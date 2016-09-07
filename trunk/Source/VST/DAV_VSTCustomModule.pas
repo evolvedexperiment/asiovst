@@ -415,25 +415,27 @@ function TCustomVSTModule.GetHostProduct: AnsiString;
 var
   Text : PAnsiChar;
 begin
- if (FHostProduct = '') or (FHostProduct = 'Unknown') then
+  if (FHostProduct = '') or (FHostProduct = 'Unknown') then
   begin
-   // allocate and zero memory (256 byte, which is more than necessary, but
-   // just to be sure and in case of host ignoring the specs)
-   GetMem(Text, 256);
-   FillChar(Text^, 256, 0);
-   try
-    if GetHostProductString(Text)
-     then Result := StrPas(Text)
-     else Result := 'Unknown';
-    if TruncateStrings and (Length(Result) > 64)
-     then SetLength(Result, 64);
-    FHostProduct := Result;
-   finally
-    // dispose memory
-    Dispose(Text);
-   end;
+    // allocate and zero memory (256 byte, which is more than necessary, but
+    // just to be sure and in case of host ignoring the specs)
+    GetMem(Text, 256);
+    FillChar(Text^, 256, 0);
+    try
+      if GetHostProductString(Text) then
+        Result := StrPas(Text)
+      else
+        Result := 'Unknown';
+      if TruncateStrings and (Length(Result) > 64) then
+        SetLength(Result, 64);
+      FHostProduct := Result;
+    finally
+      // dispose memory
+      Dispose(Text);
+    end;
   end
- else Result := FHostProduct;
+  else
+    Result := FHostProduct;
 end;
 
 function TCustomVSTModule.GetHostVendor: AnsiString;

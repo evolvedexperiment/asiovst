@@ -1,4 +1,4 @@
-unit ASIOVIObject;
+unit DAV_AsioVi;
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -36,9 +36,13 @@ interface
 
 {$IFNDEF FPC} {$INLINE AUTO} {$ENDIF}
 
+{$IFDEF Debug}
+  {-$DEFINE DebugLog}
+{$ENDIF}
+
 uses
-  Windows, {$IFDEF FPC} LCLIntf, {$ENDIF} Classes,
-  DAV_ASIO, DAV_AsioInterface, DAV_AsioConvert;
+  Windows, Messages, {$IFDEF FPC} LCLIntf, {$ENDIF} Classes,
+  DAV_ASIO, DAV_AsioInterface, DAV_AsioConvert, DAV_LabView;
 
 const
 {$EXTERNALSYM WM_USER}
@@ -61,41 +65,6 @@ const
   HKEY_LOCAL_MACHINE = LongWord($80000002);
 
 type
-  TMessage = packed record
-    Msg: Cardinal;
-    case Integer of
-      0:
-        (WParam: Integer;
-         LParam: Integer;
-         Result: Integer);
-      1:
-        (WParamLo: Word;
-         WParamHi: Word;
-         LParamLo: Word;
-         LParamHi: Word;
-         ResultLo: Word;
-         ResultHi: Word);
-  end;
-  PMessage = ^TMessage;
-
-  TSingleArray = array of Single;
-  PSingleArray = ^TSingleArray;
-  TDoubleArray = array of Double;
-  PDoubleArray = ^TDoubleArray;
-  TArrayOfSingleArray = array of TSingleArray;
-  PArrayOfSingleArray = ^TArrayOfSingleArray;
-
-  TLVSingleArray = array [0 .. 0] of Single;
-  PLVSingleArray = ^TLVSingleArray;
-  TLVDoubleArray = array [0 .. 0] of Double;
-  PLVDoubleArray = ^TLVDoubleArray;
-
-  TLVArray = record
-    Pointer: PDoubleArray;
-    Data: TDoubleArray;
-  end;
-  PLVArray = ^TLVArray;
-
   TComplex = record
     Im: Double;
     Re: Double;
@@ -114,19 +83,16 @@ type
   TConvertOptimizations = set of TConvertOptimization;
 
   TClipPreventer = procedure(InBuffer: PSingle; Samples: Integer);
-  TSamplePositionUpdateEvent = procedure(Sender: TObject; SamplePosition: Int64) of object;
-  TSample2Event = procedure(Sender: TObject; Sample: array of Single) of object;
 
-  TBufferPreFill = (bpfNone, bpfZero, bpfNoise, bpfSine);
+  TOutputSource = (osCustom, osZero, osNoise, osSine);
   TPreventClipping = (pcNone, pcDigital, pcAnalog);
   TInputMonitor = (imDisabled, imMono, imStereo, imAll);
 
-  TATFlag = (atSystemTimeValid, atSamplePositionValid, atSampleRateValid,
-    atSpeedValid, atSampleRateChanged, atClockSourceChanged);
-  TATFlags = set of TATFlag;
-  TNotifyEvent = procedure(Sender: TObject) of object;
-
   TASIOTimeSub = class(TObject)
+  type
+    TATFlags = set of (atSystemTimeValid, atSamplePositionValid,
+      atSampleRateValid, atSpeedValid, atSampleRateChanged,
+      atClockSourceChanged);
   private
     FOnChange: TNotifyEvent;
     function GetATInt64(Index: Integer): Int64;
@@ -144,114 +110,125 @@ type
 
     property SamplePos: Int64 index 0 read GetATInt64 write SetATInt64;
     property Speed: Double index 0 read GetATdouble write SetATdouble;
-    // absolute speed (1. = nominal)
     property SampleRate: Double Index 1 read GetATdouble write SetATdouble;
     property Flags: TATFlags read GetATflags Write SetATflags;
   end;
 
 type
+  TInputChannel = record
+    CurrentData: TSingleArray;
+    Buffer: TSingleArray;
+    Converter: TInConverter;
+    Meter: Single;
+  end;
+
+  TOutputChannel = record
+    CurrentData: TSingleArray;
+    Buffer: TSingleArray;
+    Converter: TOutConverter;
+    Meter: Single;
+    Volume: Single;
+    SineFrequency: Single;
+    SineStart, SineState: TComplex;
+  end;
+
+  TAsioCanDos = set of (acdInputMonitor, acdTimeInfo, acdTimeCode, acdTransport,
+    acdInputGain, acdInputMeter, acdOutputGain, acdOutputMeter, acdSetIoFormat,
+    acdGetIoFormat, acdCanDoIoFormat);
+
   TLabviewASIO = class(TObject)
   private
+    FDriver: IStdCallAsio;
+    FASIOTime: TASIOTimeSub;
+    FAsioDriverList: TAsioDriverList;
+    FAsioCanDos: TAsioCanDos;
+    FClockSources: array of TAsioClockSource;
+
     FActive: Boolean;
     FPreventClipping: TPreventClipping;
-    FInBufferPreFill: TBufferPreFill;
-    FOutBufferPreFill: TBufferPreFill;
+    FOutputSource: TOutputSource;
 
-    FDriver: IStdCallAsio;
     FDriverIndex: Integer;
     FDriverList: TStrings;
-    FDriverName: String;
+    FDriverName: string;
     FDriverVersion: Integer;
 
     FInputLatency: Integer;
     FOutputLatency: Integer;
-    FInputChannels: Integer;
-    FOutputChannels: Integer;
+    FInputChannelCount: Integer;
+    FOutputChannelCount: Integer;
     FSampleRate: Double;
     FBufferSize: Cardinal;
-    FASIOTime: TASIOTimeSub;
+    FHandle: HWND;
 
-    FInputChannelOffset: Word;
-    FOutputChannelOffset: Word;
     FMin, FMax, FPref, FGranularity: Integer;
 
-    FInConverters: array of TInConverter;
-    FOutConverters: array of TOutConverter;
+    FInputChannel: array of TInputChannel;
+    FOutputChannel: array of TOutputChannel;
 
-    FAsioDriverList: TAsioDriverList;
-    FBuffersCreated: Boolean;
     FCallbacks: TASIOCallbacks;
 
-    FSingleInBuffer: TArrayOfSingleArray;
-    FSingleOutBuffer: TArrayOfSingleArray;
-
-    FUnAlignedBuffer: PASIOBufferInfo;
+    FUnalignedBuffer: Pointer;
     FInputBuffer: PASIOBufferInfo;
     FOutputBuffer: PASIOBufferInfo;
 
-    FInputChannelInfos: array of TASIOChannelInfo;
-    FOutputChannelInfos: array of TASIOChannelInfo;
-    FOutBuf, FInBuf: TArrayOfSingleArray;
-    FLastSamples: TSingleArray;
-    FLoopCounts, FBufferUnderruns, FReadPosition, FWritePosition: Integer;
+    FLoopCounts, FBufferUnderruns: Integer;
+    FReadPosition, FWritePosition: Integer;
 
     FInputMonitor: TInputMonitor;
     FConvertOptimizations: TConvertOptimizations;
-    FOutputVolume: TSingleArray;
     FClipPrevent: TClipPreventer;
-    FASIODone: Boolean;
-    FInMeter: array of Single;
-    FOutMeter: array of Single;
-    FSineFrequencies: array of Single;
-    FSineStarts: array of TComplex;
-    FSineStates: array of TComplex;
-    FXBSize: Integer;
-    FXBSizeH, FXBSizeV: Integer;
+    FXBSize, FXBSizeH, FXBSizeQ: Integer;
     FCalcMeters: Boolean;
     FWatchDog: Boolean;
+    FUserEvent: TLVUserEventRef;
 
-    FOnReset: TNotifyEvent;
-    FOnDriverChanged: TNotifyEvent;
-    FOnLatencyChanged: TNotifyEvent;
-    FOnSampleRateChanged: TNotifyEvent;
-
-    FOnSample2Output: TSample2Event;
-    FOnInput2Sample: TSample2Event;
-
-    FOnUpdateSamplePos: TSamplePositionUpdateEvent;
-    procedure SetActive(Value: Boolean);
-    procedure SetDriverIndex(Value: Integer);
-    function CreateBuffers: Boolean;
-    procedure DestroyBuffers;
-    procedure BufferSwitch(Index: Integer);
-    procedure BufferSwitchTimeInfo(Index: Integer; const params: TASIOTime);
-    procedure SetSampleRate(const Value: Double);
-    procedure SetDriverName(const s: String);
-    procedure SetInputChannelOffset(const w: Word);
-    procedure SetOutputChannelOffset(const w: Word);
-    procedure SetConvertOptimizations(const co: TConvertOptimizations);
-    procedure SetPreventClipping(v: TPreventClipping);
     function GetBufferSize: Cardinal;
     function GetSampleRate: Double;
     function GetSineFrequency(Index: Integer): Single;
     function GetInConverter(ConverterType: TAsioSampleType): TInConverter;
     function GetOutConverter(ConverterType: TAsioSampleType): TOutConverter;
+
+    procedure CreateBuffers;
+    procedure DestroyBuffers;
+
+    procedure AquireCanDos;
+    procedure AquireClockSources;
+    procedure AquireDriverName;
+    procedure AquireDriverVersion;
+    procedure AquireSampleRate;
+    procedure DetermineBuffersize;
+
+    procedure BufferSwitch(Index: Integer);
+    procedure BufferSwitchTimeInfo(Index: Integer; const params: TASIOTime);
+    procedure ResetPositions;
+
+    procedure LatencyChanged;
+    procedure SampleRateChanged;
+
+    procedure InitializeDriver(ID: TGUID);
+
+    procedure SetActive(Value: Boolean);
+    procedure SetConvertOptimizations(const co: TConvertOptimizations);
+    procedure SetDriverIndex(Value: Integer);
+    procedure SetDriverName(const s: String);
+    procedure SetPreventClipping(v: TPreventClipping);
+    procedure SetSampleRate(Value: Double);
     procedure SetSineFrequency(Index: Integer; const Value: Single);
     procedure SetXBSize(const Value: Integer);
-    procedure ResetPositions;
   protected
+    procedure WndProc(var Msg: TMessage);
     procedure PMASIO(var Message: TMessage); message PM_ASIO;
-    procedure PMUpdateSamplePos(var Message: TMessage);
-      message PM_UpdateSamplePos;
+    procedure PMUpdateSamplePos(var Message: TMessage); message PM_UpdateSamplePos;
     procedure PMBufferSwitch(var Message: TMessage); message PM_BufferSwitch;
-    procedure PMBufferSwitchTimeInfo(var Message: TMessage);
-      message PM_BufferSwitchTimeInfo;
+    procedure PMBufferSwitchTimeInfo(var Message: TMessage); message PM_BufferSwitchTimeInfo;
     function GetDriverList: TStrings;
   public
     constructor Create;
     destructor Destroy; override;
 
     procedure Reset;
+
     function GetNumDrivers: Integer;
     procedure OpenDriver;
     procedure CloseDriver;
@@ -259,7 +236,6 @@ type
     function CanSampleRate(SampleRate: TASIOSampleRate): TASIOError;
 
     property Active: Boolean read FActive write SetActive;
-    property ASIODone: Boolean read FASIODone;
     property ASIOTime: TASIOTimeSub read FASIOTime Write FASIOTime;
     property BufferGranularity: Integer read FGranularity;
     property BufferMaximum: Integer read FMax;
@@ -272,55 +248,41 @@ type
     property DriverName: string read FDriverName write SetDriverName;
     property DriverVersion: Integer read FDriverVersion;
     property ExtraBufferSize: Integer read FXBSize write SetXBSize;
-    property InputChannelOffset: Word read FInputChannelOffset write SetInputChannelOffset default 0;
-    property InputChannels: Integer read FInputChannels default 0;
+    property InputChannelCount: Integer read FInputChannelCount default 0;
     property InputLatency: Integer read FInputLatency default 0;
     property InputMonitor: TInputMonitor read FInputMonitor write FInputMonitor default imDisabled;
-    property OnDriverChanged: TNotifyEvent read FOnDriverChanged write FOnDriverChanged;
-    property OnInput2Sample: TSample2Event read FOnInput2Sample write FOnInput2Sample;
-    property OnLatencyChanged: TNotifyEvent read FOnLatencyChanged write FOnLatencyChanged;
-    property OnReset: TNotifyEvent read FOnReset write FOnReset;
-    property OnSample2Output: TSample2Event read FOnSample2Output write FOnSample2Output;
-    property OnSampleRateChanged: TNotifyEvent read FOnSampleRateChanged write FOnSampleRateChanged;
-    property OnUpdateSamplePos: TSamplePositionUpdateEvent read FOnUpdateSamplePos write FOnUpdateSamplePos;
-    property OutputChannelOffset: Word read FOutputChannelOffset write SetOutputChannelOffset default 0;
-    property OutputChannels: Integer read FOutputChannels default 0;
+    property OutputChannelCount: Integer read FOutputChannelCount default 0;
     property OutputLatency: Integer read FOutputLatency default 0;
-    property PreFillInBuffer: TBufferPreFill read FInBufferPreFill write FInBufferPreFill;
-    property PreFillOutBuffer: TBufferPreFill read FOutBufferPreFill write FOutBufferPreFill;
+    property OutputSource: TOutputSource read FOutputSource write FOutputSource;
     property PreventClipping: TPreventClipping read FPreventClipping write SetPreventClipping;
     property SampleRate: Double read GetSampleRate write SetSampleRate;
     property SineFrequency[index: Integer]: Single read GetSineFrequency write SetSineFrequency;
   end;
 
+procedure ASIOInitialize; cdecl;
+procedure ASIOTerminate; cdecl;
 function ASIOInitDriver(DriverName: PAnsiChar): Integer; cdecl;
 function ASIOInitDriverIndex(Index: Integer): Integer; cdecl;
 function ASIOGetNumDevices: Integer; cdecl;
 function ASIOSetDriverIndex(Index: Integer): Integer; cdecl;
 function ASIOGetDriverName(Index: Integer): PAnsiChar; cdecl;
-function ASIOGetDriverNames(Names: PAnsiChar;
-  lmaxDriverCount, lDriverNumber: Integer): Integer; cdecl;
+function ASIOGetDriverNames(Names: PAnsiChar; lmaxDriverCount, lDriverNumber: Integer): Integer; cdecl;
 function ASIODriverStart: Integer; cdecl;
 function ASIODriverStop: Integer; cdecl;
-function ASIOGetBufferSize(minSize, maxSize, preferredSize,
-  granularity: PInteger): Integer; cdecl;
+function ASIOGetBufferSize(minSize, maxSize, preferredSize, granularity: PInteger): Integer; cdecl;
 function ASIOControlPanel: Integer; cdecl;
 function ASIOCanSampleRate(SampleRate: Double): Integer; cdecl;
 function ASIOSetSampleRate(SampleRate: Double): Integer; cdecl;
-function ASIOGetChannels(InputChannels, OutputChannels: PInteger)
-  : Integer; cdecl;
+function ASIOGetChannels(InputChannelCount, OutputChannelCount: PInteger): Integer; cdecl;
 function ASIOOutputType(Index: Integer): Integer; cdecl;
 function ASIOSetOutputVolume(Channel: Integer; Volume: Single): Integer; cdecl;
-function ASIOSetOutputVolumedB(Channel: Integer; Volume: Single)
-  : Integer; cdecl;
-function ASIOSetSineFrequency(Channel: Integer; Frequency: Single)
-  : Integer; cdecl;
+function ASIOSetOutputVolumedB(Channel: Integer; Volume: Single): Integer; cdecl;
+function ASIOSetSineFrequency(Channel: Integer; Frequency: Single): Integer; cdecl;
 function ASIOGetInputLevel(Channel: Integer): Single; cdecl;
 function ASIOGetOutputLevel(Channel: Integer): Single; cdecl;
 function ASIOReadWriteSize: Integer; cdecl;
 function ASIOReadWriteSizeFixed: Integer; cdecl;
-function ASIOReadWrite(Buffer: PDouble; Length, Channel: Integer)
-  : Integer; cdecl;
+function ASIOReadWrite(Buffer: PDouble; Length, Channel: Integer): Integer; cdecl;
 function ASIOReadWriteX(Buffer: Pointer; Length: Integer): Integer; cdecl;
 function ASIOAutopilot(Buffer: Pointer; Length: Integer): Integer; cdecl;
 function ASIOSetExtraBufferSize(Size: Integer): Integer; cdecl;
@@ -330,6 +292,14 @@ function ASIOGetLoopCounts: Integer; cdecl;
 procedure ASIOSetLoopCounts(Loops: Integer); cdecl;
 function ASIOSetClipFunction(ClipFunction: Integer): Integer; cdecl;
 procedure ASIOCalcMeters(CalcMeters: Integer); cdecl;
+
+function ASIORegisterCallback(InstanceData: PInstanceData): TManagerError; cdecl;
+function ASIOUnegisterCallback(InstanceData: PInstanceData): TManagerError; cdecl;
+function ASIOAbortCallback(InstanceData: PInstanceData): TManagerError; cdecl;
+procedure ASIOSetUserEventRef(UserEventRef: PLVUserEventRef); cdecl;
+
+procedure InitializeLibrary;
+procedure FinalizeLibrary;
 
 implementation
 
@@ -345,6 +315,15 @@ const
 
 resourcestring
   RStrConverterTypeUnknown = 'Converter type unknown';
+  RCStrDriverNotPresent = 'Driver not present';
+  RCStrHardwareMalfunction = 'Hardware malfunctioning';
+  RCStrInputParameterInvalid = 'Input parameter invalid';
+  RCStrInvalidMode = 'Hardware is in a bad mode or used in a bad mode';
+  RCStrSPNotAdvancing = 'Hardware is not running when sample position is inquired';
+  RCStrNoClock = 'Sample clock or rate cannot be determined or is not present';
+  RCStrNoMemory = 'Not enough memory for completing the request';
+  RCStrPreferedBufferSize = 'Prefered buffer size invalid!';
+  RCStrWrongSamplerate = 'Wrong Samplerate!';
 
 var
   GHost: TLabviewASIO;
@@ -352,13 +331,12 @@ var
   PMBufSwitch: TMessage;
   PMBufSwitchTimeInfo: TMessage;
   PMReset: TMessage;
-  ASIODriverInfo: TASIODriverInfo;
   RandSeed: Cardinal = $DEADBEAF;
 
-{$IFDEF Debug}
+{$IFDEF DebugLog}
   GLog: TStringList;
 
-procedure LogMessage(Text: string);
+procedure LogMessage(Text: string); inline;
 begin
   GLog.Add(Text);
   GLog.SaveToFile(CLogFile);
@@ -375,7 +353,7 @@ begin
   if s = GHost.DriverName then
   begin
     Result := 0;
-    exit;
+    Exit;
   end
   else
     Result := 1;
@@ -387,7 +365,7 @@ begin
       GHost.DriverIndex := i;
       Result := 0;
 
-      {$IFDEF Debug}
+      {$IFDEF DebugLog}
       LogMessage(Format('InitDriver (%s)', [s]));
       {$ENDIF}
 
@@ -398,8 +376,8 @@ end;
 
 function ASIOInitDriverIndex(Index: Integer): Integer; cdecl;
 begin
-  {$IFDEF Debug}
-  LogMessage(Format('InitDriver (%d)', [Index]));
+  {$IFDEF DebugLog}
+  LogMessage(Format('InitDriverIndex (%d)', [Index]));
   {$ENDIF}
 
   try
@@ -412,7 +390,7 @@ end;
 
 function ASIOGetNumDevices: Integer; cdecl;
 begin
-  {$IFDEF Debug}
+  {$IFDEF DebugLog}
   LogMessage('GetNumDevices');
   {$ENDIF}
 
@@ -424,7 +402,7 @@ end;
 
 function ASIOBufferUnderrun: Integer; cdecl;
 begin
-  {$IFDEF Debug}
+  {$IFDEF DebugLog}
   LogMessage('BufferUnderrun');
   {$ENDIF}
 
@@ -433,7 +411,7 @@ end;
 
 procedure ASIOResetBufferUnderruns; cdecl;
 begin
-  {$IFDEF Debug}
+  {$IFDEF DebugLog}
   LogMessage('BResetufferUnderrun');
   {$ENDIF}
 
@@ -442,7 +420,7 @@ end;
 
 function ASIOGetLoopCounts: Integer; cdecl;
 begin
-  {$IFDEF Debug}
+  {$IFDEF DebugLog}
   LogMessage('GetLoopCounts');
   {$ENDIF}
 
@@ -452,63 +430,61 @@ end;
 procedure ASIOSetLoopCounts(Loops: Integer); cdecl;
 begin
   GHost.FLoopCounts := Loops;
-{$IFDEF Debug}
+{$IFDEF DebugLog}
   LogMessage('Set Loopcounts to: ' + IntToStr(Loops));
 {$ENDIF}
 end;
 
 function ASIOSetOutputVolume(Channel: Integer; Volume: Single): Integer; cdecl;
 var
-  i: Integer;
+  ChannelIndex: Integer;
 begin
   Result := 0;
   if Assigned(GHost) then
-    if (Channel > 0) and (Channel <= GHost.FOutputChannels) then
-      GHost.FOutputVolume[Channel - 1] := Volume
+    if (Channel > 0) and (Channel <= GHost.FOutputChannelCount) then
+      GHost.FOutputChannel[Channel - 1].Volume := Volume
     else
-      for i := 0 to GHost.FOutputChannels - 1 do
-        GHost.FOutputVolume[i] := Volume
+      for ChannelIndex := 0 to GHost.FOutputChannelCount - 1 do
+        GHost.FOutputChannel[ChannelIndex].Volume := Volume
   else
     Result := 1;
-{$IFDEF Debug}
+{$IFDEF DebugLog}
   LogMessage(Format('Set Output Volume on Channel %d to: %g', [Channel, Volume]));
 {$ENDIF}
 end;
 
 // Convert a value in dB's to a linear amplitude
-function dB_to_Amp(g: Single): Single;
+function dB_to_Amp(g: Double): Double; inline;
 begin
-  if (g > -90.0) then
-    Result := Exp(g * 0.05 * Ln(10))
+  if (g > -150.0) then
+    Result := Exp(g * 0.11512925465)
   else
     Result := 0;
 end;
 
-function ASIOSetOutputVolumedB(Channel: Integer; Volume: Single)
-  : Integer; cdecl;
+function ASIOSetOutputVolumedB(Channel: Integer; Volume: Single): Integer; cdecl;
 var
-  i: Integer;
+  ChannelIndex: Integer;
 begin
   Volume := dB_to_Amp(Volume);
   Result := 0;
   if Assigned(GHost) then
-    if (Channel > 0) and (Channel <= GHost.FOutputChannels) then
-      GHost.FOutputVolume[Channel - 1] := Volume
+    if (Channel > 0) and (Channel <= GHost.FOutputChannelCount) then
+      GHost.FOutputChannel[Channel - 1].Volume := Volume
     else
-      for i := 0 to GHost.FOutputChannels - 1 do
-        GHost.FOutputVolume[i] := Volume
+      for ChannelIndex := 0 to GHost.FOutputChannelCount - 1 do
+        GHost.FOutputChannel[ChannelIndex].Volume := Volume
   else
     Result := 1;
-{$IFDEF Debug}
+{$IFDEF DebugLog}
   LogMessage(Format('Set Output Volume on Channel %d to: %g dB', [Channel,
     Volume]));
 {$ENDIF}
 end;
 
-function ASIOSetSineFrequency(Channel: Integer; Frequency: Single)
-  : Integer; cdecl;
+function ASIOSetSineFrequency(Channel: Integer; Frequency: Single): Integer; cdecl;
 begin
-{$IFDEF Debug}
+{$IFDEF DebugLog}
   LogMessage('SetSineFrequency');
 {$ENDIF}
 
@@ -521,31 +497,31 @@ end;
 
 function ASIOGetInputLevel(Channel: Integer): Single; cdecl;
 begin
-{$IFDEF Debug}
+{$IFDEF DebugLog}
   LogMessage('GetInputLevel');
 {$ENDIF}
 
-  if (Channel > 0) and (Channel <= GHost.FInputChannels) then
-    Result := GHost.FInMeter[Channel - 1]
+  if (Channel > 0) and (Channel <= GHost.FInputChannelCount) then
+    Result := GHost.FInputChannel[Channel - 1].Meter
   else
     Result := 0;
 end;
 
 function ASIOGetOutputLevel(Channel: Integer): Single; cdecl;
 begin
-{$IFDEF Debug}
+{$IFDEF DebugLog}
   LogMessage('GetOutputLevel');
 {$ENDIF}
 
-  if (Channel > 0) and (Channel <= GHost.FOutputChannels) then
-    Result := GHost.FOutMeter[Channel - 1]
+  if (Channel > 0) and (Channel <= GHost.FOutputChannelCount) then
+    Result := GHost.FOutputChannel[Channel - 1].Meter
   else
     Result := 0;
 end;
 
 procedure ASIOCalcMeters(CalcMeters: Integer); cdecl;
 begin
-{$IFDEF Debug}
+{$IFDEF DebugLog}
   LogMessage('CalcMeters');
 {$ENDIF}
 
@@ -557,7 +533,7 @@ end;
 
 function ASIOReadWriteSize: Integer; cdecl;
 begin
-{$IFDEF Debug}
+{$IFDEF DebugLog}
   LogMessage('ReadWriteSize');
 {$ENDIF}
 
@@ -578,8 +554,8 @@ begin
       Result := FXBSize - FReadPosition + FWritePosition
     else
       Result := FWritePosition - FReadPosition;
-    if Result > FXBSizeV then
-      Result := FXBSizeV
+    if Result > FXBSizeQ then
+      Result := FXBSizeQ
     else
       Result := 0;
   end;
@@ -587,7 +563,7 @@ end;
 
 function ASIOSetExtraBufferSize(Size: Integer): Integer; cdecl;
 begin
-{$IFDEF Debug}
+{$IFDEF DebugLog}
   LogMessage(Format('Extra Buffer set to: %d samples', [Size]));
 {$ENDIF}
   GHost.ExtraBufferSize := Size;
@@ -598,17 +574,17 @@ function ASIOReadWrite(Buffer: PDouble; Length, Channel: Integer)
   : Integer; cdecl;
 var
   tmp: TDoubleArray absolute Buffer;
-  n: Integer;
+  ChannelIndex: Integer;
 begin
   Result := 0;
   with GHost do
     if (Channel > 0) then
-      if (Channel <= OutputChannels) and (Channel <= InputChannels) then
+      if (Channel <= OutputChannelCount) and (Channel <= InputChannelCount) then
         try
           while Result < Length do
           begin
-            GHost.FOutBuf[Channel - 1, FReadPosition] := tmp[Result];
-            tmp[Result] := GHost.FInBuf[Channel - 1, FReadPosition];
+            GHost.FOutputChannel[Channel - 1].Buffer[FReadPosition] := tmp[Result];
+            tmp[Result] := GHost.FInputChannel[Channel - 1].Buffer[FReadPosition];
             Inc(FReadPosition);
             if FReadPosition >= FXBSize then
               FReadPosition := 0;
@@ -621,10 +597,10 @@ begin
         try
           while Result < Length do
           begin
-            for n := 0 to GHost.FOutputChannels - 1 do
-              GHost.FOutBuf[n, FReadPosition] := tmp[Result];
-            for n := 0 to GHost.FInputChannels - 1 do
-              tmp[Result] := GHost.FInBuf[n, FReadPosition];
+            for ChannelIndex := 0 to GHost.FOutputChannelCount - 1 do
+              GHost.FOutputChannel[ChannelIndex].Buffer[FReadPosition] := tmp[Result];
+            for ChannelIndex := 0 to GHost.FInputChannelCount - 1 do
+              tmp[Result] := GHost.FInputChannel[ChannelIndex].Buffer[FReadPosition];
             Inc(FReadPosition);
             if FReadPosition >= FXBSize then
               FReadPosition := 0;
@@ -637,8 +613,8 @@ end;
 
 function ASIOReadWriteX(Buffer: Pointer; Length: Integer): Integer; cdecl;
 var
-  i, j: Integer;
-  Channels: Integer;
+  i, ChannelIndex: Integer;
+  ChannelCount: array [0..1] of Integer;
 begin
   try
     Result := Length;
@@ -646,45 +622,61 @@ begin
 
     i := PInteger(Buffer)^;
     if i = Length then
-      Channels := 1
+      ChannelCount[0] := 1
     else
     begin
-      Channels := i;
+      ChannelCount[0] := i;
       Inc(PInteger(Buffer), 1);  // was Inc(Integer(Buffer), 4);
       i := PInteger(Buffer)^;
       if i <> Length then
         raise Exception.Create('ASIO: Length doesn''t fit');
       Inc(PInteger(Buffer), 1);  // was Inc(Integer(Buffer), 4);
     end;
+    ChannelCount[1] := ChannelCount[0];
 
     with GHost do
     begin
-      if Channels > OutputChannels then
-        Channels := OutputChannels;
+      if ChannelCount[0] > InputChannelCount then
+        ChannelCount[0] := InputChannelCount;
+      if ChannelCount[1] > OutputChannelCount then
+        ChannelCount[1] := OutputChannelCount;
+
       if FReadPosition + Length > FXBSize then
       begin
-        for j := 0 to Channels - 1 do
+        // copy output data to output buffers
+        for ChannelIndex := 0 to ChannelCount[1] - 1 do
           for i := 0 to FXBSize - FReadPosition - 1 do
-          begin
-            FOutBuf[j, FReadPosition + i] := PLVDoubleArray(Buffer)^[j * Length + i];
-            PLVDoubleArray(Buffer)^[j * Length + i] := FInBuf[j, FReadPosition + i];
-          end;
+            FOutputChannel[ChannelIndex].Buffer[FReadPosition + i] := PLVDoubleArray(Buffer)^[ChannelIndex * Length + i];
+
+        // copy input data from input buffers
+        for ChannelIndex := 0 to ChannelCount[0] - 1 do
+          for i := 0 to FXBSize - FReadPosition - 1 do
+            PLVDoubleArray(Buffer)^[ChannelIndex * Length + i] := FInputChannel[ChannelIndex].Buffer[FReadPosition + i];
+
         FReadPosition := Length - (FXBSize - FReadPosition);
-        for j := 0 to Channels - 1 do
+
+        // copy output data to output buffers
+        for ChannelIndex := 0 to ChannelCount[1] - 1 do
           for i := 0 to FReadPosition - 1 do
-          begin
-            FOutBuf[j, i] := PLVDoubleArray(Buffer)^[j * Length + i];
-            PLVDoubleArray(Buffer)^[j * Length + i] := FInBuf[j, i];
-          end;
+            FOutputChannel[ChannelIndex].Buffer[i] := PLVDoubleArray(Buffer)^[ChannelIndex * Length + i];
+
+        // copy input data from input buffers
+        for ChannelIndex := 0 to ChannelCount[0] - 1 do
+          for i := 0 to FReadPosition - 1 do
+            PLVDoubleArray(Buffer)^[ChannelIndex * Length + i] := FInputChannel[ChannelIndex].Buffer[i];
       end
       else
       begin
-        for j := 0 to Channels - 1 do
+        // copy output data to output buffers
+        for ChannelIndex := 0 to ChannelCount[1] - 1 do
           for i := 0 to Length - 1 do
-          begin
-            FOutBuf[j, FReadPosition + i] := PLVDoubleArray(Buffer)^[j * Length + i];
-            PLVDoubleArray(Buffer)^[j * Length + i] := FInBuf[j, FReadPosition + i];
-          end;
+            FOutputChannel[ChannelIndex].Buffer[FReadPosition + i] := PLVDoubleArray(Buffer)^[ChannelIndex * Length + i];
+
+        // copy input data from input buffers
+        for ChannelIndex := 0 to ChannelCount[0] - 1 do
+          for i := 0 to Length - 1 do
+            PLVDoubleArray(Buffer)^[ChannelIndex * Length + i] := FInputChannel[ChannelIndex].Buffer[FReadPosition + i];
+
         FReadPosition := FReadPosition + Length;
       end;
     end;
@@ -717,28 +709,28 @@ begin
 
     with GHost do
     begin
-{$IFDEF Debug}
+{$IFDEF DebugLog}
       LogMessage('Autopilot started');
 {$ENDIF}
       PreventClipping := pcDigital;
       Active := False;
       oldXBufSz := ExtraBufferSize;
-      ExtraBufferSize := Length + FInputLatency + FOutputLatency + BufferSize;
+      ExtraBufferSize := Length + FInputLatency + FOutputLatency + Integer(BufferSize);
       FReadPosition := 0;
       FWritePosition := 0;
       Result := ExtraBufferSize;
-      if Channels > OutputChannels then
-        Channels := OutputChannels;
+      if Channels > OutputChannelCount then
+        Channels := OutputChannelCount;
 
       for j := 0 to Channels - 1 do
         try
-          FillChar(FOutBuf[j, 0], System.Length(FOutBuf[j]) * SizeOf(Single), 0);
+          FillChar(FOutputChannel[j].Buffer[0], System.Length(FOutputChannel[j].Buffer) * SizeOf(Single), 0);
           for i := 0 to Length - 1 do
-            FOutBuf[j, i] := TLVDoubleArray(PLVDoubleArray(Buffer)^)[j * Length + i];
+            FOutputChannel[j].Buffer[i] := TLVDoubleArray(PLVDoubleArray(Buffer)^)[j * Length + i];
         except
         end;
 
-{$IFDEF Debug}
+{$IFDEF DebugLog}
       LogMessage('Autopilot before playing/recording');
 {$ENDIF}
       FWatchDog := False;
@@ -748,7 +740,7 @@ begin
       if Active then
       begin
         Sleep(Round(2008 / SampleRate * (FInputLatency + FOutputLatency +
-          BufferSize)));
+          Integer(BufferSize))));
         if FWatchDog then
         begin
           Sleep(Round(1008 / SampleRate * (Length)));
@@ -763,24 +755,24 @@ begin
         end;
       end;
       Active := False;
-{$IFDEF Debug}
+{$IFDEF DebugLog}
       LogMessage('Autopilot before copying');
 {$ENDIF}
       for j := 0 to Channels - 1 do
         try
           for i := 0 to Length - 1 do
             PLVDoubleArray(Buffer)^[j * Length + i] :=
-              FInBuf[j, i + FInputLatency + FOutputLatency];
+              FInputChannel[j].Buffer[i + FInputLatency + FOutputLatency];
         except
         end;
       ExtraBufferSize := oldXBufSz;
-{$IFDEF Debug}
+{$IFDEF DebugLog}
       LogMessage('Autopilot finished');
 {$ENDIF}
     end;
   except
     Result := 0;
-{$IFDEF Debug}
+{$IFDEF DebugLog}
     LogMessage('Autopilot error');
 {$ENDIF}
   end;
@@ -803,7 +795,7 @@ function ASIOSetDriverIndex(Index: Integer): Integer; cdecl;
 begin
   GHost.DriverIndex := Index;
   Result := Integer(GHost.DriverIndex = Index);
-{$IFDEF Debug}
+{$IFDEF DebugLog}
   LogMessage('Driver set to: ' + GHost.FDriverList[Index]);
 {$ENDIF}
 end;
@@ -820,8 +812,8 @@ begin
   StrCopy(Result, PAnsiChar(AnsiString(dn)))
 end;
 
-function ASIOGetDriverNames(Names: PAnsiChar;
-  lmaxDriverCount, lDriverNumber: Integer): Integer; cdecl;
+function ASIOGetDriverNames(Names: PAnsiChar; lmaxDriverCount,
+  lDriverNumber: Integer): Integer; cdecl;
 var
   Current: string;
 begin
@@ -830,7 +822,7 @@ begin
     begin
       Current := GHost.DriverList[lDriverNumber];
 
-{$IFDEF Debug}
+{$IFDEF DebugLog}
       LogMessage('Available Driver (' + IntToStr(lDriverNumber) + '): ' +
         Current);
 {$ENDIF}
@@ -840,6 +832,25 @@ begin
   except
     Result := 1;
   end;
+end;
+
+procedure ASIOInitialize; cdecl;
+begin
+{$IFDEF DebugLog}
+  if not Assigned(GLog) then
+    GLog := TStringList.Create;
+  LogMessage('ASIOInitialize');
+{$ENDIF}
+  if not Assigned(GHost) then
+    GHost := TLabviewASIO.Create;
+end;
+
+procedure ASIOTerminate; cdecl;
+begin
+  FreeAndNil(GHost);
+{$IFDEF DebugLog}
+  FreeAndNil(GLog);
+{$ENDIF}
 end;
 
 function ASIOGetBufferSize(minSize, maxSize, preferredSize,
@@ -857,13 +868,12 @@ begin
     Result := 1;
 end;
 
-function ASIOGetChannels(InputChannels, OutputChannels: PInteger)
-  : Integer; cdecl;
+function ASIOGetChannels(InputChannelCount, OutputChannelCount: PInteger): Integer; cdecl;
 begin
   if Assigned(GHost) then
   begin
-    InputChannels^ := GHost.InputChannels;
-    OutputChannels^ := GHost.OutputChannels;
+    InputChannelCount^ := GHost.InputChannelCount;
+    OutputChannelCount^ := GHost.OutputChannelCount;
     Result := 0;
   end
   else
@@ -874,39 +884,39 @@ function ASIOOutputType(Index: Integer): Integer; cdecl;
 begin
   case Index of
     0:
-      GHost.PreFillOutBuffer := bpfNone;
+      GHost.OutputSource := osCustom;
     1:
-      GHost.PreFillOutBuffer := bpfNoise;
+      GHost.OutputSource := osNoise;
     2:
-      GHost.PreFillOutBuffer := bpfSine;
+      GHost.OutputSource := osSine;
   else
-    GHost.PreFillOutBuffer := bpfZero;
+    GHost.OutputSource := osZero;
   end;
   Result := 0;
 end;
 
 function ASIODriverStart: Integer; cdecl;
 begin
-{$IFDEF Debug}
+{$IFDEF DebugLog}
   LogMessage('Start Audio (before)');
 {$ENDIF}
   if Assigned(GHost) then
     GHost.Active := True;
   Result := Integer(not GHost.Active);
-{$IFDEF Debug}
+{$IFDEF DebugLog}
   LogMessage('Start Audio (after)');
 {$ENDIF}
 end;
 
 function ASIODriverStop: Integer; cdecl;
 begin
-{$IFDEF Debug}
+{$IFDEF DebugLog}
   LogMessage('Stop Audio (before)');
 {$ENDIF}
   if Assigned(GHost) then
     GHost.Active := False;
   Result := Integer(GHost.Active);
-{$IFDEF Debug}
+{$IFDEF DebugLog}
   LogMessage('Stop Audio (after)');
 {$ENDIF}
 end;
@@ -920,14 +930,14 @@ function ASIOSetSampleRate(SampleRate: Double): Integer; cdecl;
 begin
   GHost.SampleRate := SampleRate;
   Result := Integer(GHost.SampleRate = SampleRate);
-{$IFDEF Debug}
+{$IFDEF DebugLog}
   LogMessage(Format('Extra Buffer set to: %f Hz', [SampleRate]));
 {$ENDIF}
 end;
 
 function ASIOControlPanel: Integer; cdecl;
 begin
-{$IFDEF Debug}
+{$IFDEF DebugLog}
   LogMessage('Control Panel');
 {$ENDIF}
 
@@ -937,13 +947,136 @@ begin
     Result := 1;
 end;
 
-{ TLabviewASIO }
+function ASIORegisterCallback(InstanceData: PInstanceData): TManagerError; cdecl;
+begin
 
-function findDrvPath(const clsidstr: string; var dllpath: string): Integer;
+  Result := meNoError;
+end;
+
+function ASIOUnegisterCallback(InstanceData: PInstanceData): TManagerError; cdecl;
+begin
+
+  Result := meNoError;
+end;
+
+function ASIOAbortCallback(InstanceData: PInstanceData): TManagerError; cdecl;
+begin
+
+  Result := meNoError;
+end;
+
+procedure ASIOSetUserEventRef(UserEventRef: PLVUserEventRef); cdecl;
+begin
+  GHost.FUserEvent := UserEventRef^;
+end;
+
+procedure ASIOBufferSwitch(doubleBufferIndex: Integer;
+  directProcess: TASIOBool); cdecl;
+begin
+  directProcess := CASIOFalse;
+  case directProcess of
+    CASIOFalse:
+      begin
+        PMBufSwitch.WParam := AM_BufferSwitch;
+        PMBufSwitch.LParam := doubleBufferIndex;
+        GHost.Dispatch(PMBufSwitch);
+      end;
+    CASIOTrue:
+      GHost.BufferSwitch(doubleBufferIndex);
+  end;
+end;
+
+function ASIOBufferSwitchTimeInfo(var params: TASIOTime;
+  doubleBufferIndex: Integer; directProcess: TASIOBool): PASIOTime; cdecl;
+begin
+  directProcess := CASIOFalse;
+  case directProcess of
+    CASIOFalse:
+      begin
+        GHost.ASIOTime.FBufferTime := params;
+        PMBufSwitchTimeInfo.WParam := AM_BufferSwitchTimeInfo;
+        PMBufSwitchTimeInfo.LParam := doubleBufferIndex;
+        GHost.Dispatch(PMBufSwitchTimeInfo);
+      end;
+    CASIOTrue:
+      GHost.BufferSwitchTimeInfo(doubleBufferIndex, params);
+  end;
+  Result := nil;
+end;
+
+procedure ASIOSampleRateDidChange(SampleRate: TASIOSampleRate); cdecl;
+begin
+  GHost.SampleRate := SampleRate;
+end;
+
+function ASIOMessage(selector, Value: Integer; Message: Pointer;
+  opt: PDouble): Integer; cdecl;
+begin
+  Result := 0;
+  case selector of
+    kASIOSelectorSupported: // return 1 if a selector is supported
+      begin
+        case Value of
+          kASIOEngineVersion:
+            Result := 1;
+          kASIOResetRequest:
+            Result := 1;
+          kASIOBufferSizeChange:
+            Result := 0;
+          kASIOResyncRequest:
+            Result := 1;
+          kASIOLatenciesChanged:
+            Result := 1;
+          kASIOSupportsTimeInfo:
+            Result := 1;
+          kASIOSupportsTimeCode:
+            Result := 1;
+          kASIOSupportsInputMonitor:
+            Result := 0;
+        end;
+      end;
+    kASIOEngineVersion:
+      Result := 2; // ASIO 2 is supported
+    kASIOResetRequest:
+      begin
+        PMReset.Msg := PM_ASIO;
+        PMReset.WParam := AM_ResetRequest;
+        PMReset.LParam := 0;
+        GHost.Dispatch(PMReset);
+        Result := 1;
+      end;
+    kASIOBufferSizeChange:
+      begin
+        PMReset.Msg := PM_ASIO;
+        PMReset.WParam := AM_ResetRequest;
+        PMReset.LParam := 0;
+        GHost.Dispatch(PMReset);
+        Result := 1;
+      end;
+    kASIOResyncRequest:
+      ;
+    kASIOLatenciesChanged:
+      begin
+        PMReset.Msg := PM_ASIO;
+        PMReset.WParam := AM_LatencyChanged;
+        PMReset.LParam := 0;
+        GHost.Dispatch(PMReset);
+        Result := 1;
+      end;
+    kASIOSupportsTimeInfo:
+      Result := 1;
+    kASIOSupportsTimeCode:
+      Result := 0;
+    kASIOSupportsInputMonitor:
+      Result := 0;
+  end;
+end;
+
+function FindDrvPath(const clsidstr: string; var dllpath: string): Integer;
 var
   reg: TRegistry;
   success: Boolean;
-  buf: array [0 .. 1024] of char;
+  buf: array [0 .. 1024] of Char;
   s: string;
   temps: string;
 begin
@@ -1035,6 +1168,9 @@ begin
     r.Free;
   end;
 end;
+
+
+{ TASIOTimeSub }
 
 constructor TASIOTimeSub.Create;
 begin
@@ -1150,187 +1286,39 @@ begin
   end;
 end;
 
-function ChannelTypeToString(vType: TASIOSampleType): string;
-begin
-  Result := '';
-  case vType of
-    CASIOSTInt16MSB:
-      Result := 'Int16MSB';
-    CASIOSTInt24MSB:
-      Result := 'Int24MSB';
-    CASIOSTInt32MSB:
-      Result := 'Int32MSB';
-    CASIOSTFloat32MSB:
-      Result := 'Float32MSB';
-    CASIOSTFloat64MSB:
-      Result := 'Float64MSB';
-
-    // these are used for 32 bit data buffer, with different alignment of the data inside
-    // 32 bit PCI bus systems can be more easily used with these
-    CASIOSTInt32MSB16:
-      Result := 'Int32MSB16';
-    CASIOSTInt32MSB18:
-      Result := 'Int32MSB18';
-    CASIOSTInt32MSB20:
-      Result := 'Int32MSB20';
-    CASIOSTInt32MSB24:
-      Result := 'Int32MSB24';
-
-    CASIOSTInt16LSB:
-      Result := 'Int16LSB';
-    CASIOSTInt24LSB:
-      Result := 'Int24LSB';
-    CASIOSTInt32LSB:
-      Result := 'Int32LSB';
-    CASIOSTFloat32LSB:
-      Result := 'Float32LSB';
-    CASIOSTFloat64LSB:
-      Result := 'Float64LSB';
-
-    // these are used for 32 bit data buffer, with different alignment of the data inside
-    // 32 bit PCI bus systems can more easily used with these
-    CASIOSTInt32LSB16:
-      Result := 'Int32LSB16';
-    CASIOSTInt32LSB18:
-      Result := 'Int32LSB18';
-    CASIOSTInt32LSB20:
-      Result := 'Int32LSB20';
-    CASIOSTInt32LSB24:
-      Result := 'Int32LSB24';
-  end;
-end;
-
-procedure ASIOBufferSwitch(doubleBufferIndex: Integer;
-  directProcess: TASIOBool); cdecl;
-begin
-  directProcess := CASIOFalse;
-  case directProcess of
-    CASIOFalse:
-      begin
-        PMBufSwitch.WParam := AM_BufferSwitch;
-        PMBufSwitch.LParam := doubleBufferIndex;
-        GHost.Dispatch(PMBufSwitch);
-      end;
-    CASIOTrue:
-      GHost.BufferSwitch(doubleBufferIndex);
-  end;
-end;
-
-function ASIOBufferSwitchTimeInfo(var params: TASIOTime;
-  doubleBufferIndex: Integer; directProcess: TASIOBool): PASIOTime; cdecl;
-begin
-  directProcess := CASIOFalse;
-  case directProcess of
-    CASIOFalse:
-      begin
-        GHost.ASIOTime.FBufferTime := params;
-        PMBufSwitchTimeInfo.WParam := AM_BufferSwitchTimeInfo;
-        PMBufSwitchTimeInfo.LParam := doubleBufferIndex;
-        GHost.Dispatch(PMBufSwitchTimeInfo);
-      end;
-    CASIOTrue:
-      GHost.BufferSwitchTimeInfo(doubleBufferIndex, params);
-  end;
-  Result := nil;
-end;
-
-procedure ASIOSampleRateDidChange(sRate: TASIOSampleRate); cdecl;
-begin
-  if Assigned(GHost.FOnSampleRateChanged) then
-    GHost.FOnSampleRateChanged(GHost);
-end;
-
-function ASIOMessage(selector, Value: Integer; Message: Pointer; opt: PDouble)
-  : Integer; cdecl;
-begin
-  Result := 0;
-  case selector of
-    kASIOSelectorSupported: // return 1 if a selector is supported
-      begin
-        case Value of
-          kASIOEngineVersion:
-            Result := 1;
-          kASIOResetRequest:
-            Result := 1;
-          kASIOBufferSizeChange:
-            Result := 0;
-          kASIOResyncRequest:
-            Result := 1;
-          kASIOLatenciesChanged:
-            Result := 1;
-          kASIOSupportsTimeInfo:
-            Result := 1;
-          kASIOSupportsTimeCode:
-            Result := 1;
-          kASIOSupportsInputMonitor:
-            Result := 0;
-        end;
-      end;
-    kASIOEngineVersion:
-      Result := 2; // ASIO 2 is supported
-    kASIOResetRequest:
-      begin
-        PMReset.Msg := PM_ASIO;
-        PMReset.WParam := AM_ResetRequest;
-        PMReset.LParam := 0;
-        GHost.Dispatch(PMReset);
-        Result := 1;
-      end;
-    kASIOBufferSizeChange:
-      begin
-        PMReset.Msg := PM_ASIO;
-        PMReset.WParam := AM_ResetRequest;
-        PMReset.LParam := 0;
-        GHost.Dispatch(PMReset);
-        Result := 1;
-      end;
-    kASIOResyncRequest:
-      ;
-    kASIOLatenciesChanged:
-      begin
-        PMReset.Msg := PM_ASIO;
-        PMReset.WParam := AM_LatencyChanged;
-        PMReset.LParam := 0;
-        GHost.Dispatch(PMReset);
-        Result := 1;
-      end;
-    kASIOSupportsTimeInfo:
-      Result := 1;
-    kASIOSupportsTimeCode:
-      Result := 0;
-    kASIOSupportsInputMonitor:
-      Result := 0;
-  end;
-end;
+{ TLabviewASIO }
 
 constructor TLabviewASIO.Create;
 begin
-{$IFDEF Debug}
+  GHost := Self;
+
+  // allocate window handle
+  FHandle := AllocateHWnd(WndProc);
+
+{$IFDEF DebugLog}
   LogMessage('Initialize Host');
 {$ENDIF}
   FClipPrevent := ClipDigital.cb32;
   FXBSize := 0;
   FLoopCounts := 0;
   FBufferUnderruns := 0;
-  GHost := Self;
   FCalcMeters := True;
-  FUnAlignedBuffer := nil;
+  FUnalignedBuffer := nil;
   FInputBuffer := nil;
   FOutputBuffer := nil;
-  ASIOTime := TASIOTimeSub.Create;
+  FASIOTime := TASIOTimeSub.Create;
   FDriverList := GetDriverList;
   FConvertOptimizations := [coSSE, co3DNow];
 
   // set the FCallbacks record fields
   FCallbacks.BufferSwitch := {$IFDEF FPC}@{$ENDIF}ASIOBufferSwitch;
-  FCallbacks.sampleRateDidChange := {$IFDEF FPC}@{$ENDIF}ASIOSampleRateDidChange;
+  FCallbacks.SampleRateDidChange := {$IFDEF FPC}@{$ENDIF}ASIOSampleRateDidChange;
   FCallbacks.ASIOMessage := {$IFDEF FPC}@{$ENDIF}ASIOMessage;
-  FCallbacks.BufferSwitchTimeInfo :=
-  {$IFDEF FPC}@{$ENDIF}ASIOBufferSwitchTimeInfo;
+  FCallbacks.BufferSwitchTimeInfo := {$IFDEF FPC}@{$ENDIF}ASIOBufferSwitchTimeInfo;
 
   // set the FDriver itself to nil for now
   FDriver := nil;
-  FBuffersCreated := False;
+  FUnalignedBuffer := nil;
 
   // and make sure all controls are enabled or disabled
   FDriverIndex := -1;
@@ -1342,59 +1330,35 @@ end;
 
 destructor TLabviewASIO.Destroy;
 begin
-{$IFDEF Debug}
-  LogMessage('Destroy!');
+{$IFDEF DebugLog}
+  LogMessage('Destroy');
 {$ENDIF}
 
+  FCallbacks.BufferSwitch := nil;
   FCallbacks.BufferSwitchTimeInfo := nil;
 
+  OutputSource := osZero;
   if Active then
     Active := False;
-
   CloseDriver;
 
-{$IFDEF Debug}
+{$IFDEF DebugLog}
   LogMessage('After CloseDriver');
 {$ENDIF}
 
   SetLength(FAsioDriverList, 0);
-  SetLength(FInConverters, 0);
-  SetLength(FOutConverters, 0);
-  SetLength(FOutputVolume, 0);
-  SetLength(FInMeter, 0);
-  SetLength(FOutMeter, 0);
-  SetLength(FSineFrequencies, 0);
-  SetLength(FSineStarts, 0);
-  SetLength(FSineStarts, 0);
-
-{$IFDEF Debug}
-  LogMessage('After array resize');
-{$ENDIF}
-
   FDriverList.Free;
   ASIOTime.Free;
 
-{$IFDEF Debug}
-  LogMessage('Before inherited');
-{$ENDIF}
+  DeallocateHWnd(FHandle);
 
   inherited;
-{$IFDEF Debug}
+{$IFDEF DebugLog}
   LogMessage('Host closed');
 {$ENDIF}
 end;
 
 /// /////////////////////////////////////////////////////////////////////////////
-
-procedure TLabviewASIO.ResetPositions;
-begin
-  FReadPosition := 0;
-  if FBufferSize < FXBSize then
-    FReadPosition := FXBSize - FBufferSize
-  else
-    FReadPosition := 0;
-  FWritePosition := 0;
-end;
 
 function TLabviewASIO.GetDriverList: TStrings;
 var
@@ -1413,18 +1377,6 @@ begin
     DriverIndex := FDriverList.IndexOf(s);
 end;
 
-procedure TLabviewASIO.SetInputChannelOffset(const w: Word);
-begin
-  if (w <> FInputChannelOffset) and (w < FInputChannels) then
-    FInputChannelOffset := w;
-end;
-
-procedure TLabviewASIO.SetOutputChannelOffset(const w: Word);
-begin
-  if (w <> FOutputChannelOffset) and (w < FOutputChannels) then
-    FOutputChannelOffset := w;
-end;
-
 procedure TLabviewASIO.SetConvertOptimizations(const co: TConvertOptimizations);
 begin
   Use_FPU;
@@ -1441,49 +1393,38 @@ end;
 
 procedure TLabviewASIO.SetDriverIndex(Value: Integer);
 var
-  DriverName: array [0 .. 255] of AnsiChar;
-  tmpActive: Boolean;
+  WasActive: Boolean;
 begin
-  if (Value <> FDriverIndex) then
-  begin
-    tmpActive := Active;
-    Active := False;
-    if Value < -1 then
-      FDriverIndex := -1
-    else if Value >= FDriverList.Count then
-      FDriverIndex := FDriverList.Count - 1
-    else
-      FDriverIndex := Value;
-    if FDriverIndex = -1 then
-    begin
-      FDriverName := '';
-      FInputLatency := 0;
-      FOutputLatency := 0;
-      FInputChannels := 0;
-      FOutputChannels := 0;
-      FBufferSize := 0;
-      CloseDriver;
-    end
-    else
-    begin
-      try
-        CloseDriver;
-        FDriverName := FDriverList[FDriverIndex];
-        OpenDriver;
-      except
-        exit;
-      end;
+  // ensure input paramter range
+  if Value < -1 then
+    Value := -1
+  else if Value >= FDriverList.Count then
+    Value := FDriverList.Count - 1;
 
-      if Assigned(FDriver) then
-      begin
-        FDriver.GetDriverName(DriverName);
-        FDriverVersion := FDriver.GetDriverVersion;
-      end;
+  // only continue on change
+  if (Value = FDriverIndex) then
+    Exit;
+
+  WasActive := Active;
+  Active := False;
+  FDriverIndex := Value;
+  if FDriverIndex = -1 then
+  begin
+    FDriverName := '';
+    FBufferSize := 0;
+    CloseDriver;
+  end
+  else
+  begin
+    try
+      CloseDriver;
+      FDriverName := FDriverList[FDriverIndex];
+      OpenDriver;
+    except
+      Exit;
     end;
-    if Assigned(FOnDriverChanged) then
-      OnDriverChanged(Self);
-    Active := tmpActive;
   end;
+  Active := WasActive;
 end;
 
 procedure TLabviewASIO.SetPreventClipping(v: TPreventClipping);
@@ -1515,15 +1456,30 @@ begin
       FBufferUnderruns := 0;
       ResetPositions;
       FXBSize := Max(Value, BufferSize);
-      for i := 0 to FInputChannels - 1 do
-        SetLength(FInBuf[i], FXBSize);
-      for i := 0 to FOutputChannels - 1 do
-        SetLength(FOutBuf[i], FXBSize);
+      for i := 0 to FInputChannelCount - 1 do
+        SetLength(FInputChannel[i].Buffer, FXBSize);
+      for i := 0 to FOutputChannelCount - 1 do
+        SetLength(FOutputChannel[i].Buffer, FXBSize);
       FXBSizeH := FXBSize div 2;
-      FXBSizeV := FXBSize div 4;
+      FXBSizeQ := FXBSize div 4;
     finally
       ResetPositions;
     end;
+end;
+
+procedure TLabviewASIO.ResetPositions;
+begin
+  FReadPosition := 0;
+  if Integer(FBufferSize) < FXBSize then
+    FReadPosition := FXBSize - Integer(FBufferSize)
+  else
+    FReadPosition := 0;
+  FWritePosition := 0;
+end;
+
+procedure TLabviewASIO.WndProc(var Msg: TMessage);
+begin
+  Dispatch(Msg);
 end;
 
 function TLabviewASIO.GetInConverter(ConverterType: TAsioSampleType): TInConverter;
@@ -1577,200 +1533,355 @@ begin
  end;
 end;
 
-function TLabviewASIO.CreateBuffers: Boolean;
-var
-  i: Integer;
-  CurrentBuffer: PASIOBufferInfo;
+procedure TLabviewASIO.DetermineBuffersize;
 begin
-  if FDriver = nil then
-  begin
-    Result := False;
-    exit;
-  end;
-  if FBuffersCreated then
-    DestroyBuffers;
-
+  // query buffer sizes
   FDriver.GetBufferSize(FMin, FMax, FPref, FGranularity);
+
   if FMin = FMax then
     FPref := FMin;
+
+  // check prefered buffersize is valid
+  if FPref <= 0 then
+    raise Exception.Create(RCStrPreferedBufferSize);
+
   FBufferSize := FPref;
-  FDriver.GetSampleRate(FSampleRate);
-  if FSampleRate < 0 then
-    FSampleRate := 44100;
-  SetSampleRate(FSampleRate);
-  FDriver.GetChannels(FInputChannels, FOutputChannels);
+end;
 
-  SetLength(FOutputVolume, FOutputChannels);
-  SetLength(FOutMeter, FOutputChannels);
-  SetLength(FSineFrequencies, FOutputChannels);
-  SetLength(FSineStates, FOutputChannels);
-  SetLength(FSineStarts, FOutputChannels);
-  SetLength(FLastSamples, FOutputChannels);
-  SetLength(FOutBuf, FOutputChannels);
-  SineFrequency[0] := 1000;
+procedure TLabviewASIO.CreateBuffers;
+var
+  ChannelIndex: Integer;
+  ChannelInfo: TASIOChannelInfo;
+  CurrentBuffer: PASIOBufferInfo;
+  ChannelsBufferSize: Integer;
+begin
+  // ensure a driver is present
+  if FDriver = nil then
+    Exit;
 
-  for i := 0 to FOutputChannels - 1 do
-  begin
-    FOutputVolume[i] := 1;
-    FSineStates[i].Re := 0;
-    FSineStates[i].Im := 1;
-  end;
+  // destroy buffers if already present
+  if Assigned(FUnalignedBuffer) then
+    DestroyBuffers;
 
-  GetMem(FUnAlignedBuffer, SizeOf(TAsioBufferInfo) *
-    (FInputChannels + FOutputChannels) + $F);
-  FInputBuffer := PAsioBufferInfo(NativeUInt(FUnAlignedBuffer) and (not $F));
+  // get defaults
+  DetermineBuffersize;
+  AquireSampleRate;
 
-  SetLength(FInputChannelInfos, FInputChannels);
-  SetLength(FSingleInBuffer, FInputChannels);
-  SetLength(FInConverters, FInputChannels);
-  SetLength(FInMeter, FInputChannels);
-  SetLength(FInBuf, FInputChannels);
+  FDriver.GetChannels(FInputChannelCount, FOutputChannelCount);
+
+  ChannelsBufferSize := SizeOf(TAsioBufferInfo) * (FInputChannelCount + FOutputChannelCount);
+  FUnalignedBuffer := AllocMem(ChannelsBufferSize + $F);
+  FInputBuffer := PAsioBufferInfo((NativeUInt(FUnalignedBuffer) + $F) and (not $F));
+
+  SetLength(FInputChannel, FInputChannelCount);
   CurrentBuffer := FInputBuffer;
-  for i := 0 to FInputChannels - 1 do
+
+  for ChannelIndex := 0 to FInputChannelCount - 1 do
   begin
-    FInputChannelInfos[i].Channel := i;
-    FInputChannelInfos[i].isInput := CASIOTrue;
+    // channel info management
+    ChannelInfo.Channel := ChannelIndex;
+    ChannelInfo.isInput := CASIOTrue;
 
-    FDriver.GetChannelInfo(FInputChannelInfos[i]);
-    FInConverters[i] := GetInConverter(FInputChannelInfos[i].SampleType);
+    FDriver.GetChannelInfo(ChannelInfo);
+    FInputChannel[ChannelIndex].Converter := GetInConverter(ChannelInfo.SampleType);
 
-    SetLength(FSingleInBuffer[i], BufferSize);
-    FillChar(FSingleInBuffer[i, 0], BufferSize * SizeOf(Single), 0);
+    SetLength(FInputChannel[ChannelIndex].CurrentData, BufferSize);
+    FillChar(FInputChannel[ChannelIndex].CurrentData[0], BufferSize * SizeOf(Single), 0);
+
+    FillChar(CurrentBuffer^, SizeOf(TAsioBufferInfo), 0);
     CurrentBuffer^.isInput := CASIOTrue;
-    CurrentBuffer^.channelNum := i;
-    CurrentBuffer^.buffers[0] := nil;
-    CurrentBuffer^.buffers[1] := nil;
+    CurrentBuffer^.channelNum := ChannelIndex;
     Inc(CurrentBuffer);
   end;
 
   FOutputBuffer := CurrentBuffer;
-  SetLength(FOutputChannelInfos, FOutputChannels);
-  SetLength(FSingleOutBuffer, FOutputChannels);
-  SetLength(FOutConverters, FOutputChannels);
-  for i := 0 to FOutputChannels - 1 do
+  SetLength(FOutputChannel, FOutputChannelCount);
+
+  for ChannelIndex := 0 to FOutputChannelCount - 1 do
   begin
-    FOutputChannelInfos[i].Channel := i;
-    FOutputChannelInfos[i].isInput := CASIOFalse; // output
+    // channel info management
+    ChannelInfo.Channel := ChannelIndex;
+    ChannelInfo.isInput := CASIOFalse; // output
 
-    FDriver.GetChannelInfo(FOutputChannelInfos[i]);
-    FOutConverters[i] := GetOutConverter(FOutputChannelInfos[i].SampleType);
+    FDriver.GetChannelInfo(ChannelInfo);
+    FOutputChannel[ChannelIndex].Converter := GetOutConverter(ChannelInfo.SampleType);
 
-    SetLength(FSingleOutBuffer[i], BufferSize);
-    FillChar(FSingleOutBuffer[i, 0], BufferSize * SizeOf(Single), 0);
+    FOutputChannel[ChannelIndex].Volume := 1;
+    FOutputChannel[ChannelIndex].SineFrequency := 1000;
+    FOutputChannel[ChannelIndex].SineStart.Re := cos((2000 * PI) / FSampleRate);
+    FOutputChannel[ChannelIndex].SineStart.Im := sin((2000 * PI) / FSampleRate);
+    FOutputChannel[ChannelIndex].SineState.Re := 0;
+    FOutputChannel[ChannelIndex].SineState.Im := 1;
+
+    SetLength(FOutputChannel[ChannelIndex].CurrentData, BufferSize);
+    FillChar(FOutputChannel[ChannelIndex].CurrentData[0], BufferSize * SizeOf(Single), 0);
+
     CurrentBuffer^.isInput := CASIOFalse; // create an output buffer
-    CurrentBuffer^.channelNum := i;
+    CurrentBuffer^.channelNum := ChannelIndex;
     CurrentBuffer^.buffers[0] := nil;
     CurrentBuffer^.buffers[1] := nil;
     Inc(CurrentBuffer);
   end;
 
-{$IFDEF Debug}
+{$IFDEF DebugLog}
   LogMessage('Before CreateBuffers');
 {$ENDIF}
 
-  Result := FDriver.CreateBuffers(PASIOBufferInfos(FInputBuffer),
-    FInputChannels + FOutputChannels, FPref, FCallbacks) = ASE_OK;
+  if FDriver.CreateBuffers(PASIOBufferInfos(FInputBuffer),
+    FInputChannelCount + FOutputChannelCount, FPref, FCallbacks) <> ASE_OK then
+  begin
+    FreeMem(FUnalignedBuffer);
+    FUnalignedBuffer := nil;
+    Exit;
+  end;
+
   FDriver.GetLatencies(FInputLatency, FOutputLatency);
-  if Assigned(FOnLatencyChanged) then
-    FOnLatencyChanged(Self);
+
   Randomize;
   ExtraBufferSize := 8192;
 end;
 
 procedure TLabviewASIO.DestroyBuffers;
 begin
-  if (FDriver = nil) then
+  if (FDriver = nil) or not Assigned(FUnalignedBuffer) then
     Exit;
 
-{$IFDEF Debug}
-  LogMessage('Destroy buffers');
+{$IFDEF DebugLog}
+  LogMessage('DestroyBuffers');
 {$ENDIF}
 
-  if FBuffersCreated then
+  if FDriver.DisposeBuffers <> ASE_OK then
   begin
-{$IFDEF Debug}
-    LogMessage('Before DisposeBuffers');
+{$IFDEF DebugLog}
+    LogMessage('Error DisposingBuffers');
 {$ENDIF}
-    try
-      if FDriver.DisposeBuffers <> ASE_OK then
-      begin
-{$IFDEF Debug}
-        LogMessage('Error DisposingBuffers');
+  end;
+
+{$IFDEF DebugLog}
+  LogMessage('After DisposeBuffers');
 {$ENDIF}
-      end;
-    except
+
+  if Assigned(FUnalignedBuffer) then
+    FreeMem(FUnalignedBuffer);
+
+  FUnalignedBuffer := nil;
+  FInputBuffer := nil;
+  FOutputBuffer := nil;
+end;
+
+procedure TLabviewASIO.InitializeDriver(ID: TGUID);
+var
+  ErrorMessage: PAnsiChar;
+begin
+  if CreateStdCallASIO(ID, FDriver) then
+    case FDriver.Init(FHandle) of
+      0:
+        begin
+          // equals false
+          GetMem(ErrorMessage, 128);
+          try
+            FDriver.GetErrorMessage(ErrorMessage);
+            raise Exception.Create(string(ErrorMessage));
+          finally
+            Dispose(ErrorMessage);
+          end;
+        end;
+
+      // the below codes are here due to incompatibility of some soundcards
+      ASE_NotPresent:
+        raise Exception.Create(RCStrDriverNotPresent);
+      ASE_HWMalfunction:
+        raise Exception.Create(RCStrHardwareMalfunction);
+      ASE_InvalidParameter:
+        raise Exception.Create(RCStrInputParameterInvalid);
+      ASE_InvalidMode:
+        raise Exception.Create(RCStrInvalidMode);
+      ASE_SPNotAdvancing:
+        raise Exception.Create(RCStrSPNotAdvancing);
+      ASE_NoClock:
+        raise Exception.Create(RCStrNoClock);
+      ASE_NoMemory:
+        raise Exception.Create(RCStrNoMemory);
     end;
 
-{$IFDEF Debug}
-    LogMessage('After DisposeBuffers');
-{$ENDIF}
+  // aquire driver name
+  AquireDriverName;
 
-    if Assigned(FUnAlignedBuffer) then
-      FreeMem(FUnAlignedBuffer);
+  // aquire driver version
+  AquireDriverVersion;
 
-    FUnAlignedBuffer := nil;
-    FInputBuffer := nil;
-    FOutputBuffer := nil;
+  // aquire can dos
+  AquireCanDos;
 
-    FBuffersCreated := False;
-    FSingleInBuffer := nil;
-    FSingleOutBuffer := nil;
-    SetLength(FInputChannelInfos, 0);
-    SetLength(FOutputChannelInfos, 0);
-  end;
+  // aquire clock sources
+  AquireClockSources;
 end;
 
 procedure TLabviewASIO.OpenDriver;
 var
-  tmpActive: Boolean;
+  WasActive: Boolean;
 begin
-  tmpActive := False;
+  WasActive := False;
   if Assigned(FDriver) then
   begin
     try
-      tmpActive := Active;
+      WasActive := Active;
       Active := False;
       CloseDriver;
     except
     end;
   end;
+
   if FDriverIndex >= 0 then
   begin
     try
-      if CreateStdCallASIO(FAsioDriverList[FDriverIndex].id, FDriver) then
-        if not Succeeded(FDriver.Init(LongWord(ASIODriverInfo.SysRef))) then
-          FDriver := nil;
+      InitializeDriver(FAsioDriverList[FDriverIndex].id);
     except
       FDriver := nil;
     end;
   end;
-  // if FDriver = nil then raise Exception.Create('ASIO Driver Failed!');
-  FBuffersCreated := CreateBuffers;
-  if tmpActive then
+
+  // aquire can dos
+  AquireCanDos;
+
+  CreateBuffers;
+  if WasActive then
     Active := True;
 end;
 
 procedure TLabviewASIO.CloseDriver;
 begin
-{$IFDEF Debug}
+{$IFDEF DebugLog}
   LogMessage('CloseDriver');
 {$ENDIF}
 
   if Assigned(FDriver) then
   begin
-    if FBuffersCreated then
-      DestroyBuffers;
-    FDriver := nil; // RELEASE;
+    DestroyBuffers;
+    try
+      FDriver := nil; // RELEASE;
+    except
+    end;
   end;
 
-{$IFDEF Debug}
+{$IFDEF DebugLog}
   LogMessage('Clear properties');
 {$ENDIF}
   FInputLatency := 0;
   FOutputLatency := 0;
-  FInputChannels := 0;
-  FOutputChannels := 0;
+  FInputChannelCount := 0;
+  FOutputChannelCount := 0;
   FSampleRate := 44100;
+end;
+
+procedure TLabviewASIO.AquireClockSources;
+var
+  ClockSources: PAsioClockSources;
+  ClockSourceCount: Integer;
+begin
+  ClockSourceCount := 8;
+  GetMem(ClockSources, ClockSourceCount * SizeOf(TAsioClockSource));
+  try
+    FillChar(ClockSources^, ClockSourceCount * SizeOf(TAsioClockSource), 0);
+    if FDriver.GetClockSources(ClockSources, ClockSourceCount) = ASE_OK then
+    begin
+      SetLength(FClockSources, ClockSourceCount);
+      Move(ClockSources^, FClockSources[0], ClockSourceCount *
+        SizeOf(TAsioClockSource));
+    end;
+  finally
+    Dispose(ClockSources);
+  end;
+end;
+
+procedure TLabviewASIO.AquireDriverName;
+var
+  DriverName: array [0 .. 255] of AnsiChar;
+begin
+  FDriver.GetDriverName(DriverName);
+  if DriverName <> '' then
+    FDriverName := string(DriverName);
+end;
+
+procedure TLabviewASIO.AquireDriverVersion;
+begin
+  FDriverVersion := FDriver.GetDriverVersion;
+end;
+
+procedure TLabviewASIO.AquireSampleRate;
+begin
+  FDriver.GetSampleRate(FSampleRate);
+  SampleRateChanged;
+end;
+
+procedure TLabviewASIO.AquireCanDos;
+begin
+  // check whether driver is has been assigned
+  if FDriver = nil then
+  begin
+    FAsioCanDos := [];
+    Exit;
+  end;
+
+  // test can do 'Time Info'
+  if FDriver.Future(kAsioCanTimeInfo, nil) = ASE_SUCCESS then
+    Include(FAsioCanDos, acdTimeInfo)
+  else
+    Exclude(FAsioCanDos, acdTimeInfo);
+
+  // test can do 'time code'
+  if FDriver.Future(kAsioCanTimeCode, nil) = ASE_SUCCESS then
+    Include(FAsioCanDos, acdTimeCode)
+  else
+    Exclude(FAsioCanDos, acdTimeCode);
+
+  // test can do 'transport'
+  if FDriver.Future(kAsioCanTransport, nil) = ASE_SUCCESS then
+    Include(FAsioCanDos, acdTransport)
+  else
+    Exclude(FAsioCanDos, acdTransport);
+
+  // test can do 'input gain'
+  if FDriver.Future(kAsioCanInputGain, nil) = ASE_SUCCESS then
+    Include(FAsioCanDos, acdInputGain)
+  else
+    Exclude(FAsioCanDos, acdInputGain);
+
+  // test can do 'input meter'
+  if FDriver.Future(kAsioCanInputMeter, nil) = ASE_SUCCESS then
+    Include(FAsioCanDos, acdInputMeter)
+  else
+    Exclude(FAsioCanDos, acdInputMeter);
+
+  // test can do 'output gain'
+  if FDriver.Future(kAsioCanOutputGain, nil) = ASE_SUCCESS then
+    Include(FAsioCanDos, acdOutputGain)
+  else
+    Exclude(FAsioCanDos, acdOutputGain);
+
+  // test can do 'output meter'
+  if FDriver.Future(kAsioCanOutputMeter, nil) = ASE_SUCCESS then
+    Include(FAsioCanDos, acdOutputMeter)
+  else
+    Exclude(FAsioCanDos, acdOutputMeter);
+
+  // test can do 'set I/O format'
+  if FDriver.Future(kAsioSetIoFormat, nil) = ASE_SUCCESS then
+    Include(FAsioCanDos, acdSetIoFormat)
+  else
+    Exclude(FAsioCanDos, acdSetIoFormat);
+
+  // test can do 'get I/O format'
+  if FDriver.Future(kAsioSetIoFormat, nil) = ASE_SUCCESS then
+    Include(FAsioCanDos, acdGetIoFormat)
+  else
+    Exclude(FAsioCanDos, acdGetIoFormat);
+
+  // test can do 'can do I/O format'
+  if FDriver.Future(kAsioSetIoFormat, nil) = ASE_SUCCESS then
+    Include(FAsioCanDos, acdCanDoIoFormat)
+  else
+    Exclude(FAsioCanDos, acdCanDoIoFormat);
 end;
 
 function TLabviewASIO.ControlPanel: Integer;
@@ -1783,36 +1894,32 @@ end;
 
 procedure TLabviewASIO.Reset;
 begin
-  OpenDriver; // restart the FDriver
-  if Assigned(FOnReset) then
-    FOnReset(Self);
+  // restart the driver
+  OpenDriver;
+end;
+
+procedure TLabviewASIO.LatencyChanged;
+begin
+  if Assigned(FDriver) then
+    FDriver.GetLatencies(FInputLatency, FOutputLatency);
 end;
 
 procedure TLabviewASIO.PMASIO(var Message: TMessage);
-var
-  inp, outp: Integer;
 begin
   if FDriver = nil then
-    exit;
+    Exit;
+
   case Message.WParam of
     AM_ResetRequest:
-      begin
-        OpenDriver; // restart the FDriver
-        if Assigned(FOnReset) then
-          FOnReset(Self);
-      end;
+      Reset;
     AM_BufferSwitch:
-      BufferSwitch(Message.LParam); // process a buffer
+      // process a buffer
+      BufferSwitch(Message.LParam);
     AM_BufferSwitchTimeInfo:
-      BufferSwitchTimeInfo(Message.LParam, ASIOTime.FBufferTime);
       // process a buffer with time
+      BufferSwitchTimeInfo(Message.LParam, ASIOTime.FBufferTime);
     AM_LatencyChanged:
-      begin
-        if Assigned(FDriver) then
-          FDriver.GetLatencies(inp, outp);
-        if Assigned(FOnLatencyChanged) then
-          FOnLatencyChanged(Self);
-      end;
+      LatencyChanged;
   end;
 end;
 
@@ -1822,12 +1929,13 @@ var
 begin
   Samples.Hi := Message.WParam;
   Samples.Lo := Message.LParam;
-  if Assigned(FOnUpdateSamplePos) then
-    FOnUpdateSamplePos(Self, ASIOSamplesToInt64(Samples));
 end;
 
 procedure TLabviewASIO.BufferSwitch(Index: Integer);
 begin
+  if FUserEvent <> 0 then
+    PostLVUserEvent(FUserEvent, Pointer(FBufferSize));
+
   FillChar(ASIOTime.FBufferTime, SizeOf(TASIOTime), 0);
 
   // get the time stamp of the buffer, not necessary if no
@@ -1842,175 +1950,196 @@ end;
 procedure TLabviewASIO.BufferSwitchTimeInfo(Index: Integer;
   const params: TASIOTime);
 var
-  i, j, n: Integer;
+  i, ChannelIndex: Integer;
   CurrentBuffer: PASIOBufferInfo;
-  PChannelArray: Pointer;
+  BufferPointer: Pointer;
   tmp: Single;
 begin
   if FDriver = nil then
-    exit;
+    Exit;
   PMUpdSamplePos.WParam := params.timeInfo.SamplePosition.Hi;
   PMUpdSamplePos.LParam := params.timeInfo.SamplePosition.Lo;
   Dispatch(PMUpdSamplePos);
 
   CurrentBuffer := FInputBuffer;
-  for j := 0 to FInputChannels - 1 do
+  for ChannelIndex := 0 to FInputChannelCount - 1 do
   begin
-    if FInBufferPreFill = bpfZero then
-      FillChar(FSingleInBuffer[j, 0], BufferSize * SizeOf(Single), 0)
-    else if FInBufferPreFill = bpfNoise then
-      for i := 0 to BufferSize - 1 do
-        FSingleInBuffer[j, i] := 2 * Random - 1
-    else
-    begin
-      PChannelArray := CurrentBuffer^.buffers[Index];
-      if Assigned(PChannelArray) then
-        FInConverters[j].ic32(PChannelArray, PSingle(FSingleInBuffer[j]), BufferSize);
-      Inc(CurrentBuffer);
-    end;
+    BufferPointer := CurrentBuffer^.buffers[Index];
+    if Assigned(BufferPointer) then
+      with FInputChannel[ChannelIndex] do
+        Converter.ic32(BufferPointer, @CurrentData[0], BufferSize);
+    Inc(CurrentBuffer);
   end;
 
   if FPreventClipping <> pcNone then
-    for j := 0 to FInputChannels - 1 do
-      FClipPrevent(@FSingleInBuffer[j, 0], BufferSize);
+    for ChannelIndex := 0 to FInputChannelCount - 1 do
+      FClipPrevent(@FInputChannel[ChannelIndex].CurrentData[0], BufferSize);
 
   (*
-    {$IFDEF Debug}
+    {$IFDEF DebugLog}
     LogMessage('inside');
     {$ENDIF}
   *)
 
-  if FOutBufferPreFill = bpfZero then
-    for j := 0 to FOutputChannels - 1 do
-      FillChar(FSingleOutBuffer[j, 0], BufferSize * SizeOf(Single), 0)
-  else if FOutBufferPreFill = bpfSine then
-    for j := 0 to FOutputChannels - 1 do
-      for i := 0 to BufferSize - 1 do
-      begin
-        FSingleOutBuffer[j, i] :=
-          (FSineStarts[j].Re * FSineStates[j].Re - FSineStarts[j].Im *
-          FSineStates[j].Im);
-        FSineStates[j].Im := FSineStates[j].Im * FSineStarts[j].Re + FSineStates
-          [j].Re * FSineStarts[j].Im;
-        FSineStates[j].Re := FSingleOutBuffer[j, i];
-        FSingleOutBuffer[j, i] := FOutputVolume[j] * FSingleOutBuffer[j, i];
-        FLastSamples[j] := FSingleOutBuffer[j, i];
-      end
-  else if FOutBufferPreFill = bpfNoise then
-    for j := 0 to FOutputChannels - 1 do
-      for i := 0 to BufferSize - 1 do
-        FSingleOutBuffer[j, i] := FOutputVolume[j] * (2 * Random - 1)
+  if FOutputSource = osZero then
+    for ChannelIndex := 0 to FOutputChannelCount - 1 do
+      FillChar(FOutputChannel[ChannelIndex].CurrentData[0], BufferSize * SizeOf(Single), 0)
+  else if FOutputSource = osSine then
+    for ChannelIndex := 0 to FOutputChannelCount - 1 do
+      with FOutputChannel[ChannelIndex] do
+        for i := 0 to BufferSize - 1 do
+        begin
+          CurrentData[i] := (SineStart.Re * SineState.Re - SineStart.Im * SineState.Im);
+          SineState.Im := SineState.Im * SineStart.Re + SineState.Re * SineStart.Im;
+          SineState.Re := CurrentData[i];
+          CurrentData[i] := Volume * CurrentData[i];
+        end
+  else if FOutputSource = osNoise then
+    for ChannelIndex := 0 to FOutputChannelCount - 1 do
+      with FOutputChannel[ChannelIndex] do
+        for i := 0 to BufferSize - 1 do
+          CurrentData[i] := Volume * (2 * Random - 1)
   else if (FLoopCounts > 0) and (FBufferUnderruns >= FLoopCounts) then
-    for j := 0 to FOutputChannels - 1 do
-      FillChar(FSingleOutBuffer[j, 0], BufferSize * SizeOf(Single), 0)
+    for ChannelIndex := 0 to FOutputChannelCount - 1 do
+      FillChar(FOutputChannel[ChannelIndex].CurrentData[0], BufferSize * SizeOf(Single), 0)
   else
     try
-      if FXBSize - FWritePosition >= FBufferSize then
+      if FXBSize - FWritePosition >= Integer(FBufferSize) then
       begin
-        for n := 0 to FOutputChannels - 1 do
-        begin
-          Move(FOutBuf[n, FWritePosition], FSingleOutBuffer[n, 0],
-            FBufferSize * SizeOf(Single));
-          Move(FSingleInBuffer[n, 0], FInBuf[n, FWritePosition],
-            FBufferSize * SizeOf(Single));
-        end;
+        // copy output
+        for ChannelIndex := 0 to FOutputChannelCount - 1 do
+          with FOutputChannel[ChannelIndex] do
+            Move(Buffer[FWritePosition], CurrentData[0], FBufferSize * SizeOf(Single));
+
+        // copy input
+        for ChannelIndex := 0 to FInputChannelCount - 1 do
+          with FInputChannel[ChannelIndex] do
+            Move(CurrentData[0], Buffer[FWritePosition], FBufferSize * SizeOf(Single));
+
         if (FWritePosition < FReadPosition) then
-          if (FWritePosition + FBufferSize > FReadPosition) then
+          if (FWritePosition + Integer(FBufferSize) > FReadPosition) then
             Inc(FBufferUnderruns);
-        FWritePosition := FWritePosition + FBufferSize;
+        FWritePosition := FWritePosition + Integer(FBufferSize);
         if FWritePosition >= FXBSize then
           FWritePosition := 0;
       end
       else
       begin
-        for n := 0 to FOutputChannels - 1 do
-        begin
-          Move(FOutBuf[n, FWritePosition], FSingleOutBuffer[n, 0],
-            (FXBSize - FWritePosition) * SizeOf(Single));
-          Move(FSingleInBuffer[n, 0], FInBuf[n, FWritePosition],
-            (FXBSize - FWritePosition) * SizeOf(Single));
-        end;
+        // copy output
+        for ChannelIndex := 0 to FOutputChannelCount - 1 do
+          with FOutputChannel[ChannelIndex] do
+            Move(Buffer[FWritePosition], CurrentData[0], (FXBSize - FWritePosition) * SizeOf(Single));
+
+        // copy input
+        for ChannelIndex := 0 to FInputChannelCount - 1 do
+          with FInputChannel[ChannelIndex] do
+            Move(CurrentData[0], Buffer[FWritePosition], (FXBSize - FWritePosition) * SizeOf(Single));
+
         if (FWritePosition < FReadPosition) then
           Inc(FBufferUnderruns);
-        FWritePosition := FBufferSize - (FXBSize - FWritePosition);
+
+        FWritePosition := Integer(FBufferSize) - (FXBSize - FWritePosition);
         if (FLoopCounts > 0) and (FBufferUnderruns < FLoopCounts) then
-          for n := 0 to FOutputChannels - 1 do
-          begin
-            Move(FOutBuf[n, 0], FSingleOutBuffer[n, 0],
-              FWritePosition * SizeOf(Single));
-            Move(FSingleInBuffer[n, 0], FInBuf[n, 0],
-              FWritePosition * SizeOf(Single));
-          end;
+        begin
+          for ChannelIndex := 0 to FOutputChannelCount - 1 do
+            with FOutputChannel[ChannelIndex] do
+              Move(Buffer[0], CurrentData[0], FWritePosition * SizeOf(Single));
+
+          for ChannelIndex := 0 to FInputChannelCount - 1 do
+            with FInputChannel[ChannelIndex] do
+              Move(CurrentData[0], Buffer[0], FWritePosition * SizeOf(Single));
+        end;
       end;
     except
     end;
 
+  // calculate meters
   if FCalcMeters then
   begin
-    for j := 0 to FOutputChannels - 1 do
-      for i := 0 to BufferSize - 1 do
-      begin
-        tmp := Abs(FSingleOutBuffer[j, i]);
-        if tmp > FOutMeter[j] then
-          FOutMeter[j] := tmp
-        else
-          FOutMeter[j] := 0.9999 * FOutMeter[j];
-      end;
+    // input meters
+    for ChannelIndex := 0 to FOutputChannelCount - 1 do
+      with FOutputChannel[ChannelIndex] do
+        for i := 0 to BufferSize - 1 do
+        begin
+          tmp := Abs(CurrentData[i]);
+          Meter := 0.9999 * Meter;
+          if tmp > Meter then
+            Meter := tmp
+        end;
 
-    for j := 0 to FInputChannels - 1 do
-      for i := 0 to BufferSize - 1 do
-      begin
-        tmp := Abs(FSingleInBuffer[j, i]);
-        if tmp > FInMeter[j] then
-          FInMeter[j] := tmp
-        else
-          FInMeter[j] := 0.9999 * FInMeter[j];
-      end;
+    // output meters
+    for ChannelIndex := 0 to FInputChannelCount - 1 do
+      with FInputChannel[ChannelIndex] do
+        for i := 0 to BufferSize - 1 do
+        begin
+          tmp := Abs(CurrentData[i]);
+          Meter := 0.9999 * Meter;
+          if tmp > Meter then
+            Meter := tmp
+        end;
   end;
 
+  // eventually prevent cliping
   if FPreventClipping <> pcNone then
-    for j := 0 to FOutputChannels - 1 do
-      FClipPrevent(@FSingleOutBuffer[j, 0], BufferSize);
+    for ChannelIndex := 0 to FOutputChannelCount - 1 do
+      FClipPrevent(@FOutputChannel[ChannelIndex].CurrentData[0], BufferSize);
 
+  // convert data to output buffers
   CurrentBuffer := FOutputBuffer;
-  for j := 0 to FOutputChannels - 1 do
+  for ChannelIndex := 0 to FOutputChannelCount - 1 do
   begin
-    PChannelArray := CurrentBuffer^.buffers[Index];
-    if Assigned(PChannelArray) then
-      FOutConverters[j].oc32(PSingle(FSingleOutBuffer[j]), PChannelArray, BufferSize);
+    BufferPointer := CurrentBuffer^.buffers[Index];
+    if Assigned(BufferPointer) then
+      with FOutputChannel[ChannelIndex] do
+        Converter.oc32(@CurrentData[0], BufferPointer, BufferSize);
     Inc(CurrentBuffer);
   end;
+
   if Assigned(FDriver) then
     FDriver.OutputReady;
+
   FWatchDog := True;
 end;
 
-procedure TLabviewASIO.SetSampleRate(const Value: Double);
+procedure TLabviewASIO.SetSampleRate(Value: Double);
 begin
-  FSampleRate := Value;
-  ASIOTime.SampleRate := Value;
+  // check for a valid samplerate
+  Value := Abs(Value);
+  if (Value = 0) then
+    raise Exception.Create(RCStrWrongSamplerate);
+
+  // check if samplerate is supported
   if Assigned(FDriver) then
-    FDriver.SetSampleRate(Value);
+    if FDriver.CanSampleRate(Value) <> ASE_OK then
+      Exit;
+
+  if FSampleRate <> Value then
+    if FDriver.SetSampleRate(Value) = ASE_OK then
+    begin
+      FSampleRate := Value;
+      SampleRateChanged;
+    end;
+end;
+
+procedure TLabviewASIO.SampleRateChanged;
+begin
+  // synchronize asio time with current samplerate
+  AsioTime.SampleRate := FSampleRate;
 end;
 
 procedure TLabviewASIO.SetActive(Value: Boolean);
-var
-  CurrentBuffer: PASIOBufferInfo;
-  i: Integer;
 begin
-  if FDriver = nil then
-    Exit;
-  if FActive = Value then
+  if (FDriver = nil) or (FActive = Value) then
     Exit;
 
-{$IFDEF Debug}
+{$IFDEF DebugLog}
   LogMessage('SetActive');
 {$ENDIF}
 
   if Value = True then
   begin
     try
-{$IFDEF Debug}
+{$IFDEF DebugLog}
       LogMessage('Start Audio (internal)');
 {$ENDIF}
       FActive := (FDriver.Start = ASE_OK);
@@ -2022,7 +2151,7 @@ begin
     end;
     if FActive = False then
     begin
-{$IFDEF Debug}
+{$IFDEF DebugLog}
       LogMessage('Stop Audio (internal)');
 {$ENDIF}
       FDriver.Stop;
@@ -2032,30 +2161,12 @@ begin
   begin
     FActive := False;
     try
-{$IFDEF Debug}
+{$IFDEF DebugLog}
       LogMessage('Stop Audio (internal)');
 {$ENDIF}
       FDriver.Stop;
     except
     end;
-    if FBuffersCreated and False then
-      try
-        CurrentBuffer := FOutputBuffer;
-        for i := 0 to FOutputChannels - 1 do
-        begin
-          FillChar(CurrentBuffer^.buffers[0]^, BufferSize * SizeOf(Single), 0);
-          FillChar(CurrentBuffer^.buffers[1]^, BufferSize * SizeOf(Single), 0);
-          Inc(CurrentBuffer);
-        end;
-        CurrentBuffer := FInputBuffer;
-        for i := 0 to FInputChannels - 1 do
-        begin
-          FillChar(CurrentBuffer^.buffers[0]^, BufferSize * SizeOf(Single), 0);
-          FillChar(CurrentBuffer^.buffers[1]^, BufferSize * SizeOf(Single), 0);
-          Inc(CurrentBuffer);
-        end;
-      except
-      end;
   end;
 end;
 
@@ -2098,63 +2209,57 @@ end;
 
 function TLabviewASIO.GetSineFrequency(Index: Integer): Single;
 begin
-  Result := FSineFrequencies[index];
+  Result := FOutputChannel[index].SineFrequency;
 end;
 
 procedure TLabviewASIO.SetSineFrequency(Index: Integer; const Value: Single);
 var
-  d: Double;
-  i: Integer;
+  Freq, Re, Im: Double;
+  ChannelIndex: Integer;
 begin
-  if index = 0 then
+  if Index = 0 then
   begin
-    d := (2 * Value * PI) / FSampleRate;
-    for i := 0 to OutputChannels - 1 do
+    Freq := (2 * Value * PI) / FSampleRate;
+    Re := cos(Freq);
+    Im := sin(Freq);
+    for ChannelIndex := 0 to OutputChannelCount - 1 do
     begin
-      FSineStarts[i].Re := cos(d);
-      FSineStarts[i].Im := sin(d);
-      FSineFrequencies[i] := Value;
+      FOutputChannel[ChannelIndex].SineStart.Re := Re;
+      FOutputChannel[ChannelIndex].SineStart.Im := Im;
+      FOutputChannel[ChannelIndex].SineFrequency := Value;
     end;
   end
   else
   begin
-    d := (2 * Value * PI) / FSampleRate;
-    FSineStarts[index - 1].Re := cos(d);
-    FSineStarts[index - 1].Im := sin(d);
-    FSineFrequencies[index - 1] := Value;
+    Freq := (2 * Value * PI) / FSampleRate;
+    FOutputChannel[Index - 1].SineStart.Re := cos(Freq);
+    FOutputChannel[Index - 1].SineStart.Im := sin(Freq);
+    FOutputChannel[Index - 1].SineFrequency := Value;
   end;
 end;
 
 procedure InitializeLibrary;
 begin
+{$IFDEF DebugLog}
+  if not Assigned(GLog) then
+    GLog := TStringList.Create;
+  LogMessage('InitializeLibrary');
+{$ENDIF}
   PMUpdSamplePos.Msg := PM_UpdateSamplePos;
   PMBufSwitch.Msg := PM_BufferSwitch;
   PMBufSwitchTimeInfo.Msg := PM_BufferSwitchTimeInfo;
-  {$IFDEF DEBUG}
-  GLog := TStringList.Create;
-  {$ENDIF}
-  GHost := TLabviewASIO.Create;
-
-  LogMessage('Library initialized');
+  if not Assigned(GHost) then
+    GHost := TLabviewASIO.Create;
 end;
 
 procedure FinalizeLibrary;
 begin
-  LogMessage('Finalizing Library');
-
-  if Assigned(GHost) then
-    try
-      GHost.PreFillOutBuffer := bpfNone;
-      Sleep(20);
-      GHost.Active := False;
-      Sleep(20);
-      GHost.Free;
-      GHost := nil;
-    except
-    end;
-
-{$IFDEF DEBUG}
-  GLog.Free;
+{$IFDEF DebugLog}
+  LogMessage('FinalizeLibrary');
+{$ENDIF}
+  FreeAndNil(GHost);
+{$IFDEF DebugLog}
+  FreeAndNil(GLog);
 {$ENDIF}
 end;
 

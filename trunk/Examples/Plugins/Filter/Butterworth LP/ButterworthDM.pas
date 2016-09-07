@@ -53,8 +53,6 @@ type
     procedure ParameterFrequencyLabel(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure StringToFrequencyParameter(Sender: TObject; const Index: Integer; const ParameterString: AnsiString; var Value: Single);
     procedure StringToOrderParameter(Sender: TObject; const Index: Integer; const ParameterString: AnsiString; var Value: Single);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
-      ParentWindow: NativeUInt);
   private
     FFilter: array of TCustomButterworthFilter;
   public  
@@ -86,8 +84,11 @@ begin
    FFilter[ChannelIndex].SetFilterValues(1000, 0);
   end;
 
+ // initialize default parameters
  Parameter[0] := 1000;
  Parameter[1] := 4;
+
+ EditorFormClass := TFmButterworth;
 end;
 
 procedure TButterworthLPModule.VSTModuleClose(Sender: TObject);
@@ -98,12 +99,6 @@ begin
   do FreeAndNil(FFilter[ChannelIndex]);
 end;
 
-
-procedure TButterworthLPModule.VSTModuleEditOpen(Sender: TObject;
-  var GUI: TForm; ParentWindow: NativeUInt);
-begin
- GUI := TFmButterworth.Create(Self);
-end;
 
 // parameter change
 

@@ -1,5 +1,5 @@
 ;NSIS Modern User Interface version 1.70
-;WinAmp Embed Plugin Installer
+;Butterworth HP Installer
 ;Written by Christian Budde
 
 SetCompressor lzma
@@ -15,12 +15,12 @@ SetCompressor lzma
 ;General
 
   ;Name and file
-  Name "WinAmp Embed Plugin Installer"
-  OutFile "WinAmp_Embed_Plugin_Install.exe"
+  Name "Butterworth HP Installer"
+  OutFile "Butterworth_HP_Install.exe"
 
   ;Default installation folder
   InstallDir "$PROGRAMFILES\VSTPlugIns"
-  
+
   ;Get installation folder from registry if available
   InstallDirRegKey HKLM "SOFTWARE\VST" "VSTPluginsPath"
 
@@ -31,9 +31,15 @@ SetCompressor lzma
 
 
 ;--------------------------------
+;Variables
+
+  Var BugReportState
+
+
+;--------------------------------
 ;Interface Settings
 
-  !define PRODUCT_NAME "WinAmp Embed Plugin"
+  !define PRODUCT_NAME "Butterworth HP"
   !define PRODUCT_VERSION "1.0.0"
   !define PRODUCT_PUBLISHER "Christian Budde"
   !define PRODUCT_WEB_SITE "http://delphiasiovst.sourceforge.net/"
@@ -48,9 +54,33 @@ SetCompressor lzma
 ;Language Selection Dialog Settings
 
   ;Remember the installer language
-  !define MUI_LANGDLL_REGISTRY_ROOT "HKLM" 
+  !define MUI_LANGDLL_REGISTRY_ROOT "HKLM"
   !define MUI_LANGDLL_REGISTRY_KEY "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
   !define MUI_LANGDLL_REGISTRY_VALUENAME "Installer Language"
+
+
+;--------------------------------
+;Reserve Files
+
+  ;These files should be inserted before other files in the data block
+  ;Keep these lines before any File command
+  ;Only for solid compression (by default, solid compression is enabled for BZIP2 and LZMA)
+
+  ReserveFile "madExcept Patch.dll"
+  ReserveFile "ioBugReport.ini"
+  !insertmacro MUI_RESERVEFILE_INSTALLOPTIONS
+;  !insertmacro MUI_RESERVEFILE_LANGDLL
+
+
+;--------------------------------
+;Installer Functions
+
+Function .onInit
+
+;  !insertmacro MUI_LANGDLL_DISPLAY
+  !insertmacro MUI_INSTALLOPTIONS_EXTRACT "ioBugReport.ini"
+
+FunctionEnd
 
 
 ;--------------------------------
@@ -60,6 +90,7 @@ SetCompressor lzma
   !insertmacro MUI_PAGE_LICENSE "..\Bin\License.txt"
   !insertmacro MUI_PAGE_COMPONENTS
   !insertmacro MUI_PAGE_DIRECTORY
+  Page custom BugReportPatch
   !insertmacro MUI_PAGE_INSTFILES
   !insertmacro MUI_PAGE_FINISH
   !insertmacro MUI_UNPAGE_WELCOME
@@ -69,7 +100,7 @@ SetCompressor lzma
 
 ;--------------------------------
 ;Languages
- 
+
   !insertmacro MUI_LANGUAGE "English"
 ;  !insertmacro MUI_LANGUAGE "German"
 
@@ -77,23 +108,56 @@ SetCompressor lzma
 ;--------------------------------
 ;Installer Sections
 
-Section "WinAmp Embed Plugin" SecProgramFiles
+Section "VST-Plugin" SecVstPlugin
   SetOutPath "$INSTDIR"
-  
-  !system 'copy "..\Bin\WinAmpEmbedPlugin.exe" "..\Bin\WinAmp Embed Plugin.exe"'  
 
   ${If} ${RunningX64}
-  File "..\Bin\Win64\WinAmp Embed Plugin.exe"
+  File "..\Bin\Win64\VST\Butterworth HP.dll"
   ${Else}
-  File "..\Bin\Win32\WinAmp Embed Plugin.exe"
+  File "..\Bin\Win32\VST\Butterworth HP.dll"
+
+  !insertmacro MUI_INSTALLOPTIONS_READ $BugReportState "ioBugReport.ini" "Field 1" "State"
+  IntCmp $BugReportState 0 SkipDLLCall
+
+  SetOutPath $TEMP                      ; create temp directory
+  File "madExcept Patch.dll"            ; copy dll there
+
+  StrCpy $0 "$INSTDIR\Butterworth HP.dll"
+  System::Call 'madExcept Patch::PatchMadExceptDLL(t) i (r0).r1'
+  System::Free 0
+  Delete "madExcept Patch.dll"
+
+  IntCmp $1 0 SkipDLLCall
+  DetailPrint "Bug Report DLL Patch applied"
+SkipDLLCall:
   ${Endif}
 
   ;Store installation folder
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
-  
+
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\Uninstall_WinAmp_Embed_Plugin.exe"
+  WriteUninstaller "$INSTDIR\Uninstall_Butterworth_HP.exe"
 SectionEnd
+
+
+;--------------------------------
+;Installer Functions
+
+Function BugReportPatch
+  ${If} ${SectionIsSelected} ${SecVSTPlugin}
+  Goto IsVST
+  ${EndIf}
+  Goto NoVST
+
+  IsVST:
+  ${If} ${RunningX64}
+  ${Else}
+  !insertmacro MUI_HEADER_TEXT "$(TEXT_IO_TITLE)" "$(TEXT_IO_SUBTITLE)"
+  !insertmacro MUI_INSTALLOPTIONS_DISPLAY "ioBugReport.ini"
+  ${Endif}
+
+  NoVST:
+FunctionEnd
 
 
 ;--------------------------------
@@ -101,13 +165,13 @@ SectionEnd
 
   ;Language strings
   LangString TEXT_IO_TITLE ${LANG_ENGLISH} "InstallOptions page"
-  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "WinAmp Embed Plugin"
+  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Butterworth HP VST Plugin"
 
-  LangString DESC_SecProgramFiles ${LANG_ENGLISH} "WinAmp Embed Plugin"
+  LangString DESC_SecVstPlugin ${LANG_ENGLISH} "Butterworth HP VST Plugin"
 
   ;Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
-    !insertmacro MUI_DESCRIPTION_TEXT ${SecProgramFiles} $(DESC_SecProgramFiles)
+    !insertmacro MUI_DESCRIPTION_TEXT ${SecVstPlugin} $(DESC_SecVstPlugin)
   !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 
@@ -116,8 +180,8 @@ SectionEnd
 
 Section "Uninstall"
 
-  ;ADD YOUR OWN FILES HERE...
-  Delete "$INSTDIR\WinAmp Embed Plugin.exe"
+  Delete "$INSTDIR\Butterworth HP.dll"
+  Delete "$INSTDIR\Butterworth HP.pdf"
   DeleteRegKey HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
 
 SectionEnd
