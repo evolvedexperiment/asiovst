@@ -348,7 +348,7 @@ end;
 
 function TMonoBufferThread.GetBufferFill: Single;
 begin
-  result := 100 * (FBuffer.SamplesInBuffer / FBuffer.BufferSize);
+  Result := 100 * (FBuffer.SamplesInBuffer / FBuffer.BufferSize);
 end;
 
 procedure TMonoBufferThread.PutSamples(Data: PDAVSingleFixedArray;
@@ -450,7 +450,7 @@ end;
 
 function TStereoBufferThread.GetBufferFill: Single;
 begin
-  result := 100 * (FBuffer.SamplesInBuffer / FBuffer.BufferSize);
+  Result := 100 * (FBuffer.SamplesInBuffer / FBuffer.BufferSize);
 end;
 
 procedure TStereoBufferThread.PutSamples(Left, Right: PDAVSingleFixedArray;
@@ -553,7 +553,7 @@ end;
 
 function TMultiBufferThread.GetBufferFill: Single;
 begin
-  result := 100 * (FBuffer.SamplesInBuffer / FBuffer.BufferSize);
+  Result := 100 * (FBuffer.SamplesInBuffer / FBuffer.BufferSize);
 end;
 
 procedure TMultiBufferThread.PutSamples(Data: TDAVArrayOfSingleFixedArray;
@@ -694,22 +694,22 @@ end;
 
 function TCustomBufferedAudioRecorder.GetBlockSize: Integer;
 begin
-  result := FBufferThread.BlockSize;
+  Result := FBufferThread.BlockSize;
 end;
 
 function TCustomBufferedAudioRecorder.GetBufferFill: Single;
 begin
-  result := FBufferThread.BufferFill;
+  Result := FBufferThread.BufferFill;
 end;
 
 function TCustomBufferedAudioRecorder.GetBufferSize: Integer;
 begin
-  result := FBufferThread.BufferSize;
+  Result := FBufferThread.BufferSize;
 end;
 
 function TCustomBufferedAudioRecorder.GetAudioFile: TCustomAudioFile;
 begin
-  result := FBufferThread.AudioFile;
+  Result := FBufferThread.AudioFile;
 end;
 
 procedure TCustomBufferedAudioRecorder.SetAllowSuspend(const Value: Boolean);

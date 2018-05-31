@@ -113,7 +113,7 @@ end;
 
 function TStkTabla.GetFrequency: Single;
 begin
-  result := 0;
+  Result := 0;
 end;
 
 procedure TStkTabla.NoteOn;
@@ -230,7 +230,7 @@ begin
       output := output + FFilters[i].Tick(FWaves[i].Tick);
     i := i + 1;
   end;
-  result := output;
+  Result := output;
 end;
 
 end.

@@ -92,16 +92,16 @@ end;
 
 function TSpectralDelayFilter.MagnitudeLog10(const Frequency: Double): Double;
 begin
-  result := Log10(MagnitudeSquared(Frequency));
+  Result := Log10(MagnitudeSquared(Frequency));
 end;
 
 function TSpectralDelayFilter.MagnitudeSquared(const Frequency: Double): Double;
 var
   Filter: Integer;
 begin
-  result := 1;
+  Result := 1;
   for Filter := 0 to Length(FFilters) - 1 do
-    result := result * FFilters[Filter].MagnitudeSquared(Frequency);
+    Result := Result * FFilters[Filter].MagnitudeSquared(Frequency);
 end;
 
 procedure TSpectralDelayFilter.PopStates;
@@ -117,18 +117,18 @@ function TSpectralDelayFilter.ProcessSample32(Input: Single): Single;
 var
   Filter: Integer;
 begin
-  result := Input;
+  Result := Input;
   for Filter := 0 to Length(FFilters) - 1 do
-    result := FFilters[Filter].ProcessSample64(result);
+    Result := FFilters[Filter].ProcessSample64(result);
 end;
 
 function TSpectralDelayFilter.ProcessSample64(Input: Double): Double;
 var
   Filter: Integer;
 begin
-  result := Input;
+  Result := Input;
   for Filter := 0 to Length(FFilters) - 1 do
-    result := FFilters[Filter].ProcessSample64(result);
+    Result := FFilters[Filter].ProcessSample64(result);
 end;
 
 procedure TSpectralDelayFilter.PushStates;

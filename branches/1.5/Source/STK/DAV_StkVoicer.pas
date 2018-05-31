@@ -195,7 +195,7 @@ end;
 
 function TStkVoiceManager.GetVoiceCount: Integer;
 begin
-  result := Length(FVoices);
+  Result := Length(FVoices);
 end;
 
 procedure TStkVoiceManager.AddInstrument(const Instrument
@@ -307,7 +307,7 @@ begin
       FVoices[Voice].Frequency := Frequency;
       FVoices[Voice].Instrument.NoteOn(Frequency, Amplitude);
       FVoices[Voice].Sounding := 1;
-      result := FVoices[Voice].Tag;
+      Result := FVoices[Voice].Tag;
       exit;
     end;
 
@@ -329,10 +329,10 @@ begin
     FVoices[OldVoice].Frequency := Frequency;
     FVoices[OldVoice].Instrument.NoteOn(Frequency, Amplitude);
     FVoices[OldVoice].Sounding := 1;
-    result := FVoices[OldVoice].Tag;
+    Result := FVoices[OldVoice].Tag;
     exit;
   end;
-  result := -1;
+  Result := -1;
 end;
 
 procedure TStkVoiceManager.PitchBend(const Tag: Integer; const Value: Single);
@@ -438,7 +438,7 @@ begin
         FVoices[i].NoteNumber := -1;
     end;
   end;
-  result := FLastOutput * FScale;
+  Result := FLastOutput * FScale;
 end;
 
 end.

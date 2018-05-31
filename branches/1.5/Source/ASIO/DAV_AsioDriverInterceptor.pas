@@ -39,13 +39,13 @@ type
 {$IFDEF DELPHI10_UP} {$REGION 'Interceptor declaration'} {$ENDIF}
   TDavASIOInterceptor = class(TDavASIODriver)
   protected
-    fDriverName: string;
-    fDriverVersion: Longint;
-    fDriverList: TDAVAsioDriverList;
-    fHostInterface: IStdCallASIO;
-    fDriverIndex: integer;
-    fHostCallbacks: PASIOCallbacks;
-    fDriverCallbacks: TASIOCallbacks;
+    FDriverName: string;
+    FDriverVersion: Longint;
+    FDriverList: TDAVAsioDriverList;
+    FHostInterface: IStdCallASIO;
+    FDriverIndex: integer;
+    FHostCallbacks: PASIOCallbacks;
+    FDriverCallbacks: TASIOCallbacks;
 
     procedure UnloadHostInterface;
     procedure InitializeDriverParams; virtual;
@@ -103,7 +103,7 @@ type
     procedure ASIORequestReset;
 
     property DriverNames: TStrings read GetDriverNames;
-    property DriverIndex: integer read fDriverIndex write SetDriverIndex;
+    property DriverIndex: integer read FDriverIndex write SetDriverIndex;
   end;
 {$IFDEF DELPHI10_UP} {$ENDREGION 'Interceptor declaration'} {$ENDIF}
 
@@ -125,10 +125,10 @@ function callbackBufferSwitchTimeInfo(var Params: TASIOTime;
   DoubleBufferIndex: integer; DirectProcess: TASIOBool): PASIOTime; cdecl;
 begin
   if Assigned(GlobalCallbackInst) then
-    result := GlobalCallbackInst.ASIOBufferSwitchTimeInfo(Params,
+    Result := GlobalCallbackInst.ASIOBufferSwitchTimeInfo(Params,
       DoubleBufferIndex, DirectProcess)
   else
-    result := @Params; // dummy
+    Result := @Params; // dummy
 end;
 
 procedure callbackSampleRateDidChange(SampleRate: TASIOSampleRate); cdecl;
@@ -141,9 +141,9 @@ function callbackMessage(Selector, Value: integer; msg: Pointer; Opt: PDouble)
   : integer; cdecl;
 begin
   if Assigned(GlobalCallbackInst) then
-    result := GlobalCallbackInst.ASIOMessage(Selector, Value, msg, Opt)
+    Result := GlobalCallbackInst.ASIOMessage(Selector, Value, msg, Opt)
   else
-    result := 0;
+    Result := 0;
 end;
 
 {$IFDEF DELPHI10_UP} {$ENDREGION 'Callback methods'} {$ENDIF}
@@ -156,15 +156,15 @@ constructor TDavASIOInterceptor.Create(TCWrapper: TDavASIOTCWrapper;
 begin
   inherited;
   GlobalCallbackInst := self;
-  fDriverList := TDAVAsioDriverList.Create(InterfaceGUID);
-  fDriverList.UpdateList;
-  fDriverIndex := 0;
-  fHostInterface := nil;
-  fDriverName := 'DAV Abstract Int';
-  fDriverVersion := 1;
+  FDriverList := TDAVAsioDriverList.Create(InterfaceGUID);
+  FDriverList.UpdateList;
+  FDriverIndex := 0;
+  FHostInterface := nil;
+  FDriverName := 'DAV Abstract Int';
+  FDriverVersion := 1;
 
-  fHostCallbacks := nil;
-  with fDriverCallbacks do
+  FHostCallbacks := nil;
+  with FDriverCallbacks do
   begin
     BufferSwitch := callbackBufferSwitch;
     SampleRateDidChange := callbackSampleRateDidChange;
@@ -181,7 +181,7 @@ end;
 destructor TDavASIOInterceptor.Destroy;
 begin
   UnloadHostInterface;
-  fDriverList.Free;
+  FDriverList.Free;
   inherited;
 end;
 
@@ -192,21 +192,21 @@ end;
 
 procedure TDavASIOInterceptor.SetDriverName(name: string);
 begin
-  fDriverName := name;
+  FDriverName := name;
 end;
 
 procedure TDavASIOInterceptor.SetDriverVersion(version: Longint);
 begin
-  fDriverVersion := version;
+  FDriverVersion := version;
 end;
 
 procedure TDavASIOInterceptor.SetDriverIndex(index: integer);
 begin
-  if fDriverIndex = index then
+  if FDriverIndex = index then
     exit;
   // range check is done in the init method
-  fDriverIndex := index;
-  if Assigned(fHostInterface) then
+  FDriverIndex := index;
+  if Assigned(FHostInterface) then
     ASIORequestReset;
 end;
 
@@ -222,47 +222,47 @@ end;
 
 procedure TDavASIOInterceptor.UnloadHostInterface;
 begin
-  if not Assigned(fHostInterface) then
+  if not Assigned(FHostInterface) then
     exit;
-  fHostInterface.Stop;
-  fHostInterface.DisposeBuffers;
-  fHostInterface := nil;
+  FHostInterface.Stop;
+  FHostInterface.DisposeBuffers;
+  FHostInterface := nil;
 end;
 
 function TDavASIOInterceptor.GetDriverNames: TStrings;
 begin
-  result := fDriverList.DriverNames;
+  result := FDriverList.DriverNames;
 end;
 
 function TDavASIOInterceptor.Init(SysHandle: HWND): boolean;
 begin
   UnloadHostInterface;
-  if fDriverIndex > fDriverList.Count - 1 then
-    result := false
+  if FDriverIndex > FDriverList.Count - 1 then
+    Result := false
   else
   begin
     fParentWindowHandle := SysHandle;
     try
-      result := CreateStdCallASIO
-        (TDAVAsioDriverDesc(fDriverList.Items[fDriverIndex]).Guid,
-        fHostInterface);
-      if result then
-        result := fHostInterface.Init(SysHandle) = ASIOTrue;
+      Result := CreateStdCallASIO
+        (TDAVAsioDriverDesc(FDriverList.Items[FDriverIndex]).Guid,
+        FHostInterface);
+      if Result then
+        Result := FHostInterface.Init(SysHandle) = ASIOTrue;
     except
-      result := false;
-      fHostInterface := nil;
+      Result := false;
+      FHostInterface := nil;
     end;
   end;
 end;
 
 function TDavASIOInterceptor.GetDriverName: string;
 begin
-  result := fDriverName;
+  result := FDriverName;
 end;
 
 function TDavASIOInterceptor.GetDriverVersion: Longint;
 begin
-  result := fDriverVersion;
+  result := FDriverVersion;
 end;
 
 function TDavASIOInterceptor.GetErrorMessage: string;
@@ -270,9 +270,9 @@ var
   tmp: array [0 .. 124] of char;
 begin
   result := '';
-  if Assigned(fHostInterface) then
+  if Assigned(FHostInterface) then
     try
-      fHostInterface.GetErrorMessage(tmp);
+      FHostInterface.GetErrorMessage(tmp);
       result := tmp;
     except
     end;
@@ -280,14 +280,14 @@ end;
 
 function TDavASIOInterceptor.Start: TASIOError;
 begin
-  if not Assigned(fHostInterface) then
+  if not Assigned(FHostInterface) then
   begin
     result := ASE_NotPresent;
     exit;
   end;
 
   try
-    result := fHostInterface.Start;
+    result := FHostInterface.Start;
   except
     result := ASE_NotPresent;
   end;
@@ -295,14 +295,14 @@ end;
 
 function TDavASIOInterceptor.Stop: TASIOError;
 begin
-  if not Assigned(fHostInterface) then
+  if not Assigned(FHostInterface) then
   begin
     result := ASE_NotPresent;
     exit;
   end;
 
   try
-    result := fHostInterface.Stop;
+    result := FHostInterface.Stop;
   except
     result := ASE_NotPresent;
   end;
@@ -311,14 +311,14 @@ end;
 function TDavASIOInterceptor.GetChannels(out NumInputChannels, NumOutputChannels
   : integer): TASIOError;
 begin
-  if not Assigned(fHostInterface) then
+  if not Assigned(FHostInterface) then
   begin
     result := ASE_NotPresent;
     exit;
   end;
 
   try
-    result := fHostInterface.GetChannels(NumInputChannels, NumOutputChannels);
+    result := FHostInterface.GetChannels(NumInputChannels, NumOutputChannels);
   except
     result := ASE_NotPresent;
   end;
@@ -327,14 +327,14 @@ end;
 function TDavASIOInterceptor.GetLatencies(out InputLatency,
   OutputLatency: integer): TASIOError;
 begin
-  if not Assigned(fHostInterface) then
+  if not Assigned(FHostInterface) then
   begin
     result := ASE_NotPresent;
     exit;
   end;
 
   try
-    result := fHostInterface.GetLatencies(InputLatency, OutputLatency);
+    result := FHostInterface.GetLatencies(InputLatency, OutputLatency);
   except
     result := ASE_NotPresent;
   end;
@@ -343,14 +343,14 @@ end;
 function TDavASIOInterceptor.GetBufferSize(out MinSize, MaxSize, PreferredSize,
   Granularity: integer): TASIOError;
 begin
-  if not Assigned(fHostInterface) then
+  if not Assigned(FHostInterface) then
   begin
     result := ASE_NotPresent;
     exit;
   end;
 
   try
-    result := fHostInterface.GetBufferSize(MinSize, MaxSize, PreferredSize,
+    result := FHostInterface.GetBufferSize(MinSize, MaxSize, PreferredSize,
       Granularity);
   except
     result := ASE_NotPresent;
@@ -360,14 +360,14 @@ end;
 function TDavASIOInterceptor.CanSampleRate(SampleRate: TASIOSampleRate)
   : TASIOError;
 begin
-  if not Assigned(fHostInterface) then
+  if not Assigned(FHostInterface) then
   begin
     result := ASE_NotPresent;
     exit;
   end;
 
   try
-    result := fHostInterface.CanSampleRate(SampleRate);
+    result := FHostInterface.CanSampleRate(SampleRate);
   except
     result := ASE_NotPresent;
   end;
@@ -376,14 +376,14 @@ end;
 function TDavASIOInterceptor.GetSampleRate(out SampleRate: TASIOSampleRate)
   : TASIOError;
 begin
-  if not Assigned(fHostInterface) then
+  if not Assigned(FHostInterface) then
   begin
     result := ASE_NotPresent;
     exit;
   end;
 
   try
-    result := fHostInterface.GetSampleRate(SampleRate);
+    result := FHostInterface.GetSampleRate(SampleRate);
   except
     result := ASE_NotPresent;
   end;
@@ -392,14 +392,14 @@ end;
 function TDavASIOInterceptor.SetSampleRate(SampleRate: TASIOSampleRate)
   : TASIOError;
 begin
-  if not Assigned(fHostInterface) then
+  if not Assigned(FHostInterface) then
   begin
     result := ASE_NotPresent;
     exit;
   end;
 
   try
-    result := fHostInterface.SetSampleRate(SampleRate);
+    result := FHostInterface.SetSampleRate(SampleRate);
   except
     result := ASE_NotPresent;
   end;
@@ -408,14 +408,14 @@ end;
 function TDavASIOInterceptor.GetClockSources(Clocks: PASIOClockSources;
   out NumSources: integer): TASIOError;
 begin
-  if not Assigned(fHostInterface) then
+  if not Assigned(FHostInterface) then
   begin
     result := ASE_NotPresent;
     exit;
   end;
 
   try
-    result := fHostInterface.GetClockSources(Clocks, NumSources);
+    result := FHostInterface.GetClockSources(Clocks, NumSources);
   except
     result := ASE_NotPresent;
   end;
@@ -423,14 +423,14 @@ end;
 
 function TDavASIOInterceptor.SetClockSource(Reference: integer): TASIOError;
 begin
-  if not Assigned(fHostInterface) then
+  if not Assigned(FHostInterface) then
   begin
     result := ASE_NotPresent;
     exit;
   end;
 
   try
-    result := fHostInterface.SetClockSource(Reference);
+    result := FHostInterface.SetClockSource(Reference);
   except
     result := ASE_NotPresent;
   end;
@@ -439,14 +439,14 @@ end;
 function TDavASIOInterceptor.GetSamplePosition(out SamplePosition: TASIOSamples;
   out TimeStamp: TASIOTimeStamp): TASIOError;
 begin
-  if not Assigned(fHostInterface) then
+  if not Assigned(FHostInterface) then
   begin
     result := ASE_NotPresent;
     exit;
   end;
 
   try
-    result := fHostInterface.GetSamplePosition(SamplePosition, TimeStamp);
+    result := FHostInterface.GetSamplePosition(SamplePosition, TimeStamp);
   except
     result := ASE_NotPresent;
   end;
@@ -455,14 +455,14 @@ end;
 function TDavASIOInterceptor.GetChannelInfo(var Info: TASIOChannelInfo)
   : TASIOError;
 begin
-  if not Assigned(fHostInterface) then
+  if not Assigned(FHostInterface) then
   begin
     result := ASE_NotPresent;
     exit;
   end;
 
   try
-    result := fHostInterface.GetChannelInfo(Info);
+    result := FHostInterface.GetChannelInfo(Info);
   except
     result := ASE_NotPresent;
   end;
@@ -472,17 +472,17 @@ function TDavASIOInterceptor.CreateBuffers(BufferInfos: PASIOBufferInfos;
   NumChannels, BufferSize: integer; const Callbacks: TASIOCallbacks)
   : TASIOError;
 begin
-  fHostCallbacks := @Callbacks;
+  FHostCallbacks := @Callbacks;
 
-  if not Assigned(fHostInterface) then
+  if not Assigned(FHostInterface) then
   begin
     result := ASE_NotPresent;
     exit;
   end;
 
   try
-    result := fHostInterface.CreateBuffers(BufferInfos, NumChannels, BufferSize,
-      fDriverCallbacks);
+    result := FHostInterface.CreateBuffers(BufferInfos, NumChannels, BufferSize,
+      FDriverCallbacks);
   except
     result := ASE_NotPresent;
   end;
@@ -490,14 +490,14 @@ end;
 
 function TDavASIOInterceptor.DisposeBuffers: TASIOError;
 begin
-  if not Assigned(fHostInterface) then
+  if not Assigned(FHostInterface) then
   begin
     result := ASE_NotPresent;
     exit;
   end;
 
   try
-    result := fHostInterface.DisposeBuffers;
+    result := FHostInterface.DisposeBuffers;
   except
     result := ASE_NotPresent;
   end;
@@ -513,14 +513,14 @@ end;
 
 function TDavASIOInterceptor.DriverControlPanel: TASIOError;
 begin
-  if not Assigned(fHostInterface) then
+  if not Assigned(FHostInterface) then
   begin
     result := ASE_NotPresent;
     exit;
   end;
 
   try
-    result := fHostInterface.ControlPanel;
+    result := FHostInterface.ControlPanel;
   except
     result := ASE_NotPresent;
   end;
@@ -529,14 +529,14 @@ end;
 function TDavASIOInterceptor.Future(Selector: integer; Opt: Pointer)
   : TASIOError;
 begin
-  if not Assigned(fHostInterface) then
+  if not Assigned(FHostInterface) then
   begin
     result := ASE_NotPresent;
     exit;
   end;
 
   try
-    result := fHostInterface.Future(Selector, Opt);
+    result := FHostInterface.Future(Selector, Opt);
   except
     result := ASE_NotPresent;
   end;
@@ -544,14 +544,14 @@ end;
 
 function TDavASIOInterceptor.OutputReady: TASIOError;
 begin
-  if not Assigned(fHostInterface) then
+  if not Assigned(FHostInterface) then
   begin
     result := ASE_NotPresent;
     exit;
   end;
 
   try
-    result := fHostInterface.OutputReady;
+    result := FHostInterface.OutputReady;
   except
     result := ASE_NotPresent;
   end;
@@ -560,16 +560,16 @@ end;
 procedure TDavASIOInterceptor.ASIOBufferSwitch(DoubleBufferIndex: integer;
   DirectProcess: TASIOBool);
 begin
-  if Assigned(fHostCallbacks) and Assigned(fHostCallbacks^.BufferSwitch) then
-    fHostCallbacks^.BufferSwitch(DoubleBufferIndex, DirectProcess);
+  if Assigned(FHostCallbacks) and Assigned(FHostCallbacks^.BufferSwitch) then
+    FHostCallbacks^.BufferSwitch(DoubleBufferIndex, DirectProcess);
 end;
 
 function TDavASIOInterceptor.ASIOBufferSwitchTimeInfo(var Params: TASIOTime;
   DoubleBufferIndex: integer; DirectProcess: TASIOBool): PASIOTime;
 begin
-  if Assigned(fHostCallbacks) and Assigned(fHostCallbacks^.BufferSwitchTimeInfo)
+  if Assigned(FHostCallbacks) and Assigned(FHostCallbacks^.BufferSwitchTimeInfo)
   then
-    result := fHostCallbacks^.BufferSwitchTimeInfo(Params, DoubleBufferIndex,
+    result := FHostCallbacks^.BufferSwitchTimeInfo(Params, DoubleBufferIndex,
       DirectProcess)
   else
     result := @Params; // dummy
@@ -578,9 +578,9 @@ end;
 procedure TDavASIOInterceptor.ASIOSampleRateDidChange
   (SampleRate: TASIOSampleRate);
 begin
-  if Assigned(fHostCallbacks) and Assigned(fHostCallbacks^.SampleRateDidChange)
+  if Assigned(FHostCallbacks) and Assigned(FHostCallbacks^.SampleRateDidChange)
   then
-    fHostCallbacks^.SampleRateDidChange(SampleRate);
+    FHostCallbacks^.SampleRateDidChange(SampleRate);
 end;
 
 function TDavASIOInterceptor.ASIOMessage(Selector, Value: integer; msg: Pointer;
@@ -589,8 +589,8 @@ begin
   if Selector = kAsioResetRequest then
     SaveDriverSettings;
 
-  if Assigned(fHostCallbacks) and Assigned(fHostCallbacks^.ASIOMessage) then
-    result := fHostCallbacks^.ASIOMessage(Selector, Value, msg, Opt)
+  if Assigned(FHostCallbacks) and Assigned(FHostCallbacks^.ASIOMessage) then
+    result := FHostCallbacks^.ASIOMessage(Selector, Value, msg, Opt)
   else
     result := 0;
 end;

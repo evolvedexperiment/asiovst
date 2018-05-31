@@ -104,17 +104,18 @@ end;
 
 function OpenAsioCreate(const AsioCLSID: TClsId; var OpenASIODriver: IOpenASIO): boolean;
 begin
- if OpenAsioLoaded
-  then Result := Succeeded(CreateOpenAsio(AsioCLSID, OpenASIODriver))
-  else Result := False;
+  if OpenAsioLoaded then
+    Result := Succeeded(CreateOpenAsio(AsioCLSID, OpenASIODriver))
+  else
+    Result := False;
 end;
 
 initialization
- OpenAsioDll := LoadLibrary('OpenAsio.dll');
- {$IFNDEF FPC}
- if OpenAsioLoaded
-  then CreateOpenAsio := GetProcAddress(OpenAsioDll, 'CreateOpenAsio');
- {$ENDIF}
+  OpenAsioDll := LoadLibrary('OpenAsio.dll');
+{$IFNDEF FPC}
+  if OpenAsioLoaded then
+    CreateOpenAsio := GetProcAddress(OpenAsioDll, 'CreateOpenAsio');
+{$ENDIF}
 
 finalization
  FreeLibrary(OpenAsioDll);

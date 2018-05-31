@@ -109,56 +109,55 @@ begin
 
       if FConfig.IsSynth then
       begin
-      NumInputs    := CNumInputsSynth;
-      NumOutputs   := CNumOutputsSynth;
-      PlugCategory := vpcSynth;
-      CanDos := CanDos + [vcdReceiveAsioDriverEvents, vcdReceiveAsioDriverMidiEvent];
-      Flags := Flags + [effFlagsIsSynth];
+        NumInputs    := CNumInputsSynth;
+        NumOutputs   := CNumOutputsSynth;
+        PlugCategory := vpcSynth;
+        CanDos := CanDos + [vcdReceiveAsioDriverEvents, vcdReceiveAsioDriverMidiEvent];
+        Flags := Flags + [effFlagsIsSynth];
       end
       else
       begin
-      NumInputs    := CNumInputsEffect;
-      NumOutputs   := CNumOutputsEffect;
-      PlugCategory := vpcEffect;
-      if (NumInputs = 1) then
-      begin
-      if (NumOutputs = 1) then CanDos := CanDos + [vcd1in1out] else
-      if (NumOutputs = 2) then CanDos := CanDos + [vcd1in2out];
-      end else
-      if (NumInputs = 2) then
-      begin
-      if (NumOutputs = 1) then CanDos := CanDos + [vcd2in1out] else
-      if (NumOutputs = 2) then CanDos := CanDos + [vcd2in2out] else
-      if (NumOutputs = 4) then CanDos := CanDos + [vcd2in4out];
-      end else
-      if (NumInputs = 4) then
-      begin
-      if (NumOutputs = 2) then CanDos := CanDos + [vcd4in2out] else
-      if (NumOutputs = 4) then CanDos := CanDos + [vcd4in4out] else
-      if (NumOutputs = 8) then CanDos := CanDos + [vcd4in8out];
-      end else
-      if (NumInputs = 8) then
-      begin
-      if (NumOutputs = 4) then CanDos := CanDos + [vcd8in4out] else
-      if (NumOutputs = 8) then CanDos := CanDos + [vcd8in8out];
-      end else
-      if (NumInputs = 0) then PlugCategory := vpcGenerator;
-      if (NumOutputs = 0) then PlugCategory := vpcAnalysis;
+        NumInputs    := CNumInputsEffect;
+        NumOutputs   := CNumOutputsEffect;
+        PlugCategory := vpcEffect;
+        if (NumInputs = 1) then
+        begin
+          if (NumOutputs = 1) then CanDos := CanDos + [vcd1in1out] else
+          if (NumOutputs = 2) then CanDos := CanDos + [vcd1in2out];
+        end else
+        if (NumInputs = 2) then
+        begin
+          if (NumOutputs = 1) then CanDos := CanDos + [vcd2in1out] else
+          if (NumOutputs = 2) then CanDos := CanDos + [vcd2in2out] else
+          if (NumOutputs = 4) then CanDos := CanDos + [vcd2in4out];
+        end else
+        if (NumInputs = 4) then
+        begin
+          if (NumOutputs = 2) then CanDos := CanDos + [vcd4in2out] else
+          if (NumOutputs = 4) then CanDos := CanDos + [vcd4in4out] else
+          if (NumOutputs = 8) then CanDos := CanDos + [vcd4in8out];
+        end else
+        if (NumInputs = 8) then
+        begin
+          if (NumOutputs = 4) then CanDos := CanDos + [vcd8in4out] else
+          if (NumOutputs = 8) then CanDos := CanDos + [vcd8in8out];
+        end else
+          if (NumInputs = 0) then PlugCategory := vpcGenerator;
+        if (NumOutputs = 0) then PlugCategory := vpcAnalysis;
       end;
 
       if FConfig.UseEditor then
       begin
-      Flags := Flags + [effFlagsHasEditor];
-      // wire the OnEditOpen event handler to our AsioDriverModuleEditOpen method
-      if Supports(FormEditor, INTAFormEditor, NativeFormEditor) then
-      begin
-      if NativeFormEditor.FormDesigner <> nil then
-      begin
-      DoCreateMethod(NativeFormEditor.FormDesigner,
-      NativeFormEditor.FormDesigner.GetRoot, 'EditOpen',
-      'AsioDriverModuleEditOpen');
-      end;
-      end;
+        Flags := Flags + [effFlagsHasEditor];
+        // wire the OnEditOpen event handler to our AsioDriverModuleEditOpen method
+        if Supports(FormEditor, INTAFormEditor, NativeFormEditor) then
+        begin
+          if NativeFormEditor.FormDesigner <> nil then
+          begin
+            DoCreateMethod(NativeFormEditor.FormDesigner,
+            NativeFormEditor.FormDesigner.GetRoot, 'EditOpen', 'AsioDriverModuleEditOpen');
+          end;
+        end;
       end;
     *)
   end;

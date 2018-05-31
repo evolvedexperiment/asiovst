@@ -162,7 +162,7 @@ end;
 
 function TCustomCepstrum.GetFftOrder: Byte;
 begin
-  result := FFFT.Order;
+  Result := FFFT.Order;
 end;
 
 procedure TCustomCepstrum.SetFftOrder(const Value: Byte);
@@ -218,21 +218,21 @@ end;
 
 function TPowerCepstrum32.GetFft: TFftReal2ComplexIPPSFloat32;
 begin
-  result := TFftReal2ComplexIPPSFloat32(FFFT);
+  Result := TFftReal2ComplexIPPSFloat32(FFFT);
 end;
 
 {$ELSE} {$IFDEF Use_CUDA}
 
 function TPowerCepstrum32.GetFft: TFftReal2ComplexCUDA32;
 begin
-  result := TFftReal2ComplexCUDA32(FFFT);
+  Result := TFftReal2ComplexCUDA32(FFFT);
 end;
 
 {$ELSE}
 
 function TPowerCepstrum32.GetFft: TFftReal2ComplexNativeFloat32;
 begin
-  result := TFftReal2ComplexNativeFloat32(FFFT);
+  Result := TFftReal2ComplexNativeFloat32(FFFT);
 end;
 {$ENDIF}{$ENDIF}
 
@@ -289,21 +289,21 @@ end;
 
 function TPowerCepstrum64.GetFft: TFftReal2ComplexIPPSFloat64;
 begin
-  result := TFftReal2ComplexIPPSFloat64(FFFT);
+  Result := TFftReal2ComplexIPPSFloat64(FFFT);
 end;
 
 {$ELSE} {$IFDEF Use_CUDA}
 
 function TPowerCepstrum64.GetFft: TFftReal2ComplexCUDA64;
 begin
-  result := TFftReal2ComplexCUDA64(FFFT);
+  Result := TFftReal2ComplexCUDA64(FFFT);
 end;
 
 {$ELSE}
 
 function TPowerCepstrum64.GetFft: TFftReal2ComplexNativeFloat64;
 begin
-  result := TFftReal2ComplexNativeFloat64(FFFT);
+  Result := TFftReal2ComplexNativeFloat64(FFFT);
 end;
 {$ENDIF}{$ENDIF}
 

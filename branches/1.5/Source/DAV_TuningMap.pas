@@ -143,10 +143,10 @@ begin
     FS.Write(s[1], Length(s));
 
     for i := 0 to 127 do
-     begin
+    begin
       s := 'note ' + IntToStr(i) + ' = ' + IntToStr(round(FTunes[i])) + CRLF;
       FS.Write(s[1], Length(s));
-     end;
+    end;
 
     s := ';' + CRLF;
     FS.Write(s[1], Length(s));
@@ -158,16 +158,16 @@ begin
     FS.Write(s[1], Length(s));
 
     if (SaveBaseFrequency) then
-     begin
+    begin
       s := 'basefreq = ' + FloatToStr(FBaseFreq) + CRLF;
       FS.Write(s[1], Length(s));
-     end;
+    end;
 
     for i := 0 to 127 do
-     begin
+    begin
       s := 'note ' + IntToStr(i) + ' = ' + FloatToStr(round(FTunes[i])) + CRLF;
       FS.Write(s[1], Length(s));
-     end;
+    end;
   finally
     FreeAndNil(FS);
   end;
@@ -215,12 +215,12 @@ var
       if (lc = 2) and (numnotes = 0) then
         numnotes := StrToInt(s)
       else if ((lc > 2) and (Length(s) > 0) and (s[1] <> '!') and (s[1] <> ';')) then
-       begin
+      begin
         j := pos('/', s);
         k := pos('.', s);
 
         if (j > 0) and ((k = 0) or (j < k)) then
-         begin
+        begin
           s1 := copy(s, 1, j - 1);
           s2 := copy(s, j + 1, Length(s) - j);
           s1 := stripblanks(s1);
@@ -232,16 +232,16 @@ var
           if d = 0 then
             d := 1;
           tunes[lc - 3] := 1200 * log2(StrToFloat(s1) / d);
-         end else
+        end else
         if (k >= 0) and ((j = 0) or (k < j)) then
-         begin
+        begin
           s := stripblanks(s);
           k := pos(' ', s);
           if k > 0 then
             s := copy(s, 1, k - 1);
           s := stripblanks(s);
           tunes[lc - 3] := StrToFloat(s);
-         end;
+        end;
        end;
     until EOF(f);
 

@@ -165,12 +165,12 @@ end;
 
 function TCustomNoiseShapingFilterDesigner.GetFFTSize: Integer;
 begin
-  result := FFFT.FFTSize;
+  Result := FFFT.FFTSize;
 end;
 
 function TCustomNoiseShapingFilterDesigner.GetFFTSizeHalf: Integer;
 begin
-  result := FFFT.FFTSize div 2;
+  Result := FFFT.FFTSize div 2;
 end;
 
 procedure TCustomNoiseShapingFilterDesigner.LoopCountChanged;
@@ -195,7 +195,7 @@ begin
   // Frequency  = Min(18.0, Frequency);
 
   // from Painter & Spanias, 1997 modified by Gabriel Bouvigne to better fit to the reality
-  result := 3.640 * Power(Frequency, -0.8) - 6.800 *
+  Result := 3.640 * Power(Frequency, -0.8) - 6.800 *
     Exp(-0.6 * sqr(Frequency - 3.4)) + 6.000 * Exp(-0.15 * sqr(Frequency - 8.7))
     + 0.6 * 0.001 * IntPower(Frequency, 4);
 end;
@@ -205,7 +205,7 @@ function FrequencyToCriticalBandwidth(Frequency: Double): Double;
 begin
   // input: freq in hz  output: critical band width
   Frequency := Frequency * 0.001;
-  result := 25 + 75 * Power(1 + 1.4 * sqr(Frequency), 0.69);
+  Result := 25 + 75 * Power(1 + 1.4 * sqr(Frequency), 0.69);
 end;
 
 procedure TCustomNoiseShapingFilterDesigner.Calculate;
