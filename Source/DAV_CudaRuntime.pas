@@ -364,11 +364,11 @@ function CudaErrorToString(CudaError: TCudaError): string;
 begin
   case CudaError of
     ceSuccess .. ceNotReady:
-      result := CCudaErrorStrings[Integer(CudaError)];
+      Result := CCudaErrorStrings[Integer(CudaError)];
     ceStartupFailure:
-      result := CCudaErrorStrings[35];
+      Result := CCudaErrorStrings[35];
     ceApiFailureBase:
-      result := CCudaErrorStrings[36];
+      Result := CCudaErrorStrings[36];
   end;
 end;
 

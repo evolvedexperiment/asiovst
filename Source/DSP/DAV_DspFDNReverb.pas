@@ -191,28 +191,28 @@ uses
 
 constructor TDampingFilter.Create;
 begin
- inherited;
- CalculateCoefficients;
+  inherited;
+  CalculateCoefficients;
 end;
 
 function TDampingFilter.GetOrder: Cardinal;
 begin
- result := 1;
+  Result := 1;
 end;
 
 procedure TDampingFilter.Reset;
 begin
- FState := 0;
+  FState := 0;
 end;
 
 procedure TDampingFilter.ResetStates;
 begin
- FState := 0;
+  FState := 0;
 end;
 
 procedure TDampingFilter.ResetStatesInt64;
 begin
- PInt64(@FState)^ := 0;
+  PInt64(@FState)^ := 0;
 end;
 
 procedure TDampingFilter.SetFilterValues(const AFrequency, AGain : Single);
@@ -287,22 +287,22 @@ procedure TDampingFilter.Complex(const Frequency: Double; out Real, Imaginary: S
 var
   cmplx : TComplex64;
 begin
- Complex(Frequency, cmplx.Re, cmplx.Im);
- Real := Cmplx.Re;
- Imaginary := Cmplx.Im;
+  Complex(Frequency, cmplx.Re, cmplx.Im);
+  Real := Cmplx.Re;
+  Imaginary := Cmplx.Im;
 end;
 
 function TDampingFilter.MagnitudeLog10(const Frequency: Double): Double;
 begin
- result := 20 * Log10(MagnitudeSquared(Frequency));
+  Result := 20 * Log10(MagnitudeSquared(Frequency));
 end;
 
 function TDampingFilter.Phase(const Frequency: Double): Double;
 var
   cmplx : TComplex64;
 begin
- Complex(Frequency, cmplx.Re, cmplx.Im);
- Result := ArcTan2(cmplx.Im, cmplx.Re);
+  Complex(Frequency, cmplx.Re, cmplx.Im);
+  Result := ArcTan2(cmplx.Im, cmplx.Re);
 end;
 
 procedure TDampingFilter.AssignTo(Dest: TPersistent);
@@ -421,9 +421,10 @@ end;
 
 function TCustomDspFDNReverb.GetFeedbackRotation(Index: Integer): Double;
 begin
- if (Index < 0) or (Index > 1)
-  then raise Exception.CreateFmt('Index out of bounds (%d)', [Index])
-  else result := FFeedbackRotation[Index];
+  if (Index < 0) or (Index > 1) then 
+   raise Exception.CreateFmt('Index out of bounds (%d)', [Index])
+  else 
+    Result := FFeedbackRotation[Index];
 end;
 
 procedure TCustomDspFDNReverb.SetBaseDelay(const Value: Double);

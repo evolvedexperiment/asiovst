@@ -208,113 +208,133 @@ end;
 
 destructor TCustomAsioHostAudioData.Destroy;
 begin
- if Assigned(FAudioDataInput)  then FreeAndNil(FAudioDataInput);
- if Assigned(FAudioDataOutput) then FreeAndNil(FAudioDataOutput);
+  if Assigned(FAudioDataInput)  then
+    FreeAndNil(FAudioDataInput);
+  if Assigned(FAudioDataOutput) then
+    FreeAndNil(FAudioDataOutput);
 
- {$IFDEF AsioMixer} FreeAndNil(FAsioMixer); {$ENDIF}
- inherited;
+  {$IFDEF AsioMixer} FreeAndNil(FAsioMixer); {$ENDIF}
+  inherited;
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
 
 procedure TCustomAsioHostAudioData.SetOnBufferSwitch32(const Value: TBufferSwitchAudioData32Event);
 begin
- FOnBufferSwitch32 := Value;
- if Assigned(FOnBufferSwitch64) then ConvertMethod := cm64 else
- if Assigned(FOnBufferSwitch32) then ConvertMethod := cm32
-  else ConvertMethod := cmNone;
+  FOnBufferSwitch32 := Value;
+  if Assigned(FOnBufferSwitch64) then
+    ConvertMethod := cm64 else
+  if Assigned(FOnBufferSwitch32) then
+    ConvertMethod := cm32
+  else
+    ConvertMethod := cmNone;
 end;
 
 procedure TCustomAsioHostAudioData.SetOnBufferSwitch64(const Value: TBufferSwitchAudioData64Event);
 begin
- FOnBufferSwitch64 := Value;
- if Assigned(FOnBufferSwitch64) then ConvertMethod := cm64 else
- if Assigned(FOnBufferSwitch32) then ConvertMethod := cm32
-  else ConvertMethod := cmNone;
+  FOnBufferSwitch64 := Value;
+  if Assigned(FOnBufferSwitch64) then
+    ConvertMethod := cm64
+  else
+  if Assigned(FOnBufferSwitch32) then
+    ConvertMethod := cm32
+  else
+    ConvertMethod := cmNone;
 end;
 
 procedure TCustomAsioHostAudioData.ConvertMethodChanged;
 var
-  OldIn, OldOut  : TCustomAudioDataCollection;
+  OldIn, OldOut: TCustomAudioDataCollection;
 begin
- OldIn  := FAudioDataInput;
- OldOut := FAudioDataOutput;
- case FConvertMethod of
-  cm32 : begin
-          FAudioDataInput  := TAsioAudioDataCollection32.Create(Self, InputChannelCount, BufferSize);
-          FAudioDataOutput := TAsioAudioDataCollection32.Create(Self, OutputChannelCount, BufferSize);
-         end;
-  cm64 : begin
-          FAudioDataInput  := TAsioAudioDataCollection64.Create(Self, InputChannelCount, BufferSize);
-          FAudioDataOutput := TAsioAudioDataCollection64.Create(Self, OutputChannelCount, BufferSize);
-         end;
- end;
- if Assigned(OldIn)  then FreeAndNil(OldIn);
- if Assigned(OldOut) then FreeAndNil(OldOut);
+  OldIn  := FAudioDataInput;
+  OldOut := FAudioDataOutput;
+  case FConvertMethod of
+    cm32:
+      begin
+        FAudioDataInput := TAsioAudioDataCollection32.Create(Self, InputChannelCount, BufferSize);
+        FAudioDataOutput := TAsioAudioDataCollection32.Create(Self, OutputChannelCount, BufferSize);
+      end;
+    cm64:
+      begin
+        FAudioDataInput := TAsioAudioDataCollection64.Create(Self, InputChannelCount, BufferSize);
+        FAudioDataOutput := TAsioAudioDataCollection64.Create(Self, OutputChannelCount, BufferSize);
+      end;
+  end;
+  if Assigned(OldIn)  then
+    FreeAndNil(OldIn);
+  if Assigned(OldOut) then
+    FreeAndNil(OldOut);
 end;
 
 procedure TCustomAsioHostAudioData.SetConvertMethod(
   const Value: TConvertMethod);
 begin
- if FConvertMethod <> Value then
+  if FConvertMethod <> Value then
   begin
-   FConvertMethod := Value;
-   ConvertMethodChanged;
+    FConvertMethod := Value;
+    ConvertMethodChanged;
   end;
 end;
 
 procedure TCustomAsioHostAudioData.SetConvertOptimizations(const Value: TConvertOptimizations);
 begin
- if FConvertOptimizations <> Value then
+  if FConvertOptimizations <> Value then
   begin
-   FConvertOptimizations := Value;
-   ConvertOptimizationsChanged;
+    FConvertOptimizations := Value;
+    ConvertOptimizationsChanged;
   end;
 end;
 
 procedure TCustomAsioHostAudioData.ConvertOptimizationsChanged;
 begin
- Use_FPU;
- case ProcessorType of
-  ptSSE: if coSSE in FConvertOptimizations then Use_SSE;
-  pt3DNow: if co3DNow in FConvertOptimizations then Use_3DNow;
- end;
+  Use_FPU;
+  case ProcessorType of
+    ptSSE:
+      if coSSE in FConvertOptimizations then
+        Use_SSE;
+    pt3DNow:
+      if co3DNow in FConvertOptimizations then
+        Use_3DNow;
+  end;
 end;
 
 procedure TCustomAsioHostAudioData.SetPreventClipping(v : TPreventClipping);
 begin
- FPreventClipping := v;
- case FPreventClipping of
-  pcDigital: FClipPrevent := ClipDigital;
-   pcAnalog: FClipPrevent := ClipAnalog;
- end;
+  FPreventClipping := v;
+  case FPreventClipping of
+    pcDigital:
+      FClipPrevent := ClipDigital;
+    pcAnalog:
+      FClipPrevent := ClipAnalog;
+  end;
 end;
 
 procedure TCustomAsioHostAudioData.DetermineBuffersize;
 begin
- inherited;
- if Assigned(FAudioDataInput) then
-  with FAudioDataInput do
-   begin
-    ChannelCount := InputChannelCount;
-    SampleFrames := BufferSize;
-   end;
- if Assigned(FAudioDataOutput) then
-  with FAudioDataOutput do
-   begin
-    ChannelCount := InputChannelCount;
-    SampleFrames := BufferSize;
-   end;
+  inherited;
+  if Assigned(FAudioDataInput) then
+    with FAudioDataInput do
+    begin
+      ChannelCount := InputChannelCount;
+      SampleFrames := BufferSize;
+    end;
+  if Assigned(FAudioDataOutput) then
+    with FAudioDataOutput do
+    begin
+      ChannelCount := InputChannelCount;
+      SampleFrames := BufferSize;
+    end;
 end;
 
 {$IFDEF AsioMixer}
 procedure TCustomAsioHostAudioData.VolumeChange(Sender: TObject);
 begin
- assert(Sender is TFrChannelStrip);
- with TFrChannelStrip(Sender) do
+  Assert(Sender is TFrChannelStrip);
+  with TFrChannelStrip(Sender) do
   begin
-   FOutputVolume[Channel] := Volume;
-   if Mute then FOutputVolume[Channel] := 0;
+    FOutputVolume[Channel] := Volume;
+    if Mute then
+      FOutputVolume[Channel] := 0;
   end;
 end;
 
@@ -322,57 +342,57 @@ procedure TCustomAsioHostAudioData.SetupMixer;
 var
   Channel: Integer;
 begin
- with FAsioMixer do
+  with FAsioMixer do
   begin
-   for Channel := 0 to Length(ChannelsStrips) - 1
-    do FreeAndNil(ChannelsStrips[Channel]);
-   SetLength(ChannelsStrips, FOutputChannels);
-   for Channel := FOutputChannels - 1 downto 0 do
+    for Channel := 0 to Length(ChannelsStrips) - 1 do
+      FreeAndNil(ChannelsStrips[Channel]);
+    SetLength(ChannelsStrips, FOutputChannels);
+    for Channel := FOutputChannels - 1 downto 0 do
     begin
-     ChannelsStrips[Channel] := TFrChannelStrip.Create(FAsioMixer);
-     with ChannelsStrips[Channel] do
+      ChannelsStrips[Channel] := TFrChannelStrip.Create(FAsioMixer);
+      with ChannelsStrips[Channel] do
       begin
-       Width := 44;
-       Name := 'ChannelStrip' + IntToStr(Channel);
-       Parent := FAsioMixer.MixerPanel;
-       Align := alLeft;
-       OnVolumeChange := VolumeChange;
-       OnMuteChange := VolumeChange;
-       Channel := FOutputChannels - 1 - Channel;
-      end; 
+        Width := 44;
+        Name := 'ChannelStrip' + IntToStr(Channel);
+        Parent := FAsioMixer.MixerPanel;
+        Align := alLeft;
+        OnVolumeChange := VolumeChange;
+        OnMuteChange := VolumeChange;
+        Channel := FOutputChannels - 1 - Channel;
+      end;
     end;
-   if FOutputChannels > 0 then
+    if FOutputChannels > 0 then
     begin
-     ClientHeight := 20 + ChannelsStrips[0].Height;
-     ClientWidth := 20 + FOutputChannels * ChannelsStrips[0].Width;
+      ClientHeight := 20 + ChannelsStrips[0].Height;
+      ClientWidth := 20 + FOutputChannels * ChannelsStrips[0].Width;
     end;
-  end;  
+  end;
 end;
 {$ENDIF AsioMixer}
 
 function TCustomAsioHostAudioData.CreateBuffers: Boolean;
 var
-  Channel : Integer;
+  Channel: Integer;
 begin
- Result := inherited CreateBuffers;
+  Result := inherited CreateBuffers;
 
- if Result then
+  if Result then
   begin
-   SetLength(FOutputVolume, FOutputChannelCount);
-   for Channel := 0 to FOutputChannelCount - 1 do FOutputVolume[Channel] := 1;
-   {$IFDEF AsioMixer} SetupMixer; {$ENDIF}
+    SetLength(FOutputVolume, FOutputChannelCount);
+    for Channel := 0 to FOutputChannelCount - 1 do FOutputVolume[Channel] := 1;
+    {$IFDEF AsioMixer} SetupMixer; {$ENDIF}
 
-   if Assigned(FAudioDataInput)
-    then FAudioDataInput.ChannelCount := FInputChannelCount;
-   if Assigned(FAudioDataOutput)
-    then FAudioDataOutput.ChannelCount := FOutputChannelCount;
+    if Assigned(FAudioDataInput) then
+      FAudioDataInput.ChannelCount := FInputChannelCount;
+    if Assigned(FAudioDataOutput) then
+      FAudioDataOutput.ChannelCount := FOutputChannelCount;
   end;
 end;
 
 {$IFDEF AsioMixer}
 procedure TCustomAsioHostAudioData.Mixer;
 begin
- FAsioMixer.Show;
+  FAsioMixer.Show;
 end;
 {$ENDIF}
 
@@ -382,118 +402,126 @@ var
   CurrentBuffer  : PAsioBufferInfos;
   PChannelArray  : Pointer;
 begin
- if FDriver = nil then exit;
- PMUpdSamplePos.wParam := params.TimeInfo.samplePosition.hi;
- PMUpdSamplePos.LParam := params.TimeInfo.samplePosition.lo;
- Dispatch(PMUpdSamplePos);
- CurrentBuffer := FInputBuffers;
+  if FDriver = nil then
+    Exit;
+  PMUpdSamplePos.wParam := params.TimeInfo.samplePosition.hi;
+  PMUpdSamplePos.LParam := params.TimeInfo.samplePosition.lo;
+  Dispatch(PMUpdSamplePos);
+  CurrentBuffer := FInputBuffers;
 
- if FConvertMethod = cm64 then
+  if FConvertMethod = cm64 then
   begin
-   // 64bit float processing
+    // 64bit float processing
 
-   // process input
-   with TAsioAudioDataCollection64(FAudioDataInput) do
-    case FInBufferPreFill of
-      bpfZero : FAudioDataInput.Clear;
-     bpfNoise : FAudioDataInput.GenerateWhiteNoise(1);
-     else
-      // convert soundcard dependent format to float data
-      for Channel := 0 to FInputChannelCount - 1 do
-       begin
-        PChannelArray := CurrentBuffer^[0].buffers[Index];
-        if Assigned(PChannelArray)
-         then FInConverters[Channel].ic64(PChannelArray,
-                PDouble(TAsioAudioDataCollection64(FAudioDataInput).ChannelDataPointerList[Channel]),
-                FBufferSize);
-        Inc(CurrentBuffer);
-       end;
+    // process input
+    with TAsioAudioDataCollection64(FAudioDataInput) do
+      case FInBufferPreFill of
+        bpfZero:
+          FAudioDataInput.Clear;
+        bpfNoise:
+          FAudioDataInput.GenerateWhiteNoise(1);
+        else
+          // convert soundcard dependent format to float data
+          for Channel := 0 to FInputChannelCount - 1 do
+          begin
+            PChannelArray := CurrentBuffer^[0].buffers[Index];
+            if Assigned(PChannelArray)
+             then FInConverters[Channel].ic64(PChannelArray,
+                    PDouble(TAsioAudioDataCollection64(FAudioDataInput).ChannelDataPointerList[Channel]),
+                    FBufferSize);
+            Inc(CurrentBuffer);
+          end;
+      end;
+
+    // process output
+    case FOutBufferPreFill of
+      bpfZero:
+        FAudioDataOutput.Clear;
+      bpfNoise:
+        FAudioDataOutput.GenerateWhiteNoise(1);
     end;
 
-   // process output
-   case FOutBufferPreFill of
-    bpfZero : FAudioDataOutput.Clear;
-    bpfNoise: FAudioDataOutput.GenerateWhiteNoise(1);
-   end;
+    // call event to send in and get output data
+    FOnBufferSwitch64(Self,
+      TAsioAudioDataCollection64(FAudioDataInput),
+      TAsioAudioDataCollection64(FAudioDataOutput));
 
-   // call event to send in and get output data
-   FOnBufferSwitch64(Self,
-     TAsioAudioDataCollection64(FAudioDataInput),
-     TAsioAudioDataCollection64(FAudioDataOutput));
-
-   with TAsioAudioDataCollection64(FAudioDataOutput) do
+    with TAsioAudioDataCollection64(FAudioDataOutput) do
     begin
-     // eventually clip data to avoid ugly artifacts caused by the soundcard
-     if FPreventClipping <> pcNone then
-      for Channel := 0 to FOutputChannelCount - 1
-       do FClipPrevent.cb64(PDouble(ChannelDataPointerList[Channel]) ,FBufferSize);
+      // eventually clip data to avoid ugly artifacts caused by the soundcard
+      if FPreventClipping <> pcNone then
+        for Channel := 0 to FOutputChannelCount - 1 do
+          FClipPrevent.cb64(PDouble(ChannelDataPointerList[Channel]) ,FBufferSize);
 
-     // convert float data to soundcard dependent format
-     CurrentBuffer := FOutputBuffers;
-     for Channel := 0 to FOutputChannelCount - 1 do
+      // convert float data to soundcard dependent format
+      CurrentBuffer := FOutputBuffers;
+      for Channel := 0 to FOutputChannelCount - 1 do
       begin
-       PChannelArray := CurrentBuffer^[0].buffers[Index];
-       if Assigned(PChannelArray)
-        then FOutConverters[Channel].oc64(PDouble(ChannelDataPointerList[Channel]),
-               PChannelArray, FBufferSize);
-       inc(CurrentBuffer);
+        PChannelArray := CurrentBuffer^[0].buffers[Index];
+        if Assigned(PChannelArray) then
+          FOutConverters[Channel].oc64(PDouble(ChannelDataPointerList[Channel]),
+            PChannelArray, FBufferSize);
+        Inc(CurrentBuffer);
       end;
     end;
   end
- else
+  else
   begin
-   // 32bit float processing
+    // 32bit float processing
 
-   // process input
-   with TAsioAudioDataCollection32(FAudioDataInput) do
-    case FInBufferPreFill of
-      bpfZero : FAudioDataInput.Clear;
-     bpfNoise : FAudioDataInput.GenerateWhiteNoise(1);
-     else
-      // convert soundcard dependent format to float data
-      for Channel := 0 to FInputChannelCount - 1 do
-       begin
-        PChannelArray := CurrentBuffer^[0].buffers[Index];
-        if Assigned(PChannelArray)
-         then FInConverters[Channel].ic32(PChannelArray,
-                PSingle(ChannelDataPointer[Channel]),
-                FBufferSize);
-        Inc(CurrentBuffer);
-       end;
+    // process input
+    with TAsioAudioDataCollection32(FAudioDataInput) do
+      case FInBufferPreFill of
+        bpfZero:
+          FAudioDataInput.Clear;
+        bpfNoise:
+          FAudioDataInput.GenerateWhiteNoise(1);
+        else
+          // convert soundcard dependent format to float data
+          for Channel := 0 to FInputChannelCount - 1 do
+          begin
+            PChannelArray := CurrentBuffer^[0].buffers[Index];
+            if Assigned(PChannelArray) then
+              FInConverters[Channel].ic32(PChannelArray,
+                PSingle(ChannelDataPointer[Channel]), FBufferSize);
+            Inc(CurrentBuffer);
+          end;
+      end;
+
+    // process output
+    case FOutBufferPreFill of
+      bpfZero:
+        FAudioDataOutput.Clear;
+      bpfNoise:
+        FAudioDataOutput.GenerateWhiteNoise(1);
     end;
 
-   // process output
-   case FOutBufferPreFill of
-    bpfZero : FAudioDataOutput.Clear;
-    bpfNoise: FAudioDataOutput.GenerateWhiteNoise(1);
-   end;
+    // call event to send in and get output data
+    FOnBufferSwitch32(Self,
+      TAsioAudioDataCollection32(FAudioDataInput),
+      TAsioAudioDataCollection32(FAudioDataOutput));
 
-   // call event to send in and get output data
-   FOnBufferSwitch32(Self,
-     TAsioAudioDataCollection32(FAudioDataInput),
-     TAsioAudioDataCollection32(FAudioDataOutput));
-
-   with TAsioAudioDataCollection32(FAudioDataOutput) do
+    with TAsioAudioDataCollection32(FAudioDataOutput) do
     begin
-     // eventually clip data to avoid ugly artifacts caused by the soundcard
-     if FPreventClipping <> pcNone then
-      for Channel := 0 to FOutputChannelCount - 1
-       do FClipPrevent.cb32(PSingle(ChannelDataPointer[Channel]) ,FBufferSize);
+      // eventually clip data to avoid ugly artifacts caused by the soundcard
+      if FPreventClipping <> pcNone then
+        for Channel := 0 to FOutputChannelCount - 1 do
+          FClipPrevent.cb32(PSingle(ChannelDataPointer[Channel]) ,FBufferSize);
 
-     // convert float data to soundcard dependent format
-     CurrentBuffer := FOutputBuffers;
-     for Channel := 0 to FOutputChannelCount - 1 do
+      // convert float data to soundcard dependent format
+      CurrentBuffer := FOutputBuffers;
+      for Channel := 0 to FOutputChannelCount - 1 do
       begin
-       PChannelArray := CurrentBuffer^[0].Buffers[Index];
-       if Assigned(PChannelArray)
-        then FOutConverters[Channel].oc32(PSingle(ChannelDataPointer[Channel]),
-               PChannelArray, FBufferSize);
-       inc(CurrentBuffer);
+        PChannelArray := CurrentBuffer^[0].Buffers[Index];
+        if Assigned(PChannelArray) then
+          FOutConverters[Channel].oc32(PSingle(ChannelDataPointer[Channel]),
+            PChannelArray, FBufferSize);
+        Inc(CurrentBuffer);
       end;
     end;
 
-   end;
- FDriver.OutputReady;
+  end;
+  FDriver.OutputReady;
 end;
 
 {$IFDEF DELPHI10_UP} {$endregion} {$ENDIF}

@@ -1517,48 +1517,55 @@ end;
 
 function FloatWithUnit(const Value: Double): string;
 begin
- if Value > 1    then Result := FloatToStrF(Value, ffFixed, 6, 3)+ 's' else
- if Value > 1E-3 then Result := FloatToStrF(1E3 * Value, ffFixed, 6, 3)+ 'ms' else
- if Value > 1E-6
-  then Result := FloatToStrF(1E6 * Value, ffFixed, 6, 3)+ 'µs'
-  else Result := FloatToStrF(1E9 * Value, ffFixed, 6, 3)+ 'ns'
+  if Value > 1 then
+    Result := FloatToStrF(Value, ffFixed, 6, 3)+ 's'
+  else
+  if Value > 1E-3 then
+    Result := FloatToStrF(1E3 * Value, ffFixed, 6, 3)+ 'ms'
+  else
+  if Value > 1E-6 then
+    Result := FloatToStrF(1E6 * Value, ffFixed, 6, 3)+ 'µs'
+  else
+    Result := FloatToStrF(1E9 * Value, ffFixed, 6, 3)+ 'ns'
 end;
 
 function FloatToString(Value: Extended; Digits: Integer = -1): string;
 begin
- {$IFDEF UseNativeFloatToStringConversion}
- if Digits >= 0
-  then Result := FloatToStrF(Value, ffGeneral, Digits, Digits)
-  else Result := FloatToStr(Value);
- {$ELSE}
- if IsNan(Value)
-  then Result := 'Error' else
- if IsInfinite(Value)
-  then Result := 'oo'
+{$IFDEF UseNativeFloatToStringConversion}
+  if Digits >= 0 then
+    Result := FloatToStrF(Value, ffGeneral, Digits, Digits)
   else
- Result := IntToStr(Round(Value));
- {$ENDIF}
+    Result := FloatToStr(Value);
+{$ELSE}
+  if IsNan(Value) then
+    Result := 'Error'
+  else
+  if IsInfinite(Value) then
+    Result := 'oo'
+  else
+    Result := IntToStr(Round(Value));
+{$ENDIF}
 end;
 
 function FloatToAnsiString(Value: Extended; Digits: Integer = -1): AnsiString;
 begin
- {$IFDEF UseNativeFloatToStringConversion}
- if Digits >= 0 then
- begin
-   Value := RoundTo(Value, -Digits);
-   Result := AnsiString(FloatToStrF(Value, ffGeneral, Abs(Digits), Abs(Digits)))
- end
- else
-   Result := AnsiString(FloatToStr(Value));
- {$ELSE}
- if IsNan(Value) then
-   Result := 'Error'
- else
- if IsInfinite(Value) then
-   Result := 'oo'
- else
-   Result := IntToStr(Round(Value));
- {$ENDIF}
+{$IFDEF UseNativeFloatToStringConversion}
+  if Digits >= 0 then
+  begin
+    Value := RoundTo(Value, -Digits);
+    Result := AnsiString(FloatToStrF(Value, ffGeneral, Abs(Digits), Abs(Digits)))
+  end
+  else
+    Result := AnsiString(FloatToStr(Value));
+  {$ELSE}
+  if IsNan(Value) then
+    Result := 'Error'
+  else
+  if IsInfinite(Value) then
+    Result := 'oo'
+  else
+    Result := IntToStr(Round(Value));
+{$ENDIF}
 end;
 
 
@@ -1567,9 +1574,10 @@ end;
 function FastMin(const A, B: Single) : Single;
 {$IFDEF PUREPASCAL}
 begin
- if A > B
-  then Result := B
-  else Result := A
+  if A > B then
+    Result := B
+  else
+    Result := A
 {$ELSE}
 asm
     FLD     DWORD PTR [EBP + $08]
@@ -1621,23 +1629,23 @@ type
 var
   MTP : ^TMethodToProcedure absolute Result;
 begin
- MTP := VirtualAlloc(nil, SizeOf(MTP^), MEM_COMMIT, PAGE_EXECUTE_READWRITE);
- with MTP^ do
+  MTP := VirtualAlloc(nil, SizeOf(MTP^), MEM_COMMIT, PAGE_EXECUTE_READWRITE);
+  with MTP^ do
   begin
-   PopEax          := $58;
-   PushSelf.Opcode := $68;
-   PushSelf.Self   := Self;
-   PushEax         := $50;
-   Jump.Opcode     := $FF;
-   Jump.ModRm      := $25;
-   Jump.PTarget    := @Jump.Target;
-   Jump.Target     := MethodAddr;
+    PopEax          := $58;
+    PushSelf.Opcode := $68;
+    PushSelf.Self   := Self;
+    PushEax         := $50;
+    Jump.Opcode     := $FF;
+    Jump.ModRm      := $25;
+    Jump.PTarget    := @Jump.Target;
+    Jump.Target     := MethodAddr;
   end;
 end;
 
 function MethodToProcedure(Method: TMethod): Pointer;
 begin
- Result := MethodToProcedure(TObject(Method.data), Method.code);
+  Result := MethodToProcedure(TObject(Method.data), Method.code);
 end;
 {$ENDIF}
 {$ENDIF}
