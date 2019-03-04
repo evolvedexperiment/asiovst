@@ -163,6 +163,7 @@ object FmGroupBoxTest: TFmGroupBoxTest
     Height = 18
     BorderRadius = 4.000000000000000000
     BorderWidth = 2.000000000000000000
+    Caption = ''
     Color = clBtnFace
     DefaultValue = 10.000000000000000000
     Max = 10.000000000000000000
@@ -181,6 +182,7 @@ object FmGroupBoxTest: TFmGroupBoxTest
     Height = 18
     BorderRadius = 4.000000000000000000
     BorderWidth = 2.000000000000000000
+    Caption = ''
     Color = clBtnFace
     DefaultValue = 10.000000000000000000
     Max = 10.000000000000000000

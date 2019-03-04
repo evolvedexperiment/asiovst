@@ -1,6 +1,13 @@
 program EqSlideTest;
 
+{$I DAV_Compiler.inc}
+
 uses
+  FastMM4,
+{$IFDEF UseMadExcept}
+  madExcept,
+  madLinkDisAsm,
+{$ENDIF}
   Forms,
   EqSlideTestMain in 'EqSlideTestMain.pas' {Form1};
 

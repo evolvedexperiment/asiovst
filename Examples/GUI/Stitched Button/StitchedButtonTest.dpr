@@ -1,6 +1,13 @@
 program StitchedButtonTest;
 
+{$I DAV_Compiler.inc}
+
 uses
+  FastMM4,
+{$IFDEF UseMadExcept}
+  madExcept,
+  madLinkDisAsm,
+{$ENDIF}
   Forms,
   MainUnit in 'MainUnit.pas' {FmStitchedButtonTest};
 
