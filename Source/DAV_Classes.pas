@@ -253,7 +253,7 @@ type
 
   // the code below is based on code found in the GLScene (see www.glscene.org)
 
-  TDAVUpdateAbleObject = class(TPersistent)
+  TDAVUpdateableObject = class(TPersistent)
   private
     FOwner: TPersistent;
     FUpdating: Integer;
@@ -273,14 +273,14 @@ type
       write FOnNotifyChange;
   end;
 
-  TDAVCadenceAbleComponent = class(TComponent)
+  TDAVCadenceableComponent = class(TComponent)
   public
 {$IFNDEF DELPHI_5_UP}
     procedure RemoveFreeNotification(AComponent: TComponent);
 {$ENDIF}
   end;
 
-  TDAVUpdateAbleComponent = class(TDAVCadenceAbleComponent)
+  TDAVUpdateableComponent = class(TDAVCadenceableComponent)
   public
     procedure NotifyChange(Sender: TObject); virtual;
   end;
@@ -598,20 +598,20 @@ begin
   FDataType := Value;
 end;
 
-{ TDAVUpdateAbleObject }
+{ TDAVUpdateableObject }
 
-constructor TDAVUpdateAbleObject.Create(AOwner: TPersistent);
+constructor TDAVUpdateableObject.Create(AOwner: TPersistent);
 begin
   inherited Create;
   FOwner := AOwner;
 end;
 
-procedure TDAVUpdateAbleObject.BeginUpdate;
+procedure TDAVUpdateableObject.BeginUpdate;
 begin
   Inc(FUpdating);
 end;
 
-procedure TDAVUpdateAbleObject.EndUpdate;
+procedure TDAVUpdateableObject.EndUpdate;
 begin
   Dec(FUpdating);
   if FUpdating <= 0 then
@@ -621,39 +621,39 @@ begin
   end;
 end;
 
-function TDAVUpdateAbleObject.GetOwner: TPersistent;
+function TDAVUpdateableObject.GetOwner: TPersistent;
 begin
   Result := Owner;
 end;
 
-procedure TDAVUpdateAbleObject.NotifyChange(Sender: TObject);
+procedure TDAVUpdateableObject.NotifyChange(Sender: TObject);
 begin
   if (FUpdating = 0) and Assigned(Owner) then
   begin
-    if Owner is TDAVUpdateAbleObject then
-      TDAVUpdateAbleObject(Owner).NotifyChange(Self)
-    else if Owner is TDAVUpdateAbleComponent then
-      TDAVUpdateAbleComponent(Owner).NotifyChange(Self);
+    if Owner is TDAVUpdateableObject then
+      TDAVUpdateableObject(Owner).NotifyChange(Self)
+    else if Owner is TDAVUpdateableComponent then
+      TDAVUpdateableComponent(Owner).NotifyChange(Self);
     if Assigned(FOnNotifyChange) then
       FOnNotifyChange(Self);
   end;
 end;
 
-{ TDAVCadenceAbleComponent }
+{ TDAVCadenceableComponent }
 
-procedure TDAVCadenceAbleComponent.RemoveFreeNotification
+procedure TDAVCadenceableComponent.RemoveFreeNotification
   (AComponent: TComponent);
 begin
   Notification(AComponent, opRemove);
 end;
 
-{ TDAVUpdateAbleComponent }
+{ TDAVUpdateableComponent }
 
-procedure TDAVUpdateAbleComponent.NotifyChange(Sender: TObject);
+procedure TDAVUpdateableComponent.NotifyChange(Sender: TObject);
 begin
   if Assigned(Owner) then
-    if (Owner is TDAVUpdateAbleComponent) then
-      (Owner as TDAVUpdateAbleComponent).NotifyChange(Self);
+    if (Owner is TDAVUpdateableComponent) then
+      (Owner as TDAVUpdateableComponent).NotifyChange(Self);
 end;
 
 function CheckDspProcessor32Class(AClass: TDspPersistentClass): Boolean;
@@ -668,12 +668,6 @@ begin
       if GDspProcessors32[I] = AClass then
         raise Exception.CreateFmt(RCStrDspProcessorDuplicate,
           [AClass.ClassName]);
-
-    (*
-      // check if the class supports the IDspProcessor32 interface
-      if not Supports(AClass, CGUIDDspProcessor32)
-      then raise Exception.CreateFmt(RCStrNoIDspProcessor32, [AClass.ClassName]);
-    *)
   except
     Result := False;
   end;
@@ -689,14 +683,7 @@ begin
     // check if file format is already registered
     for I := 0 to Length(GDspProcessors64) - 1 do
       if GDspProcessors64[I] = AClass then
-        raise Exception.CreateFmt(RCStrDspProcessorDuplicate,
-          [AClass.ClassName]);
-
-    (*
-      // check if the class supports the IDspProcessor64 interface
-      if not Supports(AClass, CGUIDDspProcessor64)
-      then raise Exception.CreateFmt(RCStrNoIDspProcessor64, [AClass.ClassName]);
-    *)
+        raise Exception.CreateFmt(RCStrDspProcessorDuplicate, [AClass.ClassName]);
   except
     Result := False;
   end;

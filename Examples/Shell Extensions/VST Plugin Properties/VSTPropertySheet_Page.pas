@@ -65,70 +65,74 @@ uses
 
 procedure TFmPage.FormCreate(Sender: TObject);
 begin
- FGUIBitmap := TBitmap.Create;
+  FGUIBitmap := TBitmap.Create;
 end;
 
 procedure TFmPage.FormDestroy(Sender: TObject);
 begin
- if Assigned(FGUIBitmap)
-  then FGUIBitmap.Free;
+  if Assigned(FGUIBitmap) then
+    FGUIBitmap.Free;
 end;
 
 procedure TFmPage.FormPaint(Sender: TObject);
 begin
- Canvas.Draw(0, 200, FGUIBitmap);
+  Canvas.Draw(0, 200, FGUIBitmap);
 end;
 
 procedure TFmPage.SetFileName(const Value: TFileName);
-var r  : ERect;
-    fm : TForm;
+var
+  r: ERect;
+  Frm: TForm;
 begin
- Memo.Clear;
- FFileName := Value;
- if FileExists(FFileName) then
-  with VstHost[0] do
-   try
-    DLLFileName := FFileName;
-    Active := True;
-    with Memo.Items do
-     begin
-      Add('Effect Name: ' + GetEffectName {+ 'Unique ID: ' + PVstEffect^.UniqueID + ', '});
-      Add('Vendor: ' + VendorString + ', Product: ' + ProductString);
-      Add('VST Version: ' + IntToStr(GetVstVersion) + ', Category: ' + PlugCategory2String(GetPlugCategory));
-      Add('Inputs: ' + IntToStr(numInputs) + ', Outputs: ' + IntToStr(numOutputs));
-      Add('Parameters: ' + IntToStr(numParams));
-      Add('Programs: ' + IntToStr(numPrograms));
-      Add('Initial Delay: ' + IntToStr(InitialDelay) + ', Tail Size: ' + IntToStr(GetTailSize));
+  Memo.Clear;
+  FFileName := Value;
+  if not FileExists(FFileName) then
+    Exit;
 
-      if (effFlagsHasEditor in VstEffectPointer.EffectFlags) then
-       begin
-        fm := TForm.Create(nil);
-        with fm do
-         try
-          ShowEdit(fm);
-          EditIdle; Idle;
-          Application.ProcessMessages;
-          r := EditGetRect;
-          ClientWidth := r.Right - r.Left;
-          ClientHeight := r.Bottom - r.Top;
-          FGUIBitmap.Width := Self.Width;
-          FGUIBitmap.Height := (Height * FGUIBitmap.Width) div Width;
-          Visible := True;
-          Application.ProcessMessages;
-          StretchBlt(FGUIBitmap.Canvas.Handle, 0, 0, FGUIBitmap.Width, FGUIBitmap.Height,
-                     Canvas.Handle, r.Left, r.Top, r.Right - r.Left, r.Bottom - r.Top, cmSrcCopy);
-         finally
-          CloseEdit;
+  with VstHost[0] do
+    try
+      DLLFileName := FFileName;
+      Active := True;
+      with Memo.Items do
+      begin
+        Add('Effect Name: ' + GetEffectName {+ 'Unique ID: ' + PVstEffect^.UniqueID + ', '});
+        Add('Vendor: ' + VendorString + ', Product: ' + ProductString);
+        Add('VST Version: ' + IntToStr(GetVstVersion) + ', Category: ' + PlugCategory2String(GetPlugCategory));
+        Add('Inputs: ' + IntToStr(numInputs) + ', Outputs: ' + IntToStr(numOutputs));
+        Add('Parameters: ' + IntToStr(numParams));
+        Add('Programs: ' + IntToStr(numPrograms));
+        Add('Initial Delay: ' + IntToStr(InitialDelay) + ', Tail Size: ' + IntToStr(GetTailSize));
+
+        if (effFlagsHasEditor in VstEffectPointer.EffectFlags) then
+         begin
+           Frm := TForm.Create(nil);
+           with Frm do
+           try
+             ShowEdit(Frm);
+             EditIdle; Idle;
+             Application.ProcessMessages;
+             r := EditGetRect;
+             ClientWidth := r.Right - r.Left;
+             ClientHeight := r.Bottom - r.Top;
+             FGUIBitmap.Width := Self.Width;
+             FGUIBitmap.Height := (Height * FGUIBitmap.Width) div Width;
+             Visible := True;
+             Application.ProcessMessages;
+             StretchBlt(FGUIBitmap.Canvas.Handle, 0, 0, FGUIBitmap.Width,
+               FGUIBitmap.Height, Canvas.Handle, r.Left, r.Top,
+               r.Right - r.Left, r.Bottom - r.Top, cmSrcCopy);
+           finally
+            CloseEdit;
+           end;
+           Frm.Free;
          end;
-        fm.Free;
-       end;
-     end;
-   finally
-    if not Active
-     then Memo.Items.Add('Error while loading');
-    Active := False;
-    UnLoad;
-   end;
+      end;
+    finally
+      if not Active then
+        Memo.Items.Add('Error while loading');
+      Active := False;
+      Unload;
+    end;
 end;
 
 end.

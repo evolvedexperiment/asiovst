@@ -1,4 +1,4 @@
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <ProjectGuid>{C4A93347-6F8E-4CC5-BA2F-208CE317DE56}</ProjectGuid>
         <MainSource>DAV_DSP.dpk</MainSource>
