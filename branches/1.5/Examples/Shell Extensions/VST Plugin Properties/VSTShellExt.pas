@@ -40,10 +40,10 @@ uses
 
 type
   TVSTPluginPropertySheet = class(TTypedComObject, IVSTPluginPropertySheet,
-                                  IShellExtInit, IShellPropSheetExt)
+    IShellExtInit, IShellPropSheetExt)
   private
-    FPageForm : TForm;
-    FFileName : PChar;
+    FPageForm: TForm;
+    FFileName: PChar;
   protected
     function IShellExtInit.Initialize = ShellExtInitialize;
     function ShellExtInitialize(pidlFolder: PItemIDList; lpdobj: IDataObject; hKeyProgID: HKEY): HResult; stdcall;
@@ -66,85 +66,90 @@ uses
 const
   IDD_PROPDLG = 100;
 
-function propdlgproc(hDlg: HWND; uMsg: UINT; wp: WPARAM; lp: LPARAM): boolean; stdcall;
-var str : string;
+function PropDlgProc(hDlg: HWND; uMsg: UINT; wp: WPARAM; lp: LPARAM): Boolean; stdcall;
+var
+  TempFileName: string;
 begin
-  Result := true;
-  case uMsg of
-    WM_INITDIALOG:
-      try
-       if PPropSheetPage(lp)^.lParam = 0 then Exit;
-       with TVSTPluginPropertySheet(PPropSheetPage(lp)^.lParam) do
-        begin
-         str := FFileName;
-         FPageForm := TFmPage.Create(nil);
-         with TFmPage(FPageForm) do
-          begin
-           BorderStyle := bsNone;
-           WindowState := wsMaximized;
-           ParentWindow := hDlg;
-           Show;
-           FileName := str;
-          end;
-        end;
-      except
-      end;
-    else Result := false;
+   Result := True;
+   case uMsg of
+     WM_INITDIALOG:
+       try
+         if PPropSheetPage(lp)^.lParam = 0 then
+           Exit;
+         with TVSTPluginPropertySheet(PPropSheetPage(lp)^.lParam) do
+         begin
+           TempFileName := FFileName;
+           FPageForm := TFmPage.Create(nil);
+           with TFmPage(FPageForm) do
+            begin
+              BorderStyle := bsNone;
+              WindowState := wsMaximized;
+              ParentWindow := hDlg;
+              Show;
+              FileName := TempFileName;
+            end;
+         end;
+       except
+       end;
+    else
+      Result := False;
   end;
 end;
 
-function propcallback(Wnd: HWnd; Msg: Integer; PPSP: PPropSheetPageA): Integer; stdcall;
+function PropCallback(Wnd: HWnd; Msg: Integer; PPSP: PPropSheetPageA): Integer; stdcall;
 begin
- result := 1;
- try
-  case Msg of
-   PSPCB_RELEASE : with TVSTPluginPropertySheet(PPropSheetPage(PPSP)^.lParam)
-                    do FreeAndNil(FPageForm);
+  Result := 1;
+  try
+    case Msg of
+      PSPCB_RELEASE:
+        with TVSTPluginPropertySheet(PPropSheetPage(PPSP)^.lParam) do
+          FreeAndNil(FPageForm);
+    end;
+  except
+    Result := 0;
   end;
- except
-  result := 0;
- end;
 end;
 
 
 function TVSTPluginPropertySheet.AddPages(lpfnAddPage: TFNAddPropSheetPage;
   lParam: LPARAM): HResult;
 var
-  aPSP : TPropSheetPage;
-  hPage : HPropSheetPage;
-  DLLHnd : THandle;
+  PropertySheetPage: TPropSheetPage;
+  hPage: HPropSheetPage;
+  DLLHnd: THandle;
 begin
- Result := NOERROR;
- try
-  DLLHnd := SafeLoadLibrary(FFileName,7);
+  Result := NOERROR;
   try
-   if (GetProcAddress(DLLHnd, 'main') = nil) and
-      (GetProcAddress(DLLHnd, 'VSTPluginMain') = nil)
-    then result := E_NOTIMPL;
-  finally
-   FreeLibrary(DLLHnd);
+    DLLHnd := SafeLoadLibrary(FFileName,7);
+    try
+      if (GetProcAddress(DLLHnd, 'main') = nil) and
+         (GetProcAddress(DLLHnd, 'VSTPluginMain') = nil) then
+        Result := E_NOTIMPL;
+    finally
+      FreeLibrary(DLLHnd);
+    end;
+  except
+    Result := E_FAIL;
   end;
- except
-  result := E_FAIL;
- end;
- if Result <> NOERROR then exit;
 
- fillchar(aPSP, sizeof(TPropSheetPage),#0);
- aPSP.dwSize      := sizeof(TPropSheetPage);
- aPSP.dwFlags     := PSP_USETITLE + PSP_USECALLBACK;
- aPSP.hInstance   := hInstance;
- aPSP.pszTemplate := MakeIntResource(IDD_PROPDLG);
- aPSP.pszTitle    := 'VST Plugin';
- aPSP.pfnDlgProc  := @propdlgproc;
- aPSP.pfnCallback := @propcallback;
- aPSP.lParam      := Integer(Self);
+  if Result <> NOERROR then
+    Exit;
 
- hPage := CreatePropertySheetPage(aPSP);
- if (hPage <> nil) then
-  if (lpfnAddPage(hPage, lParam) = FALSE)
-   then DestroyPropertySheetPage(hPage);
+  FillChar(PropertySheetPage, SizeOf(TPropSheetPage),#0);
+  PropertySheetPage.dwSize      := SizeOf(TPropSheetPage);
+  PropertySheetPage.dwFlags     := PSP_USETITLE + PSP_USECALLBACK;
+  PropertySheetPage.hInstance   := hInstance;
+  PropertySheetPage.pszTemplate := MakeIntResource(IDD_PROPDLG);
+  PropertySheetPage.pszTitle    := 'VST Plugin';
+  PropertySheetPage.pfnDlgProc  := @PropDlgProc;
+  PropertySheetPage.pfnCallback := @PropCallback;
+  PropertySheetPage.lParam      := Integer(Self);
 
- Result := NOERROR;
+  hPage := CreatePropertySheetPage(PropertySheetPage);
+  if (hPage <> nil) and (lpfnAddPage(hPage, lParam) = False) then
+    DestroyPropertySheetPage(hPage);
+
+  Result := NOERROR;
 end;
 
 function TVSTPluginPropertySheet.ReplacePage(uPageID: UINT;
@@ -156,29 +161,36 @@ end;
 function TVSTPluginPropertySheet.ShellExtInitialize(pidlFolder: PItemIDList;
   lpdobj: IDataObject; hKeyProgID: HKEY): HResult;
 var
-  StgMedium : TStgMedium;
-  FormatEtc : TFormatEtc;
+  StgMedium: TStgMedium;
+  FormatEtc: TFormatEtc;
 begin
- if Assigned(FPageForm) then FreeAndNil(FPageForm); 
- Result := E_INVALIDARG;
- if(lpdobj = nil) then exit;
- with FormatEtc do
+  if Assigned(FPageForm) then
+    FreeAndNil(FPageForm);
+
+  Result := E_INVALIDARG;
+  if(lpdobj = nil) then
+    Exit;
+
+  with FormatEtc do
   begin
-   cfFormat := CF_HDROP;
-   ptd      := nil;
-   dwAspect := DVASPECT_CONTENT;
-   lindex   := -1;
-   tymed    := TYMED_HGLOBAL;
+    cfFormat := CF_HDROP;
+    ptd      := nil;
+    dwAspect := DVASPECT_CONTENT;
+    lindex   := -1;
+    tymed    := TYMED_HGLOBAL;
   end;
- Result := lpdobj.GetData(FormatEtc, StgMedium); if Failed(Result) then exit;
- if (DragQueryFile(StgMedium.hGlobal, $FFFFFFFF, nil, 0) = 1) then
+
+  Result := lpdobj.GetData(FormatEtc, StgMedium); if Failed(Result) then Exit;
+  if DragQueryFile(StgMedium.hGlobal, $FFFFFFFF, nil, 0) = 1 then
   begin
-   if FFileName <> nil then FreeMem(FFileName);
-   GetMem(FFileName, 256);
-   DragQueryFile(StgMedium.hGlobal, 0, FFileName, 256);
-   Result := NOERROR;
+    if FFileName <> nil then
+      FreeMem(FFileName);
+    GetMem(FFileName, 256);
+    DragQueryFile(StgMedium.hGlobal, 0, FFileName, 256);
+    Result := NOERROR;
   end;
 end;
+
 
 { TPSheetTestFactory }
 
@@ -186,10 +198,12 @@ procedure TPSheetTestFactory.UpdateRegistry(Register: Boolean);
 const
   szTestExtension = 'dllfile\shellex\PropertySheetHandlers\';
 begin
- inherited;
- if register
-  then CreateRegKey(szTestExtension + ClassName,'',GUIDToString(ClassID))
-  else DeleteRegKey(szTestExtension + ClassName);
+  inherited;
+
+  if Register then
+    CreateRegKey(szTestExtension + ClassName, '', GUIDToString(ClassID))
+  else
+    DeleteRegKey(szTestExtension + ClassName);
 end;
 
 initialization

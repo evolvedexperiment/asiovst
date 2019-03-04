@@ -92,7 +92,7 @@ type
     FOutputBuffer: array of PDAVSingleFixedArray;
 
     FNrChannels: Integer;
-    FEnhanceFak: Integer;
+    FEnhanceFactor: Integer;
     FSampleRate: Integer;
     FSampleFrames: Integer;
     FEditorForm: TFmWinAmpVST;
@@ -419,7 +419,7 @@ begin
   FSampleRate := 44100;
   FSampleFrames := 0;
   FNrChannels := 0;
-  FEnhanceFak := 1;
+  FEnhanceFactor := 1;
   FBypass := False;
 
 {$IFDEF UseCriticalSection}
@@ -430,7 +430,6 @@ begin
 
     Assert(HInstance = AWinAmpDspModule.HDLLinstance);
 
-    // GetModuleFileName(HInstance, @FFxpName[1], 254);
     GetModuleFileName(AWinAmpDspModule.HDLLinstance, @FFxpName[1], 254);
     FFxpName := StrPas(PChar(@FFxpName[1]));
     FRegistryKey := ExtractFileName(FFxpName);
@@ -464,53 +463,6 @@ begin
     with VstPlugIns.Add do
       OnAudioMasterUpdateDisplay := AudioMasterUpdateDisplay;
   end;
-
-  ContainedVSTPlugins := TStringList.Create;
-  try
-    EnumResourceNames(HInstance, 'DLL', @EnumNamesFunc,
-      LongWord(ContainedVSTPlugins));
-
-    if ContainedVSTPlugins.Count > 0 then
-    begin
-      RS := TResourceStream.Create(HInstance, ContainedVSTPlugins[0], 'DLL');
-      try
-        VstHost[0].LoadFromStream(RS);
-        VstHost[0].Active := True;
-        UpdateVSTPlugin;
-        if FileExists(FxpName) then
-          VstHost[0].LoadPreset(FxpName);
-      finally
-        FreeAndNil(RS);
-      end;
-    end
-    else
-      with TRegistry.Create do
-        try
-          if OpenKeyReadOnly(RegistryKey) then
-          begin
-            if ValueExists('Last Plugin') then
-            begin
-              LoadVSTDLL(ReadString('Last Plugin'));
-              if FileExists(FxpName) then
-                try
-                  VstHost[0].LoadPreset(FxpName);
-                finally
-                  if not ValueExists('Dispose Preset') or
-                    ReadBool('Dispose Preset') then
-                    if CheckAccessToFile(GENERIC_WRITE, FFxpName) then
-                      DeleteFile(FxpName);
-                end;
-            end;
-          end;
-        finally
-          CloseKey;
-          Free;
-        end;
-
-  finally
-    FreeAndNil(ContainedVSTPlugins);
-  end;
-
 end;
 
 destructor TWinAmpObject.Destroy;
@@ -553,7 +505,7 @@ end;
 
 function TWinAmpObject.GetEnhanced: Boolean;
 begin
-  Result := FEnhanceFak > 1;
+  Result := FEnhanceFactor > 1;
 end;
 
 function TWinAmpObject.GetWinampDSPModule: TWinampDSPModule;
@@ -618,7 +570,6 @@ begin
           FreeAndNil(FEditorForm);
 
           Active := False;
-          // Unload;
         except
         end;
 
@@ -968,32 +919,32 @@ begin
       *)
 
       // test if maximum blocksize changed
-      if FEnhanceFak * SampleFrames > FSampleFrames then
+      if FEnhanceFactor * SampleFrames > FSampleFrames then
       begin
-        FSampleFrames := FEnhanceFak * SampleFrames;
-        FVstHost[0].SetBlockSize(FEnhanceFak * SampleFrames);
+        FSampleFrames := FEnhanceFactor * SampleFrames;
+        FVstHost[0].SetBlockSize(FEnhanceFactor * SampleFrames);
 
         // reallocate input VST buffers
         for i := 0 to Length(FInputBuffer) - 1 do
-          ReallocMem(FInputBuffer[i], FEnhanceFak * SampleFrames *
+          ReallocMem(FInputBuffer[i], FEnhanceFactor * SampleFrames *
             SizeOf(Single));
 
         // reallocate output VST buffers
         for i := 0 to Length(FOutputBuffer) - 1 do
-          ReallocMem(FOutputBuffer[i], FEnhanceFak * SampleFrames *
+          ReallocMem(FOutputBuffer[i], FEnhanceFactor * SampleFrames *
             SizeOf(Single));
       end;
 
       // test if samplerate changed
-      if FEnhanceFak * SampleRate <> FSampleRate then
+      if FEnhanceFactor * SampleRate <> FSampleRate then
       begin
-        FSampleRate := FEnhanceFak * SampleRate;
-        FVstHost[0].SetSampleRate(FEnhanceFak * SampleRate);
+        FSampleRate := FEnhanceFactor * SampleRate;
+        FVstHost[0].SetSampleRate(FEnhanceFactor * SampleRate);
       end;
 
       case BitPerSample of
         8:
-          if FEnhanceFak > 1 then
+          if FEnhanceFactor > 1 then
           begin
             FWinAmpConvertIn := ConvertInterleaved8bitToFloatOversampled;
             FWinAmpConvertOut := ConvertFloatToInterleaved8bitOversampled;
@@ -1004,7 +955,7 @@ begin
             FWinAmpConvertOut := ConvertFloatToInterleaved8bit;
           end;
         16:
-          if FEnhanceFak > 1 then
+          if FEnhanceFactor > 1 then
           begin
             FWinAmpConvertIn := ConvertInterleaved16bitToFloatOversampled;
             FWinAmpConvertOut := ConvertFloatToInterleaved16bitOversampled;
@@ -1015,7 +966,7 @@ begin
             FWinAmpConvertOut := ConvertFloatToInterleaved16bit;
           end;
         24:
-          if FEnhanceFak > 1 then
+          if FEnhanceFactor > 1 then
           begin
             FWinAmpConvertIn := ConvertInterleaved24bitToFloatOversampled;
             FWinAmpConvertOut := ConvertFloatToInterleaved24bitOversampled;
@@ -1026,7 +977,7 @@ begin
             FWinAmpConvertOut := ConvertFloatToInterleaved24bit;
           end;
         32:
-          if FEnhanceFak > 1 then
+          if FEnhanceFactor > 1 then
           begin
             FWinAmpConvertIn := ConvertInterleaved32bitToFloatOversampled;
             // ConvertInterleavedToFloatOversampled;
@@ -1052,7 +1003,7 @@ begin
 
       // process VST plugin
       FVstHost[0].Process32Replacing(@FInputBuffer[0], @FOutputBuffer[0],
-        FEnhanceFak * SampleFrames);
+        FEnhanceFactor * SampleFrames);
 
       // convert float to interleaved data
       FWinAmpConvertOut(Samples, ChannelCount, SampleFrames);
@@ -1152,7 +1103,7 @@ begin
         ('This is an unregistered copy! To disable/remember this setting the' +
         #13#10 + 'next time the VST bridge starts, please consider a donation.',
         mtInformation, [mbOK], 0);
-      FEnhanceFak := 2;
+      FEnhanceFactor := 2;
       for i := 0 to Length(FDownsampler) - 1 do
         if Assigned(FDownsampler[i]) then
           FDownsampler[i].ClearBuffers;
@@ -1161,7 +1112,7 @@ begin
           FUpsampler[i].ClearBuffers;
     end
     else
-      FEnhanceFak := 1;
+      FEnhanceFactor := 1;
   end;
 end;
 

@@ -1,4 +1,4 @@
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <ProjectGuid>{227B6A52-B342-4C53-8222-9F7CF900593B}</ProjectGuid>
         <MainSource>DAV_Common.dpk</MainSource>

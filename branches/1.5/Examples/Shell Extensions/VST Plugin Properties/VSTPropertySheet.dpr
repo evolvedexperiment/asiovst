@@ -3,6 +3,7 @@ library VSTPropertySheet;
 {$R 'VSTPSheet.res' 'VSTPSheet.rc'}
 
 uses
+  FastMM4,
   ComServ,
   VSTPropertySheet_TLB in 'VSTPropertySheet_TLB.pas',
   VSTShellExt in 'VSTShellExt.pas' {VSTPluginPropertySheet: CoClass},

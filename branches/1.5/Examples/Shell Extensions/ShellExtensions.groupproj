@@ -1,0 +1,48 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{6832B9BF-C66E-482D-A857-F41A61DD017F}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="Audio Sheet\AudioSheet.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="VST Plugin Properties\VSTPropertySheet.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="AudioSheet">
+        <MSBuild Projects="Audio Sheet\AudioSheet.dproj"/>
+    </Target>
+    <Target Name="AudioSheet:Clean">
+        <MSBuild Projects="Audio Sheet\AudioSheet.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="AudioSheet:Make">
+        <MSBuild Projects="Audio Sheet\AudioSheet.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="VSTPropertySheet">
+        <MSBuild Projects="VST Plugin Properties\VSTPropertySheet.dproj"/>
+    </Target>
+    <Target Name="VSTPropertySheet:Clean">
+        <MSBuild Projects="VST Plugin Properties\VSTPropertySheet.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="VSTPropertySheet:Make">
+        <MSBuild Projects="VST Plugin Properties\VSTPropertySheet.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="AudioSheet;VSTPropertySheet"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="AudioSheet:Clean;VSTPropertySheet:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="AudioSheet:Make;VSTPropertySheet:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>
