@@ -3,14 +3,16 @@ program MultiSineGenerator;
 {$I DAV_Compiler.inc}
 
 uses
-  FastMM4,
+  FastMM4, // either download the library or comment if there is an error here
+  {$IFDEF UseMadExcept}
   madExcept,
   madLinkDisAsm,
   madListHardware,
   madListProcesses,
   madListModules, // either download the library or comment if there is an error here
+  {$ENDIF}
   {$IFDEF UseFastMove}
-  FastMove,
+  FastMove, // either download the library or disable the feature
   {$ENDIF}
   Forms,
   Vcl.Themes,

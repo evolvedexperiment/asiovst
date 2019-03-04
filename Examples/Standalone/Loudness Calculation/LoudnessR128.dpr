@@ -35,13 +35,17 @@ program LoudnessR128;
 {$APPTYPE CONSOLE}
 
 uses
-{$IFDEF FPC}
-  Interfaces,
-{$ELSE}
-{$IFNDEF COMPILER16_UP}
+  FastMM4, // either download the library or comment if there is an error here
+  {$IFNDEF UseFastMove}
   FastMove,
-{$ENDIF}
-{$ENDIF}
+  {$ENDIF}
+  {$IFDEF UseFastMove}
+  FastMove, // either download the library or disable the feature
+  {$ENDIF}
+  {$IFDEF FPC}
+  Interfaces,
+  {$ELSE}
+  {$ENDIF}
   SysUtils, Math, DAV_AudioFile, DAV_AudioFileWAV,
   DAV_AudioFileAIFF, DAV_AudioFileAU, DAV_MpegAudio, DAV_DspR128,
   DAV_AudioData;

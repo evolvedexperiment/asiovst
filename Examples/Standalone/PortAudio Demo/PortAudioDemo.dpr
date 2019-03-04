@@ -3,15 +3,17 @@ program PortAudioDemo;
 {$I DAV_Compiler.inc}
 
 uses
-  FastMM4,
-  madExcept,
+  FastMM4, // either download the library or comment if there is an error here
+  {$IFDEF UseMadExcept}
+  madExcept, // either download the library or disable the feature
   madLinkDisAsm,
   madListHardware,
   madListProcesses,
-  madListModules,  // either download the library or comment if there is an error here
-{$IFDEF UseFastMove}
-  FastMove,
-{$ENDIF}
+  madListModules,
+  {$ENDIF}
+  {$IFDEF UseFastMove}
+  FastMove, // either download the library or disable the feature
+  {$ENDIF}
   Forms,
   PortAudioDemoForm in 'PortAudioDemoForm.pas' {FmPortAudio};
 

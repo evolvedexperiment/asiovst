@@ -222,7 +222,7 @@ implementation
 {$ENDIF}
 
 uses
-  IniFiles, Math, Mapi, ShellApi, AnsiStrings, ZLib, DAV_GuiCommon,
+  IniFiles, Math, Mapi, ShellApi, AnsiStrings, System.ZLib, DAV_GuiCommon,
   DAV_Common, DAV_Approximations, JNDEQTaudio, JNDEQTsurvey;
 
 procedure TFmJNDEQT.FormCreate(Sender: TObject);
@@ -883,9 +883,9 @@ begin
       Receip.ulReserved := 0;
       Receip.ulRecipClass := MAPI_TO;
       TempString := AnsiString(Mail.Values['to']);
-      Receip.lpszName := StrNew(PAnsiChar(TempString));
+      Receip.lpszName := SysUtils.StrNew(PAnsiChar(TempString));
       TempString := AnsiString('SMTP:' + Mail.Values['to']);
-      Receip.lpszAddress := StrNew(PAnsiChar(TempString));
+      Receip.lpszAddress := SysUtils.StrNew(PAnsiChar(TempString));
       Receip.ulEIDSize := 0;
       MapiMessage.nRecipCount := 1;
       MapiMessage.lpRecips := @Receip;
@@ -910,9 +910,9 @@ begin
         Attachments[i1].ulReserved := 0;
         Attachments[i1].flFlags := 0;
         Attachments[i1].nPosition := ULONG($FFFFFFFF);
-        Attachments[i1].lpszPathName := StrNew(PAnsiChar(FileName));
+        Attachments[i1].lpszPathName := SysUtils.StrNew(PAnsiChar(FileName));
         FileName := ExtractFileName(FileName);
-        Attachments[i1].lpszFileName := StrNew(PAnsiChar(FileName));
+        Attachments[i1].lpszFileName := SysUtils.StrNew(PAnsiChar(FileName));
         Attachments[i1].lpFileType := nil;
       end;
       MapiMessage.nFileCount := AttachCount;
@@ -921,11 +921,11 @@ begin
 
     TempString := AnsiString(Mail.Values['subject']);
     if TempString <> '' then
-      MapiMessage.lpszSubject := StrNew(PAnsiChar(TempString));
+      MapiMessage.lpszSubject := SysUtils.StrNew(PAnsiChar(TempString));
 
     TempString := AnsiString(Mail.Values['body']);
     if TempString <> '' then
-      MapiMessage.lpszNoteText := StrNew(PAnsiChar(TempString));
+      MapiMessage.lpszNoteText := SysUtils.StrNew(PAnsiChar(TempString));
 
     WndList := DisableTaskWindows(0);
     try
@@ -936,18 +936,18 @@ begin
 
     for i1 := 0 to AttachCount - 1 do
     begin
-      StrDispose(Attachments[i1].lpszPathName);
-      StrDispose(Attachments[i1].lpszFileName);
+      SysUtils.StrDispose(Attachments[i1].lpszPathName);
+      SysUtils.StrDispose(Attachments[i1].lpszFileName);
     end;
 
     if Assigned(MapiMessage.lpszSubject) then
-      StrDispose(MapiMessage.lpszSubject);
+      SysUtils.StrDispose(MapiMessage.lpszSubject);
     if Assigned(MapiMessage.lpszNoteText) then
-      StrDispose(MapiMessage.lpszNoteText);
+      SysUtils.StrDispose(MapiMessage.lpszNoteText);
     if Assigned(Receip.lpszAddress) then
-      StrDispose(Receip.lpszAddress);
+      SysUtils.StrDispose(Receip.lpszAddress);
     if Assigned(Receip.lpszName) then
-      StrDispose(Receip.lpszName);
+      SysUtils.StrDispose(Receip.lpszName);
 
     // log off
     MapiLogOff(MAPI_Session, Handle, 0, 0);

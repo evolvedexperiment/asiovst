@@ -1,12 +1,14 @@
 program MiniHost;
 
+{$I DAV_Compiler.inc}
+
 {.$R 'EmbeddedPlugin.res' 'EmbeddedPlugin.rc'}
 
 uses
   FastMM4, // either download the library or comment if there is an error here
-{$IFDEF UseFastMove}
-  FastMove, // either download the library or comment if there is an error here
-{$ENDIF}
+  {$IFDEF UseFastMove}
+  FastMove, // either download the library or disable the feature
+  {$ENDIF}
   Forms,
   MiniHostForm in 'MiniHostForm.pas' {FmMiniHost},
   OptionsForm in 'OptionsForm.pas' {FmOptions},

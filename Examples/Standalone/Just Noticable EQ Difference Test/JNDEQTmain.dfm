@@ -172,6 +172,7 @@ object FmJNDEQT: TFmJNDEQT
     BorderColor = clBlack
     BorderRadius = 3.000000000000000000
     BorderWidth = 1.000000000000000000
+    Caption = ''
     Color = 8620693
     DefaultValue = 3.000000000000000000
     Max = 3.000000000000000000
@@ -399,6 +400,7 @@ object FmJNDEQT: TFmJNDEQT
       Anchors = [akLeft, akTop, akRight]
       BorderRadius = 3.000000000000000000
       BorderWidth = 1.000000000000000000
+      Caption = ''
       Color = 8620693
       CurveMapping = 1.000000000000000000
       DefaultValue = 3.000000000000000000
@@ -419,6 +421,7 @@ object FmJNDEQT: TFmJNDEQT
       Anchors = [akLeft, akTop, akRight]
       BorderRadius = 3.000000000000000000
       BorderWidth = 1.000000000000000000
+      Caption = ''
       Color = 8620693
       CurveMapping = 2.000000000000000000
       DefaultValue = 1000.000000000000000000
@@ -439,6 +442,7 @@ object FmJNDEQT: TFmJNDEQT
       Anchors = [akLeft, akTop, akRight]
       BorderRadius = 3.000000000000000000
       BorderWidth = 1.000000000000000000
+      Caption = ''
       Color = 8620693
       DefaultValue = 15.000000000000000000
       Max = 15.000000000000000000
@@ -776,6 +780,7 @@ object FmJNDEQT: TFmJNDEQT
     Top = 4
   end
   object AsioHost: TAsioHost
+    AsioTime.SamplePos = 0
     AsioTime.Speed = 1.000000000000000000
     AsioTime.SampleRate = 44100.000000000000000000
     AsioTime.Flags = [atSystemTimeValid, atSamplePositionValid, atSampleRateValid, atSpeedValid]
