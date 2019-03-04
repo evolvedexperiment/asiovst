@@ -227,47 +227,47 @@ constructor TCustomVstParameterCategory.Create(ACollection: TCollection);
 constructor TCustomVstParameterCategory.Create(Collection: TCollection);
 {$ENDIF}
 begin
- inherited;
- FDisplayName := 'Category ' + IntToStr(Collection.Count);
- FParamsInCat := 0;
- FVSTModule   := TCustomVstParameterCategories(Collection).VSTModule;
+  inherited;
+  FDisplayName := 'Category ' + IntToStr(Collection.Count);
+  FParamsInCat := 0;
+  FVSTModule   := TCustomVstParameterCategories(Collection).VSTModule;
 end;
 
 destructor TCustomVstParameterCategory.Destroy;
 begin
- inherited;
+  inherited;
 end;
 
 procedure TCustomVstParameterCategory.AssignTo(Dest: TPersistent);
 begin
- if Dest is TCustomVstParameterCategory then
-  with TCustomVstParameterCategory(Dest) do
-   try
-    DisplayName := Self.DisplayName;
-   except
+  if Dest is TCustomVstParameterCategory then
+    with TCustomVstParameterCategory(Dest) do
+    try
+      DisplayName := Self.DisplayName;
+    except
+      inherited;
+    end
+  else
     inherited;
-   end
-  else inherited;
 end;
 
 function TCustomVstParameterCategory.GetDisplayName: string;
 begin
- Result := FDisplayName;
+  Result := FDisplayName;
 end;
 
 procedure TCustomVstParameterCategory.SetDisplayName(const AValue: string);
 var
   NewDisplayName : string;
 begin
- NewDisplayName := AValue;
- if Length(NewDisplayName) > 24
-  then SetLength(NewDisplayName, 24);
+  NewDisplayName := AValue;
+  if Length(NewDisplayName) > 24 then
+    SetLength(NewDisplayName, 24);
 
- if NewDisplayName <> FDisplayName then
-  begin
-   FDisplayName := NewDisplayName;
-  end;
- inherited;
+  if NewDisplayName <> FDisplayName then
+    FDisplayName := NewDisplayName;
+
+  inherited;
 end;
 
 
@@ -275,44 +275,44 @@ end;
 
 constructor TCustomVstParameterCategories.Create(AOwner: TComponent);
 begin
- inherited Create(AOwner, TCustomVstParameterCategory);
- FVSTModule := TVSTModuleWithPrograms(AOwner);
+  inherited Create(AOwner, TCustomVstParameterCategory);
+  FVSTModule := TVSTModuleWithPrograms(AOwner);
 end;
 
 destructor TCustomVstParameterCategories.Destroy;
 begin
- while Count > 0 do Delete(0);
- inherited;
+  while Count > 0 do Delete(0);
+  inherited;
 end;
 
 function TCustomVstParameterCategories.Add: TCustomVstParameterCategory;
 begin
- Result := TCustomVstParameterCategory(inherited Add);
+  Result := TCustomVstParameterCategory(inherited Add);
 end;
 
 function TCustomVstParameterCategories.GetItem(Index: Integer): TCustomVstParameterCategory;
 begin
- Result := TCustomVstParameterCategory(inherited GetItem(Index));
+  Result := TCustomVstParameterCategory(inherited GetItem(Index));
 end;
 
 function TCustomVstParameterCategories.Insert(const Index: Integer): TCustomVstParameterCategory;
 begin
- Result := TCustomVstParameterCategory(inherited Insert(Index));
+  Result := TCustomVstParameterCategory(inherited Insert(Index));
 end;
 
 procedure TCustomVstParameterCategories.Delete(const Index: Integer);
 var
   i : Integer;
 begin
- if VSTModule is TVSTModuleWithPrograms then
+  if VSTModule is TVSTModuleWithPrograms then
   with TVSTModuleWithPrograms(VSTModule) do
-   if Assigned(ParameterProperties) then
+    if Assigned(ParameterProperties) then
     begin
-     for i := 0 to ParameterProperties.Count - 1 do
-      if string(ParameterProperties[i].Category) = Items[Index].DisplayName
-       then ParameterProperties[i].Category := '';
+      for i := 0 to ParameterProperties.Count - 1 do
+      if string(ParameterProperties[i].Category) = Items[Index].DisplayName then
+        ParameterProperties[i].Category := '';
     end;
- inherited Delete(Index);
+  inherited Delete(Index);
 end;
 
 procedure TCustomVstParameterCategories.SetItem(Index: Integer; const Value: TCustomVstParameterCategory);
@@ -324,42 +324,42 @@ function TCustomVstParameterCategories.CategoryExists(const Value: AnsiString): 
 var
   i : Integer;
 begin
- Result := False;
- for i := 0 to Count - 1 do
-  if Items[i].DisplayName = string(Value) then
-   begin
-    Result := True;
-    exit;
-   end;
+  Result := False;
+  for i := 0 to Count - 1 do
+    if Items[i].DisplayName = string(Value) then
+    begin
+      Result := True;
+      Exit;
+    end;
 end;
 
 function TCustomVstParameterCategories.CategoryIndex(const Value: AnsiString): Integer;
 var
   i : Integer;
 begin
- Result := -1;
- for i := 0 to Count - 1 do
-  if Items[i].DisplayName = string(Value) then
-   begin
-    Result := i;
-    exit;
-   end;
+  Result := -1;
+  for i := 0 to Count - 1 do
+    if Items[i].DisplayName = string(Value) then
+    begin
+      Result := i;
+      exit;
+    end;
 end;
 
 procedure TCustomVstParameterCategories.CheckParametersInUse;
 var
   c, p : Integer;
 begin
- if VSTModule is TVSTModuleWithPrograms then
-  with TVSTModuleWithPrograms(VSTModule) do
-   if Assigned(ParameterProperties) then
-    for c := 0 to Count - 1 do
-     begin
-      Items[c].FParamsInCat := 0;
-      for p := 0 to ParameterProperties.Count - 1 do
-       if string(ParameterProperties[p].Category) = Items[c].DisplayName
-        then Inc(Items[c].FParamsInCat);
-     end;
+  if VSTModule is TVSTModuleWithPrograms then
+    with TVSTModuleWithPrograms(VSTModule) do
+      if Assigned(ParameterProperties) then
+        for c := 0 to Count - 1 do
+        begin
+          Items[c].FParamsInCat := 0;
+          for p := 0 to ParameterProperties.Count - 1 do
+            if string(ParameterProperties[p].Category) = Items[c].DisplayName then
+              Inc(Items[c].FParamsInCat);
+        end;
 end;
 
 

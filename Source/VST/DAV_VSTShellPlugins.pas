@@ -121,19 +121,21 @@ begin
   if Dest is TCustomVstShellPlugin then
     with TCustomVstShellPlugin(Dest)
       do DisplayName := Self.DisplayName
-  else inherited;
+  else
+    inherited;
 end;
 
 function TCustomVstShellPlugin.GetUniqueID: AnsiString;
 begin
- Result := AnsiString(FUniqueID);
+  Result := AnsiString(FUniqueID);
 end;
 
 procedure TCustomVstShellPlugin.SetUniqueID(FID: AnsiString);
 begin
- if Length(FID) < 4
-  then Move(FID[1], FUniqueID[0], Length(FID))
-  else Move(FID[1], FUniqueID[0], 4);
+  if Length(FID) < 4 then
+    Move(FID[1], FUniqueID[0], Length(FID))
+  else
+    Move(FID[1], FUniqueID[0], 4);
 end;
 
 procedure TCustomVstShellPlugin.SetDisplayName(const AValue: string);
@@ -157,7 +159,8 @@ end;
 
 destructor TCustomVstShellPlugins.Destroy;
 begin
-  while Count > 0 do Delete(0);
+  while Count > 0 do
+    Delete(0);
   inherited;
 end;
 

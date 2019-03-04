@@ -1083,254 +1083,264 @@ end;
 
 function FMod(d1, d2: Double): Double;
 var
-   i: Integer;
+  i: Integer;
 begin
- try
-  i := Trunc(d1 / d2);
- except
-  on EInvalidOp do i := High(Longint);
- end;
- Result := d1 - (i * d2);
+  try
+    i := Trunc(d1 / d2);
+  except
+    on EInvalidOp do
+      i := High(Longint);
+  end;
+  Result := d1 - (i * d2);
 end;
 
 procedure dB2string(Value: Single; text: PAnsiChar);
 begin
- if (Value <= 0)
-  then StrCopy(text, '   -oo  ')
-  else Float2String(20 * log10(Value), text);
+  if (Value <= 0) then
+    StrCopy(text, '   -oo  ')
+  else
+    Float2String(20 * log10(Value), text);
 end;
 
 procedure dB2stringRound(Value: Single; text: PAnsiChar);
 begin
- if (Value <= 0)
-  then StrCopy(text, '    -96 ')
-  else Long2String(Round(20 * Log10(Value)), text);
+  if (Value <= 0) then
+    StrCopy(text, '    -96 ')
+  else
+    Long2String(Round(20 * Log10(Value)), text);
 end;
 
 procedure Float2String(Value: Single; Text: PAnsiChar);
 begin
- StrPCopy(Text, AnsiString(Format('%f', [Value])));
+  StrPCopy(Text, AnsiString(Format('%f', [Value])));
 end;
 
 procedure Long2string(Value: Longint; Text: PAnsiChar);
 begin
- if (Value >= 1E8) then
+  if (Value >= 1E8) then
   begin
-   StrCopy(Text, 'Huge!');
-   Exit;
+    StrCopy(Text, 'Huge!');
+    Exit;
   end;
- StrPCopy(Text, AnsiString(Format('%7d', [Value])));
+  StrPCopy(Text, AnsiString(Format('%7d', [Value])));
 end;
 
 procedure Float2StringAsLong(Value: Single; Text: PAnsiChar);
 begin
- if (Value >= 1E8) then
+  if (Value >= 1E8) then
   begin
-   StrCopy(Text, 'Huge!');
-   Exit;
+    StrCopy(Text, 'Huge!');
+    Exit;
   end;
- StrPCopy(Text, AnsiString(Format('%7.0f', [Value])));
+  StrPCopy(Text, AnsiString(Format('%7.0f', [Value])));
 end;
 
 procedure Hz2string(samples, sampleRate: Single; text: PAnsiChar);
 begin
- if (samples = 0)
-  then Float2String(0, text)
-  else Float2String(sampleRate / samples, text);
+  if (samples = 0) then
+    Float2String(0, text)
+  else
+    Float2String(sampleRate / samples, text);
 end;
 
 procedure ms2string(Samples, SampleRate: Single; Text: PAnsiChar);
 begin
- Float2String(samples * 1000 / sampleRate, text);
+  Float2String(samples * 1000 / sampleRate, text);
 end;
 
 function gapSmallValue(Value, maxValue: double): Double;
 begin
- Result := Power(maxValue, Value);
+  Result := Power(maxValue, Value);
 end;
 
 function invGapSmallValue(Value, maxValue: double): Double;
 var
   r : Double;
 begin
- r := 0;
- if (Value <> 0)
-  then r := logN(maxValue, Value);
- Result :=  r;
+  r := 0;
+  if (Value <> 0) then
+    r := logN(maxValue, Value);
+  Result :=  r;
 end;
 
 function Rect(Left, Top, Right, Bottom : Smallint): ERect;
 begin
- Result.Left   := Left;
- Result.Top    := Top;
- Result.Right  := Right;
- Result.Bottom := Bottom;
+  Result.Left   := Left;
+  Result.Top    := Top;
+  Result.Right  := Right;
+  Result.Bottom := Bottom;
 end;
 
-function opcode2String(Opcode: TDispatcherOpcode): string;
+function Opcode2String(Opcode: TDispatcherOpcode): string;
+const
+  COpcodeName: array [TDispatcherOpcode] of string = (
+    'effOpen', 'effClose', 'effSetProgram', 'effGetProgram',
+    'effSetProgramName', 'effGetProgramName', 'effGetParamLabel',
+    'effGetParamDisplay', 'effGetParamName', 'effGetVu', 'effSetSampleRate',
+    'effSetBlockSize', 'effMainsChanged', 'effEditGetRect', 'effEditOpen',
+    'effEditClose', 'effEditDraw', 'effEditMouse', 'effEditKey',
+    'effEditIdle', 'effEditTop', 'effEditSleep', 'effIdentify',
+    'effGetChunk', 'effSetChunk', 'effProcessEvents', 'effCanBeAutomated',
+    'effString2Parameter', 'effGetNumProgramCategories',
+    'effGetProgramNameIndexed', 'effCopyProgram', 'effConnectInput',
+    'effConnectOutput', 'effGetInputProperties', 'effGetOutputProperties',
+    'effGetPlugCategory', 'effGetCurrentPosition', 'effGetDestinationBuffer',
+    'effOfflineNotify', 'effOfflinePrepare', 'effOfflineRun', 'effProcessVarIo',
+    'effSetSpeakerArrangement', 'effSetBlockSizeAndSampleRate', 'effSetBypass',
+    'effGetEffectName', 'effGetErrorText', 'effGetVendorString',
+    'effGetProductString', 'effGetVendorVersion', 'effVendorSpecific',
+    'effCanDo', 'effGetTailSize', 'effIdle', 'effGetIcon',
+    'effSetViewPosition', 'effGetParameterProperties', 'effKeysRequired',
+    'effGetVstVersion', 'effEditKeyDown', 'effEditKeyUp', 'effSetEditKnobMode',
+    'effGetMidiProgramName', 'effGetCurrentMidiProgram',
+    'effGetMidiProgramCategory', 'effHasMidiProgramsChanged',
+    'effGetMidiKeyName', 'effBeginSetProgram', 'effEndSetProgram',
+    'effGetSpeakerArrangement', 'effShellGetNextPlugin', 'effStartProcess',
+    'effStopProcess', 'effSetTotalSampleToProcess', 'effSetPanLaw',
+    'effBeginLoadBank', 'effBeginLoadProgram', 'effSetProcessPrecision',
+    'effGetNumMidiInputChannels', 'effGetNumMidiOutputChannels');
 begin
- case Opcode of
-  effOpen                      : Result := 'effOpen';
-  effClose                     : Result := 'effClose';
-  effSetProgram                : Result := 'effSetProgram';
-  effGetProgram                : Result := 'effGetProgram';
-  effSetProgramName            : Result := 'effSetProgramName';
-  effGetProgramName            : Result := 'effGetProgramName';
-  effGetParamLabel             : Result := 'effGetParamLabel';
-  effGetParamDisplay           : Result := 'effGetParamDisplay';
-  effGetParamName              : Result := 'effGetParamName';
-  effGetVu                     : Result := 'effGetVu';
-  effSetSampleRate             : Result := 'effSetSampleRate';
-  effSetBlockSize              : Result := 'effSetBlockSize';
-  effMainsChanged              : Result := 'effMainsChanged';
-  effEditGetRect               : Result := 'effEditGetRect';
-  effEditOpen                  : Result := 'effEditOpen';
-  effEditClose                 : Result := 'effEditClose';
-  effEditDraw                  : Result := 'effEditDraw';
-  effEditMouse                 : Result := 'effEditMouse';
-  effEditKey                   : Result := 'effEditKey';
-  effEditIdle                  : Result := 'effEditIdle';
-  effEditTop                   : Result := 'effEditTop';
-  effEditSleep                 : Result := 'effEditSleep';
-  effIdentify                  : Result := 'effIdentify';
-  effGetChunk                  : Result := 'effGetChunk';
-  effSetChunk                  : Result := 'effSetChunk';
-  effProcessEvents             : Result := 'effProcessEvents';
-  effCanBeAutomated            : Result := 'effCanBeAutomated';
-  effString2Parameter          : Result := 'effString2Parameter';
-  effGetNumProgramCategories   : Result := 'effGetNumProgramCategories';
-  effGetProgramNameIndexed     : Result := 'effGetProgramNameIndexed';
-  effCopyProgram               : Result := 'effCopyProgram';
-  effConnectInput              : Result := 'effConnectInput';
-  effConnectOutput             : Result := 'effConnectOutput';
-  effGetInputProperties        : Result := 'effGetInputProperties';     
-  effGetOutputProperties       : Result := 'effGetOutputProperties';
-  effGetPlugCategory           : Result := 'effGetPlugCategory';
-  effGetCurrentPosition        : Result := 'effGetCurrentPosition';
-  effGetDestinationBuffer      : Result := 'effGetDestinationBuffer';
-  effOfflineNotify             : Result := 'effOfflineNotify';
-  effOfflinePrepare            : Result := 'effOfflinePrepare';
-  effOfflineRun                : Result := 'effOfflineRun';
-  effProcessVarIo              : Result := 'effProcessVarIo';
-  effSetSpeakerArrangement     : Result := 'effSetSpeakerArrangement';
-  effSetBlockSizeAndSampleRate : Result := 'effSetBlockSizeAndSampleRate';
-  effSetBypass                 : Result := 'effSetBypass';
-  effGetEffectName             : Result := 'effGetEffectName';
-  effGetErrorText              : Result := 'effGetErrorText';
-  effGetVendorString           : Result := 'effGetVendorString';
-  effGetProductString          : Result := 'effGetProductString';
-  effGetVendorVersion          : Result := 'effGetVendorVersion';
-  effVendorSpecific            : Result := 'effVendorSpecific';
-  effCanDo                     : Result := 'effCanDo';
-  effGetTailSize               : Result := 'effGetTailSize';
-  effIdle                      : Result := 'effIdle';
-  effGetIcon                   : Result := 'effGetIcon';
-  effSetViewPosition           : Result := 'effSetViewPosition';
-  effGetParameterProperties    : Result := 'effGetParameterProperties';
-  effKeysRequired              : Result := 'effKeysRequired';
-  effGetVstVersion             : Result := 'effGetVstVersion';
-  effEditKeyDown               : Result := 'effEditKeyDown';
-  effEditKeyUp                 : Result := 'effEditKeyUp';
-  effSetEditKnobMode           : Result := 'effSetEditKnobMode';
-  effGetMidiProgramName        : Result := 'effGetMidiProgramName';
-  effGetCurrentMidiProgram     : Result := 'effGetCurrentMidiProgram';
-  effGetMidiProgramCategory    : Result := 'effGetMidiProgramCategory';
-  effHasMidiProgramsChanged    : Result := 'effHasMidiProgramsChanged';
-  effGetMidiKeyName            : Result := 'effGetMidiKeyName';
-  effBeginSetProgram           : Result := 'effBeginSetProgram';
-  effEndSetProgram             : Result := 'effEndSetProgram';
-  effGetSpeakerArrangement     : Result := 'effGetSpeakerArrangement';
-  effShellGetNextPlugin        : Result := 'effShellGetNextPlugin';
-  effStartProcess              : Result := 'effStartProcess';
-  effStopProcess               : Result := 'effStopProcess';
-  effSetTotalSampleToProcess   : Result := 'effSetTotalSampleToProcess';
-  effSetPanLaw                 : Result := 'effSetPanLaw';
-  effBeginLoadBank             : Result := 'effBeginLoadBank';
-  effBeginLoadProgram          : Result := 'effBeginLoadProgram';
-  effSetProcessPrecision       : Result := 'effSetProcessPrecision';
-  effGetNumMidiInputChannels   : Result := 'effGetNumMidiInputChannels';
-  effGetNumMidiOutputChannels  : Result := 'effGetNumMidiOutputChannels';
-  else Result := 'unkown opcode: '  + IntToStr(Integer(Opcode));
- end;
+  if Opcode > effGetNumMidiOutputChannels then
+    Result := 'unkown opcode: ' + IntToStr(Integer(Opcode))
+  else
+    Result := COpcodeName[Opcode];
 end;
 
 function KeyCodeToInteger(VKC: TVstKeyCode): Integer;
 begin
- if (VKC.character = 0) then
+  if (VKC.Character = 0) then
   begin
-   {$IFNDEF FPC}
-   case VKC.virt of
-    VKEY_BACK      : Result := VK_BACK;
-    VKEY_TAB       : Result := VK_TAB;
-    VKEY_CLEAR     : Result := VK_CLEAR;
-    VKEY_RETURN    : Result := VK_RETURN;
-    VKEY_PAUSE     : Result := VK_PAUSE;
-    VKEY_ESCAPE    : Result := VK_ESCAPE;
-    VKEY_SPACE     : Result := VK_SPACE;
-    VKEY_NEXT      : Result := VK_NEXT;
-    VKEY_END       : Result := VK_END;
-    VKEY_HOME      : Result := VK_HOME;
-    VKEY_LEFT      : Result := VK_LEFT;
-    VKEY_UP        : Result := VK_UP;
-    VKEY_RIGHT     : Result := VK_RIGHT;
-    VKEY_DOWN      : Result := VK_DOWN;
-    VKEY_PAGEUP    : Result := VK_UP;
-    VKEY_PAGEDOWN  : Result := VK_DOWN;
-    VKEY_SELECT    : Result := VK_SELECT;
-    VKEY_PRINT     : Result := VK_PRINT;
-    VKEY_ENTER     : Result := VK_RETURN;
-    VKEY_SNAPSHOT  : Result := VK_SNAPSHOT;
-    VKEY_INSERT    : Result := VK_INSERT;
-    VKEY_DELETE    : Result := VK_DELETE;
-    VKEY_HELP      : Result := VK_HELP;
-    VKEY_NUMPAD0   : Result := 48; //VK_NUMPAD0;
-    VKEY_NUMPAD1   : Result := 49; //VK_NUMPAD1;
-    VKEY_NUMPAD2   : Result := 50; //VK_NUMPAD2;
-    VKEY_NUMPAD3   : Result := 51; //VK_NUMPAD3;
-    VKEY_NUMPAD4   : Result := 52; //VK_NUMPAD4;
-    VKEY_NUMPAD5   : Result := 53; //VK_NUMPAD5;
-    VKEY_NUMPAD6   : Result := 54; //VK_NUMPAD6;
-    VKEY_NUMPAD7   : Result := 55; //VK_NUMPAD7;
-    VKEY_NUMPAD8   : Result := 56; //VK_NUMPAD8;
-    VKEY_NUMPAD9   : Result := 57; //VK_NUMPAD9;
-    VKEY_MULTIPLY  : Result := VK_MULTIPLY;
-    VKEY_ADD       : Result := VK_ADD;
-    VKEY_SEPARATOR : Result := VK_SEPARATOR;
-    VKEY_SUBTRACT  : Result := VK_SUBTRACT;
-    VKEY_DECIMAL   : Result := VK_DECIMAL;
-    VKEY_DIVIDE    : Result := VK_DIVIDE;
-    VKEY_F1        : Result := VK_F1;
-    VKEY_F2        : Result := VK_F2;
-    VKEY_F3        : Result := VK_F3;
-    VKEY_F4        : Result := VK_F4;
-    VKEY_F5        : Result := VK_F5;
-    VKEY_F6        : Result := VK_F6;
-    VKEY_F7        : Result := VK_F7;
-    VKEY_F8        : Result := VK_F8;
-    VKEY_F9        : Result := VK_F9;
-    VKEY_F10       : Result := VK_F10;
-    VKEY_F11       : Result := VK_F11;
-    VKEY_F12       : Result := VK_F12;
-    VKEY_NUMLOCK   : Result := VK_NUMLOCK;
-    VKEY_SCROLL    : Result := VK_SCROLL;
-    VKEY_SHIFT     : Result := VK_SHIFT;
-    VKEY_CONTROL   : Result := VK_CONTROL;
-    VKEY_ALT       : Result := VK_MENU;
-    VKEY_EQUALS    : Result := $5D;
-    else Result := VKC.character;
-   end;
-   {$ENDIF}
+{$IFNDEF FPC}
+    case VKC.Virt of
+      VKEY_BACK:
+        Result := VK_BACK;
+      VKEY_TAB:
+        Result := VK_TAB;
+      VKEY_CLEAR:
+        Result := VK_CLEAR;
+      VKEY_RETURN:
+        Result := VK_RETURN;
+      VKEY_PAUSE:
+        Result := VK_PAUSE;
+      VKEY_ESCAPE:
+        Result := VK_ESCAPE;
+      VKEY_SPACE:
+        Result := VK_SPACE;
+      VKEY_NEXT:
+        Result := VK_NEXT;
+      VKEY_END:
+        Result := VK_END;
+      VKEY_HOME:
+        Result := VK_HOME;
+      VKEY_LEFT:
+        Result := VK_LEFT;
+      VKEY_UP:
+        Result := VK_UP;
+      VKEY_RIGHT:
+        Result := VK_RIGHT;
+      VKEY_DOWN:
+        Result := VK_DOWN;
+      VKEY_PAGEUP:
+        Result := VK_UP;
+      VKEY_PAGEDOWN:
+        Result := VK_DOWN;
+      VKEY_SELECT:
+        Result := VK_SELECT;
+      VKEY_PRINT:
+        Result := VK_PRINT;
+      VKEY_ENTER:
+        Result := VK_RETURN;
+      VKEY_SNAPSHOT:
+        Result := VK_SNAPSHOT;
+      VKEY_INSERT:
+        Result := VK_INSERT;
+      VKEY_DELETE:
+        Result := VK_DELETE;
+      VKEY_HELP:
+        Result := VK_HELP;
+      VKEY_NUMPAD0:
+        Result := VK_NUMPAD0;
+      VKEY_NUMPAD1:
+        Result := VK_NUMPAD1;
+      VKEY_NUMPAD2:
+        Result := VK_NUMPAD2;
+      VKEY_NUMPAD3:
+        Result := VK_NUMPAD3;
+      VKEY_NUMPAD4:
+        Result := VK_NUMPAD4;
+      VKEY_NUMPAD5:
+        Result := VK_NUMPAD5;
+      VKEY_NUMPAD6:
+        Result := VK_NUMPAD6;
+      VKEY_NUMPAD7:
+        Result := VK_NUMPAD7;
+      VKEY_NUMPAD8:
+        Result := VK_NUMPAD8;
+      VKEY_NUMPAD9:
+        Result := VK_NUMPAD9;
+      VKEY_MULTIPLY:
+        Result := VK_MULTIPLY;
+      VKEY_ADD:
+        Result := VK_ADD;
+      VKEY_SEPARATOR:
+        Result := VK_SEPARATOR;
+      VKEY_SUBTRACT:
+        Result := VK_SUBTRACT;
+      VKEY_DECIMAL:
+        Result := VK_DECIMAL;
+      VKEY_DIVIDE:
+        Result := VK_DIVIDE;
+      VKEY_F1:
+        Result := VK_F1;
+      VKEY_F2:
+        Result := VK_F2;
+      VKEY_F3:
+        Result := VK_F3;
+      VKEY_F4:
+        Result := VK_F4;
+      VKEY_F5:
+        Result := VK_F5;
+      VKEY_F6:
+        Result := VK_F6;
+      VKEY_F7:
+        Result := VK_F7;
+      VKEY_F8:
+        Result := VK_F8;
+      VKEY_F9:
+        Result := VK_F9;
+      VKEY_F10:
+        Result := VK_F10;
+      VKEY_F11:
+        Result := VK_F11;
+      VKEY_F12:
+        Result := VK_F12;
+      VKEY_NUMLOCK:
+        Result := VK_NUMLOCK;
+      VKEY_SCROLL:
+        Result := VK_SCROLL;
+      VKEY_SHIFT:
+        Result := VK_SHIFT;
+      VKEY_CONTROL:
+        Result := VK_CONTROL;
+      VKEY_ALT:
+        Result := VK_MENU;
+      VKEY_EQUALS:
+        Result := $5D;
+    else
+      Result := VKC.Character;
+    end;
+{$ENDIF}
   end
- else
+  else
   begin
-   Result := VKC.character;
-   {$IFNDEF FPC}
-   if mkShift in TVstModifierKeys(VKC.modifier)
-    then Dec(Result, 32);
-   {$ELSE}
-   if (VKC.modifier and 1) <> 0
-    then Dec(Result, 32);
-   {$ENDIF}
+    Result := VKC.Character;
+{$IFNDEF FPC}
+    if mkShift in TVstModifierKeys(VKC.Modifier) then
+      Dec(Result, 32);
+{$ELSE}
+    if (VKC.Modifier and 1) <> 0 then
+      Dec(Result, 32);
+{$ENDIF}
   end;
 end;
 

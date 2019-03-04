@@ -36,7 +36,7 @@ interface
 
 uses
   {$IFDEF FPC} LCLIntf, {$IFDEF MSWINDOWS} Windows, {$ENDIF}
-  {$ELSE} Windows, {$ENDIF} Classes, SysUtils, ConTnrs, ImageHlp;
+  {$ELSE} Windows, {$ENDIF} Classes, SysUtils, Contnrs, ImageHlp;
 
 type
   TPEModule = class;
@@ -64,7 +64,7 @@ type
     procedure InsertResource(idx: Integer; Details: TResourceDetails); virtual; abstract;
     function AddResource(Details: TResourceDetails): Integer; virtual;
     function IndexOfResource(Details: TResourceDetails): Integer; virtual; abstract;
-    function GetUniqueResourceName(const tp: WideString): WideString;
+    function GetUniqueResourceName(const ResType: WideString): WideString;
 
     procedure SaveToStream(Stream: TStream); virtual;
     procedure LoadFromStream(Stream: TStream); virtual;
@@ -73,7 +73,7 @@ type
     procedure LoadFromFile(const FileName: TFileName); virtual;
     procedure SortResources; virtual; abstract;
 
-    function FindResource(const tp, Name: WideString; ALanguage: Integer): TResourceDetails;
+    function FindResource(const ResType, Name: WideString; ALanguage: Integer): TResourceDetails;
 
     property ResourceCount: Integer read GetResourceCount;
     property ResourceDetails[idx: Integer]: TResourceDetails read GetResourceDetails;
@@ -813,14 +813,14 @@ end;
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-function TResourceModule.FindResource(const tp, Name: WideString;
+function TResourceModule.FindResource(const ResType, Name: WideString;
   ALanguage: Integer): TResourceDetails;
 var
   i: Integer;
 begin
   Result := nil;
   for i := 0 to ResourceCount - 1 do
-    if (ResourceDetails[i].FResourceType = tp) and
+    if (ResourceDetails[i].FResourceType = ResType) and
       (ResourceDetails[i].FResourceName = Name) and
       (Integer(ResourceDetails[i].FResourceLanguage) = ALanguage) then
      begin
@@ -830,7 +830,7 @@ begin
 
   if not Assigned(Result) then
     for i := 0 to ResourceCount - 1 do
-      if (ResourceDetails[i].FResourceType = tp) and
+      if (ResourceDetails[i].FResourceType = ResType) and
         (ResourceDetails[i].FResourceName = Name) and
         (ResourceDetails[i].FResourceLanguage = 0) then
        begin
@@ -877,7 +877,7 @@ end;
 ////////////////////////////////////////////////////////////////////////////////
 
 function TResourceModule.GetUniqueResourceName(
-  const tp: WideString): WideString;
+  const ResType: WideString): WideString;
 var
   i       : Integer;
   n, n1   : Integer;
@@ -888,7 +888,7 @@ begin
   for i := 0 to ResourceCount - 1 do
    begin
     Details := ResourceDetails[i];
-    if Details.ResourceType = tp then
+    if Details.ResourceType = ResType then
      begin
       n1 := ResourceNametoInt(AnsiString(Details.ResourceName));
       if n1 > n then n := n1

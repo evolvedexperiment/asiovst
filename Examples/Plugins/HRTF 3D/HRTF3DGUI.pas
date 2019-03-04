@@ -36,8 +36,8 @@ interface
 
 uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
-  Forms, Controls, Dialogs, StdCtrls, DAV_Types, DAV_VSTModule, BaseClasses, 
-  GLScene, GLObjects, GLTexture, GLFile3DS, GLWin32Viewer,
+  Forms, Controls, Dialogs, StdCtrls, DAV_Types, DAV_VSTModule,
+  GLScene, GLBaseClasses, GLObjects, GLTexture, GLFile3DS, GLWin32Viewer,
   GLVectorFileObjects, GLCoordinates, GLCrossPlatform;
 
 type
@@ -72,8 +72,8 @@ implementation
 {$ENDIF}
 
 uses
-  Math, VectorGeometry, MeshUtils, TGA, GLFileObj, VectorLists, HRTF3DModule,
-  DAV_DspHrtf;
+  Math, GLVectorGeometry, GLMeshUtils, GLFileObj, GLVectorLists,
+  DAV_DspHrtf, HRTF3DModule;
 
 procedure TVSTGUI.FormCreate(Sender: TObject);
 var
@@ -89,116 +89,116 @@ var
   subdivideRemap : TIntegerList;
   bufRemap       : TIntegerList;
 begin
- rs := TResourceStream.Create(hInstance, 'Head', '3DS');
- with rs do
+  rs := TResourceStream.Create(hInstance, 'Head', '3DS');
+  with rs do
   try
-   GLHead.LoadFromStream('Head.3DS',rs);
-   for i := 0 to GLHead.MeshObjects.Count-1 do
+    GLHead.LoadFromStream('Head.3DS',rs);
+    for i := 0 to GLHead.MeshObjects.Count-1 do
     begin
-     tex := TAffineVectorList.Create;
-     try
-      with GLHead.MeshObjects[i]
-       do tris := ExtractTriangles(tex);
+      tex := TAffineVectorList.Create;
       try
-       indices := BuildVectorCountOptimizedIndices(tris);
-       try
-        firstRemap := TIntegerList(indices.CreateClone);
-        RemapAndCleanupReferences(tris, indices);
-        norms := BuildNormals(tris, indices);
-
-        // subdivide geometry
-        SubdivideTriangles(0.6, tris, indices, norms);
-        texIndices := BuildVectorCountOptimizedIndices(tex);
-        RemapAndCleanupReferences(tex, texIndices);
-
-        // subdivide texture space
-        SubdivideTriangles(0, tex, texIndices);
-
-        // Re-expand everything
-        buf := TAffineVectorList.Create;
-        try
-         ConvertIndexedListToList(tris, indices, buf);
-         tris.Assign(buf);
-         buf.Count := 0;
-         ConvertIndexedListToList(norms, indices, buf);
-         norms.Assign(buf);
-         buf.Count := 0;
-         ConvertIndexedListToList(tex, texIndices, buf);
-         tex.Assign(buf);
-        finally
-         FreeAndNil(buf);
-        end;
-
-        // Pack & Optimize the expanded stuff
-        FreeAndNil(indices);
-        indices := BuildVectorCountOptimizedIndices(tris, norms, tex);
-        subdivideRemap := TIntegerList(indices.CreateClone);
-        RemapReferences(norms, indices);
-        RemapReferences(tex, indices);
-        RemapAndCleanupReferences(tris, indices);
-
-        IncreaseCoherency(indices, 13);
-
         with GLHead.MeshObjects[i] do
-         begin
-          bufRemap := TIntegerList.Create;
+          tris := ExtractTriangles(tex);
+        try
+          indices := BuildVectorCountOptimizedIndices(tris);
           try
-           morphTris := ExtractTriangles;
-           try
-            bufRemap.Assign(firstRemap);
-            RemapAndCleanupReferences(morphTris, bufRemap);
+            firstRemap := TIntegerList(indices.CreateClone);
+            RemapAndCleanupReferences(tris, indices);
+            norms := BuildNormals(tris, indices);
 
-            morphNorms := MeshUtils.BuildNormals(morphTris, bufRemap);
+            // subdivide geometry
+            SubdivideTriangles(0.6, tris, indices, norms);
+            texIndices := BuildVectorCountOptimizedIndices(tex);
+            RemapAndCleanupReferences(tex, texIndices);
+
+            // subdivide texture space
+            SubdivideTriangles(0, tex, texIndices);
+
+            // Re-expand everything
+            buf := TAffineVectorList.Create;
             try
-             SubdivideTriangles(0.7, morphTris, bufRemap, morphNorms);
-             buf := TAffineVectorList.Create;
-             try
-              ConvertIndexedListToList(morphTris, bufRemap, buf);
-              morphTris.Assign(buf);
-              ConvertIndexedListToList(morphNorms, bufRemap, buf);
-              morphNorms.Assign(buf);
-             finally
-              FreeAndNil(buf);
-             end;
-             RemapReferences(morphTris, subdivideRemap);
-             RemapReferences(morphNorms, subdivideRemap);
+              ConvertIndexedListToList(tris, indices, buf);
+              tris.Assign(buf);
+              buf.Count := 0;
+              ConvertIndexedListToList(norms, indices, buf);
+              norms.Assign(buf);
+              buf.Count := 0;
+              ConvertIndexedListToList(tex, texIndices, buf);
+              tex.Assign(buf);
             finally
-             FreeAndNil(morphNorms);
+              FreeAndNil(buf);
             end;
-           finally
-            FreeAndNil(morphTris);
-           end;
-          finally
-           FreeAndNil(bufRemap);
-          end;
 
-          Vertices := tris;
-          Normals := norms;
-          TexCoords := tex;
-          FaceGroups.Clear;
-          with TFGVertexIndexList.CreateOwned(FaceGroups) do
-           begin
-            VertexIndices := indices;
-            Mode := fgmmTriangles;
-           end;
-         end;
-        FreeAndNil(texIndices);
-        FreeAndNil(subdivideRemap);
-        FreeAndNil(firstRemap);
-        FreeAndNil(norms);
-       finally
-        FreeAndNil(indices);
-       end;
+            // Pack & Optimize the expanded stuff
+            FreeAndNil(indices);
+            indices := BuildVectorCountOptimizedIndices(tris, norms, tex);
+            subdivideRemap := TIntegerList(indices.CreateClone);
+            RemapReferences(norms, indices);
+            RemapReferences(tex, indices);
+            RemapAndCleanupReferences(tris, indices);
+
+            IncreaseCoherency(indices, 13);
+
+            with GLHead.MeshObjects[i] do
+            begin
+              bufRemap := TIntegerList.Create;
+              try
+                morphTris := ExtractTriangles;
+                try
+                  bufRemap.Assign(firstRemap);
+                  RemapAndCleanupReferences(morphTris, bufRemap);
+
+                  morphNorms := GlMeshUtils.BuildNormals(morphTris, bufRemap);
+                  try
+                    SubdivideTriangles(0.7, morphTris, bufRemap, morphNorms);
+                    buf := TAffineVectorList.Create;
+                    try
+                      ConvertIndexedListToList(morphTris, bufRemap, buf);
+                      morphTris.Assign(buf);
+                      ConvertIndexedListToList(morphNorms, bufRemap, buf);
+                      morphNorms.Assign(buf);
+                    finally
+                      FreeAndNil(buf);
+                    end;
+                    RemapReferences(morphTris, subdivideRemap);
+                    RemapReferences(morphNorms, subdivideRemap);
+                  finally
+                    FreeAndNil(morphNorms);
+                  end;
+                finally
+                  FreeAndNil(morphTris);
+                end;
+              finally
+                FreeAndNil(bufRemap);
+              end;
+
+              Vertices := tris;
+              Normals := norms;
+              TexCoords := tex;
+              FaceGroups.Clear;
+              with TFGVertexIndexList.CreateOwned(FaceGroups) do
+              begin
+                VertexIndices := indices;
+                Mode := fgmmTriangles;
+              end;
+            end;
+            FreeAndNil(texIndices);
+            FreeAndNil(subdivideRemap);
+            FreeAndNil(firstRemap);
+            FreeAndNil(norms);
+          finally
+            FreeAndNil(indices);
+          end;
+        finally
+          FreeAndNil(tris);
+        end;
       finally
-       FreeAndNil(tris);
+        FreeAndNil(tex);
       end;
-     finally
-      FreeAndNil(tex);
-     end;
     end;
-   GLHead.StructureChanged;
+    GLHead.StructureChanged;
   finally
-   Free;
+    Free;
   end;
 end;
 

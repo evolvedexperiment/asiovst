@@ -73,101 +73,99 @@ uses
 
 procedure TVSTHRTF3DModule.VST2ModuleOpen(Sender: TObject);
 var
-  Channel : Integer;
-  RS      : TResourceStream;
+  Channel: Integer;
+  RS: TResourceStream;
 begin
- FHRTFs := THRTFs.Create;
+  FHRTFs := THRTFs.Create;
 
- RS := TResourceStream.Create(hInstance, 'Default', 'HRTF');
- try
-  FHRTFs.LoadFromStream(RS);
- finally
-  RS.Free;
- end;
-
- FLength := FHRTFs.MinimumHrirSize;
-
- GetMem(FIR[0], FLength * SizeOf(Single));
- GetMem(FIR[1], FLength * SizeOf(Single));
-
- for Channel := 0 to 1 do
-  begin
-   FConvolution[Channel] := TLowLatencyConvolution32.Create;
-   FConvolution[Channel].MinimumIRBlockOrder :=  6;
-   FConvolution[Channel].MaximumIRBlockOrder := 13;
-  end;
- // initial parameters
- Parameter[0] := 0;
- Parameter[1] := 0;
- Parameter[2] := 0;
- Parameter[3] := 2;
-
- // Preset 1
- with Programs[1] do
-  begin
-   Parameter[0] := 90;
-   Parameter[1] := 0;
-   Parameter[2] := 0;
-   Parameter[3] := 2;
-   Parameter[4] := 2;
+  RS := TResourceStream.Create(hInstance, 'Default', 'HRTF');
+  try
+    FHRTFs.LoadFromStream(RS);
+  finally
+    RS.Free;
   end;
 
- // set editor form class
- EditorFormClass := TVSTGUI;
+  FLength := FHRTFs.MinimumHrirSize;
+
+  GetMem(FIR[0], FLength * SizeOf(Single));
+  GetMem(FIR[1], FLength * SizeOf(Single));
+
+  for Channel := 0 to 1 do
+  begin
+    FConvolution[Channel] := TLowLatencyConvolution32.Create;
+    FConvolution[Channel].MinimumIRBlockOrder :=  6;
+    FConvolution[Channel].MaximumIRBlockOrder := 13;
+  end;
+
+  // initial parameters
+  Parameter[0] := 0;
+  Parameter[1] := 0;
+  Parameter[2] := 0;
+  Parameter[3] := 2;
+
+  // Preset 1
+  with Programs[1] do
+  begin
+    Parameter[0] := 90;
+    Parameter[1] := 0;
+    Parameter[2] := 0;
+    Parameter[3] := 2;
+    Parameter[4] := 2;
+  end;
+
+  // set editor form class
+  EditorFormClass := TVSTGUI;
 end;
 
 procedure TVSTHRTF3DModule.VST2ModuleClose(Sender: TObject);
 begin
- Dispose(FIR[0]);
- Dispose(FIR[1]);
- FreeAndNil(FConvolution);
- FreeAndNil(FHRTFs);
-end;
-
-procedure TVSTHRTF3DModule.VST2ModuleProcess(
-  const Inputs, Outputs: TDAVArrayOfSingleFixedArray;
-  const SampleFrames: Cardinal);
-var
-  Channel : Integer;
-begin
- for Channel := 0 to 1
-  do FConvolution[Channel].ProcessBlock(@Inputs[Channel, 0], @Outputs[Channel, 0], min(BlockSize, SampleFrames));
+  Dispose(FIR[0]);
+  Dispose(FIR[1]);
+  FreeAndNil(FConvolution);
+  FreeAndNil(FHRTFs);
 end;
 
 procedure TVSTHRTF3DModule.ParameterDisplayHRTFsDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- if Parameter[Index] > 0.5
-  then PreDefined := 'On'
-  else PreDefined := 'Off';
+  if Parameter[Index] > 0.5 then
+    PreDefined := 'On'
+  else
+    PreDefined := 'Off';
 end;
 
 procedure TVSTHRTF3DModule.ParameterInterpolationChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if Assigned(FHRTFs) then
-  case Round(Parameter[Index]) of
-   1 : FHRTFs.InterpolationType := itNearest;
-   2 : FHRTFs.InterpolationType := itLinear;
-   3 : FHRTFs.InterpolationType := itLinear3;
-  end;
+  if Assigned(FHRTFs) then
+    case Round(Parameter[Index]) of
+      1:
+        FHRTFs.InterpolationType := itNearest;
+      2:
+        FHRTFs.InterpolationType := itLinear;
+      3:
+        FHRTFs.InterpolationType := itLinear3;
+    end;
 end;
 
 procedure TVSTHRTF3DModule.ParameterInterpolationDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- case Round(Parameter[Index]) of
-  1 : PreDefined := 'Nearest';
-  2 : PreDefined := 'Linear (2 Points)';
-  3 : PreDefined := 'Linear (3 Points)';
- end;
+  case Round(Parameter[Index]) of
+    1:
+      PreDefined := 'Nearest';
+    2:
+      PreDefined := 'Linear (2 Points)';
+    3:
+      PreDefined := 'Linear (3 Points)';
+  end;
 end;
 
 procedure TVSTHRTF3DModule.ParamAzimuthChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if EditorForm is TVSTGUI
-  then TVSTGUI(EditorForm).UpdateAzimuth;
+  if EditorForm is TVSTGUI then
+    TVSTGUI(EditorForm).UpdateAzimuth;
 end;
 
 procedure TVSTHRTF3DModule.VSTModuleSampleRateChange(Sender: TObject;
@@ -181,13 +179,25 @@ procedure TVSTHRTF3DModule.VST2ModuleParameterChange(Sender: TObject;
 const
   CDeg2Rad = 2 * Pi / 360;
 begin
- if Assigned(FHRTFs) then
+  if Assigned(FHRTFs) then
   begin
-   FHRTFs.InterpolateHrir(Parameter[0] * CDeg2Rad,
-                          Parameter[1] * CDeg2Rad, FLength, FIR[0], FIR[1]);
-   FConvolution[0].LoadImpulseResponse(FIR[0], FLength);
-   FConvolution[1].LoadImpulseResponse(FIR[1], FLength);
+    FHRTFs.InterpolateHrir(Parameter[0] * CDeg2Rad, Parameter[1] * CDeg2Rad,
+      FLength, FIR[0], FIR[1]);
+(*
+    FConvolution[0].LoadImpulseResponse(FIR[0], FLength);
+    FConvolution[1].LoadImpulseResponse(FIR[1], FLength);
+*)
   end;
+end;
+
+procedure TVSTHRTF3DModule.VST2ModuleProcess(
+  const Inputs, Outputs: TDAVArrayOfSingleFixedArray;
+  const SampleFrames: Cardinal);
+var
+  Channel : Integer;
+begin
+  for Channel := 0 to 1 do
+//    FConvolution[Channel].ProcessBlock(@Inputs[Channel, 0], @Outputs[Channel, 0], min(BlockSize, SampleFrames));
 end;
 
 end.

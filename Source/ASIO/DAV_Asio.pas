@@ -44,7 +44,7 @@ unit DAV_Asio;
 //    after AsioStart(), the                                                  //
 //  read  first input buffer A (index 0)                                      //
 //  |   will be invalid (empty)                                               //
-//  *   ------------------------                                              //
+//  *------------------------                                                 //
 //  |------------------------|-----------------------|                        //
 //  |                        |                       |                        //
 //  |  Input Buffer A (0)    |   Input Buffer B (1)  |                        //
@@ -76,9 +76,9 @@ const
   CAsioFalse = 0;
   CAsioTrue = 1;
 
-  // -------------------------
-  // Type definitions
-  // -------------------------
+// ----------------
+// Type definitions
+// ----------------
 
 type
   // use the function AsioSamplesToInt64 to convert to an Int64
@@ -472,7 +472,6 @@ type
   end;
 
   PAsioClockSource = ^TAsioClockSource;
-
   TAsioClockSource = packed record
     Index: LongInt; // as used for AsioSetClockSource()
     AssociatedChannel: LongInt; // for instance, S/PDIF or AES/EBU
@@ -481,8 +480,8 @@ type
     Name: array [0 .. 31] of AnsiChar; // for user selection
   end;
 
-  TAsioClockSources = array [0 .. 0] of TAsioClockSource;
   PAsioClockSources = ^TAsioClockSources;
+  TAsioClockSources = array [0 .. 0] of TAsioClockSource;
 
   TAsioChannelInfo = packed record
     Channel: LongInt; // on input, channel index
@@ -494,15 +493,14 @@ type
   end;
 
   PAsioBufferInfo = ^TAsioBufferInfo;
-
   TAsioBufferInfo = packed record
     IsInput: TAsioBool; // on input:  AsioTrue: input, else output
     ChannelNum: LongInt; // on input:  channel index
     Buffers: array [0 .. 1] of Pointer; // on output: double buffer addresses
   end;
 
-  TAsioBufferInfos = array [0 .. 0] of TAsioBufferInfo;
   PAsioBufferInfos = ^TAsioBufferInfos;
+  TAsioBufferInfos = array [0 .. 0] of TAsioBufferInfo;
 
 const
   kAsioEnableTimeCodeRead = 1; // no arguments

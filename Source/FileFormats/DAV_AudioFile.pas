@@ -63,7 +63,7 @@ type
     procedure SetEncoding(const Value: TAudioEncoding);
     function GetEncoding: TAudioEncoding;
 
-    property AudioEncoding:TAudioEncoding read GetEncoding write SetEncoding;
+    property AudioEncoding: TAudioEncoding read GetEncoding write SetEncoding;
   end;
 
 
