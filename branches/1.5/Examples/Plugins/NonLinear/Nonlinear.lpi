@@ -161,7 +161,7 @@
       <IncludeFiles Value="..\..\..\Source"/>
       <Libraries Value="..\..\..\Packages\Lazarus;..\..\..\Source"/>
       <OtherUnitFiles Value="..\..\..\Packages\Lazarus;..\..\..\Source;..\..\..\Source\VST;..\..\..\Source\Math"/>
-      <UnitOutputDirectory Value="..\..\..\Precompiles"/>
+      <UnitOutputDirectory Value="..\..\..\UnitCache"/>
       <ObjectPath Value="..\..\Source"/>
     </SearchPaths>
     <Parsing>

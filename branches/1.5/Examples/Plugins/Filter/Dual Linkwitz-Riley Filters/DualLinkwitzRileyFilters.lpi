@@ -28,7 +28,7 @@
           <SearchPaths>
             <IncludeFiles Value="..\..\..\..\Source;$(ProjOutDir)"/>
             <OtherUnitFiles Value="..\..\..\..\Source;..\..\..\..\Source\VST;..\..\..\..\Source\DSP;..\..\..\..\Source\Math;..\..\..\..\Source\FileFormats;..\..\..\..\Source\GUI"/>
-            <UnitOutputDirectory Value="..\..\..\..\Precompiles"/>
+            <UnitOutputDirectory Value="..\..\..\..\UnitCache"/>
           </SearchPaths>
           <Parsing>
             <SyntaxOptions>
@@ -201,7 +201,7 @@
     <SearchPaths>
       <IncludeFiles Value="..\..\..\..\Source;$(ProjOutDir)"/>
       <OtherUnitFiles Value="..\..\..\..\Source;..\..\..\..\Source\VST;..\..\..\..\Source\DSP;..\..\..\..\Source\Math;..\..\..\..\Source\FileFormats;..\..\..\..\Source\GUI"/>
-      <UnitOutputDirectory Value="..\..\..\..\Precompiles"/>
+      <UnitOutputDirectory Value="..\..\..\..\UnitCache"/>
     </SearchPaths>
     <Parsing>
       <SyntaxOptions>
