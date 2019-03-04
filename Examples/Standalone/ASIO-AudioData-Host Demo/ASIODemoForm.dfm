@@ -67,7 +67,6 @@ object FmASIO: TFmASIO
     Width = 273
     Height = 21
     Style = csDropDownList
-    ItemHeight = 13
     TabOrder = 0
     OnChange = DriverComboChange
   end
@@ -87,7 +86,6 @@ object FmASIO: TFmASIO
     Width = 233
     Height = 21
     Style = csDropDownList
-    ItemHeight = 13
     TabOrder = 2
     OnChange = ChannelBoxChange
   end
@@ -136,10 +134,11 @@ object FmASIO: TFmASIO
     TabOrder = 6
     OnChange = SbPanChange
   end
-  object ASIOHostAudioData: TASIOHostAudioData
-    ASIOTime.Speed = 1.000000000000000000
-    ASIOTime.SampleRate = 44100.000000000000000000
-    ASIOTime.Flags = [atSystemTimeValid, atSamplePositionValid, atSampleRateValid, atSpeedValid]
+  object ASIOHostAudioData: TAsioHostAudioData
+    AsioTime.SamplePos = 0
+    AsioTime.Speed = 1.000000000000000000
+    AsioTime.SampleRate = 44100.000000000000000000
+    AsioTime.Flags = [atSystemTimeValid, atSamplePositionValid, atSampleRateValid, atSpeedValid]
     ConvertOptimizations = [coSSE, co3DNow]
     SampleRate = 44100.000000000000000000
     OnBufferSwitch32 = ASIOHostAudioDataBufferSwitch32
