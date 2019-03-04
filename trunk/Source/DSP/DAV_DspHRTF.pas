@@ -1897,11 +1897,12 @@ end;
 
 function GetOrthodromicAngle2DWithoutArcCos(A, B: TSphereVector3D): Double;
 var
-  CosAzimuth : Double;
+  CosAzimuth: Double;
 begin
- CosAzimuth := cos(A.Azimuth - B.Azimuth);
- Result := 0.5 * ((cos(A.Polar - B.Polar) * (CosAzimuth + 1) +
-                   cos(A.Polar + B.Polar) * (CosAzimuth - 1)));
+  CosAzimuth := cos(A.Azimuth - B.Azimuth);
+  Result := 
+    0.5 * ((cos(A.Polar - B.Polar) * (CosAzimuth + 1) +
+            cos(A.Polar + B.Polar) * (CosAzimuth - 1)));
 end;
 
 function GetSphericTriangleAngleNoCos(A, B, C: Double): Double;

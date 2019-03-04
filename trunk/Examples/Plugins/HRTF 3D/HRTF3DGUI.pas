@@ -36,8 +36,8 @@ interface
 
 uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
-  Forms, Controls, Dialogs, StdCtrls, DAV_Types, DAV_VSTModule, BaseClasses, 
-  GLScene, GLObjects, GLTexture, GLFile3DS, GLWin32Viewer,
+  Forms, Controls, Dialogs, StdCtrls, DAV_Types, DAV_VSTModule,
+  GLScene, GLBaseClasses, GLObjects, GLTexture, GLFile3DS, GLWin32Viewer,
   GLVectorFileObjects, GLCoordinates, GLCrossPlatform;
 
 type
@@ -72,155 +72,148 @@ implementation
 {$ENDIF}
 
 uses
-  Math, VectorGeometry, MeshUtils, TGA, GLFileObj, VectorLists, HRTF3DModule,
-  DAV_DspHrtf;
+  Math, GLVectorGeometry, GLMeshUtils, GLFileObj, GLVectorLists, DAV_DspHrtf,
+  HRTF3DModule;
 
 procedure TVSTGUI.FormCreate(Sender: TObject);
 var
-  rs             : TResourceStream;
-  i              : Integer;
-  tris, norms    : TAffineVectorList;
-  tex, buf       : TAffineVectorList;
-  morphTris      : TAffineVectorList;
-  morphNorms     : TAffineVectorList;
-  indices        : TIntegerList;
-  texIndices     : TIntegerList;
-  firstRemap     : TIntegerList;
-  subdivideRemap : TIntegerList;
-  bufRemap       : TIntegerList;
+  rs: TResourceStream;
+  i: Integer;
+  tris, norms, tex, buf, morphTris, morphNorms: TAffineVectorList;
+  indices, texIndices, firstRemap, subdivideRemap, bufRemap: TIntegerList;
 begin
- rs := TResourceStream.Create(hInstance, 'Head', '3DS');
- with rs do
+  rs := TResourceStream.Create(hInstance, 'Head', '3DS');
+  with rs do
   try
-   GLHead.LoadFromStream('Head.3DS',rs);
-   for i := 0 to GLHead.MeshObjects.Count-1 do
+    GLHead.LoadFromStream('Head.3DS',rs);
+    for i := 0 to GLHead.MeshObjects.Count-1 do
     begin
-     tex := TAffineVectorList.Create;
-     try
-      with GLHead.MeshObjects[i]
-       do tris := ExtractTriangles(tex);
+      tex := TAffineVectorList.Create;
       try
-       indices := BuildVectorCountOptimizedIndices(tris);
-       try
-        firstRemap := TIntegerList(indices.CreateClone);
-        RemapAndCleanupReferences(tris, indices);
-        norms := BuildNormals(tris, indices);
-
-        // subdivide geometry
-        SubdivideTriangles(0.6, tris, indices, norms);
-        texIndices := BuildVectorCountOptimizedIndices(tex);
-        RemapAndCleanupReferences(tex, texIndices);
-
-        // subdivide texture space
-        SubdivideTriangles(0, tex, texIndices);
-
-        // Re-expand everything
-        buf := TAffineVectorList.Create;
+        tris := GLHead.MeshObjects[i].ExtractTriangles(tex);
         try
-         ConvertIndexedListToList(tris, indices, buf);
-         tris.Assign(buf);
-         buf.Count := 0;
-         ConvertIndexedListToList(norms, indices, buf);
-         norms.Assign(buf);
-         buf.Count := 0;
-         ConvertIndexedListToList(tex, texIndices, buf);
-         tex.Assign(buf);
-        finally
-         FreeAndNil(buf);
-        end;
-
-        // Pack & Optimize the expanded stuff
-        FreeAndNil(indices);
-        indices := BuildVectorCountOptimizedIndices(tris, norms, tex);
-        subdivideRemap := TIntegerList(indices.CreateClone);
-        RemapReferences(norms, indices);
-        RemapReferences(tex, indices);
-        RemapAndCleanupReferences(tris, indices);
-
-        IncreaseCoherency(indices, 13);
-
-        with GLHead.MeshObjects[i] do
-         begin
-          bufRemap := TIntegerList.Create;
+          indices := BuildVectorCountOptimizedIndices(tris);
           try
-           morphTris := ExtractTriangles;
-           try
-            bufRemap.Assign(firstRemap);
-            RemapAndCleanupReferences(morphTris, bufRemap);
+            firstRemap := TIntegerList(indices.CreateClone);
+            RemapAndCleanupReferences(tris, indices);
+            norms := BuildNormals(tris, indices);
 
-            morphNorms := MeshUtils.BuildNormals(morphTris, bufRemap);
+            // subdivide geometry
+            SubdivideTriangles(0.6, tris, indices, norms);
+            texIndices := BuildVectorCountOptimizedIndices(tex);
+            RemapAndCleanupReferences(tex, texIndices);
+
+            // subdivide texture space
+            SubdivideTriangles(0, tex, texIndices);
+
+            // Re-expand everything
+            buf := TAffineVectorList.Create;
             try
-             SubdivideTriangles(0.7, morphTris, bufRemap, morphNorms);
-             buf := TAffineVectorList.Create;
-             try
-              ConvertIndexedListToList(morphTris, bufRemap, buf);
-              morphTris.Assign(buf);
-              ConvertIndexedListToList(morphNorms, bufRemap, buf);
-              morphNorms.Assign(buf);
-             finally
-              FreeAndNil(buf);
-             end;
-             RemapReferences(morphTris, subdivideRemap);
-             RemapReferences(morphNorms, subdivideRemap);
+              ConvertIndexedListToList(tris, indices, buf);
+              tris.Assign(buf);
+              buf.Count := 0;
+              ConvertIndexedListToList(norms, indices, buf);
+              norms.Assign(buf);
+              buf.Count := 0;
+              ConvertIndexedListToList(tex, texIndices, buf);
+              tex.Assign(buf);
             finally
-             FreeAndNil(morphNorms);
+              FreeAndNil(buf);
             end;
-           finally
-            FreeAndNil(morphTris);
-           end;
-          finally
-           FreeAndNil(bufRemap);
-          end;
 
-          Vertices := tris;
-          Normals := norms;
-          TexCoords := tex;
-          FaceGroups.Clear;
-          with TFGVertexIndexList.CreateOwned(FaceGroups) do
-           begin
-            VertexIndices := indices;
-            Mode := fgmmTriangles;
-           end;
-         end;
-        FreeAndNil(texIndices);
-        FreeAndNil(subdivideRemap);
-        FreeAndNil(firstRemap);
-        FreeAndNil(norms);
-       finally
-        FreeAndNil(indices);
-       end;
+            // Pack & Optimize the expanded stuff
+            FreeAndNil(indices);
+            indices := BuildVectorCountOptimizedIndices(tris, norms, tex);
+            subdivideRemap := TIntegerList(indices.CreateClone);
+            RemapReferences(norms, indices);
+            RemapReferences(tex, indices);
+            RemapAndCleanupReferences(tris, indices);
+
+            IncreaseCoherency(indices, 13);
+
+            with GLHead.MeshObjects[i] do
+            begin
+              bufRemap := TIntegerList.Create;
+              try
+                morphTris := ExtractTriangles;
+                try
+                  bufRemap.Assign(firstRemap);
+                  RemapAndCleanupReferences(morphTris, bufRemap);
+
+                  morphNorms := GlMeshUtils.BuildNormals(morphTris, bufRemap);
+                  try
+                    SubdivideTriangles(0.7, morphTris, bufRemap, morphNorms);
+                    buf := TAffineVectorList.Create;
+                    try
+                      ConvertIndexedListToList(morphTris, bufRemap, buf);
+                      morphTris.Assign(buf);
+                      ConvertIndexedListToList(morphNorms, bufRemap, buf);
+                      morphNorms.Assign(buf);
+                    finally
+                      FreeAndNil(buf);
+                    end;
+                    RemapReferences(morphTris, subdivideRemap);
+                    RemapReferences(morphNorms, subdivideRemap);
+                  finally
+                    FreeAndNil(morphNorms);
+                  end;
+                finally
+                  FreeAndNil(morphTris);
+                end;
+              finally
+                FreeAndNil(bufRemap);
+              end;
+
+              Vertices := tris;
+              Normals := norms;
+              TexCoords := tex;
+              FaceGroups.Clear;
+              with TFGVertexIndexList.CreateOwned(FaceGroups) do
+              begin
+                VertexIndices := indices;
+                Mode := fgmmTriangles;
+              end;
+            end;
+
+            FreeAndNil(texIndices);
+            FreeAndNil(subdivideRemap);
+            FreeAndNil(firstRemap);
+            FreeAndNil(norms);
+          finally
+            FreeAndNil(indices);
+          end;
+        finally
+          FreeAndNil(tris);
+        end;
       finally
-       FreeAndNil(tris);
+        FreeAndNil(tex);
       end;
-     finally
-      FreeAndNil(tex);
-     end;
     end;
-   GLHead.StructureChanged;
+    GLHead.StructureChanged;
   finally
-   Free;
+    Free;
   end;
 end;
 
 procedure TVSTGUI.Zoom(Value: Single);
 var
-  vect : TVector;
+  vect: TVector;
 begin
- if GLSceneViewer.Camera = GLCamera then
+  if GLSceneViewer.Camera = GLCamera then
   with GLCamera do
-   if Assigned(TargetObject) then
+    if Assigned(TargetObject) then
     begin
-     vect := VectorSubtract(AbsolutePosition, TargetObject.AbsolutePosition);
-     if ((VectorLength(vect) > 1.2) or (Value > 1)) and
-        ((VectorLength(vect) < 10)  or (Value < 1)) then
+      vect := VectorSubtract(AbsolutePosition, TargetObject.AbsolutePosition);
+      if ((VectorLength(vect) > 1.2) or (Value > 1)) and
+         ((VectorLength(vect) < 10)  or (Value < 1)) then
       begin
-       ScaleVector(vect, Value - 1);
-       AddVector(vect, AbsolutePosition);
-       if Assigned(Parent)
-        then vect := Parent.AbsoluteToLocal(vect);
-       Position.AsVector := vect;
+        ScaleVector(vect, Value - 1);
+        AddVector(vect, AbsolutePosition);
+        if Assigned(Parent) then
+          vect := Parent.AbsoluteToLocal(vect);
+        Position.AsVector := vect;
       end;
-    end
+    end;
 end;
 
 procedure TVSTGUI.FormMouseWheel(Sender: TObject; Shift: TShiftState;
@@ -228,26 +221,26 @@ procedure TVSTGUI.FormMouseWheel(Sender: TObject; Shift: TShiftState;
 const
   Scale = 1/120;
 begin
- Zoom(Power(0.9, WheelDelta * Scale));
- Handled := true
+  Zoom(Power(0.9, WheelDelta * Scale));
+  Handled := true
 end;
 
 procedure TVSTGUI.FormShow(Sender: TObject);
 var
   HrtfNr : Integer;
 begin
- GLHRTFs.Visible := TVSTHRTF3DModule(Owner).Parameter[4] > 0.5;
- if GLHRTFs.Visible then
+  GLHRTFs.Visible := TVSTHRTF3DModule(Owner).Parameter[4] > 0.5;
+  if GLHRTFs.Visible then
   begin
-   GLHRTFs.Positions.Clear;
-   with TVSTHRTF3DModule(Owner) do
-    for HrtfNr := 0 to HRTFs.HrirCount - 1 do
-     with HRTFs.Hrir[HrtfNr].Position do
+    GLHRTFs.Positions.Clear;
+    with TVSTHRTF3DModule(Owner) do
+      for HrtfNr := 0 to HRTFs.HrirCount - 1 do
+      with HRTFs.Hrir[HrtfNr].Position do
       begin
-       GLHRTFs.Positions.Add(cos(Azimuth) * sin(Polar + 0.25 * Pi), sin(Azimuth) * sin(Polar + 0.25 * Pi), cos(Polar + 0.25 * Pi));
-  //     GLHRTFs.Positions.Add(cos(Polar) * sin(Azimuth), sin(Polar) * sin(Azimuth), cos(Azimuth));
+        GLHRTFs.Positions.Add(cos(Azimuth) * sin(Polar + 0.25 * Pi), sin(Azimuth) * sin(Polar + 0.25 * Pi), cos(Polar + 0.25 * Pi));
+//        GLHRTFs.Positions.Add(cos(Polar) * sin(Azimuth), sin(Polar) * sin(Azimuth), cos(Azimuth));
       end;
-   GLHRTFs.StructureChanged;
+    GLHRTFs.StructureChanged;
   end;
 end;
 
@@ -259,44 +252,44 @@ var
    originalT2C, normalT2C, normalCameraRight, newPos : TVector;
    pitchNow, dist: Single;
 begin
- if ssLeft in Shift then
+  if ssLeft in Shift then
   begin
-   with GLSceneViewer.Camera do
+    with GLSceneViewer.Camera do
     begin
-     originalT2C := VectorSubtract(AbsolutePosition, GLDummyCube.AbsolutePosition);
-     SetVector(normalT2C, originalT2C);
-     dist := VectorLength(normalT2C);
-     NormalizeVector(normalT2C);
-     normalCameraRight := VectorCrossProduct(AbsoluteUp, normalT2C);
-     if VectorLength(normalCameraRight) < 0.001
+      originalT2C := VectorSubtract(AbsolutePosition, GLDummyCube.AbsolutePosition);
+      SetVector(normalT2C, originalT2C);
+      dist := VectorLength(normalT2C);
+      NormalizeVector(normalT2C);
+      normalCameraRight := VectorCrossProduct(AbsoluteUp, normalT2C);
+      if VectorLength(normalCameraRight) < 0.001
       then SetVector(normalCameraRight, XVector) // arbitrary vector
       else NormalizeVector(normalCameraRight);
-     pitchNow := Math.ArcCos(VectorDotProduct(AbsoluteUp, normalT2C));
-     if not (ssAlt in Shift)
+      pitchNow := Math.ArcCos(VectorDotProduct(AbsoluteUp, normalT2C));
+      if not (ssAlt in Shift)
       then pitchNow := ClampValue(pitchNow + Math.DegToRad(FOldMousePoint.Y - Y), 0.002, PI - 0.77);
-     SetVector(normalT2C, AbsoluteUp);
-     RotateVector(normalT2C, normalCameraRight, -pitchNow);
-     if not (ssShift in Shift)
+      SetVector(normalT2C, AbsoluteUp);
+      RotateVector(normalT2C, normalCameraRight, -pitchNow);
+      if not (ssShift in Shift)
       then RotateVector(normalT2C, AbsoluteUp, -Math.DegToRad(FOldMousePoint.X - X));
-     ScaleVector(normalT2C, dist);
-     newPos := VectorAdd(AbsolutePosition, VectorSubtract(normalT2C, originalT2C));
-     if Assigned(Parent) then newPos := Parent.AbsoluteToLocal(newPos);
-     Position.AsVector := newPos;
-     GLLight.Position.SetVector(newPos);
-     with TVSTHRTF3DModule(Self.Owner) do
+      ScaleVector(normalT2C, dist);
+      newPos := VectorAdd(AbsolutePosition, VectorSubtract(normalT2C, originalT2C));
+      if Assigned(Parent) then newPos := Parent.AbsoluteToLocal(newPos);
+      Position.AsVector := newPos;
+      GLLight.Position.SetVector(newPos);
+      with TVSTHRTF3DModule(Self.Owner) do
       begin
        Parameter[0] := Math.RadToDeg(Math.ArcTan2(Position.Y, Position.X));
        Parameter[1] := 90 - Math.RadToDeg(pitchNow);
       end;
     end;
-   FOldMousePoint.X := X;
-   FOldMousePoint.Y := Y;
+    FOldMousePoint.X := X;
+    FOldMousePoint.Y := Y;
   end else
- if ssRight in Shift then
+  if ssRight in Shift then
   begin
-   Zoom(Power(0.995, (FOldMousePoint.Y - Y)));
-   FOldMousePoint.X := X;
-   FOldMousePoint.Y := Y;
+    Zoom(Power(0.995, (FOldMousePoint.Y - Y)));
+    FOldMousePoint.X := X;
+    FOldMousePoint.Y := Y;
   end;
 end;
 
@@ -343,8 +336,8 @@ end;
 procedure TVSTGUI.GLSceneViewerMouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
- FOldMousePoint.X := X;
- FOldMousePoint.Y := Y;
+  FOldMousePoint.X := X;
+  FOldMousePoint.Y := Y;
 end;
 
 end.
