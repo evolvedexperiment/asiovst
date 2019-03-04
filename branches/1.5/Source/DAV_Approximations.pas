@@ -3775,7 +3775,6 @@ end;
 {$ENDIF}
 
 initialization
-
-InitConstants;
+  InitConstants;
 
 end.

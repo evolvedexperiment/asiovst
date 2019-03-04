@@ -35,8 +35,10 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, SysUtils, {$IFDEF FPC} ZBase, ZDeflate, ZInflate; {$ELSE}ZLib;
-{$ENDIF}
+  Classes, SysUtils,
+  {$IFDEF FPC} ZBase, ZDeflate, ZInflate; {$ELSE}
+  {$IFDEF DELPHIXE2_UP}System.ZLib {$ELSE}ZLib{$ENDIF};
+  {$ENDIF}
 
 type
   EPngError = class(Exception);

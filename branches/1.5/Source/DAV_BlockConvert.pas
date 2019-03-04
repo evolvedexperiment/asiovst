@@ -124,21 +124,16 @@ begin
   BindingBlockConvertFloat64ToFloat32 := TFunctionBinding.Create
     (@@BlockConvertFloat64ToFloat32, @BlockConvertFloat64ToFloat32Native);
   with BindingBlockConvertFloat64ToFloat32 do
-  begin
     Add(@BlockConvertFloat64ToFloat32Native);
-  end;
 
   // create function binding for 64-bit to 32-bit float conversion
   BindingBlockConvertFloat32ToFloat64 := TFunctionBinding.Create
     (@@BlockConvertFloat32ToFloat64, @BlockConvertFloat32ToFloat64Native);
   with BindingBlockConvertFloat64ToFloat32 do
-  begin
     Add(@BlockConvertFloat32ToFloat64Native);
-  end;
 end;
 
 initialization
-
-BindFunctions;
+  BindFunctions;
 
 end.

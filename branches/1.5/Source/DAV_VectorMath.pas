@@ -96,49 +96,33 @@ const
   C360: Single = 360;
 
 function VectorMake(const x, y, z, w: Single): TDAVVector32; overload;
-procedure SetVector(var Value: TDAVVector32; const x, y, z, w: Single);
-  overload;
-procedure SetVector(var Value: TDAVVector32; const vSrc: TDAVVector32);
-  overload;
+procedure SetVector(var Value: TDAVVector32; const x, y, z, w: Single); overload;
+procedure SetVector(var Value: TDAVVector32; const vSrc: TDAVVector32); overload;
 procedure RstVector(var Value: TDAVVector32); overload;
 function VectorAdd(const v1, v2: TDAVVector32): TDAVVector32; overload;
 procedure VectorAdd(const v1, v2: TDAVVector32; var vr: TDAVVector32); overload;
-function VectorAdd(const Value: TDAVVector32; const FTST: Single)
-  : TDAVVector32; overload;
+function VectorAdd(const Value: TDAVVector32; const FTST: Single): TDAVVector32; overload;
 procedure AddVector(var v1: TDAVVector32; const v2: TDAVVector32); overload;
 procedure AddVector(var Value: TDAVVector32; const FTST: Single); overload;
 function VectorSubtract(const v1, v2: TDAVVector32): TDAVVector32; overload;
-procedure VectorSubtract(const v1, v2: TDAVVector32;
-  var Result: TDAVVector32); overload;
-function VectorSubtract(const v1: TDAVVector32; delta: Single)
-  : TDAVVector32; overload;
-procedure SubtractVector(var v1: TDAVVector32; const v2: TDAVVector32);
-  overload;
-procedure CombineVector(var vr: TDAVVector32; const Value: TDAVVector32;
-  var FTST: Single); overload;
-function VectorCombine(const v1, v2: TDAVVector32; const F1, F2: Single)
-  : TDAVVector32; overload;
-procedure VectorCombine(const v1, v2: TDAVVector32; const F1, F2: Single;
-  var vr: TDAVVector32); overload;
-procedure VectorCombine(const v1, v2: TDAVVector32; const F2: Single;
-  var vr: TDAVVector32); overload;
-function VectorCombine3(const v1, v2, V3: TDAVVector32;
-  const F1, F2, F3: Single): TDAVVector32; overload;
-procedure VectorCombine3(const v1, v2, V3: TDAVVector32;
-  const F1, F2, F3: Single; var vr: TDAVVector32); overload;
+procedure VectorSubtract(const v1, v2: TDAVVector32; var Result: TDAVVector32); overload;
+function VectorSubtract(const v1: TDAVVector32; delta: Single): TDAVVector32; overload;
+procedure SubtractVector(var v1: TDAVVector32; const v2: TDAVVector32); overload;
+procedure CombineVector(var vr: TDAVVector32; const Value: TDAVVector32; var FTST: Single); overload;
+function VectorCombine(const v1, v2: TDAVVector32; const F1, F2: Single): TDAVVector32; overload;
+procedure VectorCombine(const v1, v2: TDAVVector32; const F1, F2: Single; var vr: TDAVVector32); overload;
+procedure VectorCombine(const v1, v2: TDAVVector32; const F2: Single; var vr: TDAVVector32); overload;
+function VectorCombine3(const v1, v2, V3: TDAVVector32; const F1, F2, F3: Single): TDAVVector32; overload;
+procedure VectorCombine3(const v1, v2, V3: TDAVVector32; const F1, F2, F3: Single; var vr: TDAVVector32); overload;
 function VectorDotProduct(const v1, v2: TDAVVector32): Single; overload;
-function PointProject(const p, origin, direction: TDAVVector32)
-  : Single; overload;
+function PointProject(const p, origin, direction: TDAVVector32): Single; overload;
 function VectorCrossProduct(const v1, v2: TDAVVector32): TDAVVector32; overload;
-procedure VectorCrossProduct(const v1, v2: TDAVVector32;
-  var vr: TDAVVector32); overload;
+procedure VectorCrossProduct(const v1, v2: TDAVVector32; var vr: TDAVVector32); overload;
 function Lerp(const start, stop, t: Single): Single;
 function AngleLerp(start, stop, t: Single): Single;
 function DistanceBetweenAngles(angle1, angle2: Single): Single;
-function VectorLerp(const v1, v2: TDAVVector32; t: Single)
-  : TDAVVector32; overload;
-procedure VectorLerp(const v1, v2: TDAVVector32; t: Single;
-  var vr: TDAVVector32); overload;
+function VectorLerp(const v1, v2: TDAVVector32; t: Single): TDAVVector32; overload;
+procedure VectorLerp(const v1, v2: TDAVVector32; t: Single; var vr: TDAVVector32); overload;
 function VectorLength(const Value: TDAVVector32): Single; overload;
 function VectorLength(const Value: array of Single): Single; overload;
 function VectorNorm(const x, y: Single): Single; overload;
@@ -150,73 +134,52 @@ function VectorNegate(const Value: TDAVVector32): TDAVVector32; overload;
 procedure NegateVector(var Value: TDAVVector32); overload;
 procedure NegateVector(var Value: array of Single); overload;
 procedure ScaleVector(var Value: TDAVVector32; const Factor: Single); overload;
-procedure ScaleVector(var Value: TDAVVector32;
-  const Factor: TDAVVector32); overload;
-function VectorScale(const Value: TDAVVector32; const Factor: Single)
-  : TDAVVector32; overload;
-procedure VectorScale(const Value: TDAVVector32; const Factor: Single;
-  var vr: TDAVVector32); overload;
-procedure DivideVector(var Value: TDAVVector32;
-  const divider: TDAVVector32); overload;
+procedure ScaleVector(var Value: TDAVVector32; const Factor: TDAVVector32); overload;
+function VectorScale(const Value: TDAVVector32; const Factor: Single) : TDAVVector32; overload;
+procedure VectorScale(const Value: TDAVVector32; const Factor: Single; var vr: TDAVVector32); overload;
+procedure DivideVector(var Value: TDAVVector32; const Divider: TDAVVector32); overload;
 function VectorEquals(const v1, v2: TDAVVector32): Boolean; overload;
 function VectorIsNull(const Value: TDAVVector32): Boolean; overload;
 function VectorSpacing(const v1, v2: TDAVVector32): Single; overload;
 function VectorDistance(const v1, v2: TDAVVector32): Single; overload;
 function VectorDistance2(const v1, v2: TDAVVector32): Single; overload;
-procedure RotateVector(var vector: TDAVVector32; const axis: TDAVVector32;
-  Angle: Single); overload;
+procedure RotateVector(var vector: TDAVVector32; const Axis: TDAVVector32; Angle: Single); overload;
 procedure AbsVector(var Value: TDAVVector32); overload;
 function VectorAbs(const Value: TDAVVector32): TDAVVector32; overload;
-procedure SetMatrix(var Destination: TDAVMatrix64;
-  const Source: TDAVMatrix32); overload;
-procedure SetMatrixRow(var Destination: TDAVMatrix32; rowNb: Integer;
-  const aRow: TDAVVector32); overload;
+procedure SetMatrix(var Destination: TDAVMatrix64; const Source: TDAVMatrix32); overload;
+procedure SetMatrixRow(var Destination: TDAVMatrix32; rowNb: Integer; const aRow: TDAVVector32); overload;
 function CreateScaleMatrix(const Value: TDAVVector32): TDAVMatrix32; overload;
-function CreateTranslationMatrix(const Value: TDAVVector32)
-  : TDAVMatrix32; overload;
-function CreateScaleAndTranslationMatrix(const scale, offset: TDAVVector32)
-  : TDAVMatrix32; overload;
-function CreateRotationMatrixX(const sine, cosine: Single)
-  : TDAVMatrix32; overload;
+function CreateTranslationMatrix(const Value: TDAVVector32): TDAVMatrix32; overload;
+function CreateScaleAndTranslationMatrix(const scale, offset: TDAVVector32): TDAVMatrix32; overload;
+function CreateRotationMatrixX(const sine, cosine: Single): TDAVMatrix32; overload;
 function CreateRotationMatrixX(const Angle: Single): TDAVMatrix32; overload;
-function CreateRotationMatrixY(const sine, cosine: Single)
-  : TDAVMatrix32; overload;
+function CreateRotationMatrixY(const sine, cosine: Single): TDAVMatrix32; overload;
 function CreateRotationMatrixY(const Angle: Single): TDAVMatrix32; overload;
-function CreateRotationMatrixZ(const sine, cosine: Single)
-  : TDAVMatrix32; overload;
+function CreateRotationMatrixZ(const sine, cosine: Single): TDAVMatrix32; overload;
 function CreateRotationMatrixZ(const Angle: Single): TDAVMatrix32; overload;
-function CreateRotationMatrix(const anAxis: TDAVVector32; Angle: Single)
-  : TDAVMatrix32; overload;
+function CreateRotationMatrix(const anAxis: TDAVVector32; Angle: Single): TDAVMatrix32; overload;
 function MatrixMultiply(const M1, M2: TDAVMatrix32): TDAVMatrix32; overload;
-procedure MatrixMultiply(const M1, M2: TDAVMatrix32;
-  var MResult: TDAVMatrix32); overload;
-function VectorTransform(const Value: TDAVVector32; const M: TDAVMatrix32)
-  : TDAVVector32; overload;
+procedure MatrixMultiply(const M1, M2: TDAVMatrix32; var MResult: TDAVMatrix32); overload;
+function VectorTransform(const Value: TDAVVector32; const M: TDAVMatrix32): TDAVVector32; overload;
 procedure SetMatrixLength(Matrix: TDAVDoubleDynMatrix; Size: TPoint); overload;
 procedure SetMatrixLength(Matrix: TDAVSingleDynMatrix; Size: TPoint); overload;
 function MatrixDeterminant(const M: TDAVMatrix32): Single; overload;
 procedure AdjointMatrix(var M: TDAVMatrix32); overload;
 procedure ScaleMatrix(var M: TDAVMatrix32; const Factor: Single); overload;
 procedure ScaleMatrix(var M: TDAVMatrix32; const Factor: Double); overload;
-procedure TranslateMatrix(var M: TDAVMatrix32;
-  const Value: TDAVVector32); overload;
+procedure TranslateMatrix(var M: TDAVMatrix32; const Value: TDAVVector32); overload;
 procedure NormalizeMatrix(var M: TDAVMatrix32);
 procedure TransposeMatrix(var M: TDAVMatrix32); overload;
 procedure InvertMatrix(var M: TDAVMatrix32); overload;
 function AnglePreservingMatrixInvert(const mat: TDAVMatrix32): TDAVMatrix32;
-procedure SetPlane(var Destination: TDAVHomogeneousVector64;
-  const Source: TDAVHomogeneousVector32);
+procedure SetPlane(var Destination: TDAVHomogeneousVector64; const Source: TDAVHomogeneousVector32);
 procedure NormalizePlane(var Plane: TDAVHomogeneousVector32);
-function PlaneEvaluatePoint(const Plane: TDAVHomogeneousVector32;
-  const Point: TDAVVector32): Single; overload;
-function PointIsInHalfSpace(const Point, PlanePoint, PlaneNormal: TDAVVector32)
-  : Boolean; overload;
-function PointPlaneDistance(const Point, PlanePoint, PlaneNormal: TDAVVector32)
-  : Single; overload;
+function PlaneEvaluatePoint(const Plane: TDAVHomogeneousVector32; const Point: TDAVVector32): Single; overload;
+function PointIsInHalfSpace(const Point, PlanePoint, PlaneNormal: TDAVVector32): Boolean; overload;
+function PointPlaneDistance(const Point, PlanePoint, PlaneNormal: TDAVVector32): Single; overload;
 
 function MakeDblVector(var Value: array of Double): TDAVHomogeneousVector64;
-function VectorDblToFlt(const Value: TDAVHomogeneousVector64)
-  : TDAVHomogeneousVector32;
+function VectorDblToFlt(const Value: TDAVHomogeneousVector64): TDAVHomogeneousVector32;
 function VectorFltToDbl(const Value: TDAVVector32): TDAVHomogeneousVector64;
 procedure DivMod(Dividend: Integer; Divisor: Word; var Result, Remainder: Word);
 function NormalizeAngle(Angle: Single): Single;

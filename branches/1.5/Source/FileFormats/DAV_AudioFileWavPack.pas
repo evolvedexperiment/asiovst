@@ -33,8 +33,8 @@ unit DAV_AudioFileWAVPack;
 interface
 
 uses
-  Classes, Contnrs, SysUtils, DAV_Common, DAV_AudioFile, DAV_ChunkClasses,
-  DAV_WaveFileTypes;
+  Classes, Contnrs, SysUtils, DAV_Common, DAV_Types, DAV_AudioFile,
+  DAV_ChunkClasses, DAV_WaveFileTypes;
 
 const
   cChunkHeaderFormat   = '4L';
@@ -84,14 +84,14 @@ const
   cHybridShape    = $40;    // noise shape (hybrid mode only)
   cFloatData      = $80;    // ieee 32-bit floating point data
 
-  cInt32Data      = $100   // special extended int handling
-  cHybridBitrate  = $200   // bitrate noise (hybrid mode only)
-  cHybridBalance  = $400   // balance noise (hybrid stereo mode only)
+  cInt32Data      = $100;   // special extended int handling
+  cHybridBitrate  = $200;   // bitrate noise (hybrid mode only)
+  cHybridBalance  = $400;   // balance noise (hybrid stereo mode only)
 
-  cInitialBlock   = $800   // initial block of multichannel segment
-  cFinalBlock     = $1000  // final block of multichannel segment
+  cInitialBlock   = $800;  // initial block of multichannel segment
+  cFinalBlock     = $1000; // final block of multichannel segment
 
-  cShiftLSB       = 13
+  cShiftLSB       = 13;
 (*
   cSHIFT_MASK     = ($1fL << SHIFT_LSB)
 
@@ -221,8 +221,10 @@ typedef int (*WavpackBlockOutput)(void *id, void *data, int32_t bcount);
 type
   PWavpackContext = Pointer;
 
-function WavpackOpenFileInputEx(Reader: PWavpackStreamReader; wv_id, wvc_id: Pointer; error: PChar; Flags, NormOffset: Integer): PWavpackContext;
-function WavpackOpenFileInput(const infilename: PChar; error: PChar; Flags, NormOffset: Integer): PWavpackContext;
+function WavpackOpenFileInputEx(Reader: PWavpackStreamReader;
+  wv_id, wvc_id: Pointer; error: PChar; Flags, NormOffset: Integer): PWavpackContext;
+function WavpackOpenFileInput(const infilename: PChar; error: PChar;
+  Flags, NormOffset: Integer): PWavpackContext;
 
 const
   cOpenWVC        = $1;     // open/read "correction" file

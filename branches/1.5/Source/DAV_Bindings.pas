@@ -380,12 +380,10 @@ begin
 end;
 
 initialization
-
   SetProcessorFeatures;
   CreateGlobalBindings;
 
 finalization
-
   FreeGlobalBindings;
 
 end.

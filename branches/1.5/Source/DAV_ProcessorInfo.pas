@@ -39,12 +39,12 @@ uses
 
 type
   TCPUType = (
-    ctUnknown   = 0,
-    ctIntel     = 1,
-    ctCyrix     = 2,
-    ctAMD       = 3,
+    ctUnknown = 0,
+    ctIntel = 1,
+    ctCyrix = 2,
+    ctAMD = 3,
     ctTransmeta = 4,
-    ctVIA       = 5
+    ctVIA = 5
   );
 
   TSSESupport = (ssSSE, ssSSE2, ssSSE3, ssSSE3x, ssSSE4A, ssSSE4B, ssSSE5,

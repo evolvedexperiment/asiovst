@@ -1132,7 +1132,6 @@ begin
 end;
 
 initialization
-
-BindFunctions;
+  BindFunctions;
 
 end.

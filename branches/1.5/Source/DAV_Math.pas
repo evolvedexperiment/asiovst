@@ -1294,7 +1294,6 @@ begin
 end;
 
 initialization
-
-InitConstants;
+  InitConstants;
 
 end.

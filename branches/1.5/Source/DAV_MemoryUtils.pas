@@ -223,11 +223,9 @@ begin
 end;
 
 initialization
-
-InitializeMemoryUtils;
+  InitializeMemoryUtils;
 
 finalization
-
-FinalizeMemoryUtils;
+  FinalizeMemoryUtils;
 
 end.

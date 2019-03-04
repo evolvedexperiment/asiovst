@@ -1563,11 +1563,9 @@ begin
 end;
 
 initialization
-
-BindFunctions;
+  BindFunctions;
 
 finalization
-
-UnbindFunctions;
+  UnbindFunctions;
 
 end.
