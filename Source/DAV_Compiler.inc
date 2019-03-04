@@ -148,6 +148,12 @@
   DELPHIXE8_UP        Alias for DELPHI22_UP
   DELPHI23_UP         Defined when compiling with Delphi RX for Win32 or higher
   DELPHIRX_UP         Alias for DELPHI23_UP
+  DELPHI24_UP         Defined when compiling with Delphi RX1 for Win32 or higher
+  DELPHIRX1_UP        Alias for DELPHI24_UP
+  DELPHI25_UP         Defined when compiling with Delphi RX2 for Win32 or higher
+  DELPHIRX2_UP        Alias for DELPHI25_UP
+  DELPHI26_UP         Defined when compiling with Delphi RX3 for Win32 or higher
+  DELPHIRX3_UP        Alias for DELPHI26_UP
 
 
 - Kylix Versions
@@ -931,6 +937,54 @@
       {$UNDEF UNKNOWN_COMPILER_VERSION}
     {$ENDIF VER310}
 
+    {$IFDEF VER320} // RAD Studio RX2
+      {$DEFINE BDS}
+      {$DEFINE COMPILER25}
+      {$IFDEF BCB}
+        {$DEFINE BCB25}
+      {$ELSE}
+        {$DEFINE DELPHI25}
+        {$DEFINE DELPHIRX2} // synonym to DELPHI25
+        {$DEFINE DELPHICOMPILER25}
+      {$ENDIF BCB}
+      {$IFDEF CPUX64}
+        {$DEFINE 64BIT}
+        {$DEFINE CPU64}
+        {$DEFINE CPUx86_64}
+        {$UNDEF CPU386}
+        {$UNDEF CPU32}
+      {$ELSE}
+        {$DEFINE 32BIT}
+        {$DEFINE CPU32}
+      {$ENDIF}
+      {$DEFINE RTL320_UP}
+      {$UNDEF UNKNOWN_COMPILER_VERSION}
+    {$ENDIF VER320}
+
+    {$IFDEF VER330} // RAD Studio RX3
+      {$DEFINE BDS}
+      {$DEFINE COMPILER26}
+      {$IFDEF BCB}
+        {$DEFINE BCB26}
+      {$ELSE}
+        {$DEFINE DELPHI26}
+        {$DEFINE DELPHIRX2} // synonym to DELPHI26
+        {$DEFINE DELPHICOMPILER24}
+      {$ENDIF BCB}
+      {$IFDEF CPUX64}
+        {$DEFINE 64BIT}
+        {$DEFINE CPU64}
+        {$DEFINE CPUx86_64}
+        {$UNDEF CPU386}
+        {$UNDEF CPU32}
+      {$ELSE}
+        {$DEFINE 32BIT}
+        {$DEFINE CPU32}
+      {$ENDIF}
+      {$DEFINE RTL330_UP}
+      {$UNDEF UNKNOWN_COMPILER_VERSION}
+    {$ENDIF VER330}
+
     {$IFDEF UNKNOWN_COMPILER_VERSION} // adjust for newer version (always use latest version)
       {$DEFINE BDS}
       {$DEFINE BDS9}
@@ -995,6 +1049,21 @@
 {------------------------------------------------------------------------------}
 { DELPHIX_UP from DELPHIX_UP mappings                                          }
 {------------------------------------------------------------------------------}
+
+{$IFDEF DELPHI26_UP}
+  {$DEFINE DELPHIRX3_UP} // synonym to DELPHI26_UP
+  {$DEFINE DELPHI25_UP}
+{$ENDIF}
+
+{$IFDEF DELPHI25_UP}
+  {$DEFINE DELPHIRX2_UP} // synonym to DELPHI25_UP
+  {$DEFINE DELPHI24_UP}
+{$ENDIF}
+
+{$IFDEF DELPHI24_UP}
+  {$DEFINE DELPHIRX1_UP} // synonym to DELPHI24_UP
+  {$DEFINE DELPHI23_UP}
+{$ENDIF}
 
 {$IFDEF DELPHI23_UP}
   {$DEFINE DELPHIRX_UP} // synonym to DELPHI23_UP
@@ -1078,6 +1147,10 @@
 { BCBX_UP from BCBX mappings                                                   }
 {------------------------------------------------------------------------------}
 
+{$IFDEF BCB26} {$DEFINE BCB26_UP} {$ENDIF}
+{$IFDEF BCB25} {$DEFINE BCB25_UP} {$ENDIF}
+{$IFDEF BCB24} {$DEFINE BCB24_UP} {$ENDIF}
+{$IFDEF BCB23} {$DEFINE BCB23_UP} {$ENDIF}
 {$IFDEF BCB22} {$DEFINE BCB22_UP} {$ENDIF}
 {$IFDEF BCB21} {$DEFINE BCB21_UP} {$ENDIF}
 {$IFDEF BCB20} {$DEFINE BCB20_UP} {$ENDIF}
@@ -1100,6 +1173,10 @@
 { BCBX_UP from BCBX_UP mappings                                                }
 {------------------------------------------------------------------------------}
 
+{$IFDEF BCB26_UP} {$DEFINE BCB25_UP} {$ENDIF}
+{$IFDEF BCB25_UP} {$DEFINE BCB24_UP} {$ENDIF}
+{$IFDEF BCB24_UP} {$DEFINE BCB23_UP} {$ENDIF}
+{$IFDEF BCB23_UP} {$DEFINE BCB22_UP} {$ENDIF}
 {$IFDEF BCB22_UP} {$DEFINE BCB21_UP} {$ENDIF}
 {$IFDEF BCB21_UP} {$DEFINE BCB20_UP} {$ENDIF}
 {$IFDEF BCB20_UP} {$DEFINE BCB19_UP} {$ENDIF}
@@ -1144,6 +1221,10 @@
 { DELPHICOMPILERX_UP from DELPHICOMPILERX mappings                             }
 {------------------------------------------------------------------------------}
 
+{$IFDEF DELPHICOMPILER26} {$DEFINE DELPHICOMPILER26_UP} {$ENDIF}
+{$IFDEF DELPHICOMPILER25} {$DEFINE DELPHICOMPILER25_UP} {$ENDIF}
+{$IFDEF DELPHICOMPILER24} {$DEFINE DELPHICOMPILER24_UP} {$ENDIF}
+{$IFDEF DELPHICOMPILER23} {$DEFINE DELPHICOMPILER23_UP} {$ENDIF}
 {$IFDEF DELPHICOMPILER22} {$DEFINE DELPHICOMPILER22_UP} {$ENDIF}
 {$IFDEF DELPHICOMPILER21} {$DEFINE DELPHICOMPILER21_UP} {$ENDIF}
 {$IFDEF DELPHICOMPILER20} {$DEFINE DELPHICOMPILER20_UP} {$ENDIF}
@@ -1170,6 +1251,10 @@
 { DELPHICOMPILERX_UP from DELPHICOMPILERX_UP mappings                          }
 {------------------------------------------------------------------------------}
 
+{$IFDEF DELPHICOMPILER26_UP} {$DEFINE DELPHICOMPILER25_UP} {$ENDIF}
+{$IFDEF DELPHICOMPILER25_UP} {$DEFINE DELPHICOMPILER24_UP} {$ENDIF}
+{$IFDEF DELPHICOMPILER24_UP} {$DEFINE DELPHICOMPILER23_UP} {$ENDIF}
+{$IFDEF DELPHICOMPILER23_UP} {$DEFINE DELPHICOMPILER22_UP} {$ENDIF}
 {$IFDEF DELPHICOMPILER22_UP} {$DEFINE DELPHICOMPILER21_UP} {$ENDIF}
 {$IFDEF DELPHICOMPILER21_UP} {$DEFINE DELPHICOMPILER20_UP} {$ENDIF}
 {$IFDEF DELPHICOMPILER20_UP} {$DEFINE DELPHICOMPILER19_UP} {$ENDIF}
@@ -1196,6 +1281,10 @@
 { COMPILERX_UP from COMPILERX mappings                                         }
 {------------------------------------------------------------------------------}
 
+{$IFDEF COMPILER26} {$DEFINE COMPILER26_UP} {$ENDIF}
+{$IFDEF COMPILER25} {$DEFINE COMPILER25_UP} {$ENDIF}
+{$IFDEF COMPILER24} {$DEFINE COMPILER24_UP} {$ENDIF}
+{$IFDEF COMPILER23} {$DEFINE COMPILER23_UP} {$ENDIF}
 {$IFDEF COMPILER22} {$DEFINE COMPILER22_UP} {$ENDIF}
 {$IFDEF COMPILER21} {$DEFINE COMPILER21_UP} {$ENDIF}
 {$IFDEF COMPILER20} {$DEFINE COMPILER20_UP} {$ENDIF}
@@ -1223,6 +1312,10 @@
 { COMPILERX_UP from COMPILERX_UP mappings                                      }
 {------------------------------------------------------------------------------}
 
+{$IFDEF COMPILER26_UP} {$DEFINE COMPILER25_UP} {$ENDIF}
+{$IFDEF COMPILER25_UP} {$DEFINE COMPILER24_UP} {$ENDIF}
+{$IFDEF COMPILER24_UP} {$DEFINE COMPILER23_UP} {$ENDIF}
+{$IFDEF COMPILER23_UP} {$DEFINE COMPILER22_UP} {$ENDIF}
 {$IFDEF COMPILER22_UP} {$DEFINE COMPILER21_UP} {$ENDIF}
 {$IFDEF COMPILER21_UP} {$DEFINE COMPILER20_UP} {$ENDIF}
 {$IFDEF COMPILER20_UP} {$DEFINE COMPILER19_UP} {$ENDIF}
@@ -1249,6 +1342,9 @@
 { RTLX_UP from RTLX_UP mappings                                                }
 {------------------------------------------------------------------------------}
 
+{$IFDEF RTL330_UP} {$DEFINE RTL320_UP} {$ENDIF}
+{$IFDEF RTL320_UP} {$DEFINE RTL310_UP} {$ENDIF}
+{$IFDEF RTL310_UP} {$DEFINE RTL300_UP} {$ENDIF}
 {$IFDEF RTL300_UP} {$DEFINE RTL290_UP} {$ENDIF}
 {$IFDEF RTL290_UP} {$DEFINE RTL280_UP} {$ENDIF}
 {$IFDEF RTL280_UP} {$DEFINE RTL270_UP} {$ENDIF}
