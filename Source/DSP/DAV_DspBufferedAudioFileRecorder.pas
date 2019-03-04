@@ -807,10 +807,6 @@ end;
 
 procedure TCustomBufferedAudioRecorder.PutSamples(Data: PDAVSingleFixedArray;
   SampleFrames: Integer);
-(*
-  var
-  Sample : Integer;
-*)
 begin
   // eventually reactivate thread
   if FAllowSuspend and FBufferThread.Suspended then
@@ -819,68 +815,6 @@ begin
     FBufferThread.PutSamples(Data, SampleFrames)
   else
     raise Exception.Create('not yet implemented');
-  (*
-    case FInterpolation of
-    biNone:
-    for Sample := 0 to SampleFrames - 1 do
-    begin
-    FFractalPos := FFractalPos + FRatio;
-    while FFractalPos > 1 do
-    begin
-    FBufferThread.PutSamples(PDAVSingleFixedArray(FInterpolationBuffer[0]),
-    PDAVSingleFixedArray(FInterpolationBuffer[1]), 1);
-    FFractalPos := FFractalPos - 1;
-    end;
-    Left^[Sample]  := FInterpolationBuffer[0]^[0];
-    Right^[Sample] := FInterpolationBuffer[1]^[0];
-    end;
-    biLinear:
-    for Sample := 0 to SampleFrames - 1 do
-    begin
-    FFractalPos := FFractalPos + FRatio;
-    while FFractalPos > 1 do
-    begin
-    FInterpolationBuffer[0]^[1] := FInterpolationBuffer[0]^[0];
-    FInterpolationBuffer[1]^[1] := FInterpolationBuffer[1]^[0];
-    FBufferThread.PutSamples(PDAVSingleFixedArray(FInterpolationBuffer[0]),
-    PDAVSingleFixedArray(FInterpolationBuffer[1]), 1);
-    FFractalPos := FFractalPos - 1;
-    end;
-    Left^[Sample]  := LinearInterpolation(1 - FFractalPos, PDAV2SingleArray(FInterpolationBuffer[0]));
-    Right^[Sample] := LinearInterpolation(1 - FFractalPos, PDAV2SingleArray(FInterpolationBuffer[1]));
-    end;
-    biHermite:
-    for Sample := 0 to SampleFrames - 1 do
-    begin
-    FFractalPos := FFractalPos + FRatio;
-    while FFractalPos > 1 do
-    begin
-    Move(FInterpolationBuffer[0]^[0], FInterpolationBuffer[0]^[1], 3 * SizeOf(Single));
-    Move(FInterpolationBuffer[1]^[0], FInterpolationBuffer[1]^[1], 3 * SizeOf(Single));
-    FBufferThread.PutSamples(PDAVSingleFixedArray(FInterpolationBuffer[0]),
-    PDAVSingleFixedArray(FInterpolationBuffer[1]), 1);
-    FFractalPos := FFractalPos - 1;
-    end;
-    Left^[Sample]  := Hermite32_asm(1 - FFractalPos, PDAV4SingleArray(FInterpolationBuffer[0]));
-    Right^[Sample] := Hermite32_asm(1 - FFractalPos, PDAV4SingleArray(FInterpolationBuffer[1]));
-    end;
-    biBSpline6Point5thOrder:
-    for Sample := 0 to SampleFrames - 1 do
-    begin
-    FFractalPos := FFractalPos + FRatio;
-    while FFractalPos > 1 do
-    begin
-    Move(FInterpolationBuffer[0]^[0], FInterpolationBuffer[0]^[1], 5 * SizeOf(Single));
-    Move(FInterpolationBuffer[1]^[0], FInterpolationBuffer[1]^[1], 5 * SizeOf(Single));
-    FBufferThread.PutSamples(PDAVSingleFixedArray(FInterpolationBuffer[0]),
-    PDAVSingleFixedArray(FInterpolationBuffer[1]), 1);
-    FFractalPos := FFractalPos - 1;
-    end;
-    Left^[Sample]  := BSplineInterpolation6Point5thOrder(1 - FFractalPos, PDAV6SingleArray(FInterpolationBuffer[0])^);
-    Right^[Sample] := BSplineInterpolation6Point5thOrder(1 - FFractalPos, PDAV6SingleArray(FInterpolationBuffer[1])^);
-    end;
-    end;
-  *)
 end;
 
 procedure TCustomBufferedAudioRecorder.Reset;

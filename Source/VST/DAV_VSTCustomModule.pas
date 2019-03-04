@@ -75,48 +75,48 @@ type
 
   TCustomVSTModule = class(TBasicVSTModule)
   private
-    FAbout                  : string;
-    FVersion                : AnsiString;
+    FAbout: string;
+    FVersion: AnsiString;
 
-    FOnEditClose            : TOnEditClose;
-    FOnEditIdle             : TNotifyEvent;
-    FOnEditTop              : TNotifyEvent;
-    FOnEditSleep            : TNotifyEvent;
+    FOnEditClose: TOnEditClose;
+    FOnEditIdle: TNotifyEvent;
+    FOnEditTop: TNotifyEvent;
+    FOnEditSleep: TNotifyEvent;
 
-    FOnInitialize           : TNotifyEvent;
-    FOnResume               : TNotifyEvent;
-    FOnSuspend              : TNotifyEvent;
-    FOnGetVUEvent           : TGetVUEvent;
-    FBlockSizeChangeEvent   : TBlockSizeChangeEvent;
-    FSampleRateChangeEvent  : TSampleRateChangeEvent;
-    FOnDispatcher           : TOnDispatcherEvent;
-    FProcessPrecisition     : TProcessPrecision;
-    FTempo                  : Single;
-    FTailSize               : Integer;
-    FCanDos                 : TVstCanDos;
-    FPlugCategory           : TVstPluginCategory;
-    FKeysRequired           : Boolean;
+    FOnInitialize: TNotifyEvent;
+    FOnResume: TNotifyEvent;
+    FOnSuspend: TNotifyEvent;
+    FOnGetVUEvent: TGetVUEvent;
+    FBlockSizeChangeEvent: TBlockSizeChangeEvent;
+    FSampleRateChangeEvent: TSampleRateChangeEvent;
+    FOnDispatcher: TOnDispatcherEvent;
+    FProcessPrecisition: TProcessPrecision;
+    FTempo: Single;
+    FTailSize: Integer;
+    FCanDos: TVstCanDos;
+    FPlugCategory: TVstPluginCategory;
+    FKeysRequired: Boolean;
 
-    FOnOfflineNotify        : TOfflineNotifyEvent;
-    FOnOfflinePrepare       : TOfflinePrepareEvent;
-    FOnOfflineRun           : TOfflineRunEvent;
-    FOnProcessVarIO         : TProcessVarIOEvent;
-    FOnKeyUp                : TVSTKeyEvent;
-    FOnKeyDown              : TVSTKeyEvent;
-    FOnSetKnobMode          : TSetKnobModeEvent;
-    FOnInConnected          : TInOutConnectedEvent;
-    FOnOutConnected         : TInOutConnectedEvent;
-    FOnSoftBypass           : TSoftBypassEvent;
-    FOnStartProcess         : TNotifyEvent;
-    FOnStopProcess          : TNotifyEvent;
-    FOnSetPanLaw            : TOnSetPanLawEvent;
-    FOnVendorSpecific       : TOnVendorSpecificEvent;
-    FOnCanDo                : TOnCanDoEvent;
-    FOnGetInputProperties   : TOnGetChannelPropertiesEvent;
-    FOnGetOutputProperties  : TOnGetChannelPropertiesEvent;
-    FOnCheckKey             : TOnCheckKey;
-    FVstShellPlugins        : TCustomVstShellPlugins;
-    FCurrentVstShellPlugin  : Integer;
+    FOnOfflineNotify: TOfflineNotifyEvent;
+    FOnOfflinePrepare: TOfflinePrepareEvent;
+    FOnOfflineRun: TOfflineRunEvent;
+    FOnProcessVarIO: TProcessVarIOEvent;
+    FOnKeyUp: TVSTKeyEvent;
+    FOnKeyDown: TVSTKeyEvent;
+    FOnSetKnobMode: TSetKnobModeEvent;
+    FOnInConnected: TInOutConnectedEvent;
+    FOnOutConnected: TInOutConnectedEvent;
+    FOnSoftBypass: TSoftBypassEvent;
+    FOnStartProcess: TNotifyEvent;
+    FOnStopProcess: TNotifyEvent;
+    FOnSetPanLaw: TOnSetPanLawEvent;
+    FOnVendorSpecific: TOnVendorSpecificEvent;
+    FOnCanDo: TOnCanDoEvent;
+    FOnGetInputProperties: TOnGetChannelPropertiesEvent;
+    FOnGetOutputProperties: TOnGetChannelPropertiesEvent;
+    FOnCheckKey: TOnCheckKey;
+    FVstShellPlugins: TCustomVstShellPlugins;
+    FCurrentVstShellPlugin: Integer;
     FOnSpeakerArrangementChanged: TSpeakerArrangementEvent;
 (*
     function GetEditorFormClassName: string;
@@ -138,33 +138,32 @@ type
     procedure VersionMinorChanged;
     procedure VersionReleaseChanged;
   protected
-    FBlockSize              : Integer;
-    FEditorForm             : TForm;
-    FEditorNeedUpdate       : Boolean;
-    FEditorRect             : ERect;
-    FEditorFormClass        : TFormClass;
-    FEffectName             : AnsiString;
-    FInitialDelay           : Integer;
-    FNumCategories          : Integer;
-    FOnClose                : TNotifyEvent;
-    FOnEditOpen             : TGetEditorEvent;
-    FOnEditGetSize          : TOnEditGetSize;
-    FOnOpen                 : TNotifyEvent;
+    FBlockSize: Integer;
+    FEditorForm: TForm;
+    FEditorNeedUpdate: Boolean;
+    FEditorRect: ERect;
+    FEditorFormClass: TFormClass;
+    FEffectName: AnsiString;
+    FInitialDelay: Integer;
+    FNumCategories: Integer;
+    FOnClose: TNotifyEvent;
+    FOnEditOpen: TGetEditorEvent;
+    FOnEditGetSize: TOnEditGetSize;
+    FOnOpen: TNotifyEvent;
     FOnProcess64ReplacingEx : TProcessAudio64Event;
-    FOnProcessEx            : TProcessAudio32Event;
+    FOnProcessEx: TProcessAudio32Event;
     FOnProcess32ReplacingEx : TProcessAudio32Event;
-    FProductName            : AnsiString;
-    FSampleRate             : Single;
+    FProductName: AnsiString;
+    FSampleRate: Single;
 
-    FHostProduct            : AnsiString;
-    FHostVendor             : AnsiString;
-    FTruncateStrings        : Boolean;
+    FHostProduct: AnsiString;
+    FHostVendor: AnsiString;
+    FTruncateStrings: Boolean;
 
-    FVendorName             : AnsiString;
-    FVersionMajor           : Integer;
-    FVersionMinor           : Integer;
-    FVersionRelease         : Integer;
-//    FParentWindowProxy      : TWinControl;
+    FVendorName: AnsiString;
+    FVersionMajor: Integer;
+    FVersionMinor: Integer;
+    FVersionRelease: Integer;
     function GetPluginFlags: TEffFlags; virtual;
     function GetUniqueID: AnsiString; virtual;
     function OfflinePrepare(OfflineTaskStartPointer: PVstOfflineTaskRecord; Count: Integer): Integer; virtual;
@@ -978,7 +977,7 @@ begin
   Result := 0;
   if Assigned(ptr) then
   begin
-    StrPCopy(ptr, FEffectName);
+    SysUtils.StrPCopy(ptr, FEffectName);
     Result := 1;
   end;
 end;
@@ -989,7 +988,7 @@ begin
   Result := 0;
   if Assigned(ptr) then
   begin
-    StrPCopy(ptr, FVendorName);
+    SysUtils.StrPCopy(ptr, FVendorName);
     Result := 1;
   end;
 end;
@@ -1001,9 +1000,9 @@ begin
   if Assigned(ptr) then
   begin
     if FProductName <> '' then
-      StrPCopy(ptr, FProductName)
+      SysUtils.StrPCopy(ptr, FProductName)
     else
-      StrPCopy(ptr, FEffectName);
+      SysUtils.StrPCopy(ptr, FEffectName);
     Result := 1;
   end;
 end;
@@ -1027,35 +1026,35 @@ function TCustomVSTModule.HostCallCanDo(const Index: Integer; const Value: TVstI
 begin
   Result := 0;
   {$IFDEF DebugLog} AddLogMessage('TCustomVSTModule.HostCallCanDo (' + AnsiString(PAnsiChar(ptr)) + ')'); {$ENDIF}
-  if StrComp(PAnsiChar(ptr), 'receiveVstEvents')      = 0 then Result := 2 * Integer(vcdReceiveVstEvents      in FCanDos) - 1 else
-  if StrComp(PAnsiChar(ptr), 'receiveVstMidiEvent')   = 0 then Result := 2 * Integer(vcdReceiveVstMidiEvent   in FCanDos) - 1 else
-  if StrComp(PAnsiChar(ptr), 'receiveVstTimeInfo')    = 0 then Result := 2 * Integer(vcdReceiveVstTimeInfo    in FCanDos) - 1 else
-  if StrComp(PAnsiChar(ptr), 'sendVstEvents')         = 0 then Result := 2 * Integer(vcdSendVstEvents         in FCanDos) - 1 else
-  if StrComp(PAnsiChar(ptr), 'sendVstMidiEvent')      = 0 then Result := 2 * Integer(vcdSendVstMidiEvent      in FCanDos) - 1 else
-  if StrComp(PAnsiChar(ptr), 'sendVstTimeInfo')       = 0 then Result := 2 * Integer(vcdSendVstTimeInfo       in FCanDos) - 1 else
-  if StrComp(PAnsiChar(ptr), 'offline')               = 0 then Result := 2 * Integer(vcdOffline               in FCanDos) - 1 else
-  if StrComp(PAnsiChar(ptr), 'plugAsChannelInsert')   = 0 then Result := 2 * Integer(vcdPlugAsChannelInsert   in FCanDos) - 1 else
-  if StrComp(PAnsiChar(ptr), 'plugAsSend')            = 0 then Result := 2 * Integer(vcdPlugAsSend            in FCanDos) - 1 else
-  if StrComp(PAnsiChar(ptr), 'mixDryWet')             = 0 then Result := 2 * Integer(vcdMixDryWet             in FCanDos) - 1 else
-  if StrComp(PAnsiChar(ptr), 'noRealTime')            = 0 then Result := 2 * Integer(vcdNoRealTime            in FCanDos) - 1 else
-  if StrComp(PAnsiChar(ptr), 'multipass')             = 0 then Result := 2 * Integer(vcdMultipass             in FCanDos) - 1 else
-  if StrComp(PAnsiChar(ptr), 'metapass')              = 0 then Result := 2 * Integer(vcdMetapass              in FCanDos) - 1 else
-  if StrComp(PAnsiChar(ptr), '1in1out')               = 0 then Result := 2 * Integer(vcd1in1out               in FCanDos) - 1 else
-  if StrComp(PAnsiChar(ptr), '1in2out')               = 0 then Result := 2 * Integer(vcd1in2out               in FCanDos) - 1 else
-  if StrComp(PAnsiChar(ptr), '2in1out')               = 0 then Result := 2 * Integer(vcd2in1out               in FCanDos) - 1 else
-  if StrComp(PAnsiChar(ptr), '2in2out')               = 0 then Result := 2 * Integer(vcd2in2out               in FCanDos) - 1 else
-  if StrComp(PAnsiChar(ptr), '2in4out')               = 0 then Result := 2 * Integer(vcd2in4out               in FCanDos) - 1 else
-  if StrComp(PAnsiChar(ptr), '4in2out')               = 0 then Result := 2 * Integer(vcd4in2out               in FCanDos) - 1 else
-  if StrComp(PAnsiChar(ptr), '4in4out')               = 0 then Result := 2 * Integer(vcd4in4out               in FCanDos) - 1 else
-  if StrComp(PAnsiChar(ptr), '4in8out')               = 0 then Result := 2 * Integer(vcd4in8out               in FCanDos) - 1 else
-  if StrComp(PAnsiChar(ptr), '8in4out')               = 0 then Result := 2 * Integer(vcd8in4out               in FCanDos) - 1 else
-  if StrComp(PAnsiChar(ptr), '8in8out')               = 0 then Result := 2 * Integer(vcd8in8out               in FCanDos) - 1 else
-  if StrComp(PAnsiChar(ptr), 'midiProgramNames')      = 0 then Result := 2 * Integer(vcdMidiProgramNames      in FCanDos) - 1 else
-  if StrComp(PAnsiChar(ptr), 'conformsToWindowRules') = 0 then Result := 2 * Integer(vcdConformsToWindowRules in FCanDos) - 1 else
-  if StrComp(PAnsiChar(ptr), 'LiveWithoutToolbar')    = 0 then Result := 2 * Integer(vcdLiveWithoutToolbar    in FCanDos) - 1 else
-  if StrComp(PAnsiChar(ptr), 'bypass')                = 0 then Result := 2 * Integer(vcdBypass                in FCanDos) - 1 else
-  if StrComp(PAnsiChar(ptr), 'ChainPluginAPI')        = 0 then Result := 2 * Integer(vcdChainPluginAPI        in FCanDos) - 1 else
-  if StrComp(PAnsiChar(ptr), 'hasCockosExtensions')   = 0 then
+  if SysUtils.StrComp(PAnsiChar(ptr), 'receiveVstEvents')      = 0 then Result := 2 * Integer(vcdReceiveVstEvents      in FCanDos) - 1 else
+  if SysUtils.StrComp(PAnsiChar(ptr), 'receiveVstMidiEvent')   = 0 then Result := 2 * Integer(vcdReceiveVstMidiEvent   in FCanDos) - 1 else
+  if SysUtils.StrComp(PAnsiChar(ptr), 'receiveVstTimeInfo')    = 0 then Result := 2 * Integer(vcdReceiveVstTimeInfo    in FCanDos) - 1 else
+  if SysUtils.StrComp(PAnsiChar(ptr), 'sendVstEvents')         = 0 then Result := 2 * Integer(vcdSendVstEvents         in FCanDos) - 1 else
+  if SysUtils.StrComp(PAnsiChar(ptr), 'sendVstMidiEvent')      = 0 then Result := 2 * Integer(vcdSendVstMidiEvent      in FCanDos) - 1 else
+  if SysUtils.StrComp(PAnsiChar(ptr), 'sendVstTimeInfo')       = 0 then Result := 2 * Integer(vcdSendVstTimeInfo       in FCanDos) - 1 else
+  if SysUtils.StrComp(PAnsiChar(ptr), 'offline')               = 0 then Result := 2 * Integer(vcdOffline               in FCanDos) - 1 else
+  if SysUtils.StrComp(PAnsiChar(ptr), 'plugAsChannelInsert')   = 0 then Result := 2 * Integer(vcdPlugAsChannelInsert   in FCanDos) - 1 else
+  if SysUtils.StrComp(PAnsiChar(ptr), 'plugAsSend')            = 0 then Result := 2 * Integer(vcdPlugAsSend            in FCanDos) - 1 else
+  if SysUtils.StrComp(PAnsiChar(ptr), 'mixDryWet')             = 0 then Result := 2 * Integer(vcdMixDryWet             in FCanDos) - 1 else
+  if SysUtils.StrComp(PAnsiChar(ptr), 'noRealTime')            = 0 then Result := 2 * Integer(vcdNoRealTime            in FCanDos) - 1 else
+  if SysUtils.StrComp(PAnsiChar(ptr), 'multipass')             = 0 then Result := 2 * Integer(vcdMultipass             in FCanDos) - 1 else
+  if SysUtils.StrComp(PAnsiChar(ptr), 'metapass')              = 0 then Result := 2 * Integer(vcdMetapass              in FCanDos) - 1 else
+  if SysUtils.StrComp(PAnsiChar(ptr), '1in1out')               = 0 then Result := 2 * Integer(vcd1in1out               in FCanDos) - 1 else
+  if SysUtils.StrComp(PAnsiChar(ptr), '1in2out')               = 0 then Result := 2 * Integer(vcd1in2out               in FCanDos) - 1 else
+  if SysUtils.StrComp(PAnsiChar(ptr), '2in1out')               = 0 then Result := 2 * Integer(vcd2in1out               in FCanDos) - 1 else
+  if SysUtils.StrComp(PAnsiChar(ptr), '2in2out')               = 0 then Result := 2 * Integer(vcd2in2out               in FCanDos) - 1 else
+  if SysUtils.StrComp(PAnsiChar(ptr), '2in4out')               = 0 then Result := 2 * Integer(vcd2in4out               in FCanDos) - 1 else
+  if SysUtils.StrComp(PAnsiChar(ptr), '4in2out')               = 0 then Result := 2 * Integer(vcd4in2out               in FCanDos) - 1 else
+  if SysUtils.StrComp(PAnsiChar(ptr), '4in4out')               = 0 then Result := 2 * Integer(vcd4in4out               in FCanDos) - 1 else
+  if SysUtils.StrComp(PAnsiChar(ptr), '4in8out')               = 0 then Result := 2 * Integer(vcd4in8out               in FCanDos) - 1 else
+  if SysUtils.StrComp(PAnsiChar(ptr), '8in4out')               = 0 then Result := 2 * Integer(vcd8in4out               in FCanDos) - 1 else
+  if SysUtils.StrComp(PAnsiChar(ptr), '8in8out')               = 0 then Result := 2 * Integer(vcd8in8out               in FCanDos) - 1 else
+  if SysUtils.StrComp(PAnsiChar(ptr), 'midiProgramNames')      = 0 then Result := 2 * Integer(vcdMidiProgramNames      in FCanDos) - 1 else
+  if SysUtils.StrComp(PAnsiChar(ptr), 'conformsToWindowRules') = 0 then Result := 2 * Integer(vcdConformsToWindowRules in FCanDos) - 1 else
+  if SysUtils.StrComp(PAnsiChar(ptr), 'LiveWithoutToolbar')    = 0 then Result := 2 * Integer(vcdLiveWithoutToolbar    in FCanDos) - 1 else
+  if SysUtils.StrComp(PAnsiChar(ptr), 'bypass')                = 0 then Result := 2 * Integer(vcdBypass                in FCanDos) - 1 else
+  if SysUtils.StrComp(PAnsiChar(ptr), 'ChainPluginAPI')        = 0 then Result := 2 * Integer(vcdChainPluginAPI        in FCanDos) - 1 else
+  if SysUtils.StrComp(PAnsiChar(ptr), 'hasCockosExtensions')   = 0 then
     if vcdCockosExtension in FCanDos then
       Result := Integer($BEEF0000)
     else
@@ -1236,7 +1235,7 @@ begin
   {$IFDEF DebugLog} AddLogMessage('TCustomVSTModule.HostCallShellGetNextPlugin'); {$ENDIF}
   if (FCurrentVstShellPlugin < FVstShellPlugins.Count) and Assigned(Ptr) then
   begin
-    StrPCopy(Ptr, FVstShellPlugins[FCurrentVstShellPlugin].DisplayName);
+    SysUtils.StrPCopy(Ptr, FVstShellPlugins[FCurrentVstShellPlugin].DisplayName);
     Result := TVstIntPtr(FVstShellPlugins[FCurrentVstShellPlugin].UniqueID);
     Inc(FCurrentVstShellPlugin);
   end
@@ -1438,7 +1437,7 @@ begin
  FEffect.InitialDelay := FInitialDelay;
 
  {$IFDEF DELPHI14_UP}
- if AnsiPos('WaveLab', HostProduct) > 0 then
+ if AnsiPos(AnsiString('WaveLab'), HostProduct) > 0 then
  {$ELSE}
  if Pos('WaveLab', HostProduct) > 0 then
  {$ENDIF}

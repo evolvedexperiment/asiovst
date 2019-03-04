@@ -953,7 +953,6 @@ begin
 end;
 
 initialization
-
-CalculateCosTable;
+  CalculateCosTable;
 
 end.

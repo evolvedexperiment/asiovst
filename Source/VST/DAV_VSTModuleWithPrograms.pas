@@ -376,7 +376,7 @@ begin
       Str := '';
     if FTruncateStrings and (Length(Str) > 24) then
       SetLength(Str, 24);
-    StrPCopy(ptr, Str);
+    SysUtils.StrPCopy(ptr, Str);
   end;
 end;
 
@@ -391,7 +391,7 @@ begin
     Str := ParameterLabel[Index];
     if FTruncateStrings and (Length(Str) > 8) then
       SetLength(Str, 8);
-    StrPCopy(ptr, Str);
+    SysUtils.StrPCopy(ptr, Str);
   end;
 end;
 
@@ -406,7 +406,7 @@ begin
     Str := ParameterDisplay[Index];
     if FTruncateStrings and (Length(Str) > 8) then
       SetLength(Str, 8);
-    StrPCopy(ptr, Str);
+    SysUtils.StrPCopy(ptr, Str);
   end;
 end;
 
@@ -421,7 +421,7 @@ begin
     Str := ParameterName[Index];
     if FTruncateStrings and (Length(Str) > 8) then
       SetLength(Str, 8);
-    StrPCopy(ptr, Str);
+    SysUtils.StrPCopy(ptr, Str);
   end;
 end;
 
@@ -603,17 +603,17 @@ begin
 
           // process unit extensions
 {$IFDEF DELPHI14_UP}
-          if AnsiPos('k', ProcessedStr) >= Indices[1] then
+          if AnsiPos(AnsiString('k'), ProcessedStr) >= Indices[1] then
             UnitFactor := 1E3
-          else if AnsiPos('K', ProcessedStr) >= Indices[1] then
+          else if AnsiPos(AnsiString('K'), ProcessedStr) >= Indices[1] then
             UnitFactor := 1024
-          else if AnsiPos('G', ProcessedStr) >= Indices[1] then
+          else if AnsiPos(AnsiString('G'), ProcessedStr) >= Indices[1] then
             UnitFactor := 1048576
-          else if AnsiPos('m', ProcessedStr) >= Indices[1] then
+          else if AnsiPos(AnsiString('m'), ProcessedStr) >= Indices[1] then
             UnitFactor := 1E-3
-          else if AnsiPos('µ', ProcessedStr) >= Indices[1] then
+          else if AnsiPos(AnsiString('µ'), ProcessedStr) >= Indices[1] then
             UnitFactor := 1E-6
-          else if AnsiPos('c', ProcessedStr) >= Indices[1] then
+          else if AnsiPos(AnsiString('c'), ProcessedStr) >= Indices[1] then
             UnitFactor := 1E-2
           else
             UnitFactor := 1;
@@ -680,7 +680,7 @@ begin
         ParamStr := ParamStr + ParamUnit;
       end;
       ParamStr := ParamStr + #0;
-      StrPCopy(ptr, ParamStr);
+      SysUtils.StrPCopy(ptr, ParamStr);
       Result := $BEEF;
     end
     else if (Index = Integer($DEADBEF0)) and Assigned(ptr) and (Value >= 0) and
@@ -719,7 +719,7 @@ begin
     Str := AnsiString(Programs[Index].DisplayName);
     if FTruncateStrings and (Length(Str) > 24) then
       SetLength(Str, 24);
-    StrPCopy(ptr, Str);
+    SysUtils.StrPCopy(ptr, Str);
     Result := 1;
   end;
 end;
@@ -745,14 +745,14 @@ begin
       FillChar(ParamLabel, SizeOf(ParamLabel), 0);
       if Length(Str) > 64 then
         SetLength(Str, 64);
-      StrPCopy(@ParamLabel[0], Str);
+      SysUtils.StrPCopy(@ParamLabel[0], Str);
 
       // copy short label
       Str := ParameterProperties[Index].ShortLabel + #0;
       FillChar(ShortLabel, SizeOf(ShortLabel), 0);
       if Length(Str) > 8 then
         SetLength(Str, 8);
-      StrPCopy(@ShortLabel[0], Str);
+      SysUtils.StrPCopy(@ShortLabel[0], Str);
 
       // assign flags
       Flags := ParameterProperties[Index].Flags;
@@ -815,7 +815,7 @@ begin
         if Length(Str) > 24 then
           SetLength(Str, 24);
         FillChar(CategoryLabel, SizeOf(CategoryLabel), 0);
-        StrPCopy(@CategoryLabel[0], Str);
+        SysUtils.StrPCopy(@CategoryLabel[0], Str);
         Category := ParameterProperties[Index].CategoryIndex;
         if (Category > 0) and (Category <= ParameterCategories.Count) then
           numParametersInCategory := ParameterCategories[Category - 1].ParametersInCategory

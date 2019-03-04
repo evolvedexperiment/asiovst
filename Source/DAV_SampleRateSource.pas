@@ -43,12 +43,13 @@ type
   private
     procedure SetSampleRate(const Value: Double);
   protected
-    FSampleRate     : Double;
-    FSampleRateReci : Double;
+    FSampleRate: Double;
+    FSampleRateReci: Double;
     procedure SampleRateChanged; virtual;
     procedure AssignTo(Dest: TPersistent); override;
   public
     constructor Create(AOwner: TComponent); override;
+
     property SampleRateReciprocal: Double read FSampleRateReci;
     property SampleRate: Double read FSampleRate write SetSampleRate;
   end;
@@ -75,7 +76,7 @@ procedure TCustomSampleRateSource.AssignTo(Dest: TPersistent);
 begin
   if Dest is TCustomSampleRateSource then
   begin
-    TCustomSampleRateSource(Dest).FSampleRate     := FSampleRate;
+    TCustomSampleRateSource(Dest).FSampleRate := FSampleRate;
     TCustomSampleRateSource(Dest).FSampleRateReci := FSampleRateReci;
   end
   else

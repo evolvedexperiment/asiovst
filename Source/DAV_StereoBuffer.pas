@@ -48,6 +48,7 @@ type
   public
     constructor Create;
     destructor Destroy; override;
+
     procedure Append(Channel: Cardinal; Value: Single);
     procedure Reset;
     procedure Clear;

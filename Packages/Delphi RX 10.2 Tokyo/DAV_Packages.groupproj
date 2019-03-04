@@ -1,0 +1,108 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{67A8D7A0-AC26-417D-9F1B-DFDD1EF9B10C}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="DAV_Common.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="DAV_DSP.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="DAV_VSTPlugin.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="DAV_VSTHost.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="DAV_ASIOHost.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="DAV_GUI.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="DAV_SEHost.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="DAV_Common">
+        <MSBuild Projects="DAV_Common.dproj"/>
+    </Target>
+    <Target Name="DAV_Common:Clean">
+        <MSBuild Projects="DAV_Common.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="DAV_Common:Make">
+        <MSBuild Projects="DAV_Common.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="DAV_DSP">
+        <MSBuild Projects="DAV_DSP.dproj"/>
+    </Target>
+    <Target Name="DAV_DSP:Clean">
+        <MSBuild Projects="DAV_DSP.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="DAV_DSP:Make">
+        <MSBuild Projects="DAV_DSP.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="DAV_VSTPlugin">
+        <MSBuild Projects="DAV_VSTPlugin.dproj"/>
+    </Target>
+    <Target Name="DAV_VSTPlugin:Clean">
+        <MSBuild Projects="DAV_VSTPlugin.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="DAV_VSTPlugin:Make">
+        <MSBuild Projects="DAV_VSTPlugin.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="DAV_VSTHost">
+        <MSBuild Projects="DAV_VSTHost.dproj"/>
+    </Target>
+    <Target Name="DAV_VSTHost:Clean">
+        <MSBuild Projects="DAV_VSTHost.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="DAV_VSTHost:Make">
+        <MSBuild Projects="DAV_VSTHost.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="DAV_ASIOHost">
+        <MSBuild Projects="DAV_ASIOHost.dproj"/>
+    </Target>
+    <Target Name="DAV_ASIOHost:Clean">
+        <MSBuild Projects="DAV_ASIOHost.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="DAV_ASIOHost:Make">
+        <MSBuild Projects="DAV_ASIOHost.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="DAV_GUI">
+        <MSBuild Projects="DAV_GUI.dproj"/>
+    </Target>
+    <Target Name="DAV_GUI:Clean">
+        <MSBuild Projects="DAV_GUI.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="DAV_GUI:Make">
+        <MSBuild Projects="DAV_GUI.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="DAV_SEHost">
+        <MSBuild Projects="DAV_SEHost.dproj"/>
+    </Target>
+    <Target Name="DAV_SEHost:Clean">
+        <MSBuild Projects="DAV_SEHost.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="DAV_SEHost:Make">
+        <MSBuild Projects="DAV_SEHost.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="DAV_Common;DAV_DSP;DAV_VSTPlugin;DAV_VSTHost;DAV_ASIOHost;DAV_GUI;DAV_SEHost"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="DAV_Common:Clean;DAV_DSP:Clean;DAV_VSTPlugin:Clean;DAV_VSTHost:Clean;DAV_ASIOHost:Clean;DAV_GUI:Clean;DAV_SEHost:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="DAV_Common:Make;DAV_DSP:Make;DAV_VSTPlugin:Make;DAV_VSTHost:Make;DAV_ASIOHost:Make;DAV_GUI:Make;DAV_SEHost:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>
