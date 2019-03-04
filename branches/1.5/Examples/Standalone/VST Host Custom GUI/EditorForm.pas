@@ -146,44 +146,24 @@ begin
       DLLFileName := ParamStr(1)
     else
     begin
-      ContainedVSTPlugins := TStringList.Create;
-      try
-        EnumResourceNames(HInstance, 'DLL', @EnumNamesFunc,
-          LongWord(ContainedVSTPlugins));
-
-        if ContainedVSTPlugins.Count > 0 then
-        begin
-          RS := TResourceStream.Create(HInstance,
-            ContainedVSTPlugins[0], 'DLL');
-          try
-            LoadFromStream(RS);
-          finally
-            FreeAndNil(RS);
-          end;
-        end
-        else
+      if not FileExists(DLLFileName) then
+      with TOpenDialog.Create(Self) do
+        try
+          DefaultExt := 'dll';
+          Filter := 'VST Plugin (*.dll)|*.dll';
+          Options := Options + [ofFileMustExist];
+          if Execute then
+            DLLFileName := FileName;
 
           if not FileExists(DLLFileName) then
-          with TOpenDialog.Create(Self) do
-            try
-              DefaultExt := 'dll';
-              Filter := 'VST Plugin (*.dll)|*.dll';
-              Options := Options + [ofFileMustExist];
-              if Execute then
-                DLLFileName := FileName;
+          begin
+            Application.Terminate;
+            Exit;
+          end;
 
-              if not FileExists(DLLFileName) then
-              begin
-                Application.Terminate;
-                Exit;
-              end;
-
-            finally
-              Free;
-            end;
-      finally
-        FreeAndNil(ContainedVSTPlugins);
-      end;
+        finally
+          Free;
+        end;
     end;
 
     Active := True;

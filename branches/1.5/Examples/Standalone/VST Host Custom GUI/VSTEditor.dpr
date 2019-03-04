@@ -5,7 +5,7 @@ program VSTEditor;
 uses
   FastMM4,  // either download the library or comment if there is an error here
   {$IFDEF UseFastMove}
-  FastMove,
+  FastMove, // either download the library or disable the feature
   {$ENDIF}
   Forms,
   EditorForm in 'EditorForm.pas' {FmVSTEditor},

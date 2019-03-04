@@ -10,43 +10,43 @@ uses
 
 type
   TPlayer = class(TForm)
-    GbWavFilePlayer: TGroupBox;
-    GbMidiFilePlayer: TGroupBox;
-    GbWavRecorder: TGroupBox;
-    MidiBox: TListBox;
-    WavBox: TListBox;
     BtMidiAdd: TButton;
+    BtMidiPlay: TButton;
     BtMidiRemove: TButton;
     BtMidiStop: TButton;
-    BtMidiPlay: TButton;
     BtWavAdd: TButton;
+    BtWavPause: TButton;
+    BtWavPlay: TButton;
+    BtWavRecord: TButton;
     BtWavRemove: TButton;
     BtWavStop: TButton;
-    BtWavPlay: TButton;
-    BtWavPause: TButton;
     BtWavStopRec: TButton;
-    BtWavRecord: TButton;
-    LbMidiCurrentFile: TLabel;
-    LbMidiFile: TLabel;
-    LbWavCurrentFile: TLabel;
-    LbWaveFile: TLabel;
-    LbMidiPosition: TLabel;
-    LbWavPitch: TLabel;
-    LbWavPosition: TLabel;
-    LbCurrentRecordFile: TLabel;
-    LbRecordFile: TLabel;
-    LbStatus: TLabel;
-    LbMidiPlayMode: TLabel;
-    LbWavPlayMode: TLabel;
+    CBMidiPlayMode: TComboBox;
     CbOnlyChannel1: TCheckBox;
     CbRecInMono: TCheckBox;
     CbRecordFormat: TComboBox;
-    CBMidiPlayMode: TComboBox;
     CBWavPlayMode: TComboBox;
-    SbTempo: TScrollBar;
+    GbMidiFilePlayer: TGroupBox;
+    GbWavFilePlayer: TGroupBox;
+    GbWavRecorder: TGroupBox;
+    LbCurrentRecordFile: TLabel;
+    LbMidiCurrentFile: TLabel;
+    LbMidiFile: TLabel;
+    LbMidiPlayMode: TLabel;
+    LbMidiPosition: TLabel;
+    LbRecordFile: TLabel;
+    LbStatus: TLabel;
+    LbWavCurrentFile: TLabel;
+    LbWaveFile: TLabel;
+    LbWavPitch: TLabel;
+    LbWavPlayMode: TLabel;
+    LbWavPosition: TLabel;
+    MidiBox: TListBox;
     SbMidiPosition: TScrollBar;
     SbPitch: TScrollBar;
+    SbTempo: TScrollBar;
     SbWavPosition: TScrollBar;
+    WavBox: TListBox;
     procedure WMDropFiles(var msg: TMessage); message WM_DROPFILES;
     procedure FormCreate(Sender: TObject);
     procedure MidiBoxDblClick(Sender: TObject);
@@ -74,7 +74,8 @@ type
     constructor Create(AOwner: TComponent); override;
   end;
 
-var Player: TPlayer;
+var
+  Player: TPlayer;
 
 implementation
 
@@ -82,210 +83,217 @@ implementation
 {$R *.dfm}
 {$ENDIF}
 
-uses SysUtils, MiniHostForm, OptionsForm, ShellAPI;
+uses
+  SysUtils, MiniHostForm, OptionsForm, ShellAPI;
 
-var FmMiniHost: TFmMiniHost;
+var
+  FmMiniHost: TFmMiniHost;
 
 procedure TPlayer.WMDropfiles(var msg: TMessage);
 var
-  Size      : Integer;
-  Name      : pchar;
-  s         : string;
-  i, nCount : Integer;
+  Size: Integer;
+  Name: PChar;
+  s: string;
+  i, nCount: Integer;
 begin
- inherited;
- nCount := DragQueryFile(msg.WParam, $FFFFFFFF, nil, 0);
- with TStringList.Create do
+  inherited;
+  nCount := DragQueryFile(msg.WParam, $FFFFFFFF, nil, 0);
+  with TStringList.Create do
   try
-   for i := 0 to nCount - 1 do
+    for i := 0 to nCount - 1 do
     begin
-     Size := DragQueryFile(msg.WParam, i, nil, 0) + 1;
-     Name := StrAlloc(size);
-     DragQueryFile(msg.WParam, i, Name, Size);
-     s := StrPas(Name);
-     Add(s);
-     StrDispose(Name);
+      Size := DragQueryFile(msg.WParam, i, nil, 0) + 1;
+      Name := StrAlloc(size);
+      DragQueryFile(msg.WParam, i, Name, Size);
+      s := StrPas(Name);
+      Add(s);
+      StrDispose(Name);
     end;
-   DragFinish(msg.WParam);
+    DragFinish(msg.WParam);
 
-   if Count = 0 then exit;
+   if Count = 0 then
+     Exit;
+
    s := UpperCase(ExtractFileExt(Strings[0]));
-   if (s = '.MID')
-    then FmMiniHost.AddMID(Strings[0]) else
-   if (s = '.WAV')
-    then FmMiniHost.AddWAV(Strings[0]);
+   if (s = '.MID') then
+     FmMiniHost.AddMID(Strings[0]) else
+   if (s = '.WAV') then
+     FmMiniHost.AddWAV(Strings[0]);
   finally
-   Free;
+    Free;
   end;
 end;
 
 procedure TPlayer.FormCreate(Sender: TObject);
 begin
- DragAcceptFiles(Self.Handle, True);
+  DragAcceptFiles(Self.Handle, True);
 end;
 
 procedure TPlayer.MidiBoxDblClick(Sender: TObject);
 begin
- BtMidiPlayClick(Sender);
+  BtMidiPlayClick(Sender);
 end;
 
 procedure TPlayer.BtMidiAddClick(Sender: TObject);
 begin
- FmMiniHost.LoadMIDIFile1Click(Sender);
+  FmMiniHost.LoadMIDIFile1Click(Sender);
 end;
 
 procedure TPlayer.BtMidiRemoveClick(Sender: TObject);
 var
   i: Integer;
 begin
- if MidiBox.ItemIndex >= 0 then
+  if MidiBox.ItemIndex >= 0 then
   begin
-   for i := 0 to MidiBox.Items.Count - 1 do
-    if MidiBox.Selected[i] then
-     FreeMem(pshortstr(MidiBox.Items.Objects[i]));
+    for i := 0 to MidiBox.Items.Count - 1 do
+      if MidiBox.Selected[i] then
+        FreeMem(pshortstr(MidiBox.Items.Objects[i]));
 {$IFNDEF FPC}
-   MidiBox.DeleteSelected;
+    MidiBox.DeleteSelected;
 {$ENDIF}
   end;
 end;
 
 procedure TPlayer.BtMidiPlayClick(Sender: TObject);
 begin
- with FmMiniHost do
+  with FmMiniHost do
   begin
-   MidiFile.StopPlaying;
-   MidiPlaying := False;
-   MIPanicClick(nil);
-   if (MidiBox.ItemIndex >= 0) and (MidiBox.Items.Count > 0) then
+    MidiFile.StopPlaying;
+    MidiPlaying := False;
+    MIPanicClick(nil);
+    if (MidiBox.ItemIndex >= 0) and (MidiBox.Items.Count > 0) then
     begin
-     MidiFile.Filename := PShortStr(MidiBox.Items.Objects[MidiBox.ItemIndex])^;
-     LbMidiFile.Caption := MidiBox.Items[MidiBox.ItemIndex];
-     MidiFile.ReadFile;
-     SbTempo.Position := MidiFile.Bpm;
-     MidiFile.StartPlaying;
-     MidiPlaying := True;
+      MidiFile.Filename := PShortStr(MidiBox.Items.Objects[MidiBox.ItemIndex])^;
+      LbMidiFile.Caption := MidiBox.Items[MidiBox.ItemIndex];
+      MidiFile.ReadFile;
+      SbTempo.Position := MidiFile.Bpm;
+      MidiFile.StartPlaying;
+      MidiPlaying := True;
     end;
   end;
 end;
 
 procedure TPlayer.BtMidiStopClick(Sender: TObject);
 begin
- with FmMiniHost do
+  with FmMiniHost do
   begin
-   MidiFile.StopPlaying;
-   MidiPlaying := False;
-   MIPanicClick(nil);
+    MidiFile.StopPlaying;
+    MidiPlaying := False;
+    MIPanicClick(nil);
   end;
 end;
 
 procedure TPlayer.WavBoxDblClick(Sender: TObject);
 begin
- BtWavPlayClick(Sender);
+  BtWavPlayClick(Sender);
 end;
 
 procedure TPlayer.BtWavAddClick(Sender: TObject);
 begin
- FmMiniHost.LoadWAVFile;
+  FmMiniHost.LoadWAVFile;
 end;
 
 procedure TPlayer.BtWavRemoveClick(Sender: TObject);
-var i: Integer;
+var
+  i: Integer;
 begin
- if WavBox.ItemIndex >= 0 then
+  if WavBox.ItemIndex >= 0 then
   begin
-   for i := 0 to WavBox.Items.Count - 1 do
-    if WavBox.Selected[i] then
-     FreeMem(pshortstr(WavBox.Items.Objects[i]));
-   {$IFNDEF FPC}
-   WavBox.DeleteSelected;
-   {$ENDIF}
+    for i := 0 to WavBox.Items.Count - 1 do
+      if WavBox.Selected[i] then
+        FreeMem(pshortstr(WavBox.Items.Objects[i]));
+    {$IFNDEF FPC}
+    WavBox.DeleteSelected;
+    {$ENDIF}
   end;
 end;
 
 procedure TPlayer.BtWavPlayClick(Sender: TObject);
 begin
- if (WavBox.ItemIndex >= 0) and (WavBox.Items.Count > 0) then
-  with FmMiniHost do
-   begin
-    LoadWAV(pshortstr(WavBox.Items.Objects[WavBox.ItemIndex])^);
-    LbWaveFile.Caption := WavBox.Items[WavBox.ItemIndex];
-    StartPlayback2Click(nil);
-   end;
+  if (WavBox.ItemIndex >= 0) and (WavBox.Items.Count > 0) then
+    with FmMiniHost do
+    begin
+      LoadWAV(pshortstr(WavBox.Items.Objects[WavBox.ItemIndex])^);
+      LbWaveFile.Caption := WavBox.Items[WavBox.ItemIndex];
+      StartPlayback2Click(nil);
+    end;
 end;
 
 procedure TPlayer.BtWavStopClick(Sender: TObject);
 begin
- FmMiniHost.StopPlayback2Click(nil)
+  FmMiniHost.StopPlayback2Click(nil)
 end;
 
 procedure TPlayer.BtWavRecordClick(Sender: TObject);
 begin
- with FmMiniHost do
-  if RecordState = rsPause
-   then RecordState := rsRecord
-   else if RecordState = rsStop
-    then MIStartRecordingClick(nil);
+  with FmMiniHost do
+    if RecordState = rsPause then
+      RecordState := rsRecord
+    else
+    if RecordState = rsStop then
+      MIStartRecordingClick(nil);
 end;
 
 procedure TPlayer.BtWavPauseClick(Sender: TObject);
 begin
- with FmMiniHost do
-  if RecordState = rsRecord
-   then RecordState := rsPause;
+  with FmMiniHost do
+    if RecordState = rsRecord then
+      RecordState := rsPause;
 end;
 
 procedure TPlayer.BtWavStopRecClick(Sender: TObject);
 begin
- FmMiniHost.MIStopRecordingClick(nil);
+  FmMiniHost.MIStopRecordingClick(nil);
 end;
 
 procedure TPlayer.LbRecordFileClick(Sender: TObject);
 begin
- FmMiniHost.RecordWAVFileSelect;
+  FmMiniHost.RecordWAVFileSelect;
 end;
 
 constructor TPlayer.Create(AOwner: TComponent);
 begin
- inherited;
- FmMiniHost := AOwner as TFmMiniHost; 
+  inherited;
+  FmMiniHost := AOwner as TFmMiniHost;
 end;
 
 procedure TPlayer.CBWavPlayModeChange(Sender: TObject);
 begin
- FmMiniHost.WaveFile.Looped := CBWavPlayMode.ItemIndex = 1;
+  FmMiniHost.WaveFile.Looped := CBWavPlayMode.ItemIndex = 1;
 end;
 
 procedure TPlayer.SbTempoChange(Sender: TObject);
 begin
- FmMiniHost.MidiFile.Bpm := SbTempo.Position;
- LbMidiTempo.Caption := 'tempo: ' + IntToStr(SbTempo.Position) + ' bpm';
+  FmMiniHost.MidiFile.Bpm := SbTempo.Position;
+  LbMidiTempo.Caption := 'tempo: ' + IntToStr(SbTempo.Position) + ' bpm';
 end;
 
 procedure TPlayer.SbMidiPositionChange(Sender: TObject);
 begin
- with FmMiniHost do
-  if (MIDIPlaying) then
-   begin
-    WaveTimer.Enabled := False;
-    MidiFile.StopPlaying;
-    MIPanicClick(Sender);
-    MidiFile.PlayToTime(round(MidiFile.GetTrackLength * SbMidiPosition.Position * 0.01));
-    MidiFile.ContinuePlaying;
-    WaveTimer.Enabled := True;
-   end;
- LbMidiPosition.caption := 'position: ' + IntToStr(SbMidiPosition.Position) + ' %';
+  with FmMiniHost do
+    if (MIDIPlaying) then
+    begin
+      WaveTimer.Enabled := False;
+      MidiFile.StopPlaying;
+      MIPanicClick(Sender);
+      MidiFile.PlayToTime(round(MidiFile.GetTrackLength * SbMidiPosition.Position * 0.01));
+      MidiFile.ContinuePlaying;
+      WaveTimer.Enabled := True;
+    end;
+
+  LbMidiPosition.caption := 'position: ' + IntToStr(SbMidiPosition.Position) + ' %';
 end;
 
 procedure TPlayer.SbPitchChange(Sender: TObject);
 begin
- FmMiniHost.Wavefile.Speed := 2 * SbPitch.Position / 341;
- LbWavPitch.Caption := 'pitch: ' + IntToStr(round(200 * SbPitch.Position / 341)) + ' %';
+  FmMiniHost.Wavefile.Speed := 2 * SbPitch.Position / 341;
+  LbWavPitch.Caption := 'pitch: ' + IntToStr(round(200 * SbPitch.Position / 341)) + ' %';
 end;
 
 procedure TPlayer.SbWavPositionChange(Sender: TObject);
 begin
- FmMiniHost.Wavefile.SetPos(round((FmMiniHost.Wavefile.Size - 1) * SbWavPosition.Position * 0.01));
- LbWavPosition.Caption := 'position: ' + inttostr(SbWavPosition.Position) + ' %';
+  FmMiniHost.Wavefile.SetPos(round((FmMiniHost.Wavefile.Size - 1) * SbWavPosition.Position * 0.01));
+  LbWavPosition.Caption := 'position: ' + inttostr(SbWavPosition.Position) + ' %';
 end;
 
 {$IFDEF FPC}
@@ -294,5 +302,3 @@ initialization
 {$ENDIF}
 
 end.
-
-
