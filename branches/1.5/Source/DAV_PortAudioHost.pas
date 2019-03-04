@@ -1,33 +1,3 @@
-{******************************************************************************}
-{                                                                              }
-{  Version: MPL 1.1 or LGPL 2.1 with linking exception                         }
-{                                                                              }
-{  The contents of this file are subject to the Mozilla Public License         }
-{  Version 1.1 (the "License"); you may not use this file except in            }
-{  compliance with the License. You may obtain a copy of the License at        }
-{  http://www.mozilla.org/MPL/                                                 }
-{                                                                              }
-{  Software distributed under the License is distributed on an "AS IS"         }
-{  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the     }
-{  License for the specific language governing rights and limitations under    }
-{  the License.                                                                }
-{                                                                              }
-{  Alternatively, the contents of this file may be used under the terms of     }
-{  the Free Pascal modified version of the GNU Lesser General Public           }
-{  License Version 2.1 (the "FPC modified LGPL License"), in which case the    }
-{  provisions of this license are applicable instead of those above.           }
-{  Please see the file LICENSE.txt for additional information concerning       }
-{  this license.                                                               }
-{                                                                              }
-{  The code is part of the Delphi ASIO & VST Project                           }
-{                                                                              }
-{  The initial developer of this code is Christian-W. Budde                    }
-{                                                                              }
-{  Portions created by Christian-W. Budde are Copyright (C) 2003-2013          }
-{  by Christian-W. Budde. All Rights Reserved.                                 }
-{                                                                              }
-{******************************************************************************}
-
 unit DAV_PortAudioHost;
 
 interface
@@ -57,8 +27,6 @@ type
     FOnSampleRateChanged: TNotifyEvent;
     FOutputLatency: Double;
     FInputLatency: Double;
-    FInputBuffers: TDAVArrayOfSingleFixedArray;
-    FOutputBuffers: TDAVArrayOfSingleFixedArray;
     function GetActive: Boolean;
     function GetDefaultInputDevice: LongInt;
     function GetDefaultOutputDevice: LongInt;
@@ -67,9 +35,6 @@ type
     function GetHostApiCount: LongInt;
     function GetHostApiDefaultIndex: LongInt;
     function GetHostApiInfo(Index: Integer): PPaHostApiInfo;
-    function StreamCallback(Input: Pointer; Output: Pointer;
-      FrameCount: NativeUInt; TimeInfo: PPaStreamCallbackTimeInfo;
-      StatusFlags: TPaStreamCallbackFlags): LongInt;
     procedure SetActive(const Value: Boolean);
     procedure SetInputDevice(const Value: LongInt);
     procedure SetOutputDevice(const Value: LongInt);
@@ -77,14 +42,22 @@ type
   protected
     FInputStreamParameters: TPaStreamParameters;
     FOutputStreamParameters: TPaStreamParameters;
+    FInputBuffers: TDAVArrayOfSingleFixedArray;
+    FOutputBuffers: TDAVArrayOfSingleFixedArray;
     FStream: PPaStream;
     FOnStreamCallback: TPortAudioStreamCallbackEvent;
+
+    procedure InputDeviceChanged; virtual;
+    procedure OutputDeviceChanged; virtual;
+    procedure SampleRateChanged; virtual;
+
     procedure UpdateDeviceList;
     procedure UpdateInputStreamParameters;
     procedure UpdateOutputStreamParameters;
-    procedure InputDeviceChanged;
-    procedure OutputDeviceChanged;
-    procedure SampleRateChanged;
+
+    function StreamCallback(Input: Pointer; Output: Pointer;
+      FrameCount: NativeUInt; TimeInfo: PPaStreamCallbackTimeInfo;
+      StatusFlags: TPaStreamCallbackFlags): LongInt; virtual;
   public
     constructor Create; virtual;
     destructor Destroy; override;
@@ -139,7 +112,11 @@ begin
   if Pa_GetVersion < 1899 then
     raise EPortAudio.CreateFmt(RCStrVersionNotSupported, [Pa_GetVersionText]);
 
-  PaError := Pa_Initialize;
+  try
+    PaError := Pa_Initialize;
+  except
+    PaError := paNotInitialized;
+  end;
 
   if PaError <> 0 then
     raise EPortAudio.Create(string(Pa_GetErrorText(PaError)));

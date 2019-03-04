@@ -239,18 +239,24 @@ type
   // MIDI output devices
   TMidiOutput = class(TMidiDevices)
     constructor Create; override;
-    procedure Open(const ADeviceIndex: Integer); override;
+
     // open a specific input device
-    procedure Close(const ADeviceIndex: Integer); override;
+    procedure Open(const ADeviceIndex: Integer); override;
+
     // close a specific device
+    procedure Close(const ADeviceIndex: Integer); override;
+
+    // send some midi data to the indexed device
     procedure Send(const ADeviceIndex: Integer;
       const AStatus, AData1, AData2: Byte);
-    // send some midi data to the indexed device
-    procedure SendSysEx(const ADeviceIndex: Integer;
-      const AStream: TMemoryStream); overload;
+
     // send system exclusive data to a device
     procedure SendSysEx(const ADeviceIndex: Integer;
+      const AStream: TMemoryStream); overload;
+    procedure SendSysEx(const ADeviceIndex: Integer;
       const AString: string); overload;
+    procedure SendSysEx(const ADeviceIndex: Integer;
+      const AData: Pointer; const ASize: Integer); overload;
   end;
 
 function SysExStreamToStr(const AStream: TMemoryStream): string;
@@ -534,14 +540,23 @@ end;
 
 procedure TMidiOutput.SendSysEx(const ADeviceIndex: Integer;
   const AStream: TMemoryStream);
-var
-  lSysExHeader: TMidiHdr;
 begin
   if AStream.Size > 0 then
   begin
     AStream.Position := 0;
-    lSysExHeader.dwBufferLength := AStream.Size;
-    lSysExHeader.lpData := AStream.Memory;
+    SendSysEx(ADeviceIndex, AStream.Memory, AStream.Size);
+  end;
+end;
+
+procedure TMidiOutput.SendSysEx(const ADeviceIndex: Integer;
+  const AData: Pointer; const ASize: Integer);
+var
+  lSysExHeader: TMidiHdr;
+begin
+  if ASize > 0 then
+  begin
+    lSysExHeader.dwBufferLength := ASize;
+    lSysExHeader.lpData := AData;
     lSysExHeader.dwFlags := 0;
     MidiResult := midiOutPrepareHeader(GetHandle(ADeviceIndex), @lSysExHeader,
       SizeOf(TMidiHdr));

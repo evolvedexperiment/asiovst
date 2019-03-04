@@ -370,17 +370,17 @@ function VstModuleMain(AudioMasterCallback: TAudioMasterCallbackFunc;
 var
   BasicVstModule : TBasicVSTModule;
 begin
- try
-  BasicVstModule := BasicVSTModuleClass.Create(Application);
-  with BasicVstModule do
-   begin
-    AudioMaster := AudioMasterCallback;
-    Result := Effect;
-   end;
-  GVstInstanceList.Add(BasicVstModule);
- except
-  Result := nil;
- end;
+  try
+    BasicVstModule := BasicVSTModuleClass.Create(Application);
+    with BasicVstModule do
+    begin
+      AudioMaster := AudioMasterCallback;
+      Result := Effect;
+    end;
+    GVstInstanceList.Add(BasicVstModule);
+  except
+    Result := nil;
+  end;
 end;
 
 var
@@ -389,35 +389,36 @@ var
 
 function GetWinampModule(const Which: Integer): PWinAmpDSPModule; cdecl;
 begin
- case Which of
-   0 : begin
+  case Which of
+    0 :
+      begin
         GetMem(Result, SizeOf(TWinAmpDSPModule));
         Result^.Description := PAnsiChar(AnsiString(WAVstModule.GetStaticDescription));
         Result^.Init := Init;
         Result^.Config := Config;
         Result^.ModifySamples := ModifySamplesDummy;
         Result^.Quit := Quit;
-       end
- else
-  Result := nil;
- end;
+      end
+    else
+      Result := nil;
+  end;
 end;
 
 function WinampDSPModuleHeader(const BasicVSTModuleClass: TBasicVSTModuleClass): PWinAmpDSPHeader;
 begin
- WAVstModule := BasicVSTModuleClass;
- try
-  with WADSPHeader do
-   begin
-    Version     := $20;
-    Key         := $21;
-    Description := PAnsiChar(AnsiString(WAVstModule.GetStaticDescription));
-    GetModule   := GetWinampModule;
-   end;
-  Result := @WADSPHeader;
- except
-  Result := nil;
- end;
+  WAVstModule := BasicVSTModuleClass;
+  try
+    with WADSPHeader do
+    begin
+      Version     := $20;
+      Key         := $21;
+      Description := PAnsiChar(AnsiString(WAVstModule.GetStaticDescription));
+      GetModule   := GetWinampModule;
+    end;
+    Result := @WADSPHeader;
+  except
+    Result := nil;
+  end;
 end;
 
 
@@ -425,93 +426,94 @@ end;
 
 constructor TBasicVSTModule.Create(AOwner: TComponent);
 begin
- {$IFDEF DebugLog}
- FLog := TStringList.Create;
- FTmStmp := Now;
- FLog.Add('Create: ' + TimeToStr(FTmStmp));
- if not (csDesigning in ComponentState) then
+  {$IFDEF DebugLog}
+  FLog := TStringList.Create;
+  FTmStmp := Now;
+  FLog.Add('Create: ' + TimeToStr(FTmStmp));
+  if not (csDesigning in ComponentState) then
   try
-   FLog.SaveToFile(CDebugLogFile);
+    FLog.SaveToFile(CDebugLogFile);
   except
   end;
- {$ENDIF}
+  {$ENDIF}
 
- {$IFDEF UseDelphi} inherited CreateNew(AOwner); {$ENDIF}
- with FEffect do
+  {$IFDEF UseDelphi} inherited CreateNew(AOwner); {$ENDIF}
+  with FEffect do
   begin
-   Magic           := 'PtsV';
-   EffectFlags     := [effFlagsCanReplacing];
-   ReservedForHost := nil;
-   Resvd2          := nil;
-   {$IFDEF UseAudioEffectPtr}
-   AudioEffectPtr  := Self;
-   User            := nil;
-   {$ELSE}
-   AudioEffectPtr  := nil;
-   User            := Self;
-   {$ENDIF}
-   uniqueID        := 'fEoN';
-   ioRatio         := 1;
-   numParams       := 0;
-   numPrograms     := 0;
-   numInputs       := 2;
-   numOutputs      := 2;
+    Magic           := 'PtsV';
+    EffectFlags     := [effFlagsCanReplacing];
+    ReservedForHost := nil;
+    Resvd2          := nil;
+    {$IFDEF UseAudioEffectPtr}
+    AudioEffectPtr  := Self;
+    User            := nil;
+    {$ELSE}
+    AudioEffectPtr  := nil;
+    User            := Self;
+    {$ENDIF}
+    uniqueID        := 'fEoN';
+    ioRatio         := 1;
+    numParams       := 0;
+    numPrograms     := 0;
+    numInputs       := 2;
+    numOutputs      := 2;
 
-   {$IFNDEF UseAudioEffectPtr}
-   Dispatcher         := @DispatchEffectFuncUserPtr;
-   SetParameter       := @SetParameterFuncUserPtr;
-   GetParameter       := @GetParameterFuncUserPtr;
-   {$ELSE}
-   Dispatcher         := @DispatchEffectFuncAudioEffectPtr;
-   SetParameter       := @SetParameterFuncAudioEffectPtr;
-   GetParameter       := @GetParameterFuncAudioEffectPtr;
-   {$ENDIF}
-   Process            := @ProcessFuncCheck;
-   Process32Replacing := @Process32ReplacingFuncCheck;
-   Process64Replacing := @Process64ReplacingFuncCheck;
+    {$IFNDEF UseAudioEffectPtr}
+    Dispatcher         := @DispatchEffectFuncUserPtr;
+    SetParameter       := @SetParameterFuncUserPtr;
+    GetParameter       := @GetParameterFuncUserPtr;
+    {$ELSE}
+    Dispatcher         := @DispatchEffectFuncAudioEffectPtr;
+    SetParameter       := @SetParameterFuncAudioEffectPtr;
+    GetParameter       := @GetParameterFuncAudioEffectPtr;
+    {$ENDIF}
+    Process            := @ProcessFuncCheck;
+    Process32Replacing := @Process32ReplacingFuncCheck;
+    Process64Replacing := @Process64ReplacingFuncCheck;
   end;
 
- FWinAmpDspModule    := nil;
- FWinAmpSampleRate   := 44100;
- FWinAmpSampleFrames := 0;
- FWinAmpNrChannels   := 0;
- FWinAmpBypass       := False;
+  FWinAmpDspModule    := nil;
+  FWinAmpSampleRate   := 44100;
+  FWinAmpSampleFrames := 0;
+  FWinAmpNrChannels   := 0;
+  FWinAmpBypass       := False;
 
- {$IFNDEF UseAudioEffectPtr}
- FUseAudioEffectPtr  := False;
- {$ENDIF}
+  {$IFNDEF UseAudioEffectPtr}
+  FUseAudioEffectPtr  := False;
+  {$ENDIF}
 end;
 
 destructor TBasicVSTModule.Destroy;
 var
   Index : Integer;
 begin
- try
-  {$IFDEF DebugLog}
-  AddLogMessage('TBasicVSTModule.Destroy');
-  if Assigned(FLog) then FLog.SaveToFile(CDebugLogFile);
-  {$ENDIF}
-  for Index := 0 to Length(FWinAmpInputBuffer)  - 1 do Dispose(FWinAmpInputBuffer[Index]);
-  for Index := 0 to Length(FWinAmpOutputBuffer) - 1 do Dispose(FWinAmpOutputBuffer[Index]);
- finally
-  inherited;
-  {$IFDEF DebugLog} if Assigned(FLog) then FreeAndNil(FLog); {$ENDIF}
- end;
+  try
+    {$IFDEF DebugLog}
+    AddLogMessage('TBasicVSTModule.Destroy');
+    if Assigned(FLog) then
+      FLog.SaveToFile(CDebugLogFile);
+    {$ENDIF}
+    for Index := 0 to Length(FWinAmpInputBuffer)  - 1 do Dispose(FWinAmpInputBuffer[Index]);
+    for Index := 0 to Length(FWinAmpOutputBuffer) - 1 do Dispose(FWinAmpOutputBuffer[Index]);
+  finally
+    inherited;
+    {$IFDEF DebugLog} if Assigned(FLog) then FreeAndNil(FLog); {$ENDIF}
+  end;
 end;
 
 {$IFDEF DebugLog}
 procedure TBasicVSTModule.AddLogMessage(const Text: string);
 begin
- if Assigned(FLog) then
+  if Assigned(FLog) then
   try
-   FLog.Add(TimeToStr(Now - FTmStmp) + ' | ' + Text);
-   if not (csDesigning in ComponentState) then
+    FLog.Add(TimeToStr(Now - FTmStmp) + ' | ' + Text);
+    if not (csDesigning in ComponentState) then
     begin
-     if FileExists(CDebugLogFile + '.bak')
-      then DeleteFile(CDebugLogFile + '.bak');
-     if FileExists(CDebugLogFile)
-      then RenameFile(CDebugLogFile, CDebugLogFile + '.bak');
-     FLog.SaveToFile(CDebugLogFile);
+      if FileExists(CDebugLogFile + '.bak') then
+        DeleteFile(CDebugLogFile + '.bak');
+      if FileExists(CDebugLogFile) then
+        RenameFile(CDebugLogFile, CDebugLogFile + '.bak');
+      FLog.SaveToFile(CDebugLogFile);
     end;
   except
   end;
@@ -520,45 +522,45 @@ end;
 
 function TBasicVSTModule.GetEffect: PVSTEffect;
 begin
- Result := @FEffect;
+  Result := @FEffect;
 end;
 
 procedure TBasicVSTModule.SetAudioMaster(const AM :TAudioMasterCallbackFunc);
 {$IFNDEF UseAudioEffectPtr}
 var
   HostProduct : PAnsiChar;
-{$ENDIF}  
+{$ENDIF}
 begin
- {$IFDEF DebugLog} AddLogMessage('TBasicVSTModule.SetAudioMaster'); {$ENDIF}
+  {$IFDEF DebugLog} AddLogMessage('TBasicVSTModule.SetAudioMaster'); {$ENDIF}
 
- FAudioMaster := AM;
- if CallAudioMaster(amVersion) = 0
-  then raise EVstError.Create('AudioMaster Error');
+  FAudioMaster := AM;
+  if CallAudioMaster(amVersion) = 0 then
+    raise EVstError.Create('AudioMaster Error');
 
- {$IFDEF DebugLog} AddLogMessage('-> After check audiomaster version'); {$ENDIF}
+  {$IFDEF DebugLog} AddLogMessage('-> After check audiomaster version'); {$ENDIF}
 
- {$IFNDEF UseAudioEffectPtr}
- GetMem(HostProduct, 256);
- FillChar(HostProduct^, 256, 0);
- try
-  GetHostProductString(HostProduct);
-  FUseAudioEffectPtr := (StrPos('energyXT', HostProduct) <> nil) or
-    (StrPos('Sound Forge Pro 10.0', HostProduct) <> nil);
+  {$IFNDEF UseAudioEffectPtr}
+  GetMem(HostProduct, 256);
+  FillChar(HostProduct^, 256, 0);
+  try
+    GetHostProductString(HostProduct);
+    FUseAudioEffectPtr := (StrPos('energyXT', HostProduct) <> nil) or
+      (StrPos('Sound Forge Pro 10.0', HostProduct) <> nil);
 
-  {$IFDEF DebugLog} AddLogMessage('-> Get Host Product String'); {$ENDIF}
+    {$IFDEF DebugLog} AddLogMessage('-> Get Host Product String'); {$ENDIF}
 
-  if FUseAudioEffectPtr then
-   with FEffect do
-    begin
-     AudioEffectPtr := Self;
-     User           := nil;
-     Dispatcher     := @DispatchEffectFuncAudioEffectPtr;
-     SetParameter   := @SetParameterFuncAudioEffectPtr;
-     GetParameter   := @GetParameterFuncAudioEffectPtr;
-    end;
- finally
-  Dispose(HostProduct);
- end;
+    if FUseAudioEffectPtr then
+      with FEffect do
+      begin
+       AudioEffectPtr := Self;
+       User           := nil;
+       Dispatcher     := @DispatchEffectFuncAudioEffectPtr;
+       SetParameter   := @SetParameterFuncAudioEffectPtr;
+       GetParameter   := @GetParameterFuncAudioEffectPtr;
+      end;
+  finally
+    Dispose(HostProduct);
+  end;
  {$ENDIF}
 end;
 
@@ -566,20 +568,21 @@ function TBasicVSTModule.CallAudioMaster(const Opcode: TAudioMasterOpcode;
   const Index: Integer = 0; const Value: TVstIntPtr = 0;
   const PTR: Pointer = nil; const Opt: Single = 0): TVstIntPtr;
 begin
- {$IFDEF DebugLog}
- AddLogMessage('TBasicVSTModule.CallAudioMaster; Opcode: ' +
-   IntToStr(Integer(Opcode)));
- {$ENDIF}
+  {$IFDEF DebugLog}
+  AddLogMessage('TBasicVSTModule.CallAudioMaster; Opcode: ' +
+    IntToStr(Integer(Opcode)));
+  {$ENDIF}
 
- if Assigned(FAudioMaster)
-  then Result := FAudioMaster(@FEffect, Opcode, Index, Value, PTR, Opt)
-  else Result := 0;
+  if Assigned(FAudioMaster) then
+    Result := FAudioMaster(@FEffect, Opcode, Index, Value, PTR, Opt)
+  else
+    Result := 0;
 end;
 
 
 class function TBasicVSTModule.GetStaticDescription: string;
 begin
- Result := 'Delphi ASIO & VST Package Plugin';
+  Result := 'Delphi ASIO & VST Package Plugin';
 end;
 
 
@@ -589,255 +592,266 @@ end;
 
 function TBasicVSTModule.GetMasterVersion: Integer;
 begin
- Result := CallAudioMaster(amVersion);
- if Result = 0 then Result := 1;
+  Result := CallAudioMaster(amVersion);
+  if Result = 0 then
+    Result := 1;
 end;
 
 function TBasicVSTModule.GetCurrentUniqueId: TChunkName;
 begin
- if Assigned(FAudioMaster)
-  then Result := TChunkName(Integer(CallAudioMaster(amCurrentId)))
-  else Result := #0#0#0#0;
+  if Assigned(FAudioMaster) then
+    Result := TChunkName(Integer(CallAudioMaster(amCurrentId)))
+  else
+    Result := #0#0#0#0;
 end;
 
 procedure TBasicVSTModule.MasterIdle;
 begin
- CallAudioMaster(amIdle);
+  CallAudioMaster(amIdle);
 end;
 
 function TBasicVSTModule.IsInputConnected(const Input: Integer): Boolean;
 begin
- Result := (CallAudioMaster(amPinConnected, Input) = 0);
+  Result := (CallAudioMaster(amPinConnected, Input) = 0);
 end;
 
 function TBasicVSTModule.IsOutputConnected(const Output: Integer): Boolean;
 begin
- Result := (CallAudioMaster(amPinConnected, Output, 1) = 0);
+  Result := (CallAudioMaster(amPinConnected, Output, 1) = 0);
 end;
 
 procedure TBasicVSTModule.WantEvents(const Filter: TVstIntPtr);
 begin
- CallAudioMaster(amWantMidi, 0, Filter);
+  CallAudioMaster(amWantMidi, 0, Filter);
 end;
 
 function TBasicVSTModule.GetTimeInfo(const Filter: TVstIntPtr): PVstTimeInfo;
 begin
- Result := PVstTimeInfo(CallAudioMaster(amGetTime, 0, Filter));
+  Result := PVstTimeInfo(CallAudioMaster(amGetTime, 0, Filter));
 end;
 
 procedure TBasicVSTModule.SetTimeInfo(const Filter: TVstIntPtr; var VstTimeInfo: PVstTimeInfo);
 begin
- CallAudioMaster(amSetTime, 0, Filter, @VstTimeInfo);
+  CallAudioMaster(amSetTime, 0, Filter, @VstTimeInfo);
 end;
 
 function TBasicVSTModule.TempoAt(const Pos: TVstIntPtr): TVstIntPtr;
 begin
- Result := CallAudioMaster(amTempoAt, 0, Pos);
+  Result := CallAudioMaster(amTempoAt, 0, Pos);
 end;
 
 function TBasicVSTModule.SendVstEventsToHost(var Events: TVstEvents): Boolean;
 begin
- Result := CallAudioMaster(amProcessEvents, 0, 0, @Events) = 1;
+  Result := CallAudioMaster(amProcessEvents, 0, 0, @Events) = 1;
 end;
 
 function TBasicVSTModule.GetNumAutomatableParameters: Integer;
 begin
- Result := CallAudioMaster(amGetNumAutomatableParameters);
+  Result := CallAudioMaster(amGetNumAutomatableParameters);
 end;
 
-procedure TBasicVSTModule.SetParameterAutomated(const Index: Integer; const Value: Single);
+procedure TBasicVSTModule.SetParameterAutomated(const Index: Integer;
+  const Value: Single);
 begin
- CallAudioMaster(amAutomate, Index, 0, nil, Value);
+  CallAudioMaster(amAutomate, Index, 0, nil, Value);
 end;
 
 function TBasicVSTModule.GetParameterQuantization: TVstIntPtr;
 begin
- Result := CallAudioMaster(amGetParameterQuantization);
+  Result := CallAudioMaster(amGetParameterQuantization);
 end;
 
 function TBasicVSTModule.GetInputLatency: TVstIntPtr;
 begin
- Result := CallAudioMaster(amGetInputLatency);
+  Result := CallAudioMaster(amGetInputLatency);
 end;
 
 function TBasicVSTModule.GetOutputLatency: TVstIntPtr;
 begin
- Result := CallAudioMaster(amGetOutputLatency);
+  Result := CallAudioMaster(amGetOutputLatency);
 end;
 
 function TBasicVSTModule.GetPreviousPlug(const Input: TVstIntPtr): PVSTEffect;
 begin
- Result := PVSTEffect(CallAudioMaster(amGetPreviousPlug, 0, Input));
+  Result := PVSTEffect(CallAudioMaster(amGetPreviousPlug, 0, Input));
 end;
 
 function TBasicVSTModule.GetNextPlug(const Output: TVstIntPtr): PVSTEffect;
 begin
- Result := PVSTEffect(CallAudioMaster(amGetNextPlug, 0, Output));
+  Result := PVSTEffect(CallAudioMaster(amGetNextPlug, 0, Output));
 end;
 
 function TBasicVSTModule.WillProcessReplacing: Integer;
 begin
- Result := CallAudioMaster(amWillReplaceOrAccumulate);
+  Result := CallAudioMaster(amWillReplaceOrAccumulate);
 end;
 
 function TBasicVSTModule.GetCurrentProcessLevel: Integer;
 begin
- Result := CallAudioMaster(amGetCurrentProcessLevel);
+  Result := CallAudioMaster(amGetCurrentProcessLevel);
 end;
 
 function TBasicVSTModule.GetAutomationState: Integer;
 begin
- Result := CallAudioMaster(amGetAutomationState);
+  Result := CallAudioMaster(amGetAutomationState);
 end;
 
-function TBasicVSTModule.OfflineRead(var Offline: TVstOfflineTaskRecord; const Option: TVstOfflineOption; const ReadSource: Boolean): Boolean;
+function TBasicVSTModule.OfflineRead(var Offline: TVstOfflineTaskRecord;
+  const Option: TVstOfflineOption; const ReadSource: Boolean): Boolean;
 begin
- Result := CallAudioMaster(amOfflineRead, Integer(ReadSource), TVstIntPtr(Option), @Offline) <> 0;
+  Result := CallAudioMaster(amOfflineRead, Integer(ReadSource),
+    TVstIntPtr(Option), @Offline) <> 0;
 end;
 
-function TBasicVSTModule.OfflineWrite(var Offline: TVstOfflineTaskRecord; const Option: TVstOfflineOption): Boolean;
+function TBasicVSTModule.OfflineWrite(var Offline: TVstOfflineTaskRecord;
+  const Option: TVstOfflineOption): Boolean;
 begin
- Result := CallAudioMaster(amOfflineWrite, 0, TVstIntPtr(Option), @Offline) <> 0;
+  Result := CallAudioMaster(amOfflineWrite, 0, TVstIntPtr(Option),
+    @Offline) <> 0;
 end;
 
 function TBasicVSTModule.OfflineStart(var AudioFile: TVstAudioFile;
   const numAudioFiles: Integer; const numNewAudioFiles: TVstIntPtr): Boolean;
 begin
- Result := CallAudioMaster(amOfflineStart, numNewAudioFiles, numAudioFiles, @AudioFile) <> 0;
+  Result := CallAudioMaster(amOfflineStart, numNewAudioFiles, numAudioFiles, @AudioFile) <> 0;
 end;
 
 function TBasicVSTModule.OfflineGetCurrentPass: Integer;
 begin
- Result := CallAudioMaster(amOfflineGetCurrentPass);
+  Result := CallAudioMaster(amOfflineGetCurrentPass);
 end;
 
 function TBasicVSTModule.OfflineGetCurrentMetaPass: Integer;
 begin
- Result := CallAudioMaster(amOfflineGetCurrentMetaPass);
+  Result := CallAudioMaster(amOfflineGetCurrentMetaPass);
 end;
 
 procedure TBasicVSTModule.SetOutputSampleRate(const SampleRate: Single);
 begin
- CallAudioMaster(amSetOutputSampleRate, 0, 0, nil, SampleRate);
+  CallAudioMaster(amSetOutputSampleRate, 0, 0, nil, SampleRate);
 end;
 
 function TBasicVSTModule.GetHostVendorString(const Text: PAnsiChar): Boolean;
 begin
- Result := CallAudioMaster(amGetVendorString, 0, 0, Text) <> 0;
+  Result := CallAudioMaster(amGetVendorString, 0, 0, Text) <> 0;
 end;
 
 function TBasicVSTModule.GetHostProductString(const Text: PAnsiChar): Boolean;
 begin
- {$IFDEF DebugLog}
- AddLogMessage('TBasicVSTModule.GetHostProductString;');
- AddLogMessage('--> Before AudioMaster Call');
- {$ENDIF}
+  {$IFDEF DebugLog}
+  AddLogMessage('TBasicVSTModule.GetHostProductString;');
+  AddLogMessage('--> Before AudioMaster Call');
+  {$ENDIF}
 
- Result := CallAudioMaster(amGetProductString, 0, 0, Text) <> 0;
+  Result := CallAudioMaster(amGetProductString, 0, 0, Text) <> 0;
 
- {$IFDEF DebugLog} AddLogMessage('--> After AudioMaster Call'); {$ENDIF}
+  {$IFDEF DebugLog} AddLogMessage('--> After AudioMaster Call'); {$ENDIF}
 end;
 
 function TBasicVSTModule.GetHostVendorVersion: Integer;
 begin
- Result := CallAudioMaster(amGetVendorVersion);
+  Result := CallAudioMaster(amGetVendorVersion);
 end;
 
 function TBasicVSTModule.HostVendorSpecific(const Index: Integer;
   const Value: TVstIntPtr; const PtrArg: Pointer;
   const FloatArg: Single): Integer;
 begin
- Result := CallAudioMaster(amVendorSpecific, Index, Value, ptrArg, floatArg);
+  Result := CallAudioMaster(amVendorSpecific, Index, Value, ptrArg, floatArg);
 end;
 
 function TBasicVSTModule.GetCanHostDo(Text: AnsiString): Integer;
 begin
- Result := CallAudioMaster(amCanDo, 0, 0, PAnsiChar(Text));
+  Result := CallAudioMaster(amCanDo, 0, 0, PAnsiChar(Text));
 end;
 
 function TBasicVSTModule.GetHostLanguage: Integer;
 begin
- Result := CallAudioMaster(amGetLanguage);
+  Result := CallAudioMaster(amGetLanguage);
 end;
 
 function TBasicVSTModule.OpenWindow(const aWindow: PVstWindow): Pointer;
 begin
- Result := Pointer(CallAudioMaster(amOpenWindow, 0, 0, aWindow));
+  Result := Pointer(CallAudioMaster(amOpenWindow, 0, 0, aWindow));
 end;
 
 function TBasicVSTModule.CloseWindow(const aWindow: PVstWindow): Boolean;
 begin
- Result := CallAudioMaster(amCloseWindow, 0, 0, aWindow) <> 0;
+  Result := CallAudioMaster(amCloseWindow, 0, 0, aWindow) <> 0;
 end;
 
 function TBasicVSTModule.GetDirectory: Pointer;
 begin
- Result := Pointer(CallAudioMaster(amGetDirectory));
+  Result := Pointer(CallAudioMaster(amGetDirectory));
 end;
 
 function TBasicVSTModule.UpdateDisplay: Boolean;
 begin
- Result := CallAudioMaster(amUpdateDisplay) <> 0;
+  Result := CallAudioMaster(amUpdateDisplay) <> 0;
 end;
 
 function TBasicVSTModule.IOChanged: Boolean;
 begin
- Result := CallAudioMaster(amIOChanged) <> 0;
+  Result := CallAudioMaster(amIOChanged) <> 0;
 end;
 
 function TBasicVSTModule.NeedIdle: Boolean;
 begin
- Result := CallAudioMaster(amNeedIdle) <> 0;
+  Result := CallAudioMaster(amNeedIdle) <> 0;
 end;
 
 function TBasicVSTModule.SizeWindow(const Width, Height: Integer): Boolean;
 begin
- Result := CallAudioMaster(amSizeWindow, Width, Height) <> 0;
+  Result := CallAudioMaster(amSizeWindow, Width, Height) <> 0;
 end;
 
 function TBasicVSTModule.BeginEdit(const Index: Integer): Boolean;
 begin
- Result := CallAudioMaster(amBeginEdit, Index) <> 0;
+  Result := CallAudioMaster(amBeginEdit, Index) <> 0;
 end;
 
 function TBasicVSTModule.EndEdit(const Index: Integer): Boolean;
 begin
- Result := CallAudioMaster(amEndEdit, Index) <> 0;
+  Result := CallAudioMaster(amEndEdit, Index) <> 0;
 end;
 
-function TBasicVSTModule.OpenFileSelector(var VstFileSelect: TVstFileSelect): Boolean;
+function TBasicVSTModule.OpenFileSelector(var VstFileSelect
+  : TVstFileSelect): Boolean;
 begin
- Result := CallAudioMaster(amOpenFileSelector, 0, 0, @VstFileSelect) <> 0;
+  Result := CallAudioMaster(amOpenFileSelector, 0, 0, @VstFileSelect) <> 0;
 end;
 
-function TBasicVSTModule.CloseFileSelector(var VstFileSelect: TVstFileSelect): Boolean;
+function TBasicVSTModule.CloseFileSelector(var VstFileSelect
+  : TVstFileSelect): Boolean;
 begin
- Result := CallAudioMaster(amCloseFileSelector, 0, 0, @VstFileSelect) <> 0;
+  Result := CallAudioMaster(amCloseFileSelector, 0, 0, @VstFileSelect) <> 0;
 end;
 
 function TBasicVSTModule.GetChunkFile(const NativePath: Pointer): Boolean;
 begin
- Result := CallAudioMaster(amGetChunkFile, 0, 0, NativePath) <> 0;
+  Result := CallAudioMaster(amGetChunkFile, 0, 0, NativePath) <> 0;
 end;
 
 function TBasicVSTModule.UpdateSampleRate: Double;
 begin
- Result := CallAudioMaster(amGetSampleRate);
+  Result := CallAudioMaster(amGetSampleRate);
 end;
 
 function TBasicVSTModule.UpdateBlockSize: Integer;
 begin
- Result := CallAudioMaster(amGetBlockSize);
+  Result := CallAudioMaster(amGetBlockSize);
 end;
 
 function TBasicVSTModule.GetInputSpeakerArrangement: PVstSpeakerArrangement;
 begin
- Result := PVstSpeakerArrangement(CallAudioMaster(amGetInputSpeakerArrangement));
+  Result := PVstSpeakerArrangement
+    (CallAudioMaster(amGetInputSpeakerArrangement));
 end;
 
 function TBasicVSTModule.GetOutputSpeakerArrangement: PVstSpeakerArrangement;
 begin
- Result := PVstSpeakerArrangement(CallAudioMaster(amGetOutputSpeakerArrangement));
+  Result := PVstSpeakerArrangement
+    (CallAudioMaster(amGetOutputSpeakerArrangement));
 end;
 
 function TBasicVSTModule.WinAmpModifySamples(const Samples: Pointer;
@@ -845,203 +859,215 @@ function TBasicVSTModule.WinAmpModifySamples(const Samples: Pointer;
 var
  i : Integer;
 begin
- Result := SampleFrames;
+  Result := SampleFrames;
 
- // TEST if maximum blocksize changed
- if SampleFrames > FWinAmpSampleRate then
+  // TEST if maximum blocksize changed
+  if SampleFrames > FWinAmpSampleRate then
   begin
-   FWinAmpSampleRate := SampleFrames;
-//   SetBlockSize(SampleFrames);
+    FWinAmpSampleRate := SampleFrames;
+//    SetBlockSize(SampleFrames);
 
-   // reallocate input VST buffers
-   for i := 0 to Length(FWinAmpInputBuffer) - 1
-    do ReallocMem(FWinAmpInputBuffer[i], SampleFrames * SizeOf(Single));
+    // reallocate input VST buffers
+    for i := 0 to Length(FWinAmpInputBuffer) - 1 do
+      ReallocMem(FWinAmpInputBuffer[i], SampleFrames * SizeOf(Single));
 
-   // reallocate output VST buffers
-   for i := 0 to Length(FWinAmpOutputBuffer) - 1
-    do ReallocMem(FWinAmpOutputBuffer[i], SampleFrames * SizeOf(Single));
+    // reallocate output VST buffers
+    for i := 0 to Length(FWinAmpOutputBuffer) - 1 do
+      ReallocMem(FWinAmpOutputBuffer[i], SampleFrames * SizeOf(Single));
   end;
 
- // TEST if samplerate changed
- if SampleRate <> FWinAmpSampleRate then
+  // TEST if samplerate changed
+  if SampleRate <> FWinAmpSampleRate then
   begin
-   FWinAmpSampleRate := SampleRate;
+    FWinAmpSampleRate := SampleRate;
 //   SetSampleRate(SampleRate);
   end;
 
- case BitPerSample of
-   8: begin
-       FWinAmpConvertIn  := ConvertInterleaved8bitToFloat;
-       FWinAmpConvertOut := ConvertFloatToInterleaved8bit;
+  case BitPerSample of
+    8:
+      begin
+        FWinAmpConvertIn  := ConvertInterleaved8bitToFloat;
+        FWinAmpConvertOut := ConvertFloatToInterleaved8bit;
       end;
-  16: begin
+   16:
+     begin
        FWinAmpConvertIn  := ConvertInterleaved16bitToFloat;
        FWinAmpConvertOut := ConvertFloatToInterleaved16bit;
-      end;
-  24: begin
+     end;
+   24:
+     begin
        FWinAmpConvertIn  := ConvertInterleaved24bitToFloat;
        FWinAmpConvertOut := ConvertFloatToInterleaved24bit;
-      end;
-  32: begin
+     end;
+   32:
+     begin
        FWinAmpConvertIn  := ConvertInterleavedToFloat;
        FWinAmpConvertOut := ConvertFloatToInterleaved;
-      end;
-  else
-   begin
-    FWinAmpConvertIn  := ConvertDummy;
-    FWinAmpConvertOut := ConvertDummy;
-   end;
- end;
+     end;
+   else
+     begin
+       FWinAmpConvertIn  := ConvertDummy;
+       FWinAmpConvertOut := ConvertDummy;
+     end;
+  end;
 
- // convert interleaved to float data
- FWinAmpConvertIn(Samples, ChannelCount, SampleFrames);
+  // convert interleaved to float data
+  FWinAmpConvertIn(Samples, ChannelCount, SampleFrames);
 
- // process VST plugin
- FEffect.Process32Replacing(@FEffect, @FWinAmpInputBuffer[0],
-   @FWinAmpOutputBuffer[0], SampleFrames);
+  // process VST plugin
+  FEffect.Process32Replacing(@FEffect, @FWinAmpInputBuffer[0],
+    @FWinAmpOutputBuffer[0], SampleFrames);
 
- // convert float to interleaved data
- FWinAmpConvertOut(Samples, ChannelCount, SampleFrames);
+  // convert float to interleaved data
+  FWinAmpConvertOut(Samples, ChannelCount, SampleFrames);
 end;
 
 procedure TBasicVSTModule.WinAmpConfig;
 begin
- if not Assigned(FWinAmpEditorForm) then
-  begin
-   FWinAmpEditorForm := TForm.Create(Self);
-  end;
- FWinAmpEditorForm.Show;
+  if not Assigned(FWinAmpEditorForm) then
+    FWinAmpEditorForm := TForm.Create(Self);
+
+  FWinAmpEditorForm.Show;
 end;
 
 procedure TBasicVSTModule.WinAmpQuit;
 begin
- FWinAmpBypass := True;
+  FWinAmpBypass := True;
 end;
 
-procedure TBasicVSTModule.ConvertDummy(const Data: Pointer; const ChannelCount,
-  SampleFrames: Cardinal);
+procedure TBasicVSTModule.ConvertDummy(const Data: Pointer;
+  const ChannelCount, SampleFrames: Cardinal);
 begin
- // do nothing (dummy)
+  // do nothing (dummy)
 end;
 
 procedure TBasicVSTModule.ConvertFloatToInterleaved8bit(const Data: Pointer;
   const ChannelCount, SampleFrames: Cardinal);
 var
-  I8           : PShortIntArray absolute Data;
-  ChannelIndex : Cardinal;
-  SampleIndex  : Cardinal;
+  I8: PShortIntArray absolute Data;
+  ChannelIndex: Cardinal;
+  SampleIndex: Cardinal;
 const
-  MulFakDith8 : Single = $7E;
+  MulFakDith8: Single = $7E;
 begin
- for ChannelIndex := 0 to Min(Length(FWinAmpOutputBuffer), ChannelCount) - 1 do
-  for SampleIndex := 0 to SampleFrames - 1
-   do I8^[SampleIndex * ChannelCount + ChannelIndex] := Round(FWinAmpOutputBuffer[ChannelIndex]^[SampleIndex] * MulFakDith8 + random - random);
+  for ChannelIndex := 0 to Min(Length(FWinAmpOutputBuffer), ChannelCount) - 1 do
+    for SampleIndex := 0 to SampleFrames - 1 do
+      I8^[SampleIndex * ChannelCount + ChannelIndex] :=
+        Round(FWinAmpOutputBuffer[ChannelIndex]^[SampleIndex] * MulFakDith8 +
+        random - random);
 end;
 
 procedure TBasicVSTModule.ConvertFloatToInterleaved16bit(const Data: Pointer;
   const ChannelCount, SampleFrames: Cardinal);
 var
-  I16          : PSmallIntArray absolute Data;
-  ChannelIndex : Cardinal;
-  SampleIndex  : Cardinal;
+  I16: PSmallIntArray absolute Data;
+  ChannelIndex: Cardinal;
+  SampleIndex: Cardinal;
 const
-  MulFakDith16 : Single = $7FFE;
+  MulFakDith16: Single = $7FFE;
 begin
- for ChannelIndex := 0 to Min(Length(FWinAmpOutputBuffer), ChannelCount) - 1 do
-  for SampleIndex := 0 to SampleFrames - 1
-   do I16^[SampleIndex * ChannelCount + ChannelIndex] := Round(Limit(FWinAmpOutputBuffer[ChannelIndex]^[SampleIndex]) * MulFakDith16 + Random - Random);
+  for ChannelIndex := 0 to Min(Length(FWinAmpOutputBuffer), ChannelCount) - 1 do
+    for SampleIndex := 0 to SampleFrames - 1 do
+      I16^[SampleIndex * ChannelCount + ChannelIndex] :=
+        Round(Limit(FWinAmpOutputBuffer[ChannelIndex]^[SampleIndex]) *
+        MulFakDith16 + random - random);
 end;
 
 procedure TBasicVSTModule.ConvertFloatToInterleaved24bit(const Data: Pointer;
   const ChannelCount, SampleFrames: Cardinal);
 var
-  I24           : P3ByteArray absolute Data;
-  ChannelIndex  : Cardinal;
-  SampleIndex   : Cardinal;
-  TempData      : Integer;
-  TempDataBytes : array [0..3] of Byte absolute TempData;
+  I24: P3ByteArray absolute Data;
+  ChannelIndex: Cardinal;
+  SampleIndex: Cardinal;
+  TempData: Integer;
+  TempDataBytes: array [0 .. 3] of Byte absolute TempData;
 const
-  MulFakDith24 : Single = 1 / $7FFFFE;
+  MulFakDith24: Single = 1 / $7FFFFE;
 begin
- for ChannelIndex := 0 to Min(Length(FWinAmpOutputBuffer), ChannelCount) - 1 do
-  for SampleIndex := 0 to SampleFrames - 1 do
-   begin
-    TempData := Round(Limit(FWinAmpOutputBuffer[ChannelIndex]^[SampleIndex]) * MulFakDith24 + random - random);
-    Move(TempDataBytes[1], I24^[SampleIndex * ChannelCount + ChannelIndex], 3);
-   end;
+  for ChannelIndex := 0 to Min(Length(FWinAmpOutputBuffer), ChannelCount) - 1 do
+    for SampleIndex := 0 to SampleFrames - 1 do
+    begin
+      TempData := Round(Limit(FWinAmpOutputBuffer[ChannelIndex]^[SampleIndex]) *
+        MulFakDith24 + random - random);
+      Move(TempDataBytes[1], I24^[SampleIndex * ChannelCount +
+        ChannelIndex], 3);
+    end;
 end;
 
 procedure TBasicVSTModule.ConvertFloatToInterleaved(const Data: Pointer;
   const ChannelCount, SampleFrames: Cardinal);
 var
-  Interleaved  : PDAVSingleFixedArray absolute Data;
-  ChannelIndex : Cardinal;
-  SampleIndex  : Cardinal;
+  Interleaved: PDAVSingleFixedArray absolute Data;
+  ChannelIndex: Cardinal;
+  SampleIndex: Cardinal;
 begin
- for ChannelIndex := 0 to Min(Length(FWinAmpInputBuffer), ChannelCount) - 1 do
-  for SampleIndex := 0 to SampleFrames - 1
-   do FWinAmpInputBuffer[ChannelIndex]^[SampleIndex] := Interleaved^[SampleIndex * ChannelCount + ChannelIndex];
+  for ChannelIndex := 0 to Min(Length(FWinAmpInputBuffer), ChannelCount) - 1 do
+    for SampleIndex := 0 to SampleFrames - 1 do
+      FWinAmpInputBuffer[ChannelIndex]^[SampleIndex] :=
+        Interleaved^[SampleIndex * ChannelCount + ChannelIndex];
 end;
 
 procedure TBasicVSTModule.ConvertInterleaved8bitToFloat(const Data: Pointer;
   const ChannelCount, SampleFrames: Cardinal);
 var
-  I8           : PShortIntArray absolute Data;
-  ChannelIndex : Cardinal;
-  SampleIndex  : Cardinal;
+  I8: PShortIntArray absolute Data;
+  ChannelIndex: Cardinal;
+  SampleIndex: Cardinal;
 const
-  DivFak8 : Single = 1 / $80;
+  DivFak8: Single = 1 / $80;
 begin
- for ChannelIndex := 0 to Min(Length(FWinAmpInputBuffer), ChannelCount) - 1 do
-  for SampleIndex := 0 to SampleFrames - 1
-   do FWinAmpInputBuffer[ChannelIndex]^[SampleIndex] := I8^[SampleIndex * ChannelCount + ChannelIndex] * DivFak8;
+  for ChannelIndex := 0 to Min(Length(FWinAmpInputBuffer), ChannelCount) - 1 do
+    for SampleIndex := 0 to SampleFrames - 1 do
+      FWinAmpInputBuffer[ChannelIndex]^[SampleIndex] :=
+        I8^[SampleIndex * ChannelCount + ChannelIndex] * DivFak8;
 end;
 
 procedure TBasicVSTModule.ConvertInterleaved16bitToFloat(const Data: Pointer;
   const ChannelCount, SampleFrames: Cardinal);
 var
-  I16          : PSmallIntArray absolute Data;
-  ChannelIndex : Cardinal;
-  SampleIndex  : Cardinal;
+  I16: PSmallIntArray absolute Data;
+  ChannelIndex: Cardinal;
+  SampleIndex: Cardinal;
 const
-  DivFak16 : Single = 1 / $8000;
+  DivFak16: Single = 1 / $8000;
 begin
- for ChannelIndex := 0 to Min(Length(FWinAmpInputBuffer), ChannelCount) - 1 do
-  for SampleIndex := 0 to SampleFrames - 1
-   do FWinAmpInputBuffer[ChannelIndex]^[SampleIndex] := I16^[SampleIndex * ChannelCount + ChannelIndex] * DivFak16;
+  for ChannelIndex := 0 to Min(Length(FWinAmpInputBuffer), ChannelCount) - 1 do
+    for SampleIndex := 0 to SampleFrames - 1 do
+      FWinAmpInputBuffer[ChannelIndex]^[SampleIndex] :=
+        I16^[SampleIndex * ChannelCount + ChannelIndex] * DivFak16;
 end;
 
 procedure TBasicVSTModule.ConvertInterleaved24bitToFloat(const Data: Pointer;
   const ChannelCount, SampleFrames: Cardinal);
 var
-  I24          : P3ByteArray absolute Data;
-  TempData     : Integer;
-  ChannelIndex : Cardinal;
-  SampleIndex  : Cardinal;
+  I24: P3ByteArray absolute Data;
+  TempData: Integer;
+  ChannelIndex: Cardinal;
+  SampleIndex: Cardinal;
 const
-  DivFak24 : Single = 1 / $800000;
+  DivFak24: Single = 1 / $800000;
 begin
- for ChannelIndex := 0 to Min(Length(FWinAmpInputBuffer), ChannelCount) - 1 do
-  for SampleIndex := 0 to SampleFrames - 1 do
-   begin
-    TempData := (ShortInt(I24^[SampleIndex * ChannelCount + ChannelIndex][2]) shl 16) +
-                         (I24^[SampleIndex * ChannelCount + ChannelIndex][1]  shl 8)  +
-                         (I24^[SampleIndex * ChannelCount + ChannelIndex][0]);
-    FWinAmpInputBuffer[ChannelIndex]^[SampleIndex] := TempData * DivFak24;
-   end;
+  for ChannelIndex := 0 to Min(Length(FWinAmpInputBuffer), ChannelCount) - 1 do
+    for SampleIndex := 0 to SampleFrames - 1 do
+    begin
+      TempData := (ShortInt(I24^[SampleIndex * ChannelCount + ChannelIndex][2])
+        shl 16) + (I24^[SampleIndex * ChannelCount + ChannelIndex][1] shl 8) +
+        (I24^[SampleIndex * ChannelCount + ChannelIndex][0]);
+      FWinAmpInputBuffer[ChannelIndex]^[SampleIndex] := TempData * DivFak24;
+    end;
 end;
 
 procedure TBasicVSTModule.ConvertInterleavedToFloat(const Data: Pointer;
   const ChannelCount, SampleFrames: Cardinal);
 var
-  Interleaved  : PDAVSingleFixedArray absolute Data;
-  ChannelIndex : Cardinal;
-  SampleIndex  : Cardinal;
+  Interleaved: PDAVSingleFixedArray absolute Data;
+  ChannelIndex: Cardinal;
+  SampleIndex: Cardinal;
 begin
- for ChannelIndex := 0 to Min(Length(FWinAmpInputBuffer), ChannelCount) - 1 do
-  for SampleIndex := 0 to SampleFrames - 1
-   do FWinAmpInputBuffer[ChannelIndex]^[SampleIndex] :=
-     Interleaved^[SampleIndex * ChannelCount + ChannelIndex];
+  for ChannelIndex := 0 to Min(Length(FWinAmpInputBuffer), ChannelCount) - 1 do
+    for SampleIndex := 0 to SampleFrames - 1 do
+      FWinAmpInputBuffer[ChannelIndex]^[SampleIndex] :=
+        Interleaved^[SampleIndex * ChannelCount + ChannelIndex];
 end;
 
 
@@ -1050,386 +1076,701 @@ end;
 // Calls from the host
 // ------------------------------------------------------------------
 
-function TBasicVSTModule.HostCallOpen(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
+function TBasicVSTModule.HostCallOpen(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
 begin
- Result := 0;
- {$IFNDEF UseAudioEffectPtr}
- if not FUseAudioEffectPtr then
-  begin
-   Effect^.GetParameter       := @GetParameterFuncUserPtr;
-   Effect^.SetParameter       := @SetParameterFuncUserPtr;
-   Effect^.Process            := @ProcessFuncUserPtr;
-   Effect^.Process32Replacing := @Process32ReplacingFuncUserPtr;
-   Effect^.Process64Replacing := @Process64ReplacingFuncUserPtr;
-  end
- else
- {$ELSE}
-  begin
-   Effect^.GetParameter       := @GetParameterFuncAudioEffectPtr;
-   Effect^.SetParameter       := @SetParameterFuncAudioEffectPtr;
-   Effect^.Process            := @ProcessFuncAudioEffectPtr;
-   Effect^.Process32Replacing := @Process32ReplacingFuncAudioEffectPtr;
-   Effect^.Process64Replacing := @Process64ReplacingFuncAudioEffectPtr;
-  end;
- {$ENDIF}
-end;
-
-function TBasicVSTModule.HostCallClose(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-begin
- try
-  Effect^.GetParameter := @GetParameterFuncDummy;
-  Effect^.SetParameter := @SetParameterFuncDummy;
-  Effect^.Process := @ProcessFuncDummy;
-  Effect^.Process32Replacing := @ProcessFuncDummy;
-  Effect^.Process64Replacing := @ProcessFuncDummy;
-  {$IFDEF UseAudioEffectPtr}
-  Effect^.AudioEffectPtr := nil;
-  {$ELSE}
-  if FUseAudioEffectPtr
-   then Effect^.AudioEffectPtr := nil
-   else Effect^.User := nil;
-  {$ENDIF}
-
-  {$IFNDEF FPC}
-  Free;
-  {$ENDIF}
-
-  Result := 1;
- except
   Result := 0;
- end;
-end;
-
-function TBasicVSTModule.HostCallSetProgram(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-begin Result := 0; end;
-
-function TBasicVSTModule.HostCallGetProgram(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-begin Result := 0; end;
-
-function TBasicVSTModule.HostCallSetProgramName(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-begin Result := 0; end;
-
-function TBasicVSTModule.HostCallGetProgramName(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-begin Result := 0; end;
-
-function TBasicVSTModule.HostCallGetParamLabel(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-begin Result := 0; end;
-
-function TBasicVSTModule.HostCallGetParamDisplay(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-begin Result := 0; end;
-
-function TBasicVSTModule.HostCallGetParamName(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-begin Result := 0; end;
-
-function TBasicVSTModule.HostCallGetVu(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-begin Result := 0; end;
-
-function TBasicVSTModule.HostCallSetSampleRate(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-begin Result := 0; end;
-
-function TBasicVSTModule.HostCallSetBlockSize(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-begin Result := 0; end;
-
-function TBasicVSTModule.HostCallMainsChanged(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-begin Result := 0; end;
-
-function TBasicVSTModule.HostCallEditGetRect(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-begin Result := 0; end;
-
-function TBasicVSTModule.HostCallEditOpen(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-begin Result := 0; end;
-
-function TBasicVSTModule.HostCallEditClose(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-begin Result := 0; end;
-
-function TBasicVSTModule.HostCallEditDraw(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-begin Result := 0; end;
-
-function TBasicVSTModule.HostCallEditMouse(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-begin Result := 0; end;
-
-function TBasicVSTModule.HostCallEditKey(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-begin Result := 0; end;
-
-function TBasicVSTModule.HostCallEditIdle(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-begin Result := 0; end;
-
-function TBasicVSTModule.HostCallEditTop(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-begin Result := 0; end;
-
-function TBasicVSTModule.HostCallEditSleep(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-begin Result := 0; end;
-
-function TBasicVSTModule.HostCallIdentify(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-var
-  ChunkName : TChunkName;
-begin
- ChunkName := 'fEvN';
- Result := Integer(ChunkName);
-end;
-
-function TBasicVSTModule.HostCallGetChunk(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-begin Result := 0; end;
-
-function TBasicVSTModule.HostCallSetChunk(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-begin Result := 0; end;
-
-function TBasicVSTModule.HostCallProcessEvents(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-begin Result := 0; end;
-
-function TBasicVSTModule.HostCallCanBeAutomated(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-begin Result := 0; end;
-
-function TBasicVSTModule.HostCallString2Parameter(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-begin Result := 0; end;
-
-function TBasicVSTModule.HostCallGetNumProgramCategories(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-begin Result := 0; end;
-
-function TBasicVSTModule.HostCallGetProgramNameIndexed(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-begin Result := 0; end;
-
-function TBasicVSTModule.HostCallCopyProgram(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-begin Result := 0; end;
-
-function TBasicVSTModule.HostCallDispatchEffect(const Opcode: TDispatcherOpcode; const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-begin
- case OpCode of
-  effOpen:                      Result := HostCallOpen(Index, Value, PTR, opt);
-  effClose:                     Result := HostCallClose(Index, Value, PTR, opt);
-  effSetProgram:                Result := HostCallSetProgram(Index, Value, PTR, opt);
-  effGetProgram:                Result := HostCallGetProgram(Index, Value, PTR, opt);
-  effSetProgramName:            Result := HostCallSetProgramName(Index, Value, PTR, opt);
-  effGetProgramName:            Result := HostCallGetProgramName(Index, Value, PTR, opt);
-  effGetParamLabel:             Result := HostCallGetParamLabel(Index, Value, PTR, opt);
-  effGetParamDisplay:           Result := HostCallGetParamDisplay(Index, Value, PTR, opt);
-  effGetParamName:              Result := HostCallGetParamName(Index, Value, PTR, opt);
-  effGetVu:                     Result := HostCallGetVu(Index, Value, PTR, opt);
-  effSetSampleRate:             Result := HostCallSetSampleRate(Index, Value, PTR, opt);
-  effSetBlockSize:              Result := HostCallSetBlockSize(Index, Value, PTR, opt);
-  effMainsChanged:              Result := HostCallMainsChanged(Index, Value, PTR, opt);
-  effEditGetRect:               Result := HostCallEditGetRect(Index, Value, PTR, opt);
-  effEditOpen:                  Result := HostCallEditOpen(Index, Value, PTR, opt);
-  effEditClose:                 Result := HostCallEditClose(Index, Value, PTR, opt);
-  effEditDraw:                  Result := HostCallEditDraw(Index, Value, PTR, opt);
-  effEditMouse:                 Result := HostCallEditMouse(Index, Value, PTR, opt);
-  effEditKey:                   Result := HostCallEditKey(Index, Value, PTR, opt);
-  effEditIdle:                  Result := HostCallEditIdle(Index, Value, PTR, opt);
-  effEditTop:                   Result := HostCallEditTop(Index, Value, PTR, opt);
-  effEditSleep:                 Result := HostCallEditSleep(Index, Value, PTR, opt);
-  effIdentify:                  Result := HostCallIdentify(Index, Value, PTR, opt);
-  effGetChunk:                  Result := HostCallGetChunk(Index, Value, PTR, opt);
-  effSetChunk:                  Result := HostCallSetChunk(Index, Value, PTR, opt);
-  effProcessEvents:             Result := HostCallProcessEvents(Index, Value, PTR, opt);
-  effCanBeAutomated:            Result := HostCallCanBeAutomated(Index, Value, PTR, opt);
-  effString2Parameter:          Result := HostCallString2Parameter(Index, Value, PTR, opt);
-  effGetNumProgramCategories:   Result := HostCallGetNumProgramCategories(Index, Value, PTR, opt);
-  effGetProgramNameIndexed:     Result := HostCallGetProgramNameIndexed(Index, Value, PTR, opt);
-  effCopyProgram:               Result := HostCallCopyProgram(Index, Value, PTR, opt);
-  effConnectInput:              Result := HostCallConnectInput(Index, Value, PTR, opt);
-  effConnectOutput:             Result := HostCallConnectOutput(Index, Value, PTR, opt);
-  effGetInputProperties:        Result := HostCallGetInputProperties(Index, Value, PTR, opt);
-  effGetOutputProperties:       Result := HostCallGetOutputProperties(Index, Value, PTR, opt);
-  effGetPlugCategory:           Result := HostCallGetPlugCategory(Index, Value, PTR, opt);
-  effGetCurrentPosition:        Result := HostCallGetCurrentPosition(Index, Value, PTR, opt);
-  effGetDestinationBuffer:      Result := HostCallGetDestinationBuffer(Index, Value, PTR, opt);
-  effOfflineNotify:             Result := HostCallOfflineNotify(Index, Value, PTR, opt);
-  effOfflinePrepare:            Result := HostCallOfflinePrepare(Index, Value, PTR, opt);
-  effOfflineRun:                Result := HostCallOfflineRun(Index, Value, PTR, opt);
-  effProcessVarIo:              Result := HostCallProcessVarIo(Index, Value, PTR, opt);
-  effSetSpeakerArrangement:     Result := HostCallSetSpeakerArrangement(Index, Value, PTR, opt);
-  effSetBlockSizeAndSampleRate: Result := HostCallSetBlockSizeAndSampleRate(Index, Value, PTR, opt);
-  effSetBypass:                 Result := HostCallSetBypass(Index, Value, PTR, opt);
-  effGetEffectName:             Result := HostCallGetEffectName(Index, Value, PTR, opt);
-  effGetErrorText:              Result := HostCallGetErrorText(Index, Value, PTR, opt);
-  effGetVendorString:           Result := HostCallGetVendorString(Index, Value, PTR, opt);
-  effGetProductString:          Result := HostCallGetProductString(Index, Value, PTR, opt);
-  effGetVendorVersion:          Result := HostCallGetVendorVersion(Index, Value, PTR, opt);
-  effVendorSpecific:            Result := HostCallVendorSpecific(Index, Value, PTR, opt);
-  effCanDo:                     Result := HostCallCanDo(Index, Value, PTR, opt);
-  effGetTailSize:               Result := HostCallGetTailSize(Index, Value, PTR, opt);
-  effIdle:                      Result := HostCallIdle(Index, Value, PTR, opt);
-  effGetIcon:                   Result := HostCallGetIcon(Index, Value, PTR, opt);
-  effSetViewPosition:           Result := HostCallSetViewPosition(Index, Value, PTR, opt);
-  effGetParameterProperties:    Result := HostCallGetParameterProperties(Index, Value, PTR, opt);
-  effKeysRequired:              Result := HostCallKeysRequired(Index, Value, PTR, opt);
-  effGetVstVersion:             Result := HostCallGetVstVersion(Index, Value, PTR, opt);
-  effEditKeyDown:               Result := HostCallEditKeyDown(Index, Value, PTR, opt);
-  effEditKeyUp:                 Result := HostCallEditKeyUp(Index, Value, PTR, opt);
-  effSetEditKnobMode:           Result := HostCallSetEditKnobMode(Index, Value, PTR, opt);
-  effGetMidiProgramName:        Result := HostCallGetMidiProgramName(Index, Value, PTR, opt);
-  effGetCurrentMidiProgram:     Result := HostCallGetCurrentMidiProgram(Index, Value, PTR, opt);
-  effGetMidiProgramCategory:    Result := HostCallGetMidiProgramCategory(Index, Value, PTR, opt);
-  effHasMidiProgramsChanged:    Result := HostCallHasMidiProgramsChanged(Index, Value, PTR, opt);
-  effGetMidiKeyName:            Result := HostCallGetMidiKeyName(Index, Value, PTR, opt);
-  effBeginSetProgram:           Result := HostCallBeginSetProgram(Index, Value, PTR, opt);
-  effEndSetProgram:             Result := HostCallEndSetProgram(Index, Value, PTR, opt);
-  effGetSpeakerArrangement:     Result := HostCallGetSpeakerArrangement(Index, Value, PTR, opt);
-  effShellGetNextPlugin:        Result := HostCallShellGetNextPlugin(Index, Value, PTR, opt);
-  effStartProcess:              Result := HostCallStartProcess(Index, Value, PTR, opt);
-  effStopProcess:               Result := HostCallStopProcess(Index, Value, PTR, opt);
-  effSetTotalSampleToProcess:   Result := HostCallSetTotalSampleToProcess(Index, Value, PTR, opt);
-  effSetPanLaw:                 Result := HostCallSetPanLaw(Index, Value, PTR, opt);
-  effBeginLoadBank:             Result := HostCallBeginLoadBank(Index, Value, PTR, opt);
-  effBeginLoadProgram:          Result := HostCallBeginLoadProgram(Index, Value, PTR, opt);
-  effSetProcessPrecision:       Result := HostCallSetProcessPrecision(Index, Value, PTR, opt);
-  effGetNumMidiInputChannels:   Result := HostCallGetNumMidiInputChannels(Index, Value, PTR, opt);
-  effGetNumMidiOutputChannels:  Result := HostCallGetNumMidiOutputChannels(Index, Value, PTR, opt);
+{$IFNDEF UseAudioEffectPtr}
+  if not FUseAudioEffectPtr then
+  begin
+    Effect^.GetParameter := @GetParameterFuncUserPtr;
+    Effect^.SetParameter := @SetParameterFuncUserPtr;
+    Effect^.Process := @ProcessFuncUserPtr;
+    Effect^.Process32Replacing := @Process32ReplacingFuncUserPtr;
+    Effect^.Process64Replacing := @Process64ReplacingFuncUserPtr;
+  end
   else
-   try
-     raise EVstError.Create('Unknown OpCode');
-   except
-     Result := 0;
-   end;
+{$ELSE}
+  begin
+    Effect^.GetParameter := @GetParameterFuncAudioEffectPtr;
+    Effect^.SetParameter := @SetParameterFuncAudioEffectPtr;
+    Effect^.Process := @ProcessFuncAudioEffectPtr;
+    Effect^.Process32Replacing := @Process32ReplacingFuncAudioEffectPtr;
+    Effect^.Process64Replacing := @Process64ReplacingFuncAudioEffectPtr;
+  end;
+{$ENDIF}
+end;
+
+function TBasicVSTModule.HostCallClose(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
+begin
+  try
+    Effect^.GetParameter := @GetParameterFuncDummy;
+    Effect^.SetParameter := @SetParameterFuncDummy;
+    Effect^.Process := @ProcessFuncDummy;
+    Effect^.Process32Replacing := @ProcessFuncDummy;
+    Effect^.Process64Replacing := @ProcessFuncDummy;
+{$IFDEF UseAudioEffectPtr}
+    Effect^.AudioEffectPtr := nil;
+{$ELSE}
+    if FUseAudioEffectPtr then
+      Effect^.AudioEffectPtr := nil
+    else
+      Effect^.User := nil;
+{$ENDIF}
+{$IFNDEF FPC}
+    Free;
+{$ENDIF}
+    Result := 1;
+  except
+    Result := 0;
   end;
 end;
 
-function TBasicVSTModule.HostCallConnectInput(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-begin Result := 0; end;
+function TBasicVSTModule.HostCallSetProgram(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
+begin
+  Result := 0;
+end;
 
-function TBasicVSTModule.HostCallConnectOutput(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-begin Result := 0; end;
+function TBasicVSTModule.HostCallGetProgram(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
+begin
+  Result := 0;
+end;
 
-function TBasicVSTModule.HostCallGetInputProperties(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-begin Result := 0; end;
+function TBasicVSTModule.HostCallSetProgramName(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
+begin
+  Result := 0;
+end;
 
-function TBasicVSTModule.HostCallGetOutputProperties(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-begin Result := 0; end;
+function TBasicVSTModule.HostCallGetProgramName(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
+begin
+  Result := 0;
+end;
 
-function TBasicVSTModule.HostCallGetPlugCategory(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-begin Result := 0; end;
+function TBasicVSTModule.HostCallGetParamLabel(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
+begin
+  Result := 0;
+end;
 
-function TBasicVSTModule.HostCallGetCurrentPosition(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-begin Result := 0; end;
+function TBasicVSTModule.HostCallGetParamDisplay(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
+begin
+  Result := 0;
+end;
 
-function TBasicVSTModule.HostCallGetDestinationBuffer(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-begin Result := 0; end;
+function TBasicVSTModule.HostCallGetParamName(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
+begin
+  Result := 0;
+end;
 
-function TBasicVSTModule.HostCallOfflineNotify(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-begin Result := 0; end;
+function TBasicVSTModule.HostCallGetVu(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
+begin
+  Result := 0;
+end;
 
-function TBasicVSTModule.HostCallOfflinePrepare(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-begin Result := 0; end;
+function TBasicVSTModule.HostCallSetSampleRate(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
+begin
+  Result := 0;
+end;
 
-function TBasicVSTModule.HostCallOfflineRun(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-begin Result := 0; end;
+function TBasicVSTModule.HostCallSetBlockSize(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
+begin
+  Result := 0;
+end;
 
-function TBasicVSTModule.HostCallProcessVarIo(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-begin Result := 0; end;
+function TBasicVSTModule.HostCallMainsChanged(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
+begin
+  Result := 0;
+end;
 
-function TBasicVSTModule.HostCallSetSpeakerArrangement(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-begin Result := 0; end;
+function TBasicVSTModule.HostCallEditGetRect(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
+begin
+  Result := 0;
+end;
 
-function TBasicVSTModule.HostCallSetBlockSizeAndSampleRate(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-begin Result := 0; end;
+function TBasicVSTModule.HostCallEditOpen(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
+begin
+  Result := 0;
+end;
 
-function TBasicVSTModule.HostCallSetBypass(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-begin Result := 0; end;
+function TBasicVSTModule.HostCallEditClose(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
+begin
+  Result := 0;
+end;
 
-function TBasicVSTModule.HostCallGetEffectName(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-begin Result := 0; end;
+function TBasicVSTModule.HostCallEditDraw(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
+begin
+  Result := 0;
+end;
 
-function TBasicVSTModule.HostCallGetErrorText(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-begin Result := 0; end;
+function TBasicVSTModule.HostCallEditMouse(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
+begin
+  Result := 0;
+end;
 
-function TBasicVSTModule.HostCallGetVendorString(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-begin Result := 0; end;
+function TBasicVSTModule.HostCallEditKey(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
+begin
+  Result := 0;
+end;
 
-function TBasicVSTModule.HostCallGetProductString(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-begin Result := 0; end;
+function TBasicVSTModule.HostCallEditIdle(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
+begin
+  Result := 0;
+end;
 
-function TBasicVSTModule.HostCallGetVendorVersion(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-begin Result := 0; end;
+function TBasicVSTModule.HostCallEditTop(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
+begin
+  Result := 0;
+end;
 
-function TBasicVSTModule.HostCallVendorSpecific(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-begin Result := 0; end;
+function TBasicVSTModule.HostCallEditSleep(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
+begin
+  Result := 0;
+end;
 
-function TBasicVSTModule.HostCallCanDo(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-begin Result := 0; end;
+function TBasicVSTModule.HostCallIdentify(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
+var
+  ChunkName: TChunkName;
+begin
+  ChunkName := 'fEvN';
+  Result := Integer(ChunkName);
+end;
 
-function TBasicVSTModule.HostCallGetTailSize(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-begin Result := 0; end;
+function TBasicVSTModule.HostCallGetChunk(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
+begin
+  Result := 0;
+end;
 
-function TBasicVSTModule.HostCallIdle(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-begin Result := 0; end;
+function TBasicVSTModule.HostCallSetChunk(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
+begin
+  Result := 0;
+end;
 
-function TBasicVSTModule.HostCallGetIcon(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-begin Result := 0; end;
+function TBasicVSTModule.HostCallProcessEvents(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
+begin
+  Result := 0;
+end;
 
-function TBasicVSTModule.HostCallSetViewPosition(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-begin Result := 0; end;
+function TBasicVSTModule.HostCallCanBeAutomated(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
+begin
+  Result := 0;
+end;
 
-function TBasicVSTModule.HostCallGetParameterProperties(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-begin Result := 0; end;
+function TBasicVSTModule.HostCallString2Parameter(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
+begin
+  Result := 0;
+end;
 
-function TBasicVSTModule.HostCallKeysRequired(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-begin Result := 0; end;
+function TBasicVSTModule.HostCallGetNumProgramCategories(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
+begin
+  Result := 0;
+end;
 
-function TBasicVSTModule.HostCallGetVstVersion(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-begin Result := 0; end;
+function TBasicVSTModule.HostCallGetProgramNameIndexed(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
+begin
+  Result := 0;
+end;
 
-function TBasicVSTModule.HostCallEditKeyDown(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-begin Result := 0; end;
+function TBasicVSTModule.HostCallCopyProgram(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
+begin
+  Result := 0;
+end;
 
-function TBasicVSTModule.HostCallEditKeyUp(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-begin Result := 0; end;
+function TBasicVSTModule.HostCallDispatchEffect(const Opcode: TDispatcherOpcode;
+  const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer;
+  const Opt: Single): TVstIntPtr;
+begin
+  case Opcode of
+    effOpen:
+      Result := HostCallOpen(Index, Value, PTR, Opt);
+    effClose:
+      Result := HostCallClose(Index, Value, PTR, Opt);
+    effSetProgram:
+      Result := HostCallSetProgram(Index, Value, PTR, Opt);
+    effGetProgram:
+      Result := HostCallGetProgram(Index, Value, PTR, Opt);
+    effSetProgramName:
+      Result := HostCallSetProgramName(Index, Value, PTR, Opt);
+    effGetProgramName:
+      Result := HostCallGetProgramName(Index, Value, PTR, Opt);
+    effGetParamLabel:
+      Result := HostCallGetParamLabel(Index, Value, PTR, Opt);
+    effGetParamDisplay:
+      Result := HostCallGetParamDisplay(Index, Value, PTR, Opt);
+    effGetParamName:
+      Result := HostCallGetParamName(Index, Value, PTR, Opt);
+    effGetVu:
+      Result := HostCallGetVu(Index, Value, PTR, Opt);
+    effSetSampleRate:
+      Result := HostCallSetSampleRate(Index, Value, PTR, Opt);
+    effSetBlockSize:
+      Result := HostCallSetBlockSize(Index, Value, PTR, Opt);
+    effMainsChanged:
+      Result := HostCallMainsChanged(Index, Value, PTR, Opt);
+    effEditGetRect:
+      Result := HostCallEditGetRect(Index, Value, PTR, Opt);
+    effEditOpen:
+      Result := HostCallEditOpen(Index, Value, PTR, Opt);
+    effEditClose:
+      Result := HostCallEditClose(Index, Value, PTR, Opt);
+    effEditDraw:
+      Result := HostCallEditDraw(Index, Value, PTR, Opt);
+    effEditMouse:
+      Result := HostCallEditMouse(Index, Value, PTR, Opt);
+    effEditKey:
+      Result := HostCallEditKey(Index, Value, PTR, Opt);
+    effEditIdle:
+      Result := HostCallEditIdle(Index, Value, PTR, Opt);
+    effEditTop:
+      Result := HostCallEditTop(Index, Value, PTR, Opt);
+    effEditSleep:
+      Result := HostCallEditSleep(Index, Value, PTR, Opt);
+    effIdentify:
+      Result := HostCallIdentify(Index, Value, PTR, Opt);
+    effGetChunk:
+      Result := HostCallGetChunk(Index, Value, PTR, Opt);
+    effSetChunk:
+      Result := HostCallSetChunk(Index, Value, PTR, Opt);
+    effProcessEvents:
+      Result := HostCallProcessEvents(Index, Value, PTR, Opt);
+    effCanBeAutomated:
+      Result := HostCallCanBeAutomated(Index, Value, PTR, Opt);
+    effString2Parameter:
+      Result := HostCallString2Parameter(Index, Value, PTR, Opt);
+    effGetNumProgramCategories:
+      Result := HostCallGetNumProgramCategories(Index, Value, PTR, Opt);
+    effGetProgramNameIndexed:
+      Result := HostCallGetProgramNameIndexed(Index, Value, PTR, Opt);
+    effCopyProgram:
+      Result := HostCallCopyProgram(Index, Value, PTR, Opt);
+    effConnectInput:
+      Result := HostCallConnectInput(Index, Value, PTR, Opt);
+    effConnectOutput:
+      Result := HostCallConnectOutput(Index, Value, PTR, Opt);
+    effGetInputProperties:
+      Result := HostCallGetInputProperties(Index, Value, PTR, Opt);
+    effGetOutputProperties:
+      Result := HostCallGetOutputProperties(Index, Value, PTR, Opt);
+    effGetPlugCategory:
+      Result := HostCallGetPlugCategory(Index, Value, PTR, Opt);
+    effGetCurrentPosition:
+      Result := HostCallGetCurrentPosition(Index, Value, PTR, Opt);
+    effGetDestinationBuffer:
+      Result := HostCallGetDestinationBuffer(Index, Value, PTR, Opt);
+    effOfflineNotify:
+      Result := HostCallOfflineNotify(Index, Value, PTR, Opt);
+    effOfflinePrepare:
+      Result := HostCallOfflinePrepare(Index, Value, PTR, Opt);
+    effOfflineRun:
+      Result := HostCallOfflineRun(Index, Value, PTR, Opt);
+    effProcessVarIo:
+      Result := HostCallProcessVarIo(Index, Value, PTR, Opt);
+    effSetSpeakerArrangement:
+      Result := HostCallSetSpeakerArrangement(Index, Value, PTR, Opt);
+    effSetBlockSizeAndSampleRate:
+      Result := HostCallSetBlockSizeAndSampleRate(Index, Value, PTR, Opt);
+    effSetBypass:
+      Result := HostCallSetBypass(Index, Value, PTR, Opt);
+    effGetEffectName:
+      Result := HostCallGetEffectName(Index, Value, PTR, Opt);
+    effGetErrorText:
+      Result := HostCallGetErrorText(Index, Value, PTR, Opt);
+    effGetVendorString:
+      Result := HostCallGetVendorString(Index, Value, PTR, Opt);
+    effGetProductString:
+      Result := HostCallGetProductString(Index, Value, PTR, Opt);
+    effGetVendorVersion:
+      Result := HostCallGetVendorVersion(Index, Value, PTR, Opt);
+    effVendorSpecific:
+      Result := HostCallVendorSpecific(Index, Value, PTR, Opt);
+    effCanDo:
+      Result := HostCallCanDo(Index, Value, PTR, Opt);
+    effGetTailSize:
+      Result := HostCallGetTailSize(Index, Value, PTR, Opt);
+    effIdle:
+      Result := HostCallIdle(Index, Value, PTR, Opt);
+    effGetIcon:
+      Result := HostCallGetIcon(Index, Value, PTR, Opt);
+    effSetViewPosition:
+      Result := HostCallSetViewPosition(Index, Value, PTR, Opt);
+    effGetParameterProperties:
+      Result := HostCallGetParameterProperties(Index, Value, PTR, Opt);
+    effKeysRequired:
+      Result := HostCallKeysRequired(Index, Value, PTR, Opt);
+    effGetVstVersion:
+      Result := HostCallGetVstVersion(Index, Value, PTR, Opt);
+    effEditKeyDown:
+      Result := HostCallEditKeyDown(Index, Value, PTR, Opt);
+    effEditKeyUp:
+      Result := HostCallEditKeyUp(Index, Value, PTR, Opt);
+    effSetEditKnobMode:
+      Result := HostCallSetEditKnobMode(Index, Value, PTR, Opt);
+    effGetMidiProgramName:
+      Result := HostCallGetMidiProgramName(Index, Value, PTR, Opt);
+    effGetCurrentMidiProgram:
+      Result := HostCallGetCurrentMidiProgram(Index, Value, PTR, Opt);
+    effGetMidiProgramCategory:
+      Result := HostCallGetMidiProgramCategory(Index, Value, PTR, Opt);
+    effHasMidiProgramsChanged:
+      Result := HostCallHasMidiProgramsChanged(Index, Value, PTR, Opt);
+    effGetMidiKeyName:
+      Result := HostCallGetMidiKeyName(Index, Value, PTR, Opt);
+    effBeginSetProgram:
+      Result := HostCallBeginSetProgram(Index, Value, PTR, Opt);
+    effEndSetProgram:
+      Result := HostCallEndSetProgram(Index, Value, PTR, Opt);
+    effGetSpeakerArrangement:
+      Result := HostCallGetSpeakerArrangement(Index, Value, PTR, Opt);
+    effShellGetNextPlugin:
+      Result := HostCallShellGetNextPlugin(Index, Value, PTR, Opt);
+    effStartProcess:
+      Result := HostCallStartProcess(Index, Value, PTR, Opt);
+    effStopProcess:
+      Result := HostCallStopProcess(Index, Value, PTR, Opt);
+    effSetTotalSampleToProcess:
+      Result := HostCallSetTotalSampleToProcess(Index, Value, PTR, Opt);
+    effSetPanLaw:
+      Result := HostCallSetPanLaw(Index, Value, PTR, Opt);
+    effBeginLoadBank:
+      Result := HostCallBeginLoadBank(Index, Value, PTR, Opt);
+    effBeginLoadProgram:
+      Result := HostCallBeginLoadProgram(Index, Value, PTR, Opt);
+    effSetProcessPrecision:
+      Result := HostCallSetProcessPrecision(Index, Value, PTR, Opt);
+    effGetNumMidiInputChannels:
+      Result := HostCallGetNumMidiInputChannels(Index, Value, PTR, Opt);
+    effGetNumMidiOutputChannels:
+      Result := HostCallGetNumMidiOutputChannels(Index, Value, PTR, Opt);
+  else
+    try
+      raise EVstError.Create('Unknown OpCode');
+    except
+      Result := 0;
+    end;
+  end;
+end;
 
-function TBasicVSTModule.HostCallSetEditKnobMode(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-begin Result := 0; end;
+function TBasicVSTModule.HostCallConnectInput(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
+begin
+  Result := 0;
+end;
 
-function TBasicVSTModule.HostCallGetMidiProgramName(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-begin Result := 0; end;
+function TBasicVSTModule.HostCallConnectOutput(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
+begin
+  Result := 0;
+end;
 
-function TBasicVSTModule.HostCallGetCurrentMidiProgram(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-begin Result := 0; end;
+function TBasicVSTModule.HostCallGetInputProperties(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
+begin
+  Result := 0;
+end;
 
-function TBasicVSTModule.HostCallGetMidiProgramCategory(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-begin Result := 0; end;
+function TBasicVSTModule.HostCallGetOutputProperties(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
+begin
+  Result := 0;
+end;
 
-function TBasicVSTModule.HostCallHasMidiProgramsChanged(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-begin Result := 0; end;
+function TBasicVSTModule.HostCallGetPlugCategory(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
+begin
+  Result := 0;
+end;
 
-function TBasicVSTModule.HostCallGetMidiKeyName(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-begin Result := 0; end;
+function TBasicVSTModule.HostCallGetCurrentPosition(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
+begin
+  Result := 0;
+end;
 
-function TBasicVSTModule.HostCallBeginSetProgram(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-begin Result := 0; end;
+function TBasicVSTModule.HostCallGetDestinationBuffer(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
+begin
+  Result := 0;
+end;
 
-function TBasicVSTModule.HostCallEndSetProgram(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-begin Result := 0; end;
+function TBasicVSTModule.HostCallOfflineNotify(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
+begin
+  Result := 0;
+end;
 
-function TBasicVSTModule.HostCallGetSpeakerArrangement(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-begin Result := 0; end;
+function TBasicVSTModule.HostCallOfflinePrepare(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
+begin
+  Result := 0;
+end;
 
-function TBasicVSTModule.HostCallShellGetNextPlugin(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-begin Result := 0; end;
+function TBasicVSTModule.HostCallOfflineRun(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
+begin
+  Result := 0;
+end;
 
-function TBasicVSTModule.HostCallStartProcess(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-begin Result := 0; end;
+function TBasicVSTModule.HostCallProcessVarIo(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
+begin
+  Result := 0;
+end;
 
-function TBasicVSTModule.HostCallStopProcess(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-begin Result := 0; end;
+function TBasicVSTModule.HostCallSetSpeakerArrangement(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
+begin
+  Result := 0;
+end;
 
-function TBasicVSTModule.HostCallSetTotalSampleToProcess(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-begin Result := 0; end;
+function TBasicVSTModule.HostCallSetBlockSizeAndSampleRate(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
+begin
+  Result := 0;
+end;
 
-function TBasicVSTModule.HostCallSetPanLaw(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-begin Result := 0; end;
+function TBasicVSTModule.HostCallSetBypass(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
+begin
+  Result := 0;
+end;
 
-function TBasicVSTModule.HostCallBeginLoadBank(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-begin Result := 0; end;
+function TBasicVSTModule.HostCallGetEffectName(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
+begin
+  Result := 0;
+end;
 
-function TBasicVSTModule.HostCallBeginLoadProgram(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-begin Result := 0; end;
+function TBasicVSTModule.HostCallGetErrorText(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
+begin
+  Result := 0;
+end;
 
-function TBasicVSTModule.HostCallSetProcessPrecision(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-begin Result := 0; end;
+function TBasicVSTModule.HostCallGetVendorString(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
+begin
+  Result := 0;
+end;
 
-function TBasicVSTModule.HostCallGetNumMidiInputChannels(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-begin Result := 0; end;
+function TBasicVSTModule.HostCallGetProductString(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
+begin
+  Result := 0;
+end;
 
-function TBasicVSTModule.HostCallGetNumMidiOutputChannels(const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr;
-begin Result := 0; end;
+function TBasicVSTModule.HostCallGetVendorVersion(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
+begin
+  Result := 0;
+end;
+
+function TBasicVSTModule.HostCallVendorSpecific(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
+begin
+  Result := 0;
+end;
+
+function TBasicVSTModule.HostCallCanDo(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
+begin
+  Result := 0;
+end;
+
+function TBasicVSTModule.HostCallGetTailSize(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
+begin
+  Result := 0;
+end;
+
+function TBasicVSTModule.HostCallIdle(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
+begin
+  Result := 0;
+end;
+
+function TBasicVSTModule.HostCallGetIcon(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
+begin
+  Result := 0;
+end;
+
+function TBasicVSTModule.HostCallSetViewPosition(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
+begin
+  Result := 0;
+end;
+
+function TBasicVSTModule.HostCallGetParameterProperties(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
+begin
+  Result := 0;
+end;
+
+function TBasicVSTModule.HostCallKeysRequired(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
+begin
+  Result := 0;
+end;
+
+function TBasicVSTModule.HostCallGetVstVersion(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
+begin
+  Result := 0;
+end;
+
+function TBasicVSTModule.HostCallEditKeyDown(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
+begin
+  Result := 0;
+end;
+
+function TBasicVSTModule.HostCallEditKeyUp(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
+begin
+  Result := 0;
+end;
+
+function TBasicVSTModule.HostCallSetEditKnobMode(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
+begin
+  Result := 0;
+end;
+
+function TBasicVSTModule.HostCallGetMidiProgramName(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
+begin
+  Result := 0;
+end;
+
+function TBasicVSTModule.HostCallGetCurrentMidiProgram(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
+begin
+  Result := 0;
+end;
+
+function TBasicVSTModule.HostCallGetMidiProgramCategory(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
+begin
+  Result := 0;
+end;
+
+function TBasicVSTModule.HostCallHasMidiProgramsChanged(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
+begin
+  Result := 0;
+end;
+
+function TBasicVSTModule.HostCallGetMidiKeyName(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
+begin
+  Result := 0;
+end;
+
+function TBasicVSTModule.HostCallBeginSetProgram(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
+begin
+  Result := 0;
+end;
+
+function TBasicVSTModule.HostCallEndSetProgram(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
+begin
+  Result := 0;
+end;
+
+function TBasicVSTModule.HostCallGetSpeakerArrangement(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
+begin
+  Result := 0;
+end;
+
+function TBasicVSTModule.HostCallShellGetNextPlugin(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
+begin
+  Result := 0;
+end;
+
+function TBasicVSTModule.HostCallStartProcess(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
+begin
+  Result := 0;
+end;
+
+function TBasicVSTModule.HostCallStopProcess(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
+begin
+  Result := 0;
+end;
+
+function TBasicVSTModule.HostCallSetTotalSampleToProcess(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
+begin
+  Result := 0;
+end;
+
+function TBasicVSTModule.HostCallSetPanLaw(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
+begin
+  Result := 0;
+end;
+
+function TBasicVSTModule.HostCallBeginLoadBank(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
+begin
+  Result := 0;
+end;
+
+function TBasicVSTModule.HostCallBeginLoadProgram(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
+begin
+  Result := 0;
+end;
+
+function TBasicVSTModule.HostCallSetProcessPrecision(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
+begin
+  Result := 0;
+end;
+
+function TBasicVSTModule.HostCallGetNumMidiInputChannels(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
+begin
+  Result := 0;
+end;
+
+function TBasicVSTModule.HostCallGetNumMidiOutputChannels(const Index: Integer;
+  const Value: TVstIntPtr; const PTR: Pointer; const Opt: Single): TVstIntPtr;
+begin
+  Result := 0;
+end;
 
 
 
@@ -1437,48 +1778,52 @@ begin Result := 0; end;
 
 function DispatchEffectFuncAudioEffectPtr(Effect: PVSTEffect; OpCode: TDispatcherOpCode; const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr; cdecl;
 begin
- if Assigned(Effect) and (TObject(Effect^.AudioEffectPtr) is TBasicVSTModule)
-   then Result := TBasicVSTModule(Effect^.AudioEffectPtr).HostCallDispatchEffect(OpCode, Index, Value, PTR, opt)
- else Result := 0;
+  if Assigned(Effect) and (TObject(Effect^.AudioEffectPtr) is TBasicVSTModule) then
+    Result := TBasicVSTModule(Effect^.AudioEffectPtr).HostCallDispatchEffect(OpCode, Index, Value, PTR, opt)
+  else
+    Result := 0;
 end;
 
 function GetParameterFuncAudioEffectPtr(const Effect: PVSTEffect; const Index: Integer): Single; cdecl;
 begin
- Assert(Assigned(Effect));
- if TObject(Effect^.AudioEffectPtr) is TBasicVSTModule
-  then Result := TBasicVSTModule(Effect^.AudioEffectPtr).HostCallGetParameter(Index)
-  else Result := 0;
+  Assert(Assigned(Effect));
+  if TObject(Effect^.AudioEffectPtr) is TBasicVSTModule then
+    Result := TBasicVSTModule(Effect^.AudioEffectPtr).HostCallGetParameter(Index)
+  else
+    Result := 0;
 end;
 
 procedure SetParameterFuncAudioEffectPtr(const Effect: PVSTEffect; const Index: Integer; const Value: Single); cdecl;
 begin
- Assert(Assigned(Effect));
- if TObject(Effect^.AudioEffectPtr) is TBasicVSTModule
-  then TBasicVSTModule(Effect^.AudioEffectPtr).HostCallSetParameter(Index, Value);
+  Assert(Assigned(Effect));
+  if TObject(Effect^.AudioEffectPtr) is TBasicVSTModule then
+    TBasicVSTModule(Effect^.AudioEffectPtr).HostCallSetParameter(Index, Value);
 end;
 
 {$IFNDEF UseAudioEffectPtr}
 function DispatchEffectFuncUserPtr(Effect: PVSTEffect; OpCode: TDispatcherOpCode; const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr; cdecl;
 begin
- if Assigned(Effect) and // (Effect^.Magic <> #0#0#0#0) and
-  (TObject(Effect^.User) is TBasicVSTModule)
-   then Result := TBasicVSTModule(Effect^.User).HostCallDispatchEffect(OpCode, Index, Value, PTR, opt)
- else Result := 0;
+  if Assigned(Effect) and // (Effect^.Magic <> #0#0#0#0) and
+    (TObject(Effect^.User) is TBasicVSTModule) then
+    Result := TBasicVSTModule(Effect^.User).HostCallDispatchEffect(OpCode, Index, Value, PTR, opt)
+  else
+    Result := 0;
 end;
 
 function GetParameterFuncUserPtr(const Effect: PVSTEffect; const Index: Integer): Single; cdecl;
 begin
- Assert(Assigned(Effect));
- if TObject(Effect^.User) is TBasicVSTModule
-  then Result := TBasicVSTModule(Effect^.User).HostCallGetParameter(Index)
-  else Result := 0;
+  Assert(Assigned(Effect));
+  if TObject(Effect^.User) is TBasicVSTModule then
+    Result := TBasicVSTModule(Effect^.User).HostCallGetParameter(Index)
+  else
+    Result := 0;
 end;
 
 procedure SetParameterFuncUserPtr(const Effect: PVSTEffect; const Index: Integer; const Value: Single); cdecl;
 begin
- Assert(Assigned(Effect));
- if TObject(Effect^.User) is TBasicVSTModule
-  then TBasicVSTModule(Effect^.User).HostCallSetParameter(Index, Value);
+  Assert(Assigned(Effect));
+  if TObject(Effect^.User) is TBasicVSTModule then
+    TBasicVSTModule(Effect^.User).HostCallSetParameter(Index, Value);
 end;
 {$ENDIF}
 
@@ -1488,37 +1833,37 @@ end;
 
 procedure ProcessFuncCheck(const Effect: PVSTEffect; const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer); cdecl;
 begin
- if Assigned(Effect) then
+  if Assigned(Effect) then
   {$IFDEF UseAudioEffectPtr}
-  if Addr(Effect^.Process) = Addr(ProcessFuncAudioEffectPtr)
-   then ProcessFuncAudioEffectPtr(Effect, Inputs, Outputs, SampleFrames);
+    if Addr(Effect^.Process) = Addr(ProcessFuncAudioEffectPtr) then
+      ProcessFuncAudioEffectPtr(Effect, Inputs, Outputs, SampleFrames);
   {$ELSE}
-  if Addr(Effect^.Process) = Addr(ProcessFuncUserPtr)
-   then ProcessFuncUserPtr(Effect, Inputs, Outputs, SampleFrames);
+    if Addr(Effect^.Process) = Addr(ProcessFuncUserPtr) then
+      ProcessFuncUserPtr(Effect, Inputs, Outputs, SampleFrames);
   {$ENDIF}
 end;
 
 procedure Process32ReplacingFuncCheck(const Effect: PVSTEffect; const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer); cdecl;
 begin
- if Assigned(Effect) then
+  if Assigned(Effect) then
   {$IFDEF UseAudioEffectPtr}
-  if Addr(Effect^.Process32Replacing) = Addr(Process32ReplacingFuncAudioEffectPtr)
-   then Process32ReplacingFuncAudioEffectPtr(Effect, Inputs, Outputs, SampleFrames);
+    if Addr(Effect^.Process32Replacing) = Addr(Process32ReplacingFuncAudioEffectPtr) then
+      Process32ReplacingFuncAudioEffectPtr(Effect, Inputs, Outputs, SampleFrames);
   {$ELSE}
-  if Addr(Effect^.Process32Replacing) = Addr(Process32ReplacingFuncUserPtr)
-   then Process32ReplacingFuncUserPtr(Effect, Inputs, Outputs, SampleFrames);
+    if Addr(Effect^.Process32Replacing) = Addr(Process32ReplacingFuncUserPtr) then
+      Process32ReplacingFuncUserPtr(Effect, Inputs, Outputs, SampleFrames);
   {$ENDIF}
 end;
 
 procedure Process64ReplacingFuncCheck(const Effect: PVSTEffect; const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer); cdecl;
 begin
- if Assigned(Effect) then
+  if Assigned(Effect) then
   {$IFDEF UseAudioEffectPtr}
-  if Addr(Effect^.Process64Replacing) = Addr(Process64ReplacingFuncAudioEffectPtr)
-   then Process64ReplacingFuncAudioEffectPtr(Effect, Inputs, Outputs, SampleFrames);
+    if Addr(Effect^.Process64Replacing) = Addr(Process64ReplacingFuncAudioEffectPtr) then
+      Process64ReplacingFuncAudioEffectPtr(Effect, Inputs, Outputs, SampleFrames);
   {$ELSE}
-  if Addr(Effect^.Process64Replacing) = Addr(Process64ReplacingFuncUserPtr)
-   then Process64ReplacingFuncUserPtr(Effect, Inputs, Outputs, SampleFrames);
+    if Addr(Effect^.Process64Replacing) = Addr(Process64ReplacingFuncUserPtr) then
+      Process64ReplacingFuncUserPtr(Effect, Inputs, Outputs, SampleFrames);
   {$ENDIF}
 end;
 
@@ -1529,12 +1874,12 @@ end;
 procedure ProcessFuncAudioEffectPtr(const Effect: PVSTEffect; const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer); cdecl;
 {$IFDEF PUREPASCAL}
 begin
- // check consistency
- if not Assigned(Effect) or (SampleFrames <= 0) or ((Inputs = nil) and (Outputs = nil))
-  then Exit;
+  // check consistency
+  if not Assigned(Effect) or (SampleFrames <= 0) or ((Inputs = nil) and (Outputs = nil)) then
+    Exit;
 
- if TObject(Effect^.AudioEffectPtr) is TBasicVSTModule
-  then TBasicVSTModule(Effect^.AudioEffectPtr).HostCallProcess(Inputs, Outputs, SampleFrames);
+  if TObject(Effect^.AudioEffectPtr) is TBasicVSTModule then
+    TBasicVSTModule(Effect^.AudioEffectPtr).HostCallProcess(Inputs, Outputs, SampleFrames);
 end;
 {$ELSE}
 asm
@@ -1582,12 +1927,12 @@ end;
 procedure Process32ReplacingFuncAudioEffectPtr(const Effect: PVSTEffect; const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer); cdecl;
 {$IFDEF PUREPASCAL}
 begin
- // check consistency
- if not Assigned(Effect) or (SampleFrames <= 0) or ((Inputs = nil) and (Outputs = nil))
-  then Exit;
+  // check consistency
+  if not Assigned(Effect) or (SampleFrames <= 0) or ((Inputs = nil) and (Outputs = nil)) then
+    Exit;
 
- if TObject(Effect^.AudioEffectPtr) is TBasicVSTModule
-  then TBasicVSTModule(Effect^.AudioEffectPtr).HostCallProcess32Replacing(Inputs, Outputs, SampleFrames);
+  if TObject(Effect^.AudioEffectPtr) is TBasicVSTModule then
+    TBasicVSTModule(Effect^.AudioEffectPtr).HostCallProcess32Replacing(Inputs, Outputs, SampleFrames);
 end;
 {$ELSE}
 asm
@@ -1636,12 +1981,12 @@ procedure Process64ReplacingFuncAudioEffectPtr(const Effect: PVSTEffect;
   const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer); cdecl;
 {$IFDEF PUREPASCAL}
 begin
- // check consistency
- if not Assigned(Effect) or (SampleFrames <= 0) or ((Inputs = nil) and (Outputs = nil))
-  then Exit;
+  // check consistency
+  if not Assigned(Effect) or (SampleFrames <= 0) or ((Inputs = nil) and (Outputs = nil)) then
+    Exit;
 
- if TObject(Effect^.AudioEffectPtr) is TBasicVSTModule
-  then TBasicVSTModule(Effect^.AudioEffectPtr).HostCallProcess64Replacing(Inputs, Outputs, SampleFrames);
+  if TObject(Effect^.AudioEffectPtr) is TBasicVSTModule then
+    TBasicVSTModule(Effect^.AudioEffectPtr).HostCallProcess64Replacing(Inputs, Outputs, SampleFrames);
 end;
 {$ELSE}
 asm
@@ -1691,12 +2036,12 @@ procedure ProcessFuncUserPtr(const Effect: PVSTEffect; const Inputs,
   Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer); cdecl;
 {$IFDEF PUREPASCAL}
 begin
- // check consistency
- if not Assigned(Effect) or (SampleFrames <= 0) or ((Inputs = nil) and (Outputs = nil))
-  then Exit;
+  // check consistency
+  if not Assigned(Effect) or (SampleFrames <= 0) or ((Inputs = nil) and (Outputs = nil)) then
+    Exit;
 
- if TObject(Effect^.User) is TBasicVSTModule
-  then TBasicVSTModule(Effect^.User).HostCallProcess(Inputs, Outputs, SampleFrames);
+  if TObject(Effect^.User) is TBasicVSTModule then
+    TBasicVSTModule(Effect^.User).HostCallProcess(Inputs, Outputs, SampleFrames);
 end;
 {$ELSE}
 asm
@@ -1798,12 +2143,12 @@ procedure Process64ReplacingFuncUserPtr(const Effect: PVSTEffect; const Inputs,
   Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer); cdecl;
 {$IFDEF PUREPASCAL}
 begin
- // check consistency
- if not Assigned(Effect) or (SampleFrames <= 0) or ((Inputs = nil) and (Outputs = nil))
-  then Exit;
+  // check consistency
+  if not Assigned(Effect) or (SampleFrames <= 0) or ((Inputs = nil) and (Outputs = nil)) then
+    Exit;
 
- if TObject(Effect^.User) is TBasicVSTModule
-  then TBasicVSTModule(Effect^.User).HostCallProcess64Replacing(Inputs, Outputs, SampleFrames);
+  if TObject(Effect^.User) is TBasicVSTModule then
+    TBasicVSTModule(Effect^.User).HostCallProcess64Replacing(Inputs, Outputs, SampleFrames);
 end;
 {$ELSE}
 asm
@@ -1853,7 +2198,7 @@ end;
 
 function GetParameterFuncDummy(const Effect: PVSTEffect; const Index: Integer): Single; cdecl;
 begin
- Result := 0;
+  Result := 0;
 end;
 
 procedure SetParameterFuncDummy(const Effect: PVSTEffect; const Index: Integer; const Value: Single); cdecl;
@@ -1869,75 +2214,75 @@ end;
 
 function Init(const WinAmpDSPModule: PWinAmpDSPModule): Integer; cdecl;
 begin
- // make sure a pointer to the TWinAmpDSPModule exists
- if not Assigned(WinAmpDSPModule) then
+  // make sure a pointer to the TWinAmpDSPModule exists
+  if not Assigned(WinAmpDSPModule) then
   begin
-   Result := 1;
-   Exit;
+    Result := 1;
+    Exit;
   end;
 
- // assert that no other instance exists already
- Assert(WinAmpDSPModule^.UserData = nil);
+  // assert that no other instance exists already
+  Assert(WinAmpDSPModule^.UserData = nil);
 
- try
-  // instanciate TWinAmpObject
-  WinAmpDSPModule^.UserData := WAVstModule.Create(Application);
-  TBasicVSTModule(WinAmpDSPModule^.UserData).FWinAmpDSPModule := WinAmpDSPModule;
-  WinAmpDSPModule^.ModifySamples := ModifySamples;
-  Result := 0;
- except
-  Result := 1;
- end;
+  try
+    // instanciate TWinAmpObject
+    WinAmpDSPModule^.UserData := WAVstModule.Create(Application);
+    TBasicVSTModule(WinAmpDSPModule^.UserData).FWinAmpDSPModule := WinAmpDSPModule;
+    WinAmpDSPModule^.ModifySamples := ModifySamples;
+    Result := 0;
+  except
+    Result := 1;
+  end;
 end;
 
 procedure Config(const WinAmpDSPModule: PWinAmpDSPModule); cdecl;
 begin
- // assert that a pointer to the TWinAmpDSPModule exists
- Assert(Assigned(WinAmpDSPModule));
+  // assert that a pointer to the TWinAmpDSPModule exists
+  Assert(Assigned(WinAmpDSPModule));
 
- // open config dialog
- if Assigned(WinAmpDSPModule^.UserData) then
-  try
-   TBasicVSTModule(WinAmpDSPModule^.UserData).WinAmpConfig;
-  except
-  end;
+  // open config dialog
+  if Assigned(WinAmpDSPModule^.UserData) then
+    try
+      TBasicVSTModule(WinAmpDSPModule^.UserData).WinAmpConfig;
+    except
+    end;
 end;
 
 function ModifySamples(const WinAmpDSPModule: PWinAmpDSPModule;
   const Samples: Pointer; const SampleFrames, BitPerSample, ChannelCount,
   SampleRate: Integer): Integer; cdecl;
 begin
- Result := SampleFrames;
+  Result := SampleFrames;
 
- // make sure a pointer to the TWinAmpDSPModule exists
- if not Assigned(WinAmpDSPModule) then Exit;
+  // make sure a pointer to the TWinAmpDSPModule exists
+  if not Assigned(WinAmpDSPModule) then Exit;
 
- // make sure a TWinAmpObject instance exists
- if not Assigned(WinAmpDSPModule^.UserData) then Exit;
+  // make sure a TWinAmpObject instance exists
+  if not Assigned(WinAmpDSPModule^.UserData) then Exit;
 
- // CALL the objects 'ModifySamples'
- Result := TBasicVSTModule(WinAmpDSPModule^.UserData).WinAmpModifySamples(Samples,
-   SampleFrames, BitPerSample, ChannelCount, SampleRate);
+  // CALL the objects 'ModifySamples'
+  Result := TBasicVSTModule(WinAmpDSPModule^.UserData).WinAmpModifySamples(
+    Samples, SampleFrames, BitPerSample, ChannelCount, SampleRate);
 end;
 
 function ModifySamplesDummy(const WinAmpDSPModule: PWinAmpDSPModule;
   const Samples: Pointer; const SampleFrames, BitPerSample, ChannelCount,
   SampleRate: Integer): Integer; cdecl;
 begin
- Result := SampleFrames;
+  Result := SampleFrames;
 end;
 
 procedure Quit(const WinAmpDSPModule: PWinAmpDSPModule);
 begin
- // assert that a pointer to the TWinAmpDSPModule exists
- Assert(Assigned(WinAmpDSPModule));
- try
-  WinAmpDSPModule^.ModifySamples := ModifySamplesDummy;
-  sleep(5);
-  TBasicVSTModule(WinAmpDSPModule^.UserData).WinAmpQuit;
- finally
-  FreeAndNil(WinAmpDSPModule^.UserData);
- end;
+  // assert that a pointer to the TWinAmpDSPModule exists
+  Assert(Assigned(WinAmpDSPModule));
+  try
+    WinAmpDSPModule^.ModifySamples := ModifySamplesDummy;
+    sleep(5);
+    TBasicVSTModule(WinAmpDSPModule^.UserData).WinAmpQuit;
+  finally
+    FreeAndNil(WinAmpDSPModule^.UserData);
+  end;
 end;
 
 initialization

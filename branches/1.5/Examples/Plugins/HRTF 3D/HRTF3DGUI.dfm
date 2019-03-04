@@ -24,10 +24,11 @@ object VSTGUI: TVSTGUI
     Width = 307
     Height = 284
     Camera = GLCamera
+    Buffer.FogEnvironment.FogColor.Color = {0000803F0000803F0000803F0000803F}
     Buffer.FogEnvironment.FogStart = 10.000000000000000000
     Buffer.FogEnvironment.FogEnd = 10.000000000000000000
     Buffer.FogEnvironment.FogDistance = fdEyePlane
-    Buffer.BackgroundColor = clBlack
+    Buffer.BackgroundColor = clWhite
     FieldOfView = 109.691642761230500000
     Align = alClient
     OnMouseDown = GLSceneViewerMouseDown
@@ -66,7 +67,7 @@ object VSTGUI: TVSTGUI
     object GLHRTFs: TGLPoints
       NoZWrite = False
       Static = False
-      size = 3.000000000000000000
+      Size = 3.000000000000000000
       Style = psSmooth
       PointParameters.Enabled = True
       PointParameters.PointParams = {00000000000000400000803F}

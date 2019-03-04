@@ -18,7 +18,7 @@
   The default is enabled. }
 {$DEFINE UseNativeTypes}
 
-{ Enable this option, in order to use the native float to string convertsion
+{ Enable this option, in order to use the native float to string conversion
   The default is enabled. }
 {$DEFINE UseNativeFloatToStringConversion}
 

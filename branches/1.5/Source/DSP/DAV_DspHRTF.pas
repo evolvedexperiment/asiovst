@@ -2031,30 +2031,38 @@ procedure TCustomHrtfs.InterpolateHrir(const Azimuth, Polar: Single;
   const SampleFrames: Integer; const Left, Right: PDavSingleFixedArray);
 begin
   case FHrirList.Count of
-   0 : raise Exception.Create('No HRIR found!');
-   1 : with TCustomHrir(FHrirList[0]) do
-        begin
-         MoveLeft32(Left, SampleFrames);
-         MoveRight32(Right, SampleFrames);
-        end;
-   2 : Interpolate2Hrir(Azimuth, Polar, SampleFrames, Left, Right);
-  else Interpolate3Hrir(Azimuth, Polar, SampleFrames, Left, Right);
- end;
+    0:
+      raise Exception.Create('No HRIR found!');
+    1:
+      with TCustomHrir(FHrirList[0]) do
+      begin
+        MoveLeft32(Left, SampleFrames);
+        MoveRight32(Right, SampleFrames);
+      end;
+    2:
+      Interpolate2Hrir(Azimuth, Polar, SampleFrames, Left, Right);
+    else
+      Interpolate3Hrir(Azimuth, Polar, SampleFrames, Left, Right);
+  end;
 end;
 
 procedure TCustomHrtfs.InterpolateHrir(const Azimuth, Polar: Single;
   const SampleFrames: Integer; const Left, Right: PDavDoubleFixedArray);
 begin
- case FHrirList.Count of
-   0 : raise Exception.Create('No HRIR found!');
-   1 : with TCustomHrir(FHrirList[0]) do
-        begin
-         MoveLeft64(Left, SampleFrames);
-         MoveRight64(Right, SampleFrames);
-        end;
-   2 : Interpolate2Hrir(Azimuth, Polar, SampleFrames, Left, Right);
-  else Interpolate3Hrir(Azimuth, Polar, SampleFrames, Left, Right);
- end;
+  case FHrirList.Count of
+    0:
+      raise Exception.Create('No HRIR found!');
+    1:
+      with TCustomHrir(FHrirList[0]) do
+      begin
+        MoveLeft64(Left, SampleFrames);
+        MoveRight64(Right, SampleFrames);
+      end;
+    2:
+      Interpolate2Hrir(Azimuth, Polar, SampleFrames, Left, Right);
+    else
+      Interpolate3Hrir(Azimuth, Polar, SampleFrames, Left, Right);
+  end;
 end;
 
 procedure TCustomHrtfs.Interpolate2Hrir(const Azimuth, Polar: Single;
@@ -2066,48 +2074,47 @@ var
   SpherePos : TSphereVector3D;
   Sample    : Integer;
 begin
- SpherePos := MakeSphereVector3D(Azimuth, Polar);
- Hrirs[0] := TCustomHrir(FHrirList[0]);
- Hrirs[1] := TCustomHrir(FHrirList[1]);
+  SpherePos := MakeSphereVector3D(Azimuth, Polar);
+  Hrirs[0] := TCustomHrir(FHrirList[0]);
+  Hrirs[1] := TCustomHrir(FHrirList[1]);
 
- case FInterpolationType of
-  itNearest :
-   begin
-    // select nearest
-    if GetOrthodromicAngle2D(Hrirs[1].Position, SpherePos) <
-       GetOrthodromicAngle2D(Hrirs[0].Position, SpherePos)
-     then Hrirs[0] := Hrirs[1];
+  case FInterpolationType of
+    itNearest:
+      begin
+        // select nearest
+        if GetOrthodromicAngle2D(Hrirs[1].Position, SpherePos) <
+           GetOrthodromicAngle2D(Hrirs[0].Position, SpherePos) then
+          Hrirs[0] := Hrirs[1];
 
-    // move data nearest
-    Hrirs[0].MoveLeft32(Left, SampleFrames);
-    Hrirs[0].MoveRight32(Right, SampleFrames);
-   end;
-  itLinear, itLinear3 :
-   begin
-    // calculate wheighting
-    CalculateScaleFactors(SpherePos, Hrirs[0].Position, Hrirs[1].Position,
-      Scale[0], Scale[1]);
+        // move data nearest
+        Hrirs[0].MoveLeft32(Left, SampleFrames);
+        Hrirs[0].MoveRight32(Right, SampleFrames);
+      end;
+    itLinear, itLinear3:
+      begin
+        // calculate wheighting
+        CalculateScaleFactors(SpherePos, Hrirs[0].Position, Hrirs[1].Position,
+          Scale[0], Scale[1]);
 
-    // allocate a temporary buffer
-    ReallocMem(TempData, SampleFrames * SizeOf(Single));
-    try
-     // linear interpolate left
-     Hrirs[0].MoveLeft32(TempData, SampleFrames);
-     Hrirs[1].MoveLeft32(Left, SampleFrames);
-     for Sample := 0 to SampleFrames - 1
-      do Left^[Sample] := Scale[0] * TempData^[Sample] + Scale[1] * Left^[Sample];
+        // allocate a temporary buffer
+        ReallocMem(TempData, SampleFrames * SizeOf(Single));
+        try
+          // linear interpolate left
+          Hrirs[0].MoveLeft32(TempData, SampleFrames);
+          Hrirs[1].MoveLeft32(Left, SampleFrames);
+          for Sample := 0 to SampleFrames - 1 do
+            Left^[Sample] := Scale[0] * TempData^[Sample] + Scale[1] * Left^[Sample];
 
-     // linear interpolate right
-     Hrirs[0].MoveRight32(TempData, SampleFrames);
-     Hrirs[1].MoveRight32(Right, SampleFrames);
-     for Sample := 0 to SampleFrames - 1
-      do Right^[Sample] := Scale[0] * TempData^[Sample] + Scale[1] * Right^[Sample];
-    finally
-     Dispose(TempData);
-    end;
-   end;
- end;
-
+          // linear interpolate right
+          Hrirs[0].MoveRight32(TempData, SampleFrames);
+          Hrirs[1].MoveRight32(Right, SampleFrames);
+          for Sample := 0 to SampleFrames - 1 do
+            Right^[Sample] := Scale[0] * TempData^[Sample] + Scale[1] * Right^[Sample];
+        finally
+          Dispose(TempData);
+        end;
+     end;
+  end;
 end;
 
 procedure TCustomHrtfs.Interpolate2Hrir(const Azimuth, Polar: Single;
@@ -2119,47 +2126,47 @@ var
   SpherePos : TSphereVector3D;
   Sample    : Integer;
 begin
- SpherePos := MakeSphereVector3D(Azimuth, Polar);
- Hrirs[0] := TCustomHrir(FHrirList[0]);
- Hrirs[1] := TCustomHrir(FHrirList[1]);
+  SpherePos := MakeSphereVector3D(Azimuth, Polar);
+  Hrirs[0] := TCustomHrir(FHrirList[0]);
+  Hrirs[1] := TCustomHrir(FHrirList[1]);
 
- case FInterpolationType of
-  itNearest :
-   begin
-    // select nearest
-    if GetOrthodromicAngle2D(Hrirs[1].Position, SpherePos) <
-       GetOrthodromicAngle2D(Hrirs[0].Position, SpherePos)
-     then Hrirs[0] := Hrirs[1];
+  case FInterpolationType of
+    itNearest:
+      begin
+        // select nearest
+        if GetOrthodromicAngle2D(Hrirs[1].Position, SpherePos) <
+           GetOrthodromicAngle2D(Hrirs[0].Position, SpherePos)
+         then Hrirs[0] := Hrirs[1];
 
-    // move data nearest
-    Hrirs[0].MoveLeft64(Left, SampleFrames);
-    Hrirs[0].MoveRight64(Right, SampleFrames);
-   end;
-  itLinear, itLinear3 :
-   begin
-    // calculate wheighting
-    CalculateScaleFactors(SpherePos, Hrirs[0].Position, Hrirs[1].Position,
-      Scale[0], Scale[1]);
+        // move data nearest
+        Hrirs[0].MoveLeft64(Left, SampleFrames);
+        Hrirs[0].MoveRight64(Right, SampleFrames);
+      end;
+    itLinear, itLinear3:
+      begin
+        // calculate wheighting
+        CalculateScaleFactors(SpherePos, Hrirs[0].Position, Hrirs[1].Position,
+          Scale[0], Scale[1]);
 
-    // allocate a temporary buffer
-    ReallocMem(TempData, SampleFrames * SizeOf(Double));
-    try
-     // linear interpolate left
-     Hrirs[0].MoveLeft64(TempData, SampleFrames);
-     Hrirs[1].MoveLeft64(Left, SampleFrames);
-     for Sample := 0 to SampleFrames - 1
-      do Left^[Sample] := Scale[0] * TempData^[Sample] + Scale[1] * Left^[Sample];
+        // allocate a temporary buffer
+        ReallocMem(TempData, SampleFrames * SizeOf(Double));
+        try
+         // linear interpolate left
+         Hrirs[0].MoveLeft64(TempData, SampleFrames);
+         Hrirs[1].MoveLeft64(Left, SampleFrames);
+         for Sample := 0 to SampleFrames - 1
+          do Left^[Sample] := Scale[0] * TempData^[Sample] + Scale[1] * Left^[Sample];
 
-     // linear interpolate right
-     Hrirs[0].MoveRight64(TempData, SampleFrames);
-     Hrirs[1].MoveRight64(Right, SampleFrames);
-     for Sample := 0 to SampleFrames - 1
-      do Right^[Sample] := Scale[0] * TempData^[Sample] + Scale[1] * Right^[Sample];
-    finally
-     Dispose(TempData);
-    end;
-   end;
- end;
+         // linear interpolate right
+         Hrirs[0].MoveRight64(TempData, SampleFrames);
+         Hrirs[1].MoveRight64(Right, SampleFrames);
+         for Sample := 0 to SampleFrames - 1
+          do Right^[Sample] := Scale[0] * TempData^[Sample] + Scale[1] * Right^[Sample];
+        finally
+         Dispose(TempData);
+        end;
+      end;
+  end;
 end;
 
 procedure TCustomHrtfs.Interpolate3Hrir(const Azimuth, Polar: Single;
@@ -2756,117 +2763,118 @@ end;
 
 procedure TCustomHrtfs.SwapChannels;
 var
-  i : Integer;
+  i: Integer;
 begin
- for i := 0 to FHrirList.Count - 1
-  do TCustomHrir(FHrirList[i]).SwapChannels;
+  for i := 0 to FHrirList.Count - 1 do
+    TCustomHrir(FHrirList[i]).SwapChannels;
 end;
 
 procedure TCustomHrtfs.AddChunk(Chunk: TDavCustomChunk);
 begin
- inherited;
- if Chunk is TCustomHrir
-  then FHrirList.Add(Chunk);
+  inherited;
+  if Chunk is TCustomHrir then
+    FHrirList.Add(Chunk);
 end;
 
 procedure TCustomHrtfs.Clear;
 begin
- FHrirList.Clear;
- FChunkList.Clear;
+  FHrirList.Clear;
+  FChunkList.Clear;
 end;
 
 procedure TCustomHrtfs.ClearHrirs;
 var
-  i : Integer;
+  i: Integer;
 begin
- i := 0;
- FHrirList.Clear;
- while i < FChunkList.Count do
-  if FChunkList[i] is TCustomHrir
-   then FChunkList.Delete(i)
-   else inc(i);
+  i := 0;
+  FHrirList.Clear;
+  while i < FChunkList.Count do
+    if FChunkList[i] is TCustomHrir then
+      FChunkList.Delete(i)
+    else
+      Inc(i);
 end;
 
 procedure TCustomHrtfs.ClearInformationChunks;
 begin
- if Assigned(FGeneralInformation)     then FreeAndNil(FGeneralInformation);
- if Assigned(FSubjectInformation)     then FreeAndNil(FSubjectInformation);
- if Assigned(FRoomInformation)        then FreeAndNil(FRoomInformation);
- if Assigned(FMicrophoneInformation)  then FreeAndNil(FMicrophoneInformation);
- if Assigned(FOutboardInformation)    then FreeAndNil(FOutboardInformation);
- if Assigned(FMeasurementInformation) then FreeAndNil(FMeasurementInformation);
+  if Assigned(FGeneralInformation)     then FreeAndNil(FGeneralInformation);
+  if Assigned(FSubjectInformation)     then FreeAndNil(FSubjectInformation);
+  if Assigned(FRoomInformation)        then FreeAndNil(FRoomInformation);
+  if Assigned(FMicrophoneInformation)  then FreeAndNil(FMicrophoneInformation);
+  if Assigned(FOutboardInformation)    then FreeAndNil(FOutboardInformation);
+  if Assigned(FMeasurementInformation) then FreeAndNil(FMeasurementInformation);
 end;
 
 procedure TCustomHrtfs.LoadFromStream(Stream: TStream);
 begin
- Clear;
- FGeneralInformation     := nil;
- FSubjectInformation     := nil;
- FRoomInformation        := nil;
- FMicrophoneInformation  := nil;
- FOutboardInformation    := nil;
- FMeasurementInformation := nil;
- inherited;
+  Clear;
+  FGeneralInformation     := nil;
+  FSubjectInformation     := nil;
+  FRoomInformation        := nil;
+  FMicrophoneInformation  := nil;
+  FOutboardInformation    := nil;
+  FMeasurementInformation := nil;
+  inherited;
 
- if Assigned(FOnHrtfChanged)
-  then FOnHrtfChanged(Self);
+  if Assigned(FOnHrtfChanged) then
+    FOnHrtfChanged(Self);
 end;
 
 procedure TCustomHrtfs.ConvertStreamToChunk(ChunkClass: TDavCustomChunkClass; Stream : TStream);
 begin
- if ChunkClass = TCustomHrirGeneralInformation then
+  if ChunkClass = TCustomHrirGeneralInformation then
   begin
-   if Assigned(FGeneralInformation)
-    then raise Exception.Create(RCStrChunkAlreadyExists);
-   FGeneralInformation := TCustomHrirGeneralInformation.Create;
-   FGeneralInformation.ChunkFlags := ChunkFlags;
-   FGeneralInformation.LoadFromStream(Stream);
-   AddChunk(FGeneralInformation);
+    if Assigned(FGeneralInformation) then
+      raise Exception.Create(RCStrChunkAlreadyExists);
+    FGeneralInformation := TCustomHrirGeneralInformation.Create;
+    FGeneralInformation.ChunkFlags := ChunkFlags;
+    FGeneralInformation.LoadFromStream(Stream);
+    AddChunk(FGeneralInformation);
   end else
- if ChunkClass = TCustomHrirSubjectInformation then
+  if ChunkClass = TCustomHrirSubjectInformation then
   begin
-   if Assigned(FSubjectInformation)
-    then raise Exception.Create(RCStrChunkAlreadyExists);
-   FSubjectInformation := TCustomHrirSubjectInformation.Create;
-   FSubjectInformation.ChunkFlags := ChunkFlags;
-   FSubjectInformation.LoadFromStream(Stream);
-   AddChunk(FSubjectInformation);
+    if Assigned(FSubjectInformation) then
+      raise Exception.Create(RCStrChunkAlreadyExists);
+    FSubjectInformation := TCustomHrirSubjectInformation.Create;
+    FSubjectInformation.ChunkFlags := ChunkFlags;
+    FSubjectInformation.LoadFromStream(Stream);
+    AddChunk(FSubjectInformation);
   end else
- if ChunkClass = TCustomHrirRoomInformation then
+  if ChunkClass = TCustomHrirRoomInformation then
   begin
-   if Assigned(FRoomInformation)
-    then raise Exception.Create(RCStrChunkAlreadyExists);
-   FRoomInformation := TCustomHrirRoomInformation.Create;
-   FRoomInformation.ChunkFlags := ChunkFlags;
-   FRoomInformation.LoadFromStream(Stream);
-   AddChunk(FRoomInformation);
+    if Assigned(FRoomInformation) then
+      raise Exception.Create(RCStrChunkAlreadyExists);
+    FRoomInformation := TCustomHrirRoomInformation.Create;
+    FRoomInformation.ChunkFlags := ChunkFlags;
+    FRoomInformation.LoadFromStream(Stream);
+    AddChunk(FRoomInformation);
   end else
- if ChunkClass = TCustomHrirMicrophoneInformation then
+  if ChunkClass = TCustomHrirMicrophoneInformation then
   begin
-   if Assigned(FMicrophoneInformation)
-    then raise Exception.Create(RCStrChunkAlreadyExists);
-   FMicrophoneInformation := TCustomHrirMicrophoneInformation.Create;
-   FMicrophoneInformation.ChunkFlags := ChunkFlags;
-   FMicrophoneInformation.LoadFromStream(Stream);
-   AddChunk(FMicrophoneInformation);
+    if Assigned(FMicrophoneInformation) then
+      raise Exception.Create(RCStrChunkAlreadyExists);
+    FMicrophoneInformation := TCustomHrirMicrophoneInformation.Create;
+    FMicrophoneInformation.ChunkFlags := ChunkFlags;
+    FMicrophoneInformation.LoadFromStream(Stream);
+    AddChunk(FMicrophoneInformation);
   end else
- if ChunkClass = TCustomHrirOutboardInformation then
+  if ChunkClass = TCustomHrirOutboardInformation then
   begin
-   if Assigned(FOutboardInformation)
-    then raise Exception.Create(RCStrChunkAlreadyExists);
-   FOutboardInformation := TCustomHrirOutboardInformation.Create;
-   FOutboardInformation.ChunkFlags := ChunkFlags;
-   FOutboardInformation.LoadFromStream(Stream);
-   AddChunk(FOutboardInformation);
+    if Assigned(FOutboardInformation) then
+      raise Exception.Create(RCStrChunkAlreadyExists);
+    FOutboardInformation := TCustomHrirOutboardInformation.Create;
+    FOutboardInformation.ChunkFlags := ChunkFlags;
+    FOutboardInformation.LoadFromStream(Stream);
+    AddChunk(FOutboardInformation);
   end else
- if ChunkClass = TCustomHrirMeasurementInformation then
+  if ChunkClass = TCustomHrirMeasurementInformation then
   begin
-   if Assigned(FMeasurementInformation)
-    then raise Exception.Create(RCStrChunkAlreadyExists);
-   FMeasurementInformation := TCustomHrirMeasurementInformation.Create;
-   FMeasurementInformation.ChunkFlags := ChunkFlags;
-   FMeasurementInformation.LoadFromStream(Stream);
-   AddChunk(FMeasurementInformation);
+    if Assigned(FMeasurementInformation) then
+      raise Exception.Create(RCStrChunkAlreadyExists);
+    FMeasurementInformation := TCustomHrirMeasurementInformation.Create;
+    FMeasurementInformation.ChunkFlags := ChunkFlags;
+    FMeasurementInformation.LoadFromStream(Stream);
+    AddChunk(FMeasurementInformation);
   end else inherited;
 end;
 

@@ -344,57 +344,6 @@ begin
   end;
 end;
 {$IFDEF DELPHI10_UP} {$ENDREGION 'Global functions'} {$ENDIF}
-(*
-  function GetInputConverter(ConverterType: TAsioSampleType): TInConverter;
-  begin
-  case ConverterType of
-  CAsioSTInt16MSB   : Result := FromInt16MSB;
-  CAsioSTInt24MSB   : Result := FromInt24MSB;
-  CAsioSTInt32MSB   : Result := FromInt32MSB;
-  CAsioSTFloat32MSB : Result := FromSingleMSB;
-  CAsioSTFloat64MSB : Result := FromDoubleMSB;
-  CAsioSTInt32MSB16 : Result := FromInt32MSB16;
-  CAsioSTInt32MSB18 : Result := FromInt32MSB18;
-  CAsioSTInt32MSB20 : Result := FromInt32MSB20;
-  CAsioSTInt32MSB24 : Result := FromInt32MSB24;
-  CAsioSTInt16LSB   : Result := FromInt16LSB;
-  CAsioSTInt24LSB   : Result := FromInt24LSB;
-  CAsioSTInt32LSB   : Result := FromInt32LSB;
-  CAsioSTFloat32LSB : Result := FromSingleLSB;
-  CAsioSTFloat64LSB : Result := FromDoubleLSB;
-  CAsioSTInt32LSB16 : Result := FromInt32LSB16;
-  CAsioSTInt32LSB18 : Result := FromInt32LSB18;
-  CAsioSTInt32LSB20 : Result := FromInt32LSB20;
-  CAsioSTInt32LSB24 : Result := FromInt32LSB24;
-  else raise EAsioHost.Create(RStrConverterTypeUnknown);
-  end;
-  end;
-
-  function GetOutputConverter(ConverterType: TAsioSampleType): TOutConverter;
-  begin
-  case ConverterType of
-  CAsioSTInt16MSB   : Result := ToInt16MSB;
-  CAsioSTInt24MSB   : Result := ToInt24MSB;
-  CAsioSTInt32MSB   : Result := ToInt32MSB;
-  CAsioSTFloat32MSB : Result := ToSingleMSB;
-  CAsioSTFloat64MSB : Result := ToDoubleMSB;
-  CAsioSTInt32MSB16 : Result := ToInt32MSB16;
-  CAsioSTInt32MSB18 : Result := ToInt32MSB18;
-  CAsioSTInt32MSB20 : Result := ToInt32MSB20;
-  CAsioSTInt32MSB24 : Result := ToInt32MSB24;
-  CAsioSTInt16LSB   : Result := ToInt16LSB;
-  CAsioSTInt24LSB   : Result := ToInt24LSB;
-  CAsioSTInt32LSB   : Result := ToInt32LSB;
-  CAsioSTFloat32LSB : Result := ToSingleLSB;
-  CAsioSTFloat64LSB : Result := ToDoubleLSB;
-  CAsioSTInt32LSB16 : Result := ToInt32LSB16;
-  CAsioSTInt32LSB18 : Result := ToInt32LSB18;
-  CAsioSTInt32LSB20 : Result := ToInt32LSB20;
-  CAsioSTInt32LSB24 : Result := ToInt32LSB24;
-  else raise EAsioHost.Create(RStrConverterTypeUnknown);
-  end;
-  end;
-*)
 
 {$IFDEF DELPHI10_UP} {$REGION 'Asio callback functions'} {$ENDIF}
 
@@ -1006,8 +955,8 @@ begin
 
   // allocate memory for input and output buffers
   GetMem(FUnalignedBuffer, SizeOf(TAsioBufferInfo) *
-    (ChannelCount[0] + ChannelCount[1]) + 16);
-  Buffer := PAsioBufferInfos((Integer(FUnalignedBuffer) + 15) and (not $F));
+    (ChannelCount[0] + ChannelCount[1]) + $F);
+  Buffer := PAsioBufferInfos((NativeUInt(FUnalignedBuffer) + $F) and (not $F));
 
   // setup input channel info and converter
   FInputBuffers := Buffer;

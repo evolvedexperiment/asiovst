@@ -159,9 +159,10 @@ end;
 
 destructor TStdCallAsio.Destroy;
 begin
- if Assigned(ASIODriverInterface) then ASIODriverInterface := nil;
- CoUninitialize;
- inherited Destroy;
+  if Assigned(ASIODriverInterface) then
+    ASIODriverInterface := nil;
+  CoUninitialize;
+  inherited Destroy;
 end;
 
 function TStdCallAsio.Init(SysHandle: HWND): TASIOBool; {$IFNDEF FPC} assembler; {$ENDIF}
