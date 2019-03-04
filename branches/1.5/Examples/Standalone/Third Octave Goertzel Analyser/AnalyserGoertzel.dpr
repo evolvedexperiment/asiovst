@@ -1,4 +1,4 @@
-program ASIODemo;
+program AnalyserGoertzel;
 
 {$I DAV_Compiler.inc}
 
@@ -7,13 +7,14 @@ uses
   {$IFDEF UseFastMove}
   FastMove, // either download the library or disable the feature
   {$ENDIF}
-  AsioDemoForm in 'ASIODemoForm.pas' {FmASIO};
+  Forms,
+  AnalyserForm in 'AnalyserForm.pas' {FmASIO};
 
 {$R *.RES}
 
 begin
   Application.Initialize;
-  Application.Title := 'Demo application for ASIO-Host';
-  Application.CreateForm(TFmASIO, FmASIO);
+  Application.Title := 'Third-Octave Goertzel ASIO Analyser';
+  Application.CreateForm(TFmAnalyser, FmAnalyser);
   Application.Run;
 end.

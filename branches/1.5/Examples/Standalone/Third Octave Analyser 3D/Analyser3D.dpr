@@ -1,11 +1,18 @@
-program Analyser;
+program Analyser3D;
 
 {$I DAV_Compiler.inc}
 
 uses
   FastMM4, // either download the library or comment if there is an error here
   {$IFDEF UseFastMove}
-  FastMove,
+  FastMove, // either download the library or disable the feature
+  {$ENDIF}
+  {$IFDEF UseMadExcept}
+  madExcept,
+  madLinkDisAsm,
+  madListHardware,
+  madListProcesses,
+  madListModules,
   {$ENDIF}
   Forms,
   AnalyserForm in 'AnalyserForm.pas' {FmASIO};
@@ -14,7 +21,7 @@ uses
 
 begin
   Application.Initialize;
-  Application.Title := 'Third-Octave Goertzel ASIO Analyser';
+  Application.Title := 'Third-Octave ASIO Analyser';
   Application.CreateForm(TFmAnalyser, FmAnalyser);
   Application.Run;
 end.

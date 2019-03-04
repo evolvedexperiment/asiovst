@@ -22,52 +22,52 @@ object FmAnalyser: TFmAnalyser
     326)
   PixelsPerInch = 96
   TextHeight = 13
-  object LbDriverName: TLabel
+  object LabelDriverName: TLabel
     Left = 7
     Top = 12
     Width = 31
     Height = 13
     Caption = 'Driver:'
-    OnClick = LbDriverNameClick
+    OnClick = LabelDriverNameClick
   end
-  object LbChannels: TLabel
+  object LabelChannels: TLabel
     Left = 7
     Top = 36
     Width = 77
     Height = 13
     Caption = 'Output Channel:'
   end
-  object LbSpeed: TLabel
+  object LabelSpeed: TLabel
     Left = 7
     Top = 64
     Width = 34
     Height = 13
     Caption = 'Speed:'
   end
-  object LbFullScale: TLabel
+  object LabelFullScale: TLabel
     Left = 205
     Top = 64
     Width = 53
     Height = 13
     Caption = 'Fullscale = '
   end
-  object LbFullScaleUnit: TLabel
+  object LabelFullScaleUnit: TLabel
     Left = 322
     Top = 64
     Width = 13
     Height = 13
     Caption = 'dB'
   end
-  object DriverCombo: TComboBox
+  object ComboBoxDriver: TComboBox
     Left = 64
     Top = 7
     Width = 273
     Height = 21
     Style = csDropDownList
     TabOrder = 0
-    OnChange = DriverComboChange
+    OnChange = ComboBoxDriverChange
   end
-  object BtControlPanel: TButton
+  object ButtonControlPanel: TButton
     Left = 350
     Top = 8
     Width = 91
@@ -75,9 +75,9 @@ object FmAnalyser: TFmAnalyser
     Caption = 'Control Panel'
     Enabled = False
     TabOrder = 1
-    OnClick = BtControlPanelClick
+    OnClick = ButtonControlPanelClick
   end
-  object ChannelBox: TComboBox
+  object ComboBoxChannel: TComboBox
     Left = 104
     Top = 32
     Width = 233
@@ -85,7 +85,7 @@ object FmAnalyser: TFmAnalyser
     Style = csDropDownList
     TabOrder = 2
   end
-  object BtAnalyse: TButton
+  object ButtonAnalyse: TButton
     Left = 350
     Top = 32
     Width = 91
@@ -94,18 +94,18 @@ object FmAnalyser: TFmAnalyser
     Default = True
     Enabled = False
     TabOrder = 3
-    OnClick = BtAnalyseClick
+    OnClick = ButtonAnalyseClick
   end
-  object RbFast: TRadioButton
+  object RadioButtonFast: TRadioButton
     Left = 49
     Top = 63
     Width = 40
     Height = 17
     Caption = '&Fast'
     TabOrder = 4
-    OnClick = RbFastClick
+    OnClick = RadioButtonFastClick
   end
-  object RbMedium: TRadioButton
+  object RadioButtonMedium: TRadioButton
     Left = 91
     Top = 63
     Width = 55
@@ -114,18 +114,18 @@ object FmAnalyser: TFmAnalyser
     Checked = True
     TabOrder = 5
     TabStop = True
-    OnClick = RbMediumClick
+    OnClick = RadioButtonMediumClick
   end
-  object RbSlow: TRadioButton
+  object RadioButtonSlow: TRadioButton
     Left = 150
     Top = 63
     Width = 46
     Height = 17
     Caption = '&Slow'
     TabOrder = 6
-    OnClick = RbSlowClick
+    OnClick = RadioButtonSlowClick
   end
-  object SEFullscaleGain: TSpinEdit
+  object SpinEditFullscaleGain: TSpinEdit
     Left = 262
     Top = 60
     Width = 56
@@ -134,14 +134,13 @@ object FmAnalyser: TFmAnalyser
     MinValue = 0
     TabOrder = 7
     Value = 0
-    OnChange = SEFullscaleGainChange
+    OnChange = SpinEditFullscaleGainChange
   end
-  object AnalyserChart: TChart
+  object ChartAnalyser: TChart
     Left = 7
     Top = 88
     Width = 434
     Height = 231
-    BackWall.Brush.Color = clWhite
     BackWall.Brush.Style = bsClear
     Title.Text.Strings = (
       'TChart')
@@ -155,13 +154,12 @@ object FmAnalyser: TFmAnalyser
     View3DWalls = False
     TabOrder = 8
     Anchors = [akLeft, akTop, akRight, akBottom]
+    DefaultCanvas = 'TGDIPlusCanvas'
+    ColorPaletteIndex = 13
     object BarSeries: TBarSeries
-      Marks.Arrow.Visible = True
-      Marks.Callout.Brush.Color = clBlack
-      Marks.Callout.Arrow.Visible = True
+      Legend.Visible = False
       Marks.Visible = False
       ShowInLegend = False
-      Gradient.Direction = gdTopBottom
       MultiBar = mbNone
       XValues.Name = 'X'
       XValues.Order = loAscending
@@ -170,6 +168,7 @@ object FmAnalyser: TFmAnalyser
     end
   end
   object ASIOHost: TAsioHost
+    AsioTime.SamplePos = 0
     AsioTime.Speed = 1.000000000000000000
     AsioTime.SampleRate = 44100.000000000000000000
     AsioTime.Flags = [atSystemTimeValid, atSamplePositionValid, atSampleRateValid, atSpeedValid]

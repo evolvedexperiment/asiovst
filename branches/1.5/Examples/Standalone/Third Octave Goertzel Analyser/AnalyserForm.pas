@@ -37,59 +37,60 @@ interface
 uses
   {$IFDEF FPC} LCLIntf, {$ELSE} Windows, {$ENDIF} Messages, SysUtils, Classes, 
   Graphics, Controls, Forms, StdCtrls, ComCtrls, ExtCtrls, Spin, Math, TeeProcs, 
-  TeEngine, Chart, Series, DAV_Types, DAV_Complex, DAV_ASIOHost;
+  TeEngine, Chart, Series, DAV_Types, DAV_Complex, DAV_ASIOHost,
+  VclTee.TeeGDIPlus;
 
 const
   CNumFrequencies = 32;
-  CThirdOctaveFrequencies : Array [0..cNumFrequencies-1] of Single =
-      (16, 20, 25, 31, 40, 50, 63, 80, 100, 125, 160, 200, 250, 315, 400, 500,
-      630, 800, 1000, 1250, 1600, 2000, 2500, 3150, 4000, 5000, 6300, 8000,
-      10000, 12500, 16000, 20000);
+  CThirdOctaveFrequencies: array [0 .. CNumFrequencies - 1] of Single = (
+    16, 20, 25, 31, 40, 50, 63, 80, 100, 125, 160, 200, 250, 315, 400, 500,
+    630, 800, 1000, 1250, 1600, 2000, 2500, 3150, 4000, 5000, 6300, 8000,
+    10000, 12500, 16000, 20000);
 
 type
   TFmAnalyser = class(TForm)
-    AnalyserChart: TChart;
+    ChartAnalyser: TChart;
     ASIOHost: TASIOHost;
     BarSeries: TBarSeries;
-    BtAnalyse: TButton;
-    BtControlPanel: TButton;
-    CbChannel: TComboBox;
-    CbDriver: TComboBox;
-    LbChannels: TLabel;
-    LbFullScaleUnit: TLabel;
-    LbDriverName: TLabel;
-    LbFullscale: TLabel;
-    LbSpeed: TLabel;
-    RbFast: TRadioButton;
-    RbMedium: TRadioButton;
-    RbSlow: TRadioButton;
-    SEFullscaleGain: TSpinEdit;
+    ButtonAnalyse: TButton;
+    ButtonControlPanel: TButton;
+    ComboBoxChannel: TComboBox;
+    ComboBoxDriver: TComboBox;
+    LabelChannels: TLabel;
+    LabelFullScaleUnit: TLabel;
+    LabelDriverName: TLabel;
+    LabelFullscale: TLabel;
+    LabelSpeed: TLabel;
+    RadioButtonFast: TRadioButton;
+    RadioButtonMedium: TRadioButton;
+    RadioButtonSlow: TRadioButton;
+    SpinEditFullscaleGain: TSpinEdit;
     Timer: TTimer;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure AnalyserChartDblClick(Sender: TObject);
+    procedure ChartAnalyserDblClick(Sender: TObject);
     procedure ASIOHostSampleRateChanged(Sender: TObject);
     procedure BSNormal(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
-    procedure BtAnalyseClick(Sender: TObject);
-    procedure BtControlPanelClick(Sender: TObject);
-    procedure CbDriverChange(Sender: TObject);
-    procedure RbFastClick(Sender: TObject);
-    procedure RbMediumClick(Sender: TObject);
-    procedure RbSlowClick(Sender: TObject);
-    procedure SEFullscaleGainChange(Sender: TObject);
+    procedure ButtonAnalyseClick(Sender: TObject);
+    procedure ButtonControlPanelClick(Sender: TObject);
+    procedure ComboBoxDriverChange(Sender: TObject);
+    procedure RadioButtonFastClick(Sender: TObject);
+    procedure RadioButtonMediumClick(Sender: TObject);
+    procedure RadioButtonSlowClick(Sender: TObject);
+    procedure SpinEditFullscaleGainChange(Sender: TObject);
     procedure TimerTimer(Sender: TObject);
   private
-    FMagnitudes     : Array [0..cNumFrequencies - 1] of Double;
-    FThirdOctaveExp : Array [0..cNumFrequencies - 1] of TComplex32;
-    FSpeedConst     : Array [0..1] of Single;
-    FChannelNr      : Integer;
-    FSampleRateReci : Double;
-    FFSGain         : Single;
-    FIniFile        : TFileName;
-    FBuffer         : PDAVSingleFixedArray;  // the Buffer
-    FBufferSize     : Integer;               // Buffer size
-    FBufferPosition : Integer;               // position within the Buffer
-    FBufferOverlap  : Integer;               // overlap in samples
+    FMagnitudes: array [0 .. CNumFrequencies - 1] of Double;
+    FThirdOctaveExp: array [0 .. CNumFrequencies - 1] of TComplex32;
+    FSpeedConst: array [0 .. 1] of Single;
+    FChannelNr: Integer;
+    FSampleRateReci: Double;
+    FFSGain: Single;
+    FIniFile: TFileName;
+    FBuffer: PDAVSingleFixedArray;  // the buffer
+    FBufferSize: Integer;           // buffer size
+    FBufferPosition: Integer;       // position within the Buffer
+    FBufferOverlap: Integer;        // overlap in samples
     procedure DoGoertzelMagic;
     procedure CalculateWeight;
     procedure CalculateComplexAngulars;
@@ -107,236 +108,237 @@ uses
 
 procedure TFmAnalyser.FormCreate(Sender: TObject);
 var
-  Band : Integer;
+  Band: Integer;
 begin
- FChannelNr := 0;
- FSpeedConst[0] := 0.99;
- CalculateWeight;
+  FChannelNr := 0;
+  FSpeedConst[0] := 0.99;
+  CalculateWeight;
 
- FBufferPosition := 0;
- FBufferOverlap  := 15 * 1024;
- FBufferSize     := 16 * 1024;
- ReallocMem(FBuffer, FBufferSize * SizeOf(Single));
+  FBufferPosition := 0;
+  FBufferOverlap  := 15 * 1024;
+  FBufferSize := 16 * 1024;
+  ReallocMem(FBuffer, FBufferSize * SizeOf(Single));
 
- FFSGain := SEFullscaleGain.Value;
- FSampleRateReci := 1 / ASIOHost.SampleRate;
- CbDriver.Items := ASIOHost.DriverList;
+  FFSGain := SpinEditFullscaleGain.Value;
+  FSampleRateReci := 1 / ASIOHost.SampleRate;
+  ComboBoxDriver.Items := ASIOHost.DriverList;
 
- if CbDriver.Items.Count = 0 then
+  if ComboBoxDriver.Items.Count = 0 then
   try
-   raise Exception.Create('No ASIO Driver present! Application Terminated!');
+    raise Exception.Create('No ASIO Driver present! Application Terminated!');
   except
-   Application.Terminate;
+    Application.Terminate;
   end;
 
- // set absolute ini file 
- FIniFile := ExtractFilePath(ParamStr(0)) + 'ASIODemo.INI';
+  // set absolute ini file
+  FIniFile := ExtractFilePath(ParamStr(0)) + 'ASIODemo.INI';
 
- // and make sure all controls are enabled or disabled
- with TIniFile.Create(FIniFile) do
+  // and make sure all controls are enabled or disabled
+  with TIniFile.Create(FIniFile) do
   try
-   Left := ReadInteger('Layout', 'Audio Left', Left);
-   Top := ReadInteger('Layout', 'Audio Top', Top);
-   CbDriver.ItemIndex := ReadInteger('Audio', 'Asio Driver', -1);
-   if CbDriver.ItemIndex >= 0 then CbDriverChange(CbDriver);
-   CbChannel.ItemIndex := ReadInteger('Audio', 'Channels', 0);
-   SEFullscaleGain.Value := ReadInteger('Audio', 'Fullscale Gain', 0);
+    Left := ReadInteger('Layout', 'Audio Left', Left);
+    Top := ReadInteger('Layout', 'Audio Top', Top);
+    ComboBoxDriver.ItemIndex := ReadInteger('Audio', 'Asio Driver', -1);
+    if ComboBoxDriver.ItemIndex >= 0 then
+      ComboBoxDriverChange(ComboBoxDriver);
+    ComboBoxChannel.ItemIndex := ReadInteger('Audio', 'Channels', 0);
+    SpinEditFullscaleGain.Value := ReadInteger('Audio', 'Fullscale Gain', 0);
   finally
-   Free;
+    Free;
   end;
 
- CalculateComplexAngulars;
- for Band := 0 to CNumFrequencies - 1 do
+  CalculateComplexAngulars;
+  for Band := 0 to CNumFrequencies - 1 do
   begin
-   {$IFNDEF FPC}
-   if CThirdOctaveFrequencies[Band] < 1000
-    then BarSeries.Add(0,FloatToStr(CThirdOctaveFrequencies[Band]) + ' Hz')
-    else BarSeries.Add(0,FloatToStr(0.001 * CThirdOctaveFrequencies[Band]) + ' kHz');
-   {$ELSE}
-   if Frequency < 1000
-    then AnalyserChart.AddBar(FloatToStr(CThirdOctaveFrequencies[Band]) + ' Hz', 0, $000000FF)
-    else AnalyserChart.AddBar(FloatToStr(0.001 * CThirdOctaveFrequencies[Band]) + ' kHz', 0, $000000FF);
-   {$ENDIF}
+    {$IFNDEF FPC}
+    if CThirdOctaveFrequencies[Band] < 1000 then
+      BarSeries.Add(0,FloatToStr(CThirdOctaveFrequencies[Band]) + ' Hz')
+    else
+      BarSeries.Add(0,FloatToStr(0.001 * CThirdOctaveFrequencies[Band]) + ' kHz');
+    {$ELSE}
+    if Frequency < 1000 then
+      ChartAnalyser.AddBar(FloatToStr(CThirdOctaveFrequencies[Band]) + ' Hz', 0, $000000FF)
+    else
+      ChartAnalyser.AddBar(FloatToStr(0.001 * CThirdOctaveFrequencies[Band]) + ' kHz', 0, $000000FF);
+    {$ENDIF}
   end;
 
- ASIOHostSampleRateChanged(Sender);
+  ASIOHostSampleRateChanged(Sender);
 end;
 
 procedure TFmAnalyser.FormDestroy(Sender: TObject);
 begin
- ASIOHost.Active := False;
- with TIniFile.Create(FIniFile) do
+  ASIOHost.Active := False;
+  with TIniFile.Create(FIniFile) do
   try
-   WriteInteger('Layout', 'Audio Left', Left);
-   WriteInteger('Layout', 'Audio Top', Top);
-   WriteInteger('Audio', 'ASIO Driver', CbDriver.ItemIndex);
-   WriteInteger('Audio', 'Channels', CbChannel.ItemIndex);
-   WriteInteger('Audio', 'Fullscale Gain', SEFullscaleGain.Value);
+    WriteInteger('Layout', 'Audio Left', Left);
+    WriteInteger('Layout', 'Audio Top', Top);
+    WriteInteger('Audio', 'ASIO Driver', ComboBoxDriver.ItemIndex);
+    WriteInteger('Audio', 'Channels', ComboBoxChannel.ItemIndex);
+    WriteInteger('Audio', 'Fullscale Gain', SpinEditFullscaleGain.Value);
   finally
-   Free;
+    Free;
   end;
- Dispose(FBuffer);
+
+  Dispose(FBuffer);
 end;
 
 procedure TFmAnalyser.CalculateComplexAngulars;
 var
-  Band : Integer;
+  Band: Integer;
 begin
- for Band := 0 to CNumFrequencies - 1
-  do GetSinCos(CThirdOctaveFrequencies[Band] * FSampleRateReci, FThirdOctaveExp[Band].Im, FThirdOctaveExp[Band].Re);
+  for Band := 0 to CNumFrequencies - 1 do
+    GetSinCos(CThirdOctaveFrequencies[Band] * FSampleRateReci, FThirdOctaveExp[Band].Im, FThirdOctaveExp[Band].Re);
 end;
 
-procedure TFmAnalyser.RbFastClick(Sender: TObject);
+procedure TFmAnalyser.RadioButtonFastClick(Sender: TObject);
 begin
- FSpeedConst[0] := 0.9;
- CalculateWeight;
+  FSpeedConst[0] := 0.9;
+  CalculateWeight;
 end;
 
-procedure TFmAnalyser.RbMediumClick(Sender: TObject);
+procedure TFmAnalyser.RadioButtonMediumClick(Sender: TObject);
 begin
- FSpeedConst[0] := 0.99;
- CalculateWeight;
+  FSpeedConst[0] := 0.99;
+  CalculateWeight;
 end;
 
-procedure TFmAnalyser.RbSlowClick(Sender: TObject);
+procedure TFmAnalyser.RadioButtonSlowClick(Sender: TObject);
 begin
- FSpeedConst[0] := 0.999;
- CalculateWeight;
+  FSpeedConst[0] := 0.999;
+  CalculateWeight;
 end;
 
 procedure TFmAnalyser.CalculateWeight;
 begin
- FSpeedConst[1] := 0.5 * (1 - FSpeedConst[0]);
+  FSpeedConst[1] := 0.5 * (1 - FSpeedConst[0]);
 end;
 
-procedure TFmAnalyser.SEFullscaleGainChange(Sender: TObject);
+procedure TFmAnalyser.SpinEditFullscaleGainChange(Sender: TObject);
 begin
- FFSGain := SEFullscaleGain.Value;
-// AnalyserChart.LeftAxis.Maximum := FFSGain + 20;
+  FFSGain := SpinEditFullscaleGain.Value;
+// ChartAnalyser.LeftAxis.Maximum := FFSGain + 20;
 end;
 
-procedure TFmAnalyser.CbDriverChange(Sender: TObject);
+procedure TFmAnalyser.ComboBoxDriverChange(Sender: TObject);
 var
-  i : Integer;
+  i: Integer;
 begin
- BtControlPanel.Enabled := False;
- BtAnalyse.Enabled := False;
- CbDriver.ItemIndex := CbDriver.Items.IndexOf(CbDriver.Text);
- if CbDriver.ItemIndex >= 0 then
+  ButtonControlPanel.Enabled := False;
+  ButtonAnalyse.Enabled := False;
+  ComboBoxDriver.ItemIndex := ComboBoxDriver.Items.IndexOf(ComboBoxDriver.Text);
+  if ComboBoxDriver.ItemIndex >= 0 then
   begin
-   ASIOHost.DriverIndex := CbDriver.ItemIndex;
-   CbChannel.Clear;
-   for i := 0 to ASIOHost.InputChannelCount - 1
-    do CbChannel.Items.Add(ASIOHost.InputChannelInfos[i].name);
-   with TIniFile.Create(FIniFile) do
+    ASIOHost.DriverIndex := ComboBoxDriver.ItemIndex;
+    ComboBoxChannel.Clear;
+    for i := 0 to ASIOHost.InputChannelCount - 1 do
+      ComboBoxChannel.Items.Add(string(ASIOHost.InputChannelInfos[i].name));
+    with TIniFile.Create(FIniFile) do
     try
-     WriteInteger('Audio', 'Asio Driver', CbDriver.ItemIndex);
+      WriteInteger('Audio', 'Asio Driver', ComboBoxDriver.ItemIndex);
     finally
-     Free;
+      Free;
     end;
-   BtControlPanel.Enabled := True;
-   BtAnalyse.Enabled := True;
-   CbChannel.ItemIndex := 0;
+    ButtonControlPanel.Enabled := True;
+    ButtonAnalyse.Enabled := True;
+    ComboBoxChannel.ItemIndex := 0;
   end;
 end;
 
-procedure TFmAnalyser.BtControlPanelClick(Sender: TObject);
+procedure TFmAnalyser.ButtonControlPanelClick(Sender: TObject);
 begin
- ASIOHost.ControlPanel;
+  ASIOHost.ControlPanel;
 end;
 
-procedure TFmAnalyser.BtAnalyseClick(Sender: TObject);
+procedure TFmAnalyser.ButtonAnalyseClick(Sender: TObject);
 begin
- if BtAnalyse.Caption = 'Analyse' then
+  if ButtonAnalyse.Caption = 'Analyse' then
   begin
-   ASIOHost.Active := True; // Start Audio
-   BtAnalyse.Caption := 'Stop';
+    ASIOHost.Active := True; // Start Audio
+    ButtonAnalyse.Caption := 'Stop';
   end
- else
+  else
   begin
-   ASIOHost.Active := False; // Stop Audio
-   BtAnalyse.Caption := 'Analyse';
+    ASIOHost.Active := False; // Stop Audio
+    ButtonAnalyse.Caption := 'Analyse';
   end;
- Timer.Enabled := ASIOHost.Active;
+  Timer.Enabled := ASIOHost.Active;
 end;
 
 procedure TFmAnalyser.ASIOHostSampleRateChanged(Sender: TObject);
 begin
- FSampleRateReci := 1 / ASIOHost.SampleRate;
- CalculateComplexAngulars;
+  FSampleRateReci := 1 / ASIOHost.SampleRate;
+  CalculateComplexAngulars;
 end;
 
 procedure TFmAnalyser.BSNormal(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
 var
-  CurrentPosition : Integer;
+  CurrentPosition: Integer;
 begin
- CurrentPosition := 0;
- repeat
-  if FBufferPosition + (ASIOHost.BufferSize - CurrentPosition) < FBufferSize then
-   begin
-    Move(InBuffer[0, CurrentPosition],
-         FBuffer[FBufferPosition],
-         (ASIOHost.BufferSize - CurrentPosition) * Sizeof(Single));
-    FBufferPosition  := FBufferPosition + (ASIOHost.BufferSize - CurrentPosition);
-    CurrentPosition := ASIOHost.BufferSize;
-   end
-  else
-   begin
-    Move(InBuffer[0, CurrentPosition],
-         FBuffer[FBufferPosition],
-         (FBufferSize - FBufferPosition) * Sizeof(Single));
+  CurrentPosition := 0;
+  repeat
+    if FBufferPosition + (ASIOHost.BufferSize - CurrentPosition) < FBufferSize then
+    begin
+      Move(InBuffer[0, CurrentPosition], FBuffer[FBufferPosition],
+        (ASIOHost.BufferSize - CurrentPosition) * Sizeof(Single));
+      FBufferPosition  := FBufferPosition + (ASIOHost.BufferSize - CurrentPosition);
+      CurrentPosition := ASIOHost.BufferSize;
+    end
+    else
+    begin
+      Move(InBuffer[0, CurrentPosition], FBuffer[FBufferPosition],
+        (FBufferSize - FBufferPosition) * Sizeof(Single));
 
-    DoGoertzelMagic; // do Processing here!
+      DoGoertzelMagic; // do Processing here!
 
-    Move(FBuffer[FBufferSize - FBufferOverlap],
-         FBuffer[0], FBufferOverlap * Sizeof(Single));
+      Move(FBuffer[FBufferSize - FBufferOverlap], FBuffer[0],
+        FBufferOverlap * Sizeof(Single));
 
-    CurrentPosition := CurrentPosition + (FBufferSize - FBufferPosition);
-    FBufferPosition := FBufferOverlap;
-   end;
- until CurrentPosition >= ASIOHost.BufferSize;
+      CurrentPosition := CurrentPosition + (FBufferSize - FBufferPosition);
+      FBufferPosition := FBufferOverlap;
+    end;
+  until CurrentPosition >= ASIOHost.BufferSize;
 end;
 
 procedure TFmAnalyser.DoGoertzelMagic;
 var
-  i  : Integer;
-  bs : Integer;
+  i: Integer;
+  bs: Integer;
 begin
  for i := 0 to CNumFrequencies - 1 do
   begin
    bs := round(sqr(sqr(1 - CThirdOctaveFrequencies[i] * FSampleRateReci)) * FBufferSize);
-   with Goertzel(PDAVSingleFixedArray(@FBuffer^[(FBufferSize - bs) div 2]), bs,
-                 FThirdOctaveExp[i])
-    do FMagnitudes[i] := FSpeedConst[0] * FMagnitudes[i]+
-                         FSpeedConst[1] * Amp_to_dB(sqr(Re) + sqr(Im));
+   with Goertzel(PDAVSingleFixedArray(@FBuffer^[(FBufferSize - bs) div 2]), bs, FThirdOctaveExp[i]) do
+     FMagnitudes[i] := FSpeedConst[0] * FMagnitudes[i] + FSpeedConst[1] *
+       Amp_to_dB(Sqr(Re) + Sqr(Im));
   end;
 end;
 
-procedure TFmAnalyser.AnalyserChartDblClick(Sender: TObject);
+procedure TFmAnalyser.ChartAnalyserDblClick(Sender: TObject);
 begin
- with AnalyserChart do
-  if Align <> alClient
-   then Align := alClient
-   else
+  with ChartAnalyser do
+    if Align <> alClient then
+      Align := alClient
+    else
     begin
-     Align := alBottom;
-     Top := 88;
-     Height := Self.ClientHeight - 88;
+      Align := alBottom;
+      Top := 88;
+      Height := Self.ClientHeight - 88;
     end;
 end;
 
 procedure TFmAnalyser.TimerTimer(Sender: TObject);
 var
-  Band : Integer;
+  Band: Integer;
 begin
- {$IFNDEF FPC}
- for Band := 0 to cNumFrequencies - 1
-  do BarSeries.YValue[Band] := FMagnitudes[Band] + FFSGain;
- AnalyserChart.Invalidate;
+{$IFNDEF FPC}
+  for Band := 0 to cNumFrequencies - 1 do
+    BarSeries.YValue[Band] := FMagnitudes[Band] + FFSGain;
+  ChartAnalyser.Invalidate;
  {$ELSE}
- for j := 0 to cNumFrequencies - 1
-  do TBar(AnalyserChart.Bars.Items[Band]).Value := round(FMagnitudes[Band] + FFSGain);
- AnalyserChart.Invalidate;
+  for j := 0 to cNumFrequencies - 1 do
+    TBar(ChartAnalyser.Bars.Items[Band]).Value := round(FMagnitudes[Band] + FFSGain);
+  ChartAnalyser.Invalidate;
  {$ENDIF}
 end;
 
