@@ -3,18 +3,18 @@ program SimpleSignalGenerator;
 {$I DAV_Compiler.inc}
 
 uses
-  FastMM4, // either download the library or comment if there is an error here
+  FastMM4,
   {$IFDEF UseFastMove}
-  FastMove, // either download the library or disable the feature
-  {$ENDIF}
+  FastMove,
+  {$ENDIF }
   Forms,
-  SsgMain in 'SsgMain.pas' {FmASIO};
+  SsgMain in 'SsgMain.pas' {FormASIO};
 
 {$R *.RES}
 
 begin
   Application.Initialize;
   Application.Title := 'Demo application for ASIO-Host';
-  Application.CreateForm(TFmASIO, FmASIO);
+  Application.CreateForm(TFormASIO, FormASIO);
   Application.Run;
 end.

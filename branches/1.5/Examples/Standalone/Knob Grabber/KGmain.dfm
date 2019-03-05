@@ -1,4 +1,4 @@
-object FmKnobGrabber: TFmKnobGrabber
+object FormKnobGrabber: TFormKnobGrabber
   Left = 286
   Top = 77
   Caption = 'VST Plugin Knob Grabber'
@@ -15,7 +15,7 @@ object FmKnobGrabber: TFmKnobGrabber
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
-  object PnGUI: TPanel
+  object PanelGUI: TPanel
     Left = 0
     Top = 0
     Width = 142
@@ -28,36 +28,36 @@ object FmKnobGrabber: TFmKnobGrabber
   object MainMenu: TMainMenu
     Left = 8
     Top = 8
-    object MIFile: TMenuItem
+    object MenuItemFile: TMenuItem
       Caption = '&File'
-      object MIOpen: TMenuItem
+      object MenuItemOpen: TMenuItem
         Caption = 'Open VST Plugin...'
-        OnClick = MIOpenClick
+        OnClick = MenuItemOpenClick
       end
-      object MIGrabKnobs: TMenuItem
+      object MenuItemGrabKnobs: TMenuItem
         Caption = 'Grab Knobs...'
         Enabled = False
-        OnClick = MIGrabKnobsClick
+        OnClick = MenuItemGrabKnobsClick
       end
       object N1: TMenuItem
         Caption = '-'
       end
-      object MIExit: TMenuItem
+      object MenuItemExit: TMenuItem
         Caption = 'E&xit'
-        OnClick = MIExitClick
+        OnClick = MenuItemExitClick
       end
     end
-    object MIStitch: TMenuItem
+    object MenuItemStitch: TMenuItem
       Caption = 'Stitch'
-      object MIHorizontalStitch: TMenuItem
+      object MenuItemHorizontalStitch: TMenuItem
         Caption = '&horizontal'
         RadioItem = True
       end
-      object MIVerticalStitch: TMenuItem
+      object MenuItemVerticalStitch: TMenuItem
         Caption = '&vertical'
         RadioItem = True
       end
-      object MIAutoStitch: TMenuItem
+      object MenuItemAutoStitch: TMenuItem
         Caption = '&auto'
         Checked = True
         RadioItem = True

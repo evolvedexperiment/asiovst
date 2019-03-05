@@ -41,7 +41,7 @@ uses
   DAV_VSTHost;
 
 type
-  TFmVSTEditor = class(TForm)
+  TFormVSTEditor = class(TForm)
     ASIOHost: TASIOHost;
     MainMenu: TMainMenu;
     MenuItemAudio: TMenuItem;
@@ -61,7 +61,6 @@ type
     PanelPlugin: TPanel;
     SaveDialog: TSaveDialog;
     VstHost: TVstHost;
-    XPManifest: TXPManifest;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -104,7 +103,7 @@ type
   end;
 
 var
-  FmVSTEditor: TFmVSTEditor;
+  FormVSTEditor: TFormVSTEditor;
 
 implementation
 
@@ -125,7 +124,7 @@ begin
   TStringList(lParam).Add(lpName);
 end;
 
-procedure TFmVSTEditor.FormCreate(Sender: TObject);
+procedure TFormVSTEditor.FormCreate(Sender: TObject);
 var
   theRect: TRect;
   i: Integer;
@@ -213,7 +212,7 @@ begin
     end;
 end;
 
-procedure TFmVSTEditor.FormDestroy(Sender: TObject);
+procedure TFormVSTEditor.FormDestroy(Sender: TObject);
 var
   ChannelIndex: Integer;
 begin
@@ -223,7 +222,7 @@ begin
     Dispose(FVSTOutBuffer[ChannelIndex]);
 end;
 
-procedure TFmVSTEditor.FormClose(Sender: TObject; var Action: TCloseAction);
+procedure TFormVSTEditor.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   ASIOHost.Active := False;
   VstHost[0].Active := False;
@@ -239,46 +238,46 @@ begin
     end;
 end;
 
-procedure TFmVSTEditor.FormActivate(Sender: TObject);
+procedure TFormVSTEditor.FormActivate(Sender: TObject);
 begin
   VstHost[0].EditActivate;
 end;
 
-procedure TFmVSTEditor.FormDeactivate(Sender: TObject);
+procedure TFormVSTEditor.FormDeactivate(Sender: TObject);
 begin
   VstHost[0].EditDeActivate;
 end;
 
-procedure TFmVSTEditor.MenuItemExitClick(Sender: TObject);
+procedure TFormVSTEditor.MenuItemExitClick(Sender: TObject);
 begin
   Close;
 end;
 
-procedure TFmVSTEditor.MenuItemGuiCustomClick(Sender: TObject);
+procedure TFormVSTEditor.MenuItemGuiCustomClick(Sender: TObject);
 begin
   MenuItemGuiCustom.Checked := True;
   GUIStyle := gsCustom;
 end;
 
-procedure TFmVSTEditor.MenuItemGuiDefaultClick(Sender: TObject);
+procedure TFormVSTEditor.MenuItemGuiDefaultClick(Sender: TObject);
 begin
   MenuItemGuiDefault.Checked := True;
   GUIStyle := gsDefault;
 end;
 
-procedure TFmVSTEditor.MenuItemGuiListClick(Sender: TObject);
+procedure TFormVSTEditor.MenuItemGuiListClick(Sender: TObject);
 begin
   MenuItemGuiList.Checked := True;
   GUIStyle := gsParameterList;
 end;
 
-procedure TFmVSTEditor.MenuItemGuiSelectorClick(Sender: TObject);
+procedure TFormVSTEditor.MenuItemGuiSelectorClick(Sender: TObject);
 begin
   MenuItemGuiSelector.Checked := True;
   GUIStyle := gsParameterSelector;
 end;
 
-procedure TFmVSTEditor.MenuItemLoadPresetClick(Sender: TObject);
+procedure TFormVSTEditor.MenuItemLoadPresetClick(Sender: TObject);
 begin
   if OpenDialog.Execute then
     case OpenDialog.FilterIndex of
@@ -289,7 +288,7 @@ begin
     end;
 end;
 
-procedure TFmVSTEditor.MISavePresetClick(Sender: TObject);
+procedure TFormVSTEditor.MISavePresetClick(Sender: TObject);
 begin
   if SaveDialog.Execute then
     case SaveDialog.FilterIndex of
@@ -300,12 +299,12 @@ begin
     end;
 end;
 
-procedure TFmVSTEditor.MenuItemSetupClick(Sender: TObject);
+procedure TFormVSTEditor.MenuItemSetupClick(Sender: TObject);
 begin
-  FmSetup.ShowModal;
+  FormSetup.ShowModal;
 end;
 
-procedure TFmVSTEditor.SetGUIStyle(const Value: TGUIStyle);
+procedure TFormVSTEditor.SetGUIStyle(const Value: TGUIStyle);
 begin
   if FGUIStyle <> Value then
   begin
@@ -314,7 +313,7 @@ begin
   end;
 end;
 
-procedure TFmVSTEditor.ShowCustomEdit(Sender: TObject; Control: TWinControl);
+procedure TFormVSTEditor.ShowCustomEdit(Sender: TObject; Control: TWinControl);
 var
   i, j: Integer;
   MaxParamWidth: Integer;
@@ -445,11 +444,11 @@ begin
     end;
 end;
 
-procedure TFmVSTEditor.ControlChangeList(Sender: TObject);
+procedure TFormVSTEditor.ControlChangeList(Sender: TObject);
 var
-  Lbl: TGuiLabel;
-  Str: AnsiString;
-  ChrPos: Integer;
+  CurrentLabel: TGuiLabel;
+  PrameterText: AnsiString;
+  CharPos: Integer;
 begin
   // ensure sender is TGuiSlider
   Assert(Sender is TGuiSlider);
@@ -460,45 +459,45 @@ begin
       VstHost[0].Parameter[Tag] := Value;
 
       // locate value label
-      Lbl := TGuiLabel(VstHost[0].GUIControl.FindComponent('GLV' +
+      CurrentLabel := TGuiLabel(VstHost[0].GUIControl.FindComponent('GLV' +
         IntToStr(Tag)));
-      if Assigned(Lbl) then
+      if Assigned(CurrentLabel) then
       begin
         // eventually add parameter label
         if VstHost[0].ParameterLabel[Tag] <> '' then
-          Str := VstHost[0].ParameterDisplay[Tag] + ' ' + VstHost[0]
+          PrameterText := VstHost[0].ParameterDisplay[Tag] + ' ' + VstHost[0]
             .ParameterLabel[Tag]
         else
-          Str := VstHost[0].ParameterDisplay[Tag];
+          PrameterText := VstHost[0].ParameterDisplay[Tag];
 
-        if Length(Str) < 9 then
-          Lbl.Caption := string(Str)
+        if Length(PrameterText) < 9 then
+          CurrentLabel.Caption := string(PrameterText)
         else
         begin
-          Str := VstHost[0].ParameterDisplay[Tag];
-          if Pos('.', string(Str)) > 0 then
+          PrameterText := VstHost[0].ParameterDisplay[Tag];
+          if Pos('.', string(PrameterText)) > 0 then
           begin
-            ChrPos := Length(Str) - 1;
-            while Str[ChrPos] = '0' do
+            CharPos := Length(PrameterText) - 1;
+            while PrameterText[CharPos] = '0' do
             begin
-              Delete(Str, ChrPos, 1);
-              Dec(ChrPos);
+              Delete(PrameterText, CharPos, 1);
+              Dec(CharPos);
             end;
           end;
           if VstHost[0].ParameterLabel[Tag] <> '' then
-            Lbl.Caption := string(Str) + ' ' +
+            CurrentLabel.Caption := string(PrameterText) + ' ' +
               string(VstHost[0].ParameterLabel[Tag])
           else
-            Lbl.Caption := string(Str);
-          if Length(Lbl.Caption) > 9 then
-            Lbl.Caption := string(Str)
+            CurrentLabel.Caption := string(PrameterText);
+          if Length(CurrentLabel.Caption) > 9 then
+            CurrentLabel.Caption := string(PrameterText)
         end;
       end;
     except
     end;
 end;
 
-procedure TFmVSTEditor.CloseCustomEdit(Sender: TObject);
+procedure TFormVSTEditor.CloseCustomEdit(Sender: TObject);
 begin
   with TCustomVSTPlugin(Sender) do
     if (GUIStyle = gsCustom) and Assigned(FGUIElements) then
@@ -508,7 +507,7 @@ begin
     FreeAndNil(FBackgroundBitmap);
 end;
 
-procedure TFmVSTEditor.GUIStyleChanged;
+procedure TFormVSTEditor.GUIStyleChanged;
 var
   theRect: TRect;
 begin
@@ -530,7 +529,7 @@ begin
       GUIStyle := FGUIStyle;
 end;
 
-procedure TFmVSTEditor.MiPresetClick(Sender: TObject);
+procedure TFormVSTEditor.MiPresetClick(Sender: TObject);
 begin
   with TMenuItem(Sender) do
   begin
@@ -539,13 +538,13 @@ begin
   end;
 end;
 
-procedure TFmVSTEditor.BackgroundPaint(Sender: TObject);
+procedure TFormVSTEditor.BackgroundPaint(Sender: TObject);
 begin
   if (FGUIStyle = gsCustom) and Assigned(FBackgroundBitmap) then
     TPaintBox(Sender).Canvas.Draw(0, 0, FBackgroundBitmap);
 end;
 
-procedure TFmVSTEditor.ASIOHostBufferSwitch32(Sender: TObject;
+procedure TFormVSTEditor.ASIOHostBufferSwitch32(Sender: TObject;
   const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
 var
   ChannelIndex: Integer;
@@ -577,7 +576,7 @@ begin
   end;
 end;
 
-procedure TFmVSTEditor.ASIOHostReset(Sender: TObject);
+procedure TFormVSTEditor.ASIOHostReset(Sender: TObject);
 var
   ChannelIndex: Integer;
 begin

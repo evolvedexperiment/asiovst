@@ -67,7 +67,7 @@ type
     constructor Create;
   end;
 {$ENDIF}
-  { TFmVSTPluginScanner }
+  { TFormVSTPluginScanner }
 
   TFormVSTPluginScanner = class(TForm)
     EditDirectory: TEdit;
@@ -124,7 +124,7 @@ uses
 constructor TVSTScanThread.Create;
 begin
   inherited Create(True);
-  FVstHost := TVstHost.Create(FmVSTPluginScanner);
+  FVstHost := TVstHost.Create(FormVSTPluginScanner);
   FVstHost.VstPlugIns.Add;
   FreeOnTerminate := False;
   Resume;
@@ -133,9 +133,9 @@ end;
 procedure TVSTScanThread.AddListViewItem;
 begin
   try
-    FListViewItem := FmVSTPluginScanner.ListView.Items.Add;
+    FListViewItem := FormVSTPluginScanner.ListView.Items.Add;
     FListViewItem.Caption := ExtractFileName(FFileName);
-    FmVSTPluginScanner.StatusBar.SimpleText := FListViewItem.Caption;
+    FormVSTPluginScanner.StatusBar.SimpleText := FListViewItem.Caption;
   except
     FListViewItem := nil;
   end;
@@ -180,7 +180,7 @@ end;
 procedure TVSTScanThread.QueryVSTFilename;
 begin
   try
-    FFileName := FmVSTPluginScanner.CurrentFileName;
+    FFileName := FormVSTPluginScanner.CurrentFileName;
   except
     FFileName := '';
   end;
@@ -232,7 +232,7 @@ begin
     until Terminated or (FFileName = '');
 end;
 {$ENDIF}
-{ TFmVSTPluginScanner }
+{ TFormVSTPluginScanner }
 
 procedure TFormVSTPluginScanner.FormCreate(Sender: TObject);
 begin
@@ -288,7 +288,7 @@ end;
 
 {$IFDEF UseThreads}
 
-function TFmVSTPluginScanner.GetCurrentFileName: TFileName;
+function TFormVSTPluginScanner.GetCurrentFileName: TFileName;
 begin
   if (FFileIndex >= 0) and (FFileIndex < FFilesToScan.Count) and
     FileExists(FFilesToScan[FFileIndex]) then
@@ -313,7 +313,7 @@ end;
 
 {$IFDEF UseThreads}
 
-procedure TFmVSTPluginScanner.FreeeExistingThreads;
+procedure TFormVSTPluginScanner.FreeeExistingThreads;
 var
   i: Integer;
 begin
@@ -330,7 +330,7 @@ begin
       end;
 end;
 
-procedure TFmVSTPluginScanner.ThreadTerminated(Sender: TObject);
+procedure TFormVSTPluginScanner.ThreadTerminated(Sender: TObject);
 begin
   if Sender is TThread then
     with TThread(Sender) do

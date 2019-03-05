@@ -40,21 +40,21 @@ uses
   DAV_GuiGraphicControl;
 
 type
-  TFmAbout = class(TForm)
-    ImSynthEdit: TImage;
-    LbSem: TGuiLabel;
-    LbAbout: TLabel;
-    LbDelphiASIOVST: TLabel;
-    LbPainting: TLabel;
-    LbExplorer: TGuiLabel;
+  TFormAbout = class(TForm)
+    ImageSynthEdit: TImage;
+    LabelSem: TGuiLabel;
+    LabelAbout: TLabel;
+    LabelDelphiASIOVST: TLabel;
+    LabelPainting: TLabel;
+    LabelExplorer: TGuiLabel;
     procedure FormClick(Sender: TObject);
-    procedure ImSynthEditClick(Sender: TObject);
-    procedure LbDelphiASIOVSTClick(Sender: TObject);
-    procedure LbAboutClick(Sender: TObject);
+    procedure ImageSynthEditClick(Sender: TObject);
+    procedure LabelDelphiASIOVSTClick(Sender: TObject);
+    procedure LabelAboutClick(Sender: TObject);
   end;
 
 var
-  FmAbout: TFmAbout;
+  FormAbout: TFormAbout;
 
 implementation
 
@@ -67,24 +67,24 @@ uses
 {$R *.lfm}
 {$ENDIF}
 
-procedure TFmAbout.FormClick(Sender: TObject);
+procedure TFormAbout.FormClick(Sender: TObject);
 begin
   Close;
 end;
 
-procedure TFmAbout.ImSynthEditClick(Sender: TObject);
+procedure TFormAbout.ImageSynthEditClick(Sender: TObject);
 begin
   ShellExecute(Handle, 'open',
     'http://jacky.theprize.googlepages.com/paintings', nil, nil, SW_SHOW);
 end;
 
-procedure TFmAbout.LbAboutClick(Sender: TObject);
+procedure TFormAbout.LabelAboutClick(Sender: TObject);
 begin
   ShellExecute(Handle, 'open', 'http://www.savioursofsoul.de/Christian', nil,
     nil, SW_SHOW);
 end;
 
-procedure TFmAbout.LbDelphiASIOVSTClick(Sender: TObject);
+procedure TFormAbout.LabelDelphiASIOVSTClick(Sender: TObject);
 begin
   ShellExecute(Handle, 'open', 'http://delphiasiovst.sourceforge.net', nil,
     nil, SW_SHOW);

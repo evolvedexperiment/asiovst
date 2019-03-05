@@ -1,4 +1,4 @@
-object FmASIOMP3VST: TFmASIOMP3VST
+object FormASIOMP3VST: TFormASIOMP3VST
   Left = 433
   Top = 196
   Caption = 'MP3 ASIO & VST Host'
@@ -30,14 +30,14 @@ object FmASIOMP3VST: TFmASIOMP3VST
         HorizontalOnly = True
         ImageIndex = -1
         MinHeight = 23
-        Width = 95
+        Width = 87
       end
       item
         Break = False
         Control = ActionToolBar
         ImageIndex = -1
         MinHeight = 26
-        Width = 457
+        Width = 465
       end>
     EdgeInner = esNone
     EdgeOuter = esNone
@@ -45,7 +45,7 @@ object FmASIOMP3VST: TFmASIOMP3VST
     object ActionMainMenuBar: TActionMainMenuBar
       Left = 0
       Top = 1
-      Width = 91
+      Width = 83
       Height = 23
       UseSystemFont = False
       ActionManager = ActionManager
@@ -61,9 +61,9 @@ object FmASIOMP3VST: TFmASIOMP3VST
       Spacing = 0
     end
     object ActionToolBar: TActionToolBar
-      Left = 104
+      Left = 96
       Top = 0
-      Width = 448
+      Width = 456
       Height = 26
       ActionManager = ActionManager
       ColorMap.HighlightColor = 14410210
@@ -72,7 +72,7 @@ object FmASIOMP3VST: TFmASIOMP3VST
       Spacing = 0
     end
   end
-  object PnVSTPlugin: TPanel
+  object PanelVSTPlugin: TPanel
     Left = 0
     Top = 26
     Width = 552
@@ -82,6 +82,7 @@ object FmASIOMP3VST: TFmASIOMP3VST
     TabOrder = 1
   end
   object ASIOHost: TAsioHost
+    AsioTime.SamplePos = 0
     AsioTime.Speed = 1.000000000000000000
     AsioTime.SampleRate = 44100.000000000000000000
     AsioTime.Flags = [atSystemTimeValid, atSamplePositionValid, atSampleRateValid, atSpeedValid]
@@ -100,12 +101,12 @@ object FmASIOMP3VST: TFmASIOMP3VST
           item
             Items = <
               item
-                Action = AcFileOpenVST
+                Action = ActionFileOpenVST
                 ImageIndex = 7
                 ShortCut = 16463
               end
               item
-                Action = AcFileOpenMP3
+                Action = ActionFileOpenMP3
                 Caption = 'O&pen MP3 file...'
                 ImageIndex = 7
                 ShortCut = 16463
@@ -114,7 +115,7 @@ object FmASIOMP3VST: TFmASIOMP3VST
                 Caption = '-'
               end
               item
-                Action = AcFileExit
+                Action = ActionFileExit
                 ImageIndex = 43
               end>
             Caption = '&File'
@@ -122,7 +123,7 @@ object FmASIOMP3VST: TFmASIOMP3VST
           item
             Items = <
               item
-                Action = AcAsioSettings
+                Action = ActionAsioSettings
               end>
             Caption = '&Settings'
           end>
@@ -132,12 +133,12 @@ object FmASIOMP3VST: TFmASIOMP3VST
           item
             Items = <
               item
-                Action = AcFileOpenVST
+                Action = ActionFileOpenVST
                 ImageIndex = 7
                 ShortCut = 16463
               end
               item
-                Action = AcFileOpenMP3
+                Action = ActionFileOpenMP3
                 Caption = 'O&pen MP3 file...'
                 ImageIndex = 7
                 ShortCut = 16463
@@ -146,7 +147,7 @@ object FmASIOMP3VST: TFmASIOMP3VST
                 Caption = '-'
               end
               item
-                Action = AcFileExit
+                Action = ActionFileExit
                 ImageIndex = 43
               end>
             Caption = '&File'
@@ -156,7 +157,7 @@ object FmASIOMP3VST: TFmASIOMP3VST
           item
             Items = <
               item
-                Action = AcAsioSettings
+                Action = ActionAsioSettings
               end>
             Caption = '&Settings'
           end>
@@ -165,7 +166,7 @@ object FmASIOMP3VST: TFmASIOMP3VST
       item
         Items = <
           item
-            Action = AcPlay
+            Action = ActionPlay
             ImageIndex = 0
             ShowCaption = False
           end>
@@ -175,43 +176,43 @@ object FmASIOMP3VST: TFmASIOMP3VST
     Left = 32
     Top = 40
     StyleName = 'Platform Default'
-    object AcFileExit: TFileExit
+    object ActionFileExit: TFileExit
       Category = 'File'
       Caption = 'E&xit'
       Hint = 'Exit|Close the application'
       ImageIndex = 43
     end
-    object AcFileOpenMP3: TFileOpen
+    object ActionFileOpenMP3: TFileOpen
       Category = 'File'
       Caption = '&Open MP3 file...'
       Hint = 'Open VST Plugin|Opens a VST plugin'
       ImageIndex = 7
       ShortCut = 16463
-      OnAccept = AcFileOpenMP3Accept
+      OnAccept = ActionFileOpenMP3Accept
     end
-    object AcFileOpenVST: TFileOpen
+    object ActionFileOpenVST: TFileOpen
       Category = 'File'
       Caption = '&Open VST Plugin...'
       Hint = 'Open VST Plugin|Opens a VST plugin'
       ImageIndex = 7
       ShortCut = 16463
-      OnAccept = AcFileOpenVSTAccept
+      OnAccept = ActionFileOpenVSTAccept
     end
-    object AcAsioSettings: TAction
+    object ActionAsioSettings: TAction
       Caption = '&ASIO Settings'
-      OnExecute = AcAsioSettingsExecute
+      OnExecute = ActionAsioSettingsExecute
     end
-    object AcPlay: TAction
+    object ActionPlay: TAction
       Caption = '&Play'
       ImageIndex = 0
-      OnExecute = AcPlayExecute
+      OnExecute = ActionPlayExecute
     end
   end
   object ImageList: TImageList
     Left = 104
     Top = 40
     Bitmap = {
-      494C010101000500040010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010101000800080010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000

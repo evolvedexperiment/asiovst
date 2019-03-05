@@ -41,27 +41,27 @@ uses
   DAV_GuiGraphicControl;
 
 type
-  TFmSurvey = class(TForm)
-    EdAge: TEdit;
-    EdSetup: TEdit;
-    LbAge: TGuiLabel;
-    LbGender: TGuiLabel;
-    LbGenderFemale: TGuiLabel;
-    LbGenderMale: TGuiLabel;
-    LbOK: TGuiLabel;
-    LbSetup: TGuiLabel;
+  TFormSurvey = class(TForm)
+    EditAge: TEdit;
+    EditSetup: TEdit;
+    LabelAge: TGuiLabel;
+    LabelGender: TGuiLabel;
+    LabelGenderFemale: TGuiLabel;
+    LabelGenderMale: TGuiLabel;
+    LabelOK: TGuiLabel;
+    LabelSetup: TGuiLabel;
     LEDGenderFemale: TGuiLED;
     LEDGenderMale: TGuiLED;
-    PnAge: TGuiPanel;
-    PnOK: TGuiPanel;
-    PnSetup: TGuiPanel;
+    PanelAge: TGuiPanel;
+    PanelOK: TGuiPanel;
+    PanelSetup: TGuiPanel;
     procedure FormCreate(Sender: TObject);
     procedure FormPaint(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormResize(Sender: TObject);
-    procedure LbGenderMaleClick(Sender: TObject);
-    procedure LbGenderFemaleClick(Sender: TObject);
-    procedure PnOKClick(Sender: TObject);
+    procedure LabelGenderMaleClick(Sender: TObject);
+    procedure LabelGenderFemaleClick(Sender: TObject);
+    procedure PanelOKClick(Sender: TObject);
   private
     FBackgroundBitmap: TGuiCustomPixelMap;
   end;
@@ -77,25 +77,25 @@ implementation
 uses
   DAV_GuiCommon;
 
-procedure TFmSurvey.FormCreate(Sender: TObject);
+procedure TFormSurvey.FormCreate(Sender: TObject);
 begin
   // create background bitmap
   FBackgroundBitmap := TGuiPixelMapMemory.Create;
   FormResize(Self);
 end;
 
-procedure TFmSurvey.FormDestroy(Sender: TObject);
+procedure TFormSurvey.FormDestroy(Sender: TObject);
 begin
   FreeAndNil(FBackgroundBitmap);
 end;
 
-procedure TFmSurvey.FormPaint(Sender: TObject);
+procedure TFormSurvey.FormPaint(Sender: TObject);
 begin
   if Assigned(FBackgroundBitmap) then
     FBackgroundBitmap.PaintTo(Canvas);
 end;
 
-procedure TFmSurvey.FormResize(Sender: TObject);
+procedure TFormSurvey.FormResize(Sender: TObject);
 var
   x, y: Integer;
   s: array [0 .. 1] of Single;
@@ -126,18 +126,18 @@ begin
     end;
 end;
 
-procedure TFmSurvey.LbGenderMaleClick(Sender: TObject);
+procedure TFormSurvey.LabelGenderMaleClick(Sender: TObject);
 begin
   LEDGenderMale.Brightness_Percent := 100;
   LEDGenderFemale.Brightness_Percent := 10;
 end;
 
-procedure TFmSurvey.PnOKClick(Sender: TObject);
+procedure TFormSurvey.PanelOKClick(Sender: TObject);
 begin
   Close;
 end;
 
-procedure TFmSurvey.LbGenderFemaleClick(Sender: TObject);
+procedure TFormSurvey.LabelGenderFemaleClick(Sender: TObject);
 begin
   LEDGenderMale.Brightness_Percent := 10;
   LEDGenderFemale.Brightness_Percent := 100;

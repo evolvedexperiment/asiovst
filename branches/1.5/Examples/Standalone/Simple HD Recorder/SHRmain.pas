@@ -138,7 +138,7 @@ begin
   end;
 end;
 
-{ TFmSimpleHDRecorder }
+{ TFormSimpleHDRecorder }
 
 procedure TFormSimpleHDRecorder.ASIOHostBufferSwitch32Recording(Sender: TObject;
   const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);

@@ -47,48 +47,48 @@ type
     SampleRate: Double;
   end;
 
-  TFmLunchBox = class(TForm)
+  TFormLunchBox = class(TForm)
     ASIOHost: TASIOHost;
-    Bt1: TButton;
-    Bt2: TButton;
-    Bt3: TButton;
-    Bt4: TButton;
-    Bt5: TButton;
-    Bt6: TButton;
-    Bt7: TButton;
-    Bt8: TButton;
-    Bt9: TButton;
-    BtClear: TButton;
-    BtFlange: TButton;
-    BtRecRev: TButton;
-    BtRobotize: TButton;
-    CBDelay: TCheckBox;
-    CBKit: TComboBox;
-    CBMetronome: TCheckBox;
-    CBOverdrive: TCheckBox;
-    CBQuantize: TComboBox;
-    CBStyle: TComboBox;
-    LbBar: TLabel;
-    LbBPM: TLabel;
-    LbKit: TLabel;
-    LbQuantize: TLabel;
-    LbStyle: TLabel;
+    Button1: TButton;
+    Button2: TButton;
+    Button3: TButton;
+    Button4: TButton;
+    Button5: TButton;
+    Button6: TButton;
+    Button7: TButton;
+    Button8: TButton;
+    Button9: TButton;
+    ButtonClear: TButton;
+    ButtonFlange: TButton;
+    ButtonRecRev: TButton;
+    ButtonRobotize: TButton;
+    CheckBoxDelay: TCheckBox;
+    ComboBoxKit: TComboBox;
+    CheckBoxMetronome: TCheckBox;
+    CheckBoxOverdrive: TCheckBox;
+    CheckBoxQuantize: TComboBox;
+    ComboBoxStyle: TComboBox;
+    LabelBar: TLabel;
+    LabelBPM: TLabel;
+    LabelKit: TLabel;
+    LabelQuantize: TLabel;
+    LabelStyle: TLabel;
     MainMenu: TMainMenu;
-    MIAbout: TMenuItem;
-    MIExportMID: TMenuItem;
-    MIExportWAV: TMenuItem;
-    MIFile: TMenuItem;
-    MIHelp: TMenuItem;
-    MILoadBeat: TMenuItem;
-    MIMoreSettings: TMenuItem;
-    MINewBeat: TMenuItem;
-    MIOptions: TMenuItem;
-    MIQuit: TMenuItem;
-    MISaveBeat: TMenuItem;
-    MISaveBeatAs: TMenuItem;
-    MISettings: TMenuItem;
-    MIShowKeys: TMenuItem;
-    MIVST: TMenuItem;
+    MenuItemAbout: TMenuItem;
+    MenuItemExportMID: TMenuItem;
+    MenuItemExportWAV: TMenuItem;
+    MenuItemFile: TMenuItem;
+    MenuItemHelp: TMenuItem;
+    MenuItemLoadBeat: TMenuItem;
+    MenuItemMoreSettings: TMenuItem;
+    MenuItemNewBeat: TMenuItem;
+    MenuItemOptions: TMenuItem;
+    MenuItemQuit: TMenuItem;
+    MenuItemSaveBeat: TMenuItem;
+    MenuItemSaveBeatAs: TMenuItem;
+    MenuItemSettings: TMenuItem;
+    MenuItemShowKeys: TMenuItem;
+    MenuItemVST: TMenuItem;
     N1: TMenuItem;
     N2: TMenuItem;
     N3: TMenuItem;
@@ -96,10 +96,10 @@ type
     OpenDialog: TOpenDialog;
     SaveMIDIDialog: TSaveDialog;
     SaveWAVDialog: TSaveDialog;
-    SEBar: TSpinEdit;
-    SETempo: TSpinEdit;
-    TBVolume: TTrackBar;
-    ToolBar1: TToolBar;
+    SpinEditBar: TSpinEdit;
+    SpinEditTempo: TSpinEdit;
+    TrackBarVolume: TTrackBar;
+    ToolBar: TToolBar;
     ToolButton1: TToolButton;
     ToolButton2: TToolButton;
     ToolButton3: TToolButton;
@@ -116,40 +116,40 @@ type
       const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
     procedure ASIOHostReset(Sender: TObject);
     procedure ASIOHostSampleRateChanged(Sender: TObject);
-    procedure BtClearClick(Sender: TObject);
+    procedure ButtonClearClick(Sender: TObject);
     procedure BtExitClick(Sender: TObject);
-    procedure BtFlangeMouseDown(Sender: TObject; Button: TMouseButton;
+    procedure ButtonFlangeMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
-    procedure BtFlangeMouseUp(Sender: TObject; Button: TMouseButton;
+    procedure ButtonFlangeMouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
-    procedure BtMouseDown(Sender: TObject; Button: TMouseButton;
+    procedure ButtonMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
-    procedure BtRecRevMouseDown(Sender: TObject; Button: TMouseButton;
+    procedure ButtonRecRevMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
-    procedure BtRecRevMouseUp(Sender: TObject; Button: TMouseButton;
+    procedure ButtonRecRevMouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
-    procedure BtRobotizeMouseDown(Sender: TObject; Button: TMouseButton;
+    procedure ButtonRobotizeMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
-    procedure BtRobotizeMouseUp(Sender: TObject; Button: TMouseButton;
+    procedure ButtonRobotizeMouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
-    procedure CBDelayClick(Sender: TObject);
-    procedure CBKitChange(Sender: TObject);
-    procedure CBMetronomeClick(Sender: TObject);
+    procedure CheckBoxDelayClick(Sender: TObject);
+    procedure ComboBoxKitChange(Sender: TObject);
+    procedure CheckBoxMetronomeClick(Sender: TObject);
     procedure DrumPadClick(Sender: TObject);
-    procedure MIAboutClick(Sender: TObject);
-    procedure MIExportMIDClick(Sender: TObject);
-    procedure MIExportWAVClick(Sender: TObject);
-    procedure MILoadBeatClick(Sender: TObject);
-    procedure MINewBeatClick(Sender: TObject);
-    procedure MIQuitClick(Sender: TObject);
-    procedure MISaveBeatAsClick(Sender: TObject);
-    procedure MISaveBeatClick(Sender: TObject);
-    procedure MISettingsClick(Sender: TObject);
-    procedure MIShowKeysClick(Sender: TObject);
-    procedure MIVSTClick(Sender: TObject);
-    procedure SEBarChange(Sender: TObject);
-    procedure SETempoChange(Sender: TObject);
-    procedure TBVolumeChange(Sender: TObject);
+    procedure MenuItemAboutClick(Sender: TObject);
+    procedure MenuItemExportMIDClick(Sender: TObject);
+    procedure MenuItemExportWAVClick(Sender: TObject);
+    procedure MenuItemLoadBeatClick(Sender: TObject);
+    procedure MenuItemNewBeatClick(Sender: TObject);
+    procedure MenuItemQuitClick(Sender: TObject);
+    procedure MenuItemSaveBeatAsClick(Sender: TObject);
+    procedure MenuItemSaveBeatClick(Sender: TObject);
+    procedure MenuItemSettingsClick(Sender: TObject);
+    procedure MenuItemShowKeysClick(Sender: TObject);
+    procedure MenuItemVSTClick(Sender: TObject);
+    procedure SpinEditBarChange(Sender: TObject);
+    procedure SpinEditTempoChange(Sender: TObject);
+    procedure TrackBarVolumeChange(Sender: TObject);
   private
     FMetAngle: TComplex64;
     FMetPosition: TComplex64;
@@ -193,7 +193,7 @@ type
   end;
 
 var
-  FmLunchBox: TFmLunchBox;
+  FormLunchBox: TFormLunchBox;
   Samples: Array [0 .. 8] of TSampleRec;
 
 implementation
@@ -209,23 +209,23 @@ uses
   DAV_AudioFileAIFF, DAV_AudioFileAU, WaveIOX, LunchBoxSetup, LunchBoxAbout,
   LunchBoxVST;
 
-procedure TFmLunchBox.FormActivate(Sender: TObject);
+procedure TFormLunchBox.FormActivate(Sender: TObject);
 begin
   VstHost[0].EditActivate;
 end;
 
-procedure TFmLunchBox.FormDeactivate(Sender: TObject);
+procedure TFormLunchBox.FormDeactivate(Sender: TObject);
 begin
   VstHost[0].EditDeActivate;
 end;
 
-procedure TFmLunchBox.FormDestroy(Sender: TObject);
+procedure TFormLunchBox.FormDestroy(Sender: TObject);
 begin
   FreeAndNil(FEventList);
   FreeAndNil(FASIOData);
 end;
 
-procedure TFmLunchBox.FormKeyDown(Sender: TObject; var Key: Word;
+procedure TFormLunchBox.FormKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
   case Key of
@@ -236,15 +236,15 @@ begin
     78:
       FFlange := True;
     79:
-      CBOverdrive.Checked := not CBOverdrive.Checked;
+      CheckBoxOverdrive.Checked := not CheckBoxOverdrive.Checked;
     80:
-      CBDelay.Checked := not CBDelay.Checked;
+      CheckBoxDelay.Checked := not CheckBoxDelay.Checked;
     82:
       FRealtimeVST := True;
   end;
 end;
 
-procedure TFmLunchBox.FormKeyUp(Sender: TObject; var Key: Word;
+procedure TFormLunchBox.FormKeyUp(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
   case Key of
@@ -259,12 +259,12 @@ begin
   end;
 end;
 
-procedure TFmLunchBox.MIAboutClick(Sender: TObject);
+procedure TFormLunchBox.MenuItemAboutClick(Sender: TObject);
 begin
-  FmAbout.Show;
+  FormAbout.Show;
 end;
 
-procedure TFmLunchBox.MIExportMIDClick(Sender: TObject);
+procedure TFormLunchBox.MenuItemExportMIDClick(Sender: TObject);
 begin
   if SaveMIDIDialog.Execute then
   begin
@@ -272,7 +272,7 @@ begin
   end;
 end;
 
-procedure TFmLunchBox.MIExportWAVClick(Sender: TObject);
+procedure TFormLunchBox.MenuItemExportWAVClick(Sender: TObject);
 var
   ADC: TAudioDataCollection32;
   i: Integer;
@@ -311,7 +311,7 @@ begin
   end;
 end;
 
-procedure TFmLunchBox.MILoadBeatClick(Sender: TObject);
+procedure TFormLunchBox.MenuItemLoadBeatClick(Sender: TObject);
 begin
   if OpenDialog.Execute then
   begin
@@ -319,71 +319,71 @@ begin
   end;
 end;
 
-procedure TFmLunchBox.MINewBeatClick(Sender: TObject);
+procedure TFormLunchBox.MenuItemNewBeatClick(Sender: TObject);
 begin
   FEventList.Clear;
-  CBKit.ItemIndex := 0;
-  CBKit.OnChange(Sender);
-  CBStyle.ItemIndex := 0;
-  SEBar.Value := 1;
-  SETempo.Value := 120;
+  ComboBoxKit.ItemIndex := 0;
+  ComboBoxKit.OnChange(Sender);
+  ComboBoxStyle.ItemIndex := 0;
+  SpinEditBar.Value := 1;
+  SpinEditTempo.Value := 120;
 end;
 
-procedure TFmLunchBox.MIQuitClick(Sender: TObject);
+procedure TFormLunchBox.MenuItemQuitClick(Sender: TObject);
 begin
   Close;
 end;
 
-procedure TFmLunchBox.MISaveBeatAsClick(Sender: TObject);
+procedure TFormLunchBox.MenuItemSaveBeatAsClick(Sender: TObject);
 begin
   ShowMessage('Feature not implemented yet');
 end;
 
-procedure TFmLunchBox.MISaveBeatClick(Sender: TObject);
+procedure TFormLunchBox.MenuItemSaveBeatClick(Sender: TObject);
 begin
   ShowMessage('Feature not implemented yet');
 end;
 
-procedure TFmLunchBox.MISettingsClick(Sender: TObject);
+procedure TFormLunchBox.MenuItemSettingsClick(Sender: TObject);
 begin
-  FmSetup.ShowModal;
+  FormSetup.ShowModal;
 end;
 
-procedure TFmLunchBox.MIShowKeysClick(Sender: TObject);
+procedure TFormLunchBox.MenuItemShowKeysClick(Sender: TObject);
 begin
   ShowMessage('Feature not implemented yet');
 end;
 
-procedure TFmLunchBox.MIVSTClick(Sender: TObject);
+procedure TFormLunchBox.MenuItemVSTClick(Sender: TObject);
 begin
-  FmVST.Show;
+  FormVST.Show;
 end;
 
-procedure TFmLunchBox.SEBarChange(Sender: TObject);
+procedure TFormLunchBox.SpinEditBarChange(Sender: TObject);
 begin
-  FMaxPatSamples := Round(FSamplesPerBeat * 4 * SEBar.Value);
+  FMaxPatSamples := Round(FSamplesPerBeat * 4 * SpinEditBar.Value);
 end;
 
-procedure TFmLunchBox.SETempoChange(Sender: TObject);
+procedure TFormLunchBox.SpinEditTempoChange(Sender: TObject);
 var
   i: Integer;
   R: Double;
 begin
   R := FSamplesPerBeat;
-  FSamplesPerBeat := 60 / SETempo.Value * ASIOHost.SampleRate;
+  FSamplesPerBeat := 60 / SpinEditTempo.Value * ASIOHost.SampleRate;
   R := FSamplesPerBeat / R;
   for i := 0 to FEventList.Count - 1 do
     FEventList[i].PatternPosition := Round(FEventList[i].PatternPosition * R);
-  FMaxPatSamples := Round(FSamplesPerBeat * 4 * SEBar.Value);
+  FMaxPatSamples := Round(FSamplesPerBeat * 4 * SpinEditBar.Value);
   AdjustDelayLength;
 end;
 
-procedure TFmLunchBox.TBVolumeChange(Sender: TObject);
+procedure TFormLunchBox.TrackBarVolumeChange(Sender: TObject);
 begin
-  FMetroVolume[1] := TBVolume.Position * 0.01;
+  FMetroVolume[1] := TrackBarVolume.Position * 0.01;
 end;
 
-procedure TFmLunchBox.CalculateSineAngles;
+procedure TFormLunchBox.CalculateSineAngles;
 begin
   GetSinCos(2 * Pi * 1000 / ASIOHost.SampleRate, FMetAngle.Im, FMetAngle.Re);
   FMetPosition.Re := 1;
@@ -394,15 +394,15 @@ begin
   FFlangePosition.Im := 0;
 end;
 
-procedure TFmLunchBox.CBDelayClick(Sender: TObject);
+procedure TFormLunchBox.CheckBoxDelayClick(Sender: TObject);
 begin
-  if CBDelay.Checked then
+  if CheckBoxDelay.Checked then
     FDelayVolume[0] := 0.3
   else
     FDelayVolume[0] := 0;
 end;
 
-procedure TFmLunchBox.CBKitChange(Sender: TObject);
+procedure TFormLunchBox.ComboBoxKitChange(Sender: TObject);
 var
   i: Integer;
   ADC: TAudioDataCollection32;
@@ -413,7 +413,7 @@ begin
   with TStringList.Create do
     try
       str := ExtractFilePath(Application.ExeName) + '.\sounds\' +
-        CBKit.Text + '.kit';
+        ComboBoxKit.Text + '.kit';
       if not FileExists(str) then
       begin
         done := FindFirst(ExtractFilePath(Application.ExeName) +
@@ -424,7 +424,7 @@ begin
             try
               LoadFromFile(ExtractFilePath(Application.ExeName) + '.\sounds\'
                 + Fl.Name);
-              if CBKit.Text = Strings[0] then
+              if ComboBoxKit.Text = Strings[0] then
               begin
                 str := ExtractFilePath(Application.ExeName) + '.\sounds\'
                   + Fl.Name;
@@ -466,23 +466,23 @@ begin
     end;
 end;
 
-procedure TFmLunchBox.CBMetronomeClick(Sender: TObject);
+procedure TFormLunchBox.CheckBoxMetronomeClick(Sender: TObject);
 begin
-  FMetroVolume[1] := Integer(CBMetronome.Checked) * TBVolume.Position * 0.01;
-  TBVolume.Visible := CBMetronome.Checked;
+  FMetroVolume[1] := Integer(CheckBoxMetronome.Checked) * TrackBarVolume.Position * 0.01;
+  TrackBarVolume.Visible := CheckBoxMetronome.Checked;
 end;
 
-procedure TFmLunchBox.FormCreate(Sender: TObject);
+procedure TFormLunchBox.FormCreate(Sender: TObject);
 var
   Fl: TSearchRec;
   done: Boolean;
 begin
   FEventList := TLunchBoxEventList.Create;
-  FSamplesPerBeat := 60 / SETempo.Value * ASIOHost.SampleRate;
-  FMaxPatSamples := Round(FSamplesPerBeat * 4 * SEBar.Value);
+  FSamplesPerBeat := 60 / SpinEditTempo.Value * ASIOHost.SampleRate;
+  FMaxPatSamples := Round(FSamplesPerBeat * 4 * SpinEditBar.Value);
   FSamplesCount := 0;
   FMetroVolume[0] := 1;
-  FMetroVolume[1] := Integer(CBMetronome.Checked) * TBVolume.Position * 0.01;
+  FMetroVolume[1] := Integer(CheckBoxMetronome.Checked) * TrackBarVolume.Position * 0.01;
   FMetPosition.Re := 1;
   FMetPosition.Im := 0;
   FVolume := 1;
@@ -503,7 +503,7 @@ begin
   FASIOData := TAudioDataCollection32.Create(Self);
   FASIOData.ChannelCount := 2;
 
-  CBKit.Items.Clear;
+  ComboBoxKit.Items.Clear;
   done := FindFirst(ExtractFilePath(Application.ExeName) + '.\sounds\*.kit',
     faAnyFile, Fl) <> 0;
   while not done do
@@ -512,16 +512,16 @@ begin
       try
         LoadFromFile(ExtractFilePath(Application.ExeName) + '.\sounds\'
           + Fl.Name);
-        CBKit.Items.Add(Strings[0]);
-        // CBKit.Items.Add(Copy(Fl.Name,1,Pos('.kit',Fl.Name)-1));
+        ComboBoxKit.Items.Add(Strings[0]);
+        // ComboBoxKit.Items.Add(Copy(Fl.Name,1,Pos('.kit',Fl.Name)-1));
       finally
         Free;
         done := FindNext(Fl) <> 0;
       end;
   end;
   FindClose(Fl);
-  CBKit.ItemIndex := 0;
-  CBKit.OnChange(Sender);
+  ComboBoxKit.ItemIndex := 0;
+  ComboBoxKit.OnChange(Sender);
 
   CalculateSineAngles;
 
@@ -537,7 +537,7 @@ begin
     end;
 end;
 
-procedure TFmLunchBox.CreateSample(Index: Integer; Amplitude: Double = 1);
+procedure TFormLunchBox.CreateSample(Index: Integer; Amplitude: Double = 1);
 var
   nn: TLunchBoxSample;
 begin
@@ -545,20 +545,20 @@ begin
   with nn do
   begin
     PatternPosition := FPatPos;
-    SampleRate := sqr(ASIOHost.SampleRate) / FmSetup.SESampleRate.Value;
+    SampleRate := sqr(ASIOHost.SampleRate) / FormSetup.SpinEditSampleRate.Value;
     Frequency := Samples[Index].SampleRate / SampleRate;
     NoteOn(Amplitude);
   end;
   FEventList.Add(nn)
 end;
 
-procedure TFmLunchBox.DrumPadClick(Sender: TObject);
+procedure TFormLunchBox.DrumPadClick(Sender: TObject);
 begin
   with Sender as TButton do
     CreateSample(Tag);
 end;
 
-procedure TFmLunchBox.BtMouseDown(Sender: TObject; Button: TMouseButton;
+procedure TFormLunchBox.ButtonMouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 var
   i: Integer;
@@ -574,58 +574,58 @@ begin
     end;
 end;
 
-procedure TFmLunchBox.BtClearClick(Sender: TObject);
+procedure TFormLunchBox.ButtonClearClick(Sender: TObject);
 begin
   FEventList.Clear;
 end;
 
-procedure TFmLunchBox.BtExitClick(Sender: TObject);
+procedure TFormLunchBox.BtExitClick(Sender: TObject);
 begin
   Close;
 end;
 
-procedure TFmLunchBox.BtFlangeMouseDown(Sender: TObject; Button: TMouseButton;
+procedure TFormLunchBox.ButtonFlangeMouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
   FFlange := True;
 end;
 
-procedure TFmLunchBox.BtFlangeMouseUp(Sender: TObject; Button: TMouseButton;
+procedure TFormLunchBox.ButtonFlangeMouseUp(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
   FFlange := False;
 end;
 
-procedure TFmLunchBox.BtRecRevMouseDown(Sender: TObject; Button: TMouseButton;
+procedure TFormLunchBox.ButtonRecRevMouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
   FRecRev := True;
 end;
 
-procedure TFmLunchBox.BtRecRevMouseUp(Sender: TObject; Button: TMouseButton;
+procedure TFormLunchBox.ButtonRecRevMouseUp(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
   FRecRev := False;
 end;
 
-procedure TFmLunchBox.BtRobotizeMouseDown(Sender: TObject; Button: TMouseButton;
+procedure TFormLunchBox.ButtonRobotizeMouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
   FRobotize := True;
 end;
 
-procedure TFmLunchBox.BtRobotizeMouseUp(Sender: TObject; Button: TMouseButton;
+procedure TFormLunchBox.ButtonRobotizeMouseUp(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
   FRobotize := False;
 end;
 
-procedure TFmLunchBox.Requantize;
+procedure TFormLunchBox.Requantize;
 var
   i: Integer;
   q: Double;
 begin
-  case CBQuantize.ItemIndex of
+  case CheckBoxQuantize.ItemIndex of
     0:
       q := 1;
     1:
@@ -645,7 +645,7 @@ begin
     end;
 end;
 
-procedure TFmLunchBox.RenderOutput(ADC: TAudioDataCollection32; Loop: Boolean);
+procedure TFormLunchBox.RenderOutput(ADC: TAudioDataCollection32; Loop: Boolean);
 var
   i, j: Integer;
   tmp: Single;
@@ -673,7 +673,7 @@ begin
     ADC.SampleFrames * SizeOf(Single));
 
   // Apply Overdrive
-  if CBOverdrive.Checked then
+  if CheckBoxOverdrive.Checked then
     for j := 0 to ADC.ChannelCount - 1 do
       for i := 0 to ADC.SampleFrames - 1 do
         ADC[j].ChannelDataPointer^[i] := 0.3 * FastTanhOpt4TermFPU
@@ -791,7 +791,7 @@ begin
     end;
 end;
 
-procedure TFmLunchBox.ASIOHostBufferSwitch32(Sender: TObject;
+procedure TFormLunchBox.ASIOHostBufferSwitch32(Sender: TObject;
   const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
 var
   i: Integer;
@@ -843,7 +843,7 @@ begin
   *)
 end;
 
-procedure TFmLunchBox.ASIOHostReset(Sender: TObject);
+procedure TFormLunchBox.ASIOHostReset(Sender: TObject);
 var
   i: Integer;
 begin
@@ -867,7 +867,7 @@ begin
   AdjustDelayLength;
 end;
 
-procedure TFmLunchBox.AdjustDelayLength;
+procedure TFormLunchBox.AdjustDelayLength;
 var
   i: Integer;
 begin
@@ -882,15 +882,15 @@ begin
   end;
 end;
 
-procedure TFmLunchBox.ASIOHostSampleRateChanged(Sender: TObject);
+procedure TFormLunchBox.ASIOHostSampleRateChanged(Sender: TObject);
 begin
-  FSamplesPerBeat := 60 / SETempo.Value * ASIOHost.SampleRate;
-  FMaxPatSamples := Round(FSamplesPerBeat * 4 * SEBar.Value);
+  FSamplesPerBeat := 60 / SpinEditTempo.Value * ASIOHost.SampleRate;
+  FMaxPatSamples := Round(FSamplesPerBeat * 4 * SpinEditBar.Value);
   FInputFilter[0].SampleRate := ASIOHost.SampleRate;
   CalculateSineAngles;
 end;
 
-procedure TFmLunchBox.FormClose(Sender: TObject; var Action: TCloseAction);
+procedure TFormLunchBox.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   ASIOHost.Active := False;
   with TIniFile.Create(ExtractFilePath(ParamStr(0)) + 'VSTEditor.INI') do

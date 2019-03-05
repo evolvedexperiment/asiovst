@@ -40,25 +40,24 @@ uses
   SysUtils, Classes, Controls, Forms, StdCtrls, Spin;
 
 type
-  TFmSetup = class(TForm)
-    LbPreset: TLabel;
-    LbOutput: TLabel;
-    CBDrivers: TComboBox;
-    CBOutput: TComboBox;
-    BtControlPanel: TButton;
-    LbPlaybackSampleRate: TLabel;
-    SESampleRate: TSpinEdit;
+  TFormSetup = class(TForm)
+    LabelPreset: TLabel;
+    LabelOutput: TLabel;
+    ComboBoxDrivers: TComboBox;
+    ComboBoxOutput: TComboBox;
+    ButtonControlPanel: TButton;
+    LabelPlaybackSampleRate: TLabel;
+    SpinEditSampleRate: TSpinEdit;
     procedure FormCreate(Sender: TObject);
-    procedure CBDriversChange(Sender: TObject);
-    procedure CBInputChange(Sender: TObject);
-    procedure CBOutputChange(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure BtControlPanelClick(Sender: TObject);
-    procedure SESampleRateChange(Sender: TObject);
+    procedure ComboBoxDriversChange(Sender: TObject);
+    procedure ComboBoxOutputChange(Sender: TObject);
+    procedure ButtonControlPanelClick(Sender: TObject);
+    procedure SpinEditSampleRateChange(Sender: TObject);
   end;
 
 var
-  FmSetup: TFmSetup;
+  FormSetup: TFormSetup;
 
 implementation
 
@@ -71,76 +70,71 @@ uses
 {$R *.dfm}
 {$ENDIF}
 
-procedure TFmSetup.FormCreate(Sender: TObject);
+procedure TFormSetup.FormCreate(Sender: TObject);
 var
   Settings: TInifile;
 begin
-  CBDrivers.Items := FmLunchBox.ASIOHost.DriverList;
+  ComboBoxDrivers.Items := FormLunchBox.ASIOHost.DriverList;
   Settings := TInifile.Create(ExtractFilePath(ParamStr(0)) + 'VSTEditor.INI');
   Top := Settings.ReadInteger('Layout', 'Setup Top', Top);
   Left := Settings.ReadInteger('Layout', 'Setup Left', Left);
-  CBDrivers.ItemIndex := Settings.ReadInteger('Setup', 'ASIO Driver',
-    CBDrivers.ItemIndex);
-  CBDriversChange(Self);
+  ComboBoxDrivers.ItemIndex := Settings.ReadInteger('Setup', 'ASIO Driver',
+    ComboBoxDrivers.ItemIndex);
+  ComboBoxDriversChange(Self);
   Settings.Free;
 end;
 
-procedure TFmSetup.BtControlPanelClick(Sender: TObject);
+procedure TFormSetup.ButtonControlPanelClick(Sender: TObject);
 begin
-  FmLunchBox.ASIOHost.ControlPanel;
+  FormLunchBox.ASIOHost.ControlPanel;
 end;
 
-procedure TFmSetup.CBDriversChange(Sender: TObject);
+procedure TFormSetup.ComboBoxDriversChange(Sender: TObject);
 var
   i: Integer;
 begin
-  if CBDrivers.ItemIndex >= 0 then
-    with FmLunchBox.ASIOHost do
+  if ComboBoxDrivers.ItemIndex >= 0 then
+    with FormLunchBox.ASIOHost do
     begin
       Active := False;
-      DriverIndex := CBDrivers.ItemIndex;
-      CBOutput.Clear;
+      DriverIndex := ComboBoxDrivers.ItemIndex;
+      ComboBoxOutput.Clear;
       for i := 0 to (OutputChannelCount div 2) - 1 do
       begin
-        CBOutput.Items.Add(OutputChannelInfos[2 * i].name + ' / ' +
+        ComboBoxOutput.Items.Add(OutputChannelInfos[2 * i].name + ' / ' +
           OutputChannelInfos[2 * i + 1].name);
       end;
-      CBOutput.ItemIndex := 0;
-      SESampleRate.Value := Round(Samplerate);
+      ComboBoxOutput.ItemIndex := 0;
+      SpinEditSampleRate.Value := Round(Samplerate);
       OnReset(Self);
       Active := True;
     end;
 end;
 
-procedure TFmSetup.CBInputChange(Sender: TObject);
+procedure TFormSetup.ComboBoxOutputChange(Sender: TObject);
 begin
-  // FmVSTEditor.ASIOHost.InputChannels:=CBInput.ItemIndex*2;
+  // FormVSTEditor.ASIOHost.OutputChannels:=ComboBoxOutput.ItemIndex*2;
 end;
 
-procedure TFmSetup.CBOutputChange(Sender: TObject);
-begin
-  // FmVSTEditor.ASIOHost.OutputChannels:=CBOutput.ItemIndex*2;
-end;
-
-procedure TFmSetup.FormDestroy(Sender: TObject);
+procedure TFormSetup.FormDestroy(Sender: TObject);
 var
   Settings: TInifile;
 begin
   Settings := TInifile.Create(ExtractFilePath(ParamStr(0)) + 'VSTEditor.INI');
   Settings.WriteInteger('Layout', 'Setup Top', Top);
   Settings.WriteInteger('Layout', 'Setup Left', Left);
-  Settings.WriteInteger('Setup', 'ASIO Driver', CBDrivers.ItemIndex);
+  Settings.WriteInteger('Setup', 'ASIO Driver', ComboBoxDrivers.ItemIndex);
   Settings.Free;
 end;
 
-procedure TFmSetup.SESampleRateChange(Sender: TObject);
+procedure TFormSetup.SpinEditSampleRateChange(Sender: TObject);
 var
   i: Integer;
 begin
-  for i := 0 to FmLunchBox.EventList.Count - 1 do
-    with FmLunchBox.EventList[i] do
+  for i := 0 to FormLunchBox.EventList.Count - 1 do
+    with FormLunchBox.EventList[i] do
     begin
-      Samplerate := sqr(FmLunchBox.ASIOHost.Samplerate) / SESampleRate.Value;
+      Samplerate := sqr(FormLunchBox.ASIOHost.Samplerate) / SpinEditSampleRate.Value;
       Frequency := Samples[SampleIndex].Samplerate / Samplerate;
     end;
 end;

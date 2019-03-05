@@ -1,4 +1,4 @@
-object FmNoiseshapingFilterDesigner: TFmNoiseshapingFilterDesigner
+object FormNoiseshapingFilterDesigner: TFormNoiseshapingFilterDesigner
   Left = 286
   Top = 77
   Caption = 'Noiseshaping Filter Designer'
@@ -18,42 +18,42 @@ object FmNoiseshapingFilterDesigner: TFmNoiseshapingFilterDesigner
     279)
   PixelsPerInch = 96
   TextHeight = 13
-  object LbCoefficients: TLabel
+  object LabelCoefficients: TLabel
     Left = 8
     Top = 11
     Width = 61
     Height = 13
     Caption = 'Coefficients:'
   end
-  object LbSampleRate: TLabel
+  object LabelSampleRate: TLabel
     Left = 8
     Top = 39
     Width = 58
     Height = 13
     Caption = 'Samplerate:'
   end
-  object LbFrequency: TLabel
+  object LabelFrequency: TLabel
     Left = 8
     Top = 67
     Width = 55
     Height = 13
     Caption = 'Frequency:'
   end
-  object LbSampleRateUnit: TLabel
+  object LabelSampleRateUnit: TLabel
     Left = 168
     Top = 39
     Width = 12
     Height = 13
     Caption = 'Hz'
   end
-  object LbFrequencyUnit: TLabel
+  object LabelFrequencyUnit: TLabel
     Left = 167
     Top = 67
     Width = 12
     Height = 13
     Caption = 'Hz'
   end
-  object SECoefficientCount: TSpinEdit
+  object SpinEditCoefficientCount: TSpinEdit
     Left = 75
     Top = 8
     Width = 44
@@ -62,7 +62,7 @@ object FmNoiseshapingFilterDesigner: TFmNoiseshapingFilterDesigner
     MinValue = 1
     TabOrder = 0
     Value = 9
-    OnChange = SECoefficientCountChange
+    OnChange = SpinEditCoefficientCountChange
   end
   object Memo: TMemo
     Left = 8
@@ -72,7 +72,7 @@ object FmNoiseshapingFilterDesigner: TFmNoiseshapingFilterDesigner
     Anchors = [akLeft, akTop, akRight, akBottom]
     TabOrder = 1
   end
-  object BtCalculate: TButton
+  object ButtonCalculate: TButton
     Left = 125
     Top = 8
     Width = 60
@@ -80,9 +80,9 @@ object FmNoiseshapingFilterDesigner: TFmNoiseshapingFilterDesigner
     Caption = 'Calculate'
     Default = True
     TabOrder = 2
-    OnClick = BtCalculateClick
+    OnClick = ButtonCalculateClick
   end
-  object SeSampleRate: TSpinEdit
+  object SpinEditSampleRate: TSpinEdit
     Left = 75
     Top = 36
     Width = 86
@@ -91,9 +91,9 @@ object FmNoiseshapingFilterDesigner: TFmNoiseshapingFilterDesigner
     MinValue = 40000
     TabOrder = 3
     Value = 44100
-    OnChange = SECoefficientCountChange
+    OnChange = SpinEditCoefficientCountChange
   end
-  object SeFrequency: TSpinEdit
+  object SpinEditFrequency: TSpinEdit
     Left = 75
     Top = 64
     Width = 86
@@ -102,6 +102,6 @@ object FmNoiseshapingFilterDesigner: TFmNoiseshapingFilterDesigner
     MinValue = 1000
     TabOrder = 4
     Value = 16000
-    OnChange = SECoefficientCountChange
+    OnChange = SpinEditCoefficientCountChange
   end
 end

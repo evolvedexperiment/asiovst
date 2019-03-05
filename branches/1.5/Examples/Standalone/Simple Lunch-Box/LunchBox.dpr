@@ -3,17 +3,17 @@ program LunchBox;
 {$I DAV_Compiler.inc}
 
 uses
-  FastMM4, // either download the library or comment if there is an error here
+  FastMM4,
   {$IFDEF UseFastMove}
-  FastMove, // either download the library or disable the feature
-  {$ENDIF}
+  FastMove,
+  {$ENDIF }
   Forms,
   Dialogs,
   SysUtils,
-  LunchBoxMain in 'LunchBoxMain.pas' {FmLunchBox},
-  LunchBoxSetup in 'LunchBoxSetup.pas' {FmSetup},
-  LunchBoxAbout in 'LunchBoxAbout.pas' {FmAbout},
-  LunchBoxVST in 'LunchBoxVST.pas' {FmVST},
+  LunchBoxMain in 'LunchBoxMain.pas' {FormLunchBox},
+  LunchBoxSetup in 'LunchBoxSetup.pas' {FormSetup},
+  LunchBoxAbout in 'LunchBoxAbout.pas' {FormAbout},
+  LunchBoxVST in 'LunchBoxVST.pas' {FormVST},
   LunchBoxEventList in 'LunchBoxEventList.pas',
   LunchBoxEvent in 'LunchBoxEvent.pas',
   LunchBoxInputFilter in 'LunchBoxInputFilter.pas';
@@ -28,10 +28,10 @@ begin
   end;
  Application.Initialize;
  Application.Title := 'VST Plugin Editor';
- Application.CreateForm(TFmLunchBox, FmLunchBox);
- Application.CreateForm(TFmSetup, FmSetup);
- Application.CreateForm(TFmAbout, FmAbout);
- Application.CreateForm(TFmVST, FmVST);
- Application.Run;
+ Application.CreateForm(TFormLunchBox, FormLunchBox);
+  Application.CreateForm(TFormSetup, FormSetup);
+  Application.CreateForm(TFormAbout, FormAbout);
+  Application.CreateForm(TFormVST, FormVST);
+  Application.Run;
 end.
 

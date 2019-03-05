@@ -37,12 +37,12 @@ uses
   Graphics, Controls, Forms, Dialogs, StdCtrls;
 
 type
-  TFmSetFrequency = class(TForm)
-    BtCancel: TButton;
-    BtOK: TButton;
-    EdFrequency: TEdit;
-    LbFrequencyUnit: TLabel;
-    LbNewFrequency: TLabel;
+  TFormSetFrequency = class(TForm)
+    ButtonCancel: TButton;
+    ButtonOK: TButton;
+    EditFrequency: TEdit;
+    LabelFrequencyUnit: TLabel;
+    LabelNewFrequency: TLabel;
   end;
 
 implementation

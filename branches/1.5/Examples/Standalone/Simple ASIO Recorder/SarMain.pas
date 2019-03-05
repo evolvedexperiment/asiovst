@@ -41,19 +41,19 @@ uses
   DAV_AudioFileWAV, DAV_AudioFileAIFF, DAV_AudioFileAU;
 
 type
-  TFmRecordAudio = class(TForm)
+  TFormRecordAudio = class(TForm)
     ASIOHost: TASIOHost;
-    BtControlPanel: TButton;
-    BtSelect: TButton;
-    BtStartStop: TButton;
-    ChannelBox: TComboBox;
-    DriverCombo: TComboBox;
-    EdFile: TEdit;
-    LbBuffer: TLabel;
-    LbBufferValue: TLabel;
-    LbChannels: TLabel;
-    LbDrivername: TLabel;
-    LbRecordedFile: TLabel;
+    ButtonControlPanel: TButton;
+    ButtonSelect: TButton;
+    ButtonStartStop: TButton;
+    ComboBoxChannel: TComboBox;
+    ComboBoxDriver: TComboBox;
+    EditFile: TEdit;
+    LabelBuffer: TLabel;
+    LabelBufferValue: TLabel;
+    LabelChannels: TLabel;
+    LabelDrivername: TLabel;
+    LabelRecordedFile: TLabel;
     Timer: TTimer;
     SaveDialog: TSaveDialog;
     procedure FormCreate(Sender: TObject);
@@ -61,13 +61,13 @@ type
     procedure ASIOHostBufferSwitch32(Sender: TObject;
       const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
     procedure ASIOHostSampleRateChanged(Sender: TObject);
-    procedure BtControlPanelClick(Sender: TObject);
-    procedure BtSelectClick(Sender: TObject);
-    procedure BtStartStopClick(Sender: TObject);
-    procedure ChannelBoxChange(Sender: TObject);
-    procedure DriverComboChange(Sender: TObject);
-    procedure EdFileChange(Sender: TObject);
-    procedure LbBufferClick(Sender: TObject);
+    procedure ButtonControlPanelClick(Sender: TObject);
+    procedure ButtonSelectClick(Sender: TObject);
+    procedure ButtonStartStopClick(Sender: TObject);
+    procedure ComboBoxChannelChange(Sender: TObject);
+    procedure ComboBoxDriverChange(Sender: TObject);
+    procedure EditFileChange(Sender: TObject);
+    procedure LabelBufferClick(Sender: TObject);
     procedure TimerTimer(Sender: TObject);
   private
     FIniFile: TFileName;
@@ -77,7 +77,7 @@ type
   end;
 
 var
-  FmRecordAudio: TFmRecordAudio;
+  FormRecordAudio: TFormRecordAudio;
 
 implementation
 
@@ -93,13 +93,13 @@ uses
 resourcestring
   RCStrNoASIODriverPresent = 'No ASIO Driver present! Application Terminated!';
 
-{ TFmASIOMP3 }
+{ TFormASIOMP3 }
 
-procedure TFmRecordAudio.FormCreate(Sender: TObject);
+procedure TFormRecordAudio.FormCreate(Sender: TObject);
 begin
   FIniFile := ExtractFilePath(ParamStr(0)) + 'SimpleAsioRecorder.INI';
-  DriverCombo.Items := ASIOHost.DriverList;
-  if DriverCombo.Items.Count = 0 then
+  ComboBoxDriver.Items := ASIOHost.DriverList;
+  if ComboBoxDriver.Items.Count = 0 then
   begin
     MessageDlg(RCStrNoASIODriverPresent, mtError, [mbOK], 0);
     Application.Terminate;
@@ -121,28 +121,28 @@ begin
       Left := ReadInteger('Layout', 'Audio Left', Left);
       Top := ReadInteger('Layout', 'Audio Top', Top);
 
-      DriverCombo.ItemIndex := ReadInteger('Audio', 'Asio Driver', -1);
-      if DriverCombo.ItemIndex >= 0 then
-        DriverComboChange(DriverCombo);
-      ChannelBox.ItemIndex := ReadInteger('Audio', 'Channels', 0);
-      EdFile.Text := ReadString('Audio', 'File', EdFile.Text);
-      EdFileChange(Self);
-      BtStartStop.Enabled := (EdFile.Text <> '') and
-        (DriverCombo.ItemIndex >= 0);
+      ComboBoxDriver.ItemIndex := ReadInteger('Audio', 'Asio Driver', -1);
+      if ComboBoxDriver.ItemIndex >= 0 then
+        ComboBoxDriverChange(ComboBoxDriver);
+      ComboBoxChannel.ItemIndex := ReadInteger('Audio', 'Channels', 0);
+      EditFile.Text := ReadString('Audio', 'File', EditFile.Text);
+      EditFileChange(Self);
+      ButtonStartStop.Enabled := (EditFile.Text <> '') and
+        (ComboBoxDriver.ItemIndex >= 0);
     finally
       Free;
     end;
 end;
 
-procedure TFmRecordAudio.FormDestroy(Sender: TObject);
+procedure TFormRecordAudio.FormDestroy(Sender: TObject);
 begin
   with TIniFile.Create(FIniFile) do
     try
       WriteInteger('Layout', 'Audio Left', Left);
       WriteInteger('Layout', 'Audio Top', Top);
-      WriteInteger('Audio', 'ASIO Driver', DriverCombo.ItemIndex);
-      WriteInteger('Audio', 'Channels', ChannelBox.ItemIndex);
-      WriteString('Audio', 'File', EdFile.Text);
+      WriteInteger('Audio', 'ASIO Driver', ComboBoxDriver.ItemIndex);
+      WriteInteger('Audio', 'Channels', ComboBoxChannel.ItemIndex);
+      WriteString('Audio', 'File', EditFile.Text);
     finally
       Free;
     end;
@@ -151,89 +151,89 @@ begin
   FreeAndNil(FBufferedRecorder);
 end;
 
-procedure TFmRecordAudio.LbBufferClick(Sender: TObject);
+procedure TFormRecordAudio.LabelBufferClick(Sender: TObject);
 begin
   ASIOHost.SampleRate := 48000;
 end;
 
-procedure TFmRecordAudio.TimerTimer(Sender: TObject);
+procedure TFormRecordAudio.TimerTimer(Sender: TObject);
 begin
-  LbBufferValue.Caption := IntToStr(Round(FBufferedRecorder.BufferFill)) + ' %';
+  LabelBufferValue.Caption := IntToStr(Round(FBufferedRecorder.BufferFill)) + ' %';
 end;
 
-procedure TFmRecordAudio.DriverComboChange(Sender: TObject);
+procedure TFormRecordAudio.ComboBoxDriverChange(Sender: TObject);
 var
   i: Integer;
 begin
-  BtControlPanel.Enabled := False;
-  BtStartStop.Enabled := False;
-  DriverCombo.ItemIndex := DriverCombo.Items.IndexOf(DriverCombo.Text);
-  if DriverCombo.ItemIndex >= 0 then
+  ButtonControlPanel.Enabled := False;
+  ButtonStartStop.Enabled := False;
+  ComboBoxDriver.ItemIndex := ComboBoxDriver.Items.IndexOf(ComboBoxDriver.Text);
+  if ComboBoxDriver.ItemIndex >= 0 then
   begin
-    ASIOHost.DriverIndex := DriverCombo.ItemIndex;
-    ChannelBox.Clear;
+    ASIOHost.DriverIndex := ComboBoxDriver.ItemIndex;
+    ComboBoxChannel.Clear;
     for i := 0 to (ASIOHost.InputChannelCount) - 1 do
-      ChannelBox.Items.Add(ASIOHost.InputChannelInfos[i].Name);
+      ComboBoxChannel.Items.Add(ASIOHost.InputChannelInfos[i].Name);
 
     with TIniFile.Create(FIniFile) do
       try
-        WriteInteger('Audio', 'Asio Driver', DriverCombo.ItemIndex);
+        WriteInteger('Audio', 'Asio Driver', ComboBoxDriver.ItemIndex);
       finally
         Free;
       end;
 
-    BtControlPanel.Enabled := True;
-    BtStartStop.Enabled := EdFile.Text <> '';
-    ChannelBox.ItemIndex := 0;
+    ButtonControlPanel.Enabled := True;
+    ButtonStartStop.Enabled := EditFile.Text <> '';
+    ComboBoxChannel.ItemIndex := 0;
   end;
 end;
 
-procedure TFmRecordAudio.ChannelBoxChange(Sender: TObject);
+procedure TFormRecordAudio.ComboBoxChannelChange(Sender: TObject);
 begin
-  FChannelOffset := ChannelBox.ItemIndex * 2;
+  FChannelOffset := ComboBoxChannel.ItemIndex * 2;
 end;
 
-procedure TFmRecordAudio.ASIOHostSampleRateChanged(Sender: TObject);
+procedure TFormRecordAudio.ASIOHostSampleRateChanged(Sender: TObject);
 begin
   if Assigned(FBufferedRecorder) then
     FBufferedRecorder.SampleRate := ASIOHost.SampleRate;
 end;
 
-procedure TFmRecordAudio.BtControlPanelClick(Sender: TObject);
+procedure TFormRecordAudio.ButtonControlPanelClick(Sender: TObject);
 begin
   ASIOHost.ControlPanel;
 end;
 
-procedure TFmRecordAudio.BtStartStopClick(Sender: TObject);
+procedure TFormRecordAudio.ButtonStartStopClick(Sender: TObject);
 begin
-  if BtStartStop.Caption = '&Record Audio' then
+  if ButtonStartStop.Caption = '&Record Audio' then
   begin
     ASIOHost.Active := True;
-    BtStartStop.Caption := '&Stop Audio';
+    ButtonStartStop.Caption := '&Stop Audio';
   end
   else
   begin
     ASIOHost.Active := False;
     FBufferedRecorder.Reset;
-    BtStartStop.Caption := '&Record Audio';
+    ButtonStartStop.Caption := '&Record Audio';
   end;
 end;
 
-procedure TFmRecordAudio.BtSelectClick(Sender: TObject);
+procedure TFormRecordAudio.ButtonSelectClick(Sender: TObject);
 begin
   if SaveDialog.Execute then
-    EdFile.Text := SaveDialog.FileName;
+    EditFile.Text := SaveDialog.FileName;
 end;
 
-procedure TFmRecordAudio.EdFileChange(Sender: TObject);
+procedure TFormRecordAudio.EditFileChange(Sender: TObject);
 begin
-  DeleteFile(EdFile.Text);
-  FBufferedRecorder.FileName := EdFile.Text;
-  BtStartStop.Enabled := (FBufferedRecorder.FileName <> '') and
-    (DriverCombo.ItemIndex >= 0);
+  DeleteFile(EditFile.Text);
+  FBufferedRecorder.FileName := EditFile.Text;
+  ButtonStartStop.Enabled := (FBufferedRecorder.FileName <> '') and
+    (ComboBoxDriver.ItemIndex >= 0);
 end;
 
-procedure TFmRecordAudio.ASIOHostBufferSwitch32(Sender: TObject;
+procedure TFormRecordAudio.ASIOHostBufferSwitch32(Sender: TObject;
   const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
 begin
   FBufferedRecorder.PutSamples(InBuffer[0], ASIOHost.BufferSize);

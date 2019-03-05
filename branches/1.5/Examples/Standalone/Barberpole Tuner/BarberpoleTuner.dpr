@@ -1,15 +1,15 @@
 program BarberpoleTuner;
 
 uses
-  FastMM4, // either download the library or comment if there is an error here
+  FastMM4,
   FastMove,
   Forms,
-  BTmain in 'BTmain.pas' {FmBarberpoleTuner};
+  BTmain in 'BTmain.pas' {FormBarberpoleTuner};
 
 {$R *.res}
 
 begin
   Application.Initialize;
-  Application.CreateForm(TFmBarberpoleTuner, FmBarberpoleTuner);
+  Application.CreateForm(TFormBarberpoleTuner, FormBarberpoleTuner);
   Application.Run;
 end.

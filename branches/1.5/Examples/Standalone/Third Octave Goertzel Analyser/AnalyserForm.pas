@@ -48,7 +48,7 @@ const
     10000, 12500, 16000, 20000);
 
 type
-  TFmAnalyser = class(TForm)
+  TFormAnalyser = class(TForm)
     ChartAnalyser: TChart;
     ASIOHost: TASIOHost;
     BarSeries: TBarSeries;
@@ -97,7 +97,7 @@ type
   end;
 
 var
-  FmAnalyser: TFmAnalyser;
+  FormAnalyser: TFormAnalyser;
 
 implementation
 
@@ -106,7 +106,7 @@ implementation
 uses
   Inifiles, Registry, DAV_Common, DAV_Math, DAV_ASIOConvert, DAV_DspDft;
 
-procedure TFmAnalyser.FormCreate(Sender: TObject);
+procedure TFormAnalyser.FormCreate(Sender: TObject);
 var
   Band: Integer;
 begin
@@ -166,7 +166,7 @@ begin
   ASIOHostSampleRateChanged(Sender);
 end;
 
-procedure TFmAnalyser.FormDestroy(Sender: TObject);
+procedure TFormAnalyser.FormDestroy(Sender: TObject);
 begin
   ASIOHost.Active := False;
   with TIniFile.Create(FIniFile) do
@@ -183,7 +183,7 @@ begin
   Dispose(FBuffer);
 end;
 
-procedure TFmAnalyser.CalculateComplexAngulars;
+procedure TFormAnalyser.CalculateComplexAngulars;
 var
   Band: Integer;
 begin
@@ -191,36 +191,36 @@ begin
     GetSinCos(CThirdOctaveFrequencies[Band] * FSampleRateReci, FThirdOctaveExp[Band].Im, FThirdOctaveExp[Band].Re);
 end;
 
-procedure TFmAnalyser.RadioButtonFastClick(Sender: TObject);
+procedure TFormAnalyser.RadioButtonFastClick(Sender: TObject);
 begin
   FSpeedConst[0] := 0.9;
   CalculateWeight;
 end;
 
-procedure TFmAnalyser.RadioButtonMediumClick(Sender: TObject);
+procedure TFormAnalyser.RadioButtonMediumClick(Sender: TObject);
 begin
   FSpeedConst[0] := 0.99;
   CalculateWeight;
 end;
 
-procedure TFmAnalyser.RadioButtonSlowClick(Sender: TObject);
+procedure TFormAnalyser.RadioButtonSlowClick(Sender: TObject);
 begin
   FSpeedConst[0] := 0.999;
   CalculateWeight;
 end;
 
-procedure TFmAnalyser.CalculateWeight;
+procedure TFormAnalyser.CalculateWeight;
 begin
   FSpeedConst[1] := 0.5 * (1 - FSpeedConst[0]);
 end;
 
-procedure TFmAnalyser.SpinEditFullscaleGainChange(Sender: TObject);
+procedure TFormAnalyser.SpinEditFullscaleGainChange(Sender: TObject);
 begin
   FFSGain := SpinEditFullscaleGain.Value;
 // ChartAnalyser.LeftAxis.Maximum := FFSGain + 20;
 end;
 
-procedure TFmAnalyser.ComboBoxDriverChange(Sender: TObject);
+procedure TFormAnalyser.ComboBoxDriverChange(Sender: TObject);
 var
   i: Integer;
 begin
@@ -245,12 +245,12 @@ begin
   end;
 end;
 
-procedure TFmAnalyser.ButtonControlPanelClick(Sender: TObject);
+procedure TFormAnalyser.ButtonControlPanelClick(Sender: TObject);
 begin
   ASIOHost.ControlPanel;
 end;
 
-procedure TFmAnalyser.ButtonAnalyseClick(Sender: TObject);
+procedure TFormAnalyser.ButtonAnalyseClick(Sender: TObject);
 begin
   if ButtonAnalyse.Caption = 'Analyse' then
   begin
@@ -265,13 +265,13 @@ begin
   Timer.Enabled := ASIOHost.Active;
 end;
 
-procedure TFmAnalyser.ASIOHostSampleRateChanged(Sender: TObject);
+procedure TFormAnalyser.ASIOHostSampleRateChanged(Sender: TObject);
 begin
   FSampleRateReci := 1 / ASIOHost.SampleRate;
   CalculateComplexAngulars;
 end;
 
-procedure TFmAnalyser.BSNormal(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
+procedure TFormAnalyser.BSNormal(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
 var
   CurrentPosition: Integer;
 begin
@@ -300,7 +300,7 @@ begin
   until CurrentPosition >= ASIOHost.BufferSize;
 end;
 
-procedure TFmAnalyser.DoGoertzelMagic;
+procedure TFormAnalyser.DoGoertzelMagic;
 var
   i: Integer;
   bs: Integer;
@@ -314,7 +314,7 @@ begin
   end;
 end;
 
-procedure TFmAnalyser.ChartAnalyserDblClick(Sender: TObject);
+procedure TFormAnalyser.ChartAnalyserDblClick(Sender: TObject);
 begin
   with ChartAnalyser do
     if Align <> alClient then
@@ -327,7 +327,7 @@ begin
     end;
 end;
 
-procedure TFmAnalyser.TimerTimer(Sender: TObject);
+procedure TFormAnalyser.TimerTimer(Sender: TObject);
 var
   Band: Integer;
 begin

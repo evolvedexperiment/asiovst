@@ -39,28 +39,28 @@ uses
   Graphics, Controls, Forms, Dialogs, Menus, StdCtrls, DAV_SEModule, DAV_SEHost;
 
 type
-  TFmSEModuleExplorer = class(TForm)
+  TFormSEModuleExplorer = class(TForm)
     MainMenu: TMainMenu;
-    MIFile: TMenuItem;
-    MIOpen: TMenuItem;
-    MIExit: TMenuItem;
+    MenuItemFile: TMenuItem;
+    MenuItemOpen: TMenuItem;
+    MenuItemExit: TMenuItem;
     N1: TMenuItem;
-    MISaveAs: TMenuItem;
-    LBSEMs: TListBox;
-    MINew: TMenuItem;
-    MiSettings: TMenuItem;
-    MiAddMerged: TMenuItem;
-    procedure MIExitClick(Sender: TObject);
-    procedure MIOpenClick(Sender: TObject);
-    procedure MINewClick(Sender: TObject);
-    procedure MISaveAsClick(Sender: TObject);
-    procedure MiAddMergedClick(Sender: TObject);
+    MenuItemSaveAs: TMenuItem;
+    ListBoxSEMs: TListBox;
+    MenuItemNew: TMenuItem;
+    MenuItemSettings: TMenuItem;
+    MenuItemAddMerged: TMenuItem;
+    procedure MenuItemExitClick(Sender: TObject);
+    procedure MenuItemOpenClick(Sender: TObject);
+    procedure MenuItemNewClick(Sender: TObject);
+    procedure MenuItemSaveAsClick(Sender: TObject);
+    procedure MenuItemAddMergedClick(Sender: TObject);
   private
     procedure SaveModule(Filename: TFileName);
   end;
 
 var
-  FmSEModuleExplorer: TFmSEModuleExplorer;
+  FormSEModuleExplorer: TFormSEModuleExplorer;
 
 implementation
 
@@ -73,7 +73,7 @@ uses
 {$R *.lfm}
 {$ENDIF}
 
-procedure TFmSEModuleExplorer.MIOpenClick(Sender: TObject);
+procedure TFormSEModuleExplorer.MenuItemOpenClick(Sender: TObject);
 begin
   with TOpenDialog.Create(Self) do
   begin
@@ -83,13 +83,13 @@ begin
     Title := 'Select SE Module';
     if Execute then
     begin
-      LBSEMs.Items.Add(Filename);
-      MISaveAs.Enabled := True;
+      ListBoxSEMs.Items.Add(Filename);
+      MenuItemSaveAs.Enabled := True;
     end;
   end;
 end;
 
-procedure TFmSEModuleExplorer.MISaveAsClick(Sender: TObject);
+procedure TFormSEModuleExplorer.MenuItemSaveAsClick(Sender: TObject);
 begin
   with TSaveDialog.Create(Self) do
   begin
@@ -102,7 +102,7 @@ begin
   end;
 end;
 
-procedure TFmSEModuleExplorer.SaveModule(Filename: TFileName);
+procedure TFormSEModuleExplorer.SaveModule(Filename: TFileName);
 var
   RS: TResourceStream;
   RM: TPEResourceModule;
@@ -121,12 +121,12 @@ begin
       end;
 
       // store SE modules
-      for i := 0 to LBSEMs.Count - 1 do
+      for i := 0 to ListBoxSEMs.Count - 1 do
         with TMemoryStream.Create do
           try
-            Assert(FileExists(LBSEMs.Items[i]));
-            LoadFromFile(LBSEMs.Items[i]);
-            if MiAddMerged.Checked then
+            Assert(FileExists(ListBoxSEMs.Items[i]));
+            LoadFromFile(ListBoxSEMs.Items[i]);
+            if MenuItemAddMerged.Checked then
               RD := TResourceDetails.CreateResourceDetails(RM, 0,
                 'SEMmerged' + IntToStr(i), 'SEM', Size, Memory)
             else
@@ -145,18 +145,18 @@ begin
     end;
 end;
 
-procedure TFmSEModuleExplorer.MINewClick(Sender: TObject);
+procedure TFormSEModuleExplorer.MenuItemNewClick(Sender: TObject);
 begin
-  LBSEMs.Clear;
-  MISaveAs.Enabled := False;
+  ListBoxSEMs.Clear;
+  MenuItemSaveAs.Enabled := False;
 end;
 
-procedure TFmSEModuleExplorer.MiAddMergedClick(Sender: TObject);
+procedure TFormSEModuleExplorer.MenuItemAddMergedClick(Sender: TObject);
 begin
-  MiAddMerged.Checked := not MiAddMerged.Checked;
+  MenuItemAddMerged.Checked := not MenuItemAddMerged.Checked;
 end;
 
-procedure TFmSEModuleExplorer.MIExitClick(Sender: TObject);
+procedure TFormSEModuleExplorer.MenuItemExitClick(Sender: TObject);
 begin
   Close;
 end;

@@ -40,15 +40,15 @@ uses
   SysUtils, Classes, Graphics, Controls, Forms, StdCtrls;
 
 type
-  TFmAbout = class(TForm)
-    LbTitle: TLabel;
-    LbCopyright: TLabel;
-    LbInfo: TLabel;
+  TFormAbout = class(TForm)
+    LabelTitle: TLabel;
+    LabelCopyright: TLabel;
+    LabelInfo: TLabel;
     procedure FormClick(Sender: TObject);
   end;
 
 var
-  FmAbout: TFmAbout;
+  FormAbout: TFormAbout;
 
 implementation
 
@@ -58,7 +58,7 @@ implementation
 {$R *.dfm}
 {$ENDIF}
 
-procedure TFmAbout.FormClick(Sender: TObject);
+procedure TFormAbout.FormClick(Sender: TObject);
 begin
   Close;
 end;

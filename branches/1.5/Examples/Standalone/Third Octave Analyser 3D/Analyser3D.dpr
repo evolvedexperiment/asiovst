@@ -4,15 +4,15 @@ program Analyser3D;
 
 uses
   FastMM4, // either download the library or comment if there is an error here
-  {$IFDEF UseFastMove}
-  FastMove, // either download the library or disable the feature
-  {$ENDIF}
   {$IFDEF UseMadExcept}
   madExcept,
   madLinkDisAsm,
   madListHardware,
   madListProcesses,
   madListModules,
+  {$ENDIF}
+  {$IFDEF UseFastMove}
+  FastMove, // either download the library or disable the feature
   {$ENDIF}
   Forms,
   AnalyserForm in 'AnalyserForm.pas' {FmASIO};

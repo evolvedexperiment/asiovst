@@ -39,7 +39,7 @@ uses
   Graphics, Controls, Forms, Dialogs, Menus, StdCtrls, DAV_VSTHost;
 
 type
-  TFmPresetParser = class(TForm)
+  TFormPresetParser = class(TForm)
     MainMenu: TMainMenu;
     File1: TMenuItem;
     MIOpenVSTPlugin: TMenuItem;
@@ -57,7 +57,7 @@ type
   end;
 
 var
-  FmPresetParser: TFmPresetParser;
+  FormPresetParser: TFormPresetParser;
 
 implementation
 
@@ -67,18 +67,18 @@ implementation
 {$R *.lfm}
 {$ENDIF}
 
-procedure TFmPresetParser.MIDetectBufferOverflowsClick(Sender: TObject);
+procedure TFormPresetParser.MIDetectBufferOverflowsClick(Sender: TObject);
 begin
   MIDetectBufferOverflows.Checked := not MIDetectBufferOverflows.Checked;
   VstHost.CheckStringLengths := MIDetectBufferOverflows.Checked;
 end;
 
-procedure TFmPresetParser.MIExitClick(Sender: TObject);
+procedure TFormPresetParser.MIExitClick(Sender: TObject);
 begin
   Close;
 end;
 
-procedure TFmPresetParser.MIOpenVSTPluginClick(Sender: TObject);
+procedure TFormPresetParser.MIOpenVSTPluginClick(Sender: TObject);
 var
   prgs, params: Integer;
   str: string;
@@ -124,7 +124,7 @@ begin
     end;
 end;
 
-procedure TFmPresetParser.MISaveAsClick(Sender: TObject);
+procedure TFormPresetParser.MISaveAsClick(Sender: TObject);
 begin
   with TSaveDialog.Create(Self) do
     try

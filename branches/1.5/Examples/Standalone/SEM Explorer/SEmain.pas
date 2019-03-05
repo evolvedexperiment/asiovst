@@ -39,23 +39,23 @@ uses
   Graphics, Controls, Forms, Dialogs, Menus, StdCtrls, DAV_SEModule, DAV_SEHost;
 
 type
-  TFmSEModuleExplorer = class(TForm)
+  TFormSEModuleExplorer = class(TForm)
     MainMenu: TMainMenu;
     Memo: TMemo;
-    MIAbout: TMenuItem;
-    MIEnableWrapper: TMenuItem;
-    MIExit: TMenuItem;
-    MIFile: TMenuItem;
-    MIHelp: TMenuItem;
-    MIOpen: TMenuItem;
-    MISettings: TMenuItem;
+    MenuItemAbout: TMenuItem;
+    MenuItemEnableWrapper: TMenuItem;
+    MenuItemExit: TMenuItem;
+    MenuItemFile: TMenuItem;
+    MenuItemHelp: TMenuItem;
+    MenuItemOpen: TMenuItem;
+    MenuItemSettings: TMenuItem;
     N1: TMenuItem;
-    procedure MIExitClick(Sender: TObject);
-    procedure MIOpenClick(Sender: TObject);
+    procedure MenuItemExitClick(Sender: TObject);
+    procedure MenuItemOpenClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure MIEnableWrapperClick(Sender: TObject);
-    procedure MIAboutClick(Sender: TObject);
+    procedure MenuItemEnableWrapperClick(Sender: TObject);
+    procedure MenuItemAboutClick(Sender: TObject);
   private
     SEHost: TSEHost;
     procedure LoadSEModule(FileName: TFileName);
@@ -63,7 +63,7 @@ type
   end;
 
 var
-  FmSEModuleExplorer: TFmSEModuleExplorer;
+  FormSEModuleExplorer: TFormSEModuleExplorer;
 
 implementation
 
@@ -76,7 +76,7 @@ uses
 {$R *.DFM}
 {$ENDIF}
 
-procedure TFmSEModuleExplorer.MIOpenClick(Sender: TObject);
+procedure TFormSEModuleExplorer.MenuItemOpenClick(Sender: TObject);
 begin
   with TOpenDialog.Create(Self) do
   begin
@@ -89,14 +89,14 @@ begin
   end;
 end;
 
-procedure TFmSEModuleExplorer.FormCreate(Sender: TObject);
+procedure TFormSEModuleExplorer.FormCreate(Sender: TObject);
 begin
   SEHost := TSEHost.Create(Self);
   SEHost.HostedSEModules.Add;
   with TIniFile.Create(ExtractFilePath(ParamStr(0)) + 'SEMExplorer.ini') do
     try
-      MIEnableWrapper.Checked := ReadBool('Layout', 'Enable Wrapper',
-        MIEnableWrapper.Checked);
+      MenuItemEnableWrapper.Checked := ReadBool('Layout', 'Enable Wrapper',
+        MenuItemEnableWrapper.Checked);
       Left := ReadInteger('Layout', 'Left', Left);
       Top := ReadInteger('Layout', 'Top', Top);
       Width := ReadInteger('Layout', 'Width', Width);
@@ -106,11 +106,11 @@ begin
     end;
 end;
 
-procedure TFmSEModuleExplorer.FormDestroy(Sender: TObject);
+procedure TFormSEModuleExplorer.FormDestroy(Sender: TObject);
 begin
   with TIniFile.Create(ExtractFilePath(ParamStr(0)) + 'SEMExplorer.ini') do
     try
-      WriteBool('Layout', 'Enable Wrapper', MIEnableWrapper.Checked);
+      WriteBool('Layout', 'Enable Wrapper', MenuItemEnableWrapper.Checked);
       WriteInteger('Layout', 'Left', Left);
       WriteInteger('Layout', 'Top', Top);
       WriteInteger('Layout', 'Width', Width);
@@ -121,7 +121,7 @@ begin
   FreeAndNil(SEHost);
 end;
 
-procedure TFmSEModuleExplorer.LoadSEModule(FileName: TFileName);
+procedure TFormSEModuleExplorer.LoadSEModule(FileName: TFileName);
 var
   PartNr, PinNr: Integer;
   Pin: TSEPinProperties;
@@ -207,7 +207,7 @@ begin
     end;
 
     if SEHost[0].Part[0].Magic <> CSepMagic then
-      if not MIEnableWrapper.Checked then
+      if not MenuItemEnableWrapper.Checked then
         MessageBox(0,
           'Magic number shreddered! It is likely that this SEM file is extracted from a VST plugin.'
           + #13#10#13#10 +
@@ -224,7 +224,7 @@ begin
   end;
 end;
 
-procedure TFmSEModuleExplorer.SavePatchedModule;
+procedure TFormSEModuleExplorer.SavePatchedModule;
 var
   FN: TFileName;
   RS: TResourceStream;
@@ -262,21 +262,21 @@ begin
     end;
 end;
 
-procedure TFmSEModuleExplorer.MIAboutClick(Sender: TObject);
+procedure TFormSEModuleExplorer.MenuItemAboutClick(Sender: TObject);
 begin
-  FmAbout.ShowModal;
+  FormAbout.ShowModal;
 end;
 
-procedure TFmSEModuleExplorer.MIEnableWrapperClick(Sender: TObject);
+procedure TFormSEModuleExplorer.MenuItemEnableWrapperClick(Sender: TObject);
 var
   str: string;
 begin
   str := InputBox('Enter PassKey', 'Enter PassKey', '');
   if (Length(str) >= 4) or (str = 'SEM') then
-    MIEnableWrapper.Checked := not MIEnableWrapper.Checked;
+    MenuItemEnableWrapper.Checked := not MenuItemEnableWrapper.Checked;
 end;
 
-procedure TFmSEModuleExplorer.MIExitClick(Sender: TObject);
+procedure TFormSEModuleExplorer.MenuItemExitClick(Sender: TObject);
 begin
   Close;
 end;

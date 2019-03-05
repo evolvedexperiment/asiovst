@@ -1,4 +1,4 @@
-object FmSEModuleExplorer: TFmSEModuleExplorer
+object FormSEModuleExplorer: TFormSEModuleExplorer
   Left = 446
   Top = 223
   Caption = 'SE Merger'
@@ -14,7 +14,7 @@ object FmSEModuleExplorer: TFmSEModuleExplorer
   OldCreateOrder = False
   PixelsPerInch = 96
   TextHeight = 13
-  object LBSEMs: TListBox
+  object ListBoxSEMs: TListBox
     Left = 0
     Top = 0
     Width = 229
@@ -26,35 +26,35 @@ object FmSEModuleExplorer: TFmSEModuleExplorer
   object MainMenu: TMainMenu
     Left = 8
     Top = 8
-    object MIFile: TMenuItem
+    object MenuItemFile: TMenuItem
       Caption = '&File'
-      object MINew: TMenuItem
+      object MenuItemNew: TMenuItem
         Caption = 'New'
-        OnClick = MINewClick
+        OnClick = MenuItemNewClick
       end
-      object MIOpen: TMenuItem
+      object MenuItemOpen: TMenuItem
         Caption = '&Add...'
-        OnClick = MIOpenClick
+        OnClick = MenuItemOpenClick
       end
-      object MISaveAs: TMenuItem
+      object MenuItemSaveAs: TMenuItem
         Caption = 'Save as...'
         Enabled = False
-        OnClick = MISaveAsClick
+        OnClick = MenuItemSaveAsClick
       end
       object N1: TMenuItem
         Caption = '-'
       end
-      object MIExit: TMenuItem
+      object MenuItemExit: TMenuItem
         Caption = 'E&xit'
-        OnClick = MIExitClick
+        OnClick = MenuItemExitClick
       end
     end
-    object MiSettings: TMenuItem
+    object MenuItemSettings: TMenuItem
       Caption = '&Settings'
-      object MiAddMerged: TMenuItem
+      object MenuItemAddMerged: TMenuItem
         Caption = 'add '#39'merged'#39' to ID'
         Checked = True
-        OnClick = MiAddMergedClick
+        OnClick = MenuItemAddMergedClick
       end
     end
   end

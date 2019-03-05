@@ -55,7 +55,6 @@ type
       const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
     procedure ASIOHostBufferSwitch64(Sender: TObject;
       const InBuffer, OutBuffer: TDAVArrayOfDoubleFixedArray);
-    procedure Bt_CPClick(Sender: TObject);
     procedure ButtonStartStopClick(Sender: TObject);
     procedure ComboBoxDriverChange(Sender: TObject);
     procedure ScrollBarPanChange(Sender: TObject);
@@ -116,11 +115,6 @@ begin
       end;
     ButtonStartStop.Enabled := True;
   end;
-end;
-
-procedure TFormASIONoiseGenerator.Bt_CPClick(Sender: TObject);
-begin
-  ASIOHost.ControlPanel;
 end;
 
 procedure TFormASIONoiseGenerator.FormDestroy(Sender: TObject);

@@ -17,7 +17,7 @@ uses
   Forms,
   JNDEQTmain in 'JNDEQTmain.pas' {FormJNDEQT},
   JNDEQTaudio in 'JNDEQTaudio.pas' {FormSetup},
-  JNDEQTsurvey in 'JNDEQTsurvey.pas' {FmSurvey};
+  JNDEQTsurvey in 'JNDEQTsurvey.pas' {FormSurvey};
 
 {$R *.res}
 

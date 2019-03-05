@@ -43,7 +43,7 @@ type
   TSignalType = (stSine, stWhiteNoise, stPinkNoise);
   TNoiseDistribution = (ndRectangle, ndTriangular, ndFastGauss, ndGauss);
 
-  TFmASIO = class(TForm)
+  TFormASIO = class(TForm)
     ASIOHost: TASIOHost;
     ButtonControlPanel: TButton;
     ButtonStartStop: TButton;
@@ -87,7 +87,7 @@ type
   end;
 
 var
-  FmASIO: TFmASIO;
+  FormASIO: TFormASIO;
 
 implementation
 
@@ -100,7 +100,7 @@ implementation
 uses
   SysUtils, Inifiles, DAV_Common, DAV_Math, DAV_Approximations;
 
-procedure TFmASIO.FormCreate(Sender: TObject);
+procedure TFormASIO.FormCreate(Sender: TObject);
 begin
   ComboBoxDriver.Items := ASIOHost.DriverList;
   if ComboBoxDriver.Items.Count = 0 then
@@ -135,7 +135,7 @@ begin
   FPinkNoise := TPinkNoiseGenerator.Create;
 end;
 
-procedure TFmASIO.FormDestroy(Sender: TObject);
+procedure TFormASIO.FormDestroy(Sender: TObject);
 begin
   ASIOHost.Active := False;
   FreeAndNil(FSineLFO);
@@ -151,12 +151,12 @@ begin
     end;
 end;
 
-procedure TFmASIO.ComboBoxDistributionChange(Sender: TObject);
+procedure TFormASIO.ComboBoxDistributionChange(Sender: TObject);
 begin
   FNoiseDistribution := TNoiseDistribution(ComboBoxDistribution.ItemIndex);
 end;
 
-procedure TFmASIO.ComboBoxDriverChange(Sender: TObject);
+procedure TFormASIO.ComboBoxDriverChange(Sender: TObject);
 begin
   ButtonControlPanel.Enabled := False;
   ButtonStartStop.Enabled := False;
@@ -175,7 +175,7 @@ begin
   end;
 end;
 
-procedure TFmASIO.ComboBoxSignalChange(Sender: TObject);
+procedure TFormASIO.ComboBoxSignalChange(Sender: TObject);
 begin
   FSignalType := TSignalType(ComboBoxSignal.ItemIndex);
 
@@ -193,12 +193,12 @@ begin
   end;
 end;
 
-procedure TFmASIO.ButtonControlPanelClick(Sender: TObject);
+procedure TFormASIO.ButtonControlPanelClick(Sender: TObject);
 begin
   ASIOHost.ControlPanel;
 end;
 
-procedure TFmASIO.ButtonStartStopClick(Sender: TObject);
+procedure TFormASIO.ButtonStartStopClick(Sender: TObject);
 begin
   if ButtonStartStop.Caption = 'Start Audio' then
   begin
@@ -212,12 +212,12 @@ begin
   end;
 end;
 
-procedure TFmASIO.ScrollBarFreqChange(Sender: TObject);
+procedure TFormASIO.ScrollBarFreqChange(Sender: TObject);
 begin
   Frequency := FreqLinearToLog(ScrollBarFreq.Position * 0.00001);
 end;
 
-procedure TFmASIO.SetFrequency(const Value: Double);
+procedure TFormASIO.SetFrequency(const Value: Double);
 begin
   if FFreq <> Value then
   begin
@@ -228,7 +228,7 @@ begin
   end;
 end;
 
-procedure TFmASIO.ASIOHostBufferSwitch32(Sender: TObject;
+procedure TFormASIO.ASIOHostBufferSwitch32(Sender: TObject;
   const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
 var
   Channel: Integer;
@@ -267,7 +267,7 @@ begin
       SizeOf(Single));
 end;
 
-procedure TFmASIO.ASIOHostBufferSwitch64(Sender: TObject;
+procedure TFormASIO.ASIOHostBufferSwitch64(Sender: TObject;
   const InBuffer, OutBuffer: TDAVArrayOfDoubleFixedArray);
 var
   Channel: Integer;
@@ -306,12 +306,12 @@ begin
       SizeOf(Double));
 end;
 
-procedure TFmASIO.ASIOHostSampleRateChanged(Sender: TObject);
+procedure TFormASIO.ASIOHostSampleRateChanged(Sender: TObject);
 begin
   FSineLFO.SampleRate := ASIOHost.SampleRate;
 end;
 
-procedure TFmASIO.ScrollBarVolumeChange(Sender: TObject);
+procedure TFormASIO.ScrollBarVolumeChange(Sender: TObject);
 begin
   FVol := ScrollBarVolume.Position * 0.00001;
   if FVol = 0 then

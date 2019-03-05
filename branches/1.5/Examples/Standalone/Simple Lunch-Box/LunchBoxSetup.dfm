@@ -1,4 +1,4 @@
-object FmSetup: TFmSetup
+object FormSetup: TFormSetup
   Left = 333
   Top = 221
   BorderStyle = bsDialog
@@ -19,7 +19,7 @@ object FmSetup: TFmSetup
     109)
   PixelsPerInch = 96
   TextHeight = 13
-  object LbPreset: TLabel
+  object LabelPreset: TLabel
     Left = 4
     Top = 2
     Width = 81
@@ -28,7 +28,7 @@ object FmSetup: TFmSetup
     Caption = 'ASIO Driver:'
     Layout = tlCenter
   end
-  object LbOutput: TLabel
+  object LabelOutput: TLabel
     Left = 4
     Top = 29
     Width = 50
@@ -37,7 +37,7 @@ object FmSetup: TFmSetup
     Caption = 'Output:'
     Layout = tlCenter
   end
-  object LbPlaybackSampleRate: TLabel
+  object LabelPlaybackSampleRate: TLabel
     Left = 4
     Top = 88
     Width = 138
@@ -45,7 +45,7 @@ object FmSetup: TFmSetup
     Caption = 'Playback Samplerate'
     Layout = tlCenter
   end
-  object CBDrivers: TComboBox
+  object ComboBoxDrivers: TComboBox
     Left = 88
     Top = 2
     Width = 136
@@ -53,9 +53,9 @@ object FmSetup: TFmSetup
     Style = csDropDownList
     Anchors = [akLeft, akTop, akRight]
     TabOrder = 0
-    OnChange = CBDriversChange
+    OnChange = ComboBoxDriversChange
   end
-  object CBOutput: TComboBox
+  object ComboBoxOutput: TComboBox
     Left = 64
     Top = 29
     Width = 160
@@ -63,9 +63,9 @@ object FmSetup: TFmSetup
     Style = csDropDownList
     Anchors = [akLeft, akTop, akRight]
     TabOrder = 1
-    OnChange = CBOutputChange
+    OnChange = ComboBoxOutputChange
   end
-  object BtControlPanel: TButton
+  object ButtonControlPanel: TButton
     Left = 4
     Top = 55
     Width = 220
@@ -73,9 +73,9 @@ object FmSetup: TFmSetup
     Anchors = [akLeft, akTop, akRight]
     Caption = 'Control Panel'
     TabOrder = 2
-    OnClick = BtControlPanelClick
+    OnClick = ButtonControlPanelClick
   end
-  object SESampleRate: TSpinEdit
+  object SpinEditSampleRate: TSpinEdit
     Left = 148
     Top = 85
     Width = 76
@@ -85,6 +85,6 @@ object FmSetup: TFmSetup
     MinValue = 0
     TabOrder = 3
     Value = 44100
-    OnChange = SESampleRateChange
+    OnChange = SpinEditSampleRateChange
   end
 end

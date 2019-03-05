@@ -1,4 +1,4 @@
-object FmAbout: TFmAbout
+object FormAbout: TFormAbout
   Left = 218
   Top = 77
   BorderStyle = bsDialog
@@ -16,7 +16,7 @@ object FmAbout: TFmAbout
   OnClick = FormClick
   PixelsPerInch = 96
   TextHeight = 13
-  object ImSynthEdit: TImage
+  object ImageSynthEdit: TImage
     Left = 8
     Top = 8
     Width = 32
@@ -679,9 +679,9 @@ object FmAbout: TFmAbout
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000}
-    OnClick = ImSynthEditClick
+    OnClick = ImageSynthEditClick
   end
-  object LbSem: TGuiLabel
+  object LabelSem: TGuiLabel
     Left = 46
     Top = 7
     Width = 61
@@ -700,34 +700,34 @@ object FmAbout: TFmAbout
     Transparent = True
     OnClick = FormClick
   end
-  object LbAbout: TLabel
+  object LabelAbout: TLabel
     Left = 8
     Top = 46
     Width = 148
     Height = 13
     Cursor = crHandPoint
     Caption = 'written by Christian-W. Budde '
-    OnClick = LbAboutClick
+    OnClick = LabelAboutClick
   end
-  object LbDelphiASIOVST: TLabel
+  object LabelDelphiASIOVST: TLabel
     Left = 8
     Top = 62
     Width = 190
     Height = 13
     Cursor = crHandPoint
     Caption = 'made for the Delphi ASIO && VST Project'
-    OnClick = LbDelphiASIOVSTClick
+    OnClick = LabelDelphiASIOVSTClick
   end
-  object LbPainting: TLabel
+  object LabelPainting: TLabel
     Left = 8
     Top = 96
     Width = 207
     Height = 13
     Cursor = crHandPoint
     Caption = 'icon base on an acryl painting by Jacky Lee'
-    OnClick = ImSynthEditClick
+    OnClick = ImageSynthEditClick
   end
-  object LbExplorer: TGuiLabel
+  object LabelExplorer: TGuiLabel
     Left = 106
     Top = 7
     Width = 117

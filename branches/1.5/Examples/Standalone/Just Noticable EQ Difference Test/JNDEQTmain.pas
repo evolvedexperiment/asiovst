@@ -127,10 +127,10 @@ type
     procedure AsioHostSampleRateChanged(Sender: TObject);
     procedure ButtonMediaClick(Sender: TObject);
     procedure LabelAudioFileValueDblClick(Sender: TObject);
-    procedure LbAutoVolumeAdjustmentClick(Sender: TObject);
-    procedure LbSelectionMouseDown(Sender: TObject; Button: TMouseButton;
+    procedure LabelAutoVolumeAdjustmentClick(Sender: TObject);
+    procedure LabelSelectionMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
-    procedure LbSelectionMouseUp(Sender: TObject; Button: TMouseButton;
+    procedure LabelSelectionMouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure LabelSkipClick(Sender: TObject);
     procedure LabelXisAClick(Sender: TObject);
@@ -464,7 +464,7 @@ begin
     LoadFromFile(OpenDialogMP3.FileName);
 end;
 
-procedure TFormJNDEQT.LbAutoVolumeAdjustmentClick(Sender: TObject);
+procedure TFormJNDEQT.LabelAutoVolumeAdjustmentClick(Sender: TObject);
 begin
   VolumeAutoAdjustment := False; // not VolumeAutoAdjustment;
 
@@ -518,14 +518,14 @@ begin
   TimerResultButtonEnabler.Enabled := True;
 end;
 
-procedure TFormJNDEQT.LbSelectionMouseUp(Sender: TObject; Button: TMouseButton;
+procedure TFormJNDEQT.LabelSelectionMouseUp(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
   if MenuItemLatchButtons.Checked then
     Selection := sX;
 end;
 
-procedure TFormJNDEQT.LbSelectionMouseDown(Sender: TObject; Button: TMouseButton;
+procedure TFormJNDEQT.LabelSelectionMouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
   Selection := TSelection(TComponent(Sender).Tag);
@@ -972,13 +972,13 @@ begin
   if FEncryptLogFile then
   begin
     // open survey dialog and add information
-    with TFmSurvey.Create(Self) do
+    with TFormSurvey.Create(Self) do
       try
         ShowModal;
-        if EdAge.Text <> '' then
-          FLog.Add('Age: ' + EdAge.Text);
-        if EdSetup.Text <> '' then
-          FLog.Add('Setup: ' + EdSetup.Text);
+        if EditAge.Text <> '' then
+          FLog.Add('Age: ' + EditAge.Text);
+        if EditSetup.Text <> '' then
+          FLog.Add('Setup: ' + EditSetup.Text);
         if LEDGenderMale.Brightness_Percent > 50 then
           FLog.Add('Gender: Male')
         else if LEDGenderFemale.Brightness_Percent > 50 then

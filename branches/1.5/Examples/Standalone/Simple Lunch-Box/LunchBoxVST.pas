@@ -40,27 +40,27 @@ uses
   Forms, Dialogs, StdCtrls;
 
 type
-  TFmVST = class(TForm)
-    BtOutputEditor: TButton;
-    BtOutputVST: TButton;
-    BtRealtimeEditor: TButton;
-    BtRealtimeVST: TButton;
-    EdOutputVST: TEdit;
-    EdRealtimeVST: TEdit;
-    GbOutputVST: TGroupBox;
-    GbRealtimeVST: TGroupBox;
-    LbRealtimeVST: TLabel;
-    LbOutputVST: TLabel;
-    procedure EdRealtimeVSTChange(Sender: TObject);
-    procedure BtOutputEditorClick(Sender: TObject);
-    procedure BtRealtimeEditorClick(Sender: TObject);
-    procedure EdOutputVSTChange(Sender: TObject);
-    procedure BtRealtimeVSTClick(Sender: TObject);
-    procedure BtOutputVSTClick(Sender: TObject);
+  TFormVST = class(TForm)
+    ButtonOutputEditor: TButton;
+    ButtonOutputVST: TButton;
+    ButtonRealtimeEditor: TButton;
+    ButtonRealtimeVST: TButton;
+    EditOutputVST: TEdit;
+    EditRealtimeVST: TEdit;
+    GroupBoxOutputVST: TGroupBox;
+    GroupBoxRealtimeVST: TGroupBox;
+    LabelRealtimeVST: TLabel;
+    LabelOutputVST: TLabel;
+    procedure EditRealtimeVSTChange(Sender: TObject);
+    procedure ButtonOutputEditorClick(Sender: TObject);
+    procedure ButtonRealtimeEditorClick(Sender: TObject);
+    procedure EditOutputVSTChange(Sender: TObject);
+    procedure ButtonRealtimeVSTClick(Sender: TObject);
+    procedure ButtonOutputVSTClick(Sender: TObject);
   end;
 
 var
-  FmVST: TFmVST;
+  FormVST: TFormVST;
 
 implementation
 
@@ -73,7 +73,7 @@ uses
 {$R *.dfm}
 {$ENDIF}
 
-procedure TFmVST.BtOutputVSTClick(Sender: TObject);
+procedure TFormVST.ButtonOutputVSTClick(Sender: TObject);
 begin
   with TOpenDialog.Create(Self) do
     try
@@ -83,14 +83,14 @@ begin
       Title := 'Select a VST Plugin';
       if Execute then
       begin
-        EdOutputVST.Text := FileName;
+        EditOutputVST.Text := FileName;
       end;
     finally
       Free;
     end;
 end;
 
-procedure TFmVST.BtRealtimeVSTClick(Sender: TObject);
+procedure TFormVST.ButtonRealtimeVSTClick(Sender: TObject);
 begin
   with TOpenDialog.Create(Self) do
     try
@@ -100,50 +100,50 @@ begin
       Title := 'Select a VST Plugin';
       if Execute then
       begin
-        EdRealtimeVST.Text := FileName;
+        EditRealtimeVST.Text := FileName;
       end;
     finally
       Free;
     end;
 end;
 
-procedure TFmVST.BtRealtimeEditorClick(Sender: TObject);
+procedure TFormVST.ButtonRealtimeEditorClick(Sender: TObject);
 begin
-  if FmLunchBox.VSTHost[0].Active then
-    FmLunchBox.VSTHost[0].ShowEdit;
+  if FormLunchBox.VSTHost[0].Active then
+    FormLunchBox.VSTHost[0].ShowEdit;
 end;
 
-procedure TFmVST.BtOutputEditorClick(Sender: TObject);
+procedure TFormVST.ButtonOutputEditorClick(Sender: TObject);
 begin
-  if FmLunchBox.VSTHost[1].Active then
-    FmLunchBox.VSTHost[1].ShowEdit;
+  if FormLunchBox.VSTHost[1].Active then
+    FormLunchBox.VSTHost[1].ShowEdit;
 end;
 
-procedure TFmVST.EdRealtimeVSTChange(Sender: TObject);
+procedure TFormVST.EditRealtimeVSTChange(Sender: TObject);
 begin
-  with FmLunchBox.VSTHost[0] do
+  with FormLunchBox.VSTHost[0] do
   begin
     Active := False;
-    if FileExists(EdRealtimeVST.Text) then
+    if FileExists(EditRealtimeVST.Text) then
     begin
-      DLLFileName := EdRealtimeVST.Text;
+      DLLFileName := EditRealtimeVST.Text;
       Active := True;
     end;
-    BtRealtimeEditor.Enabled := Active;
+    ButtonRealtimeEditor.Enabled := Active;
   end;
 end;
 
-procedure TFmVST.EdOutputVSTChange(Sender: TObject);
+procedure TFormVST.EditOutputVSTChange(Sender: TObject);
 begin
-  with FmLunchBox.VSTHost[1] do
+  with FormLunchBox.VSTHost[1] do
   begin
     Active := False;
-    if FileExists(EdOutputVST.Text) then
+    if FileExists(EditOutputVST.Text) then
     begin
-      DLLFileName := EdOutputVST.Text;
+      DLLFileName := EditOutputVST.Text;
       Active := True;
     end;
-    BtOutputEditor.Enabled := Active;
+    ButtonOutputEditor.Enabled := Active;
   end;
 end;
 

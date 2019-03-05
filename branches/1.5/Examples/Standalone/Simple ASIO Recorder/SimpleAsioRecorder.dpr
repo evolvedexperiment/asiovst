@@ -3,17 +3,17 @@ program SimpleAsioRecorder;
 {$I DAV_Compiler.inc}
 
 uses
-  FastMM4, // either download the library or comment if there is an error here
+  FastMM4,
   {$IFDEF UseFastMove}
-  FastMove, // either download the library or disable the feature
-  {$ENDIF}
+  FastMove,
+  {$ENDIF }
   Forms,
-  SarMain in 'SarMain.pas' {FmRecordAudio};
+  SarMain in 'SarMain.pas' {FormRecordAudio};
 
 {$R *.res}
 
 begin
   Application.Initialize;
-  Application.CreateForm(TFmRecordAudio, FmRecordAudio);
+  Application.CreateForm(TFormRecordAudio, FormRecordAudio);
   Application.Run;
 end.

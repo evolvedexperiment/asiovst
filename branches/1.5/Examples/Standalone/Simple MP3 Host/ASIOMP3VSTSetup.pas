@@ -39,19 +39,19 @@ uses
   SysUtils, Classes, Controls, Forms, StdCtrls;
 
 type
-  TFmSetup = class(TForm)
-    LbPreset: TLabel;
-    LbOutput: TLabel;
-    CbDrivers: TComboBox;
-    CBOutput: TComboBox;
-    BtControlPanel: TButton;
-    procedure CbDriversChange(Sender: TObject);
-    procedure CBOutputChange(Sender: TObject);
-    procedure BtControlPanelClick(Sender: TObject);
+  TFormSetup = class(TForm)
+    LabelPreset: TLabel;
+    LabelOutput: TLabel;
+    ComboBoxDrivers: TComboBox;
+    ComboBoxOutput: TComboBox;
+    ButtonControlPanel: TButton;
+    procedure ComboBoxDriversChange(Sender: TObject);
+    procedure ComboBoxOutputChange(Sender: TObject);
+    procedure ButtonControlPanelClick(Sender: TObject);
   end;
 
 var
-  FmSetup: TFmSetup;
+  FormSetup: TFormSetup;
 
 implementation
 
@@ -62,37 +62,37 @@ uses
 {$R *.dfm}
 {$ENDIF}
 
-procedure TFmSetup.BtControlPanelClick(Sender: TObject);
+procedure TFormSetup.ButtonControlPanelClick(Sender: TObject);
 begin
- FmASIOMP3VST.AsioHost.ControlPanel;
+  FormASIOMP3VST.AsioHost.ControlPanel;
 end;
 
-procedure TFmSetup.CbDriversChange(Sender: TObject);
+procedure TFormSetup.ComboBoxDriversChange(Sender: TObject);
 var
   i : Integer;
 begin
- with FmASIOMP3VST.ASIOHost do
-  if CBDrivers.ItemIndex >= 0 then
-   begin
-    Active := False;
-    DriverIndex := CBDrivers.ItemIndex;
-    CBOutput.Clear;
-    for i := 0 to (OutputChannelCount div 2) - 1 do
-     begin
-      CBOutput.Items.Add(string(
-        OutputChannelInfos[2 * i].name + ' / ' +
-        OutputChannelInfos[2 * i + 1].name));
-     end;
-    CBOutput.ItemIndex := 0;
-    if Assigned(OnReset)
-     then OnReset(Self);
-    Active := True;
-   end;
+  with FormASIOMP3VST.ASIOHost do
+    if ComboBoxDrivers.ItemIndex >= 0 then
+    begin
+      Active := False;
+      DriverIndex := ComboBoxDrivers.ItemIndex;
+      ComboBoxOutput.Clear;
+      for i := 0 to (OutputChannelCount div 2) - 1 do
+      begin
+        ComboBoxOutput.Items.Add(string(
+          OutputChannelInfos[2 * i].name + ' / ' +
+          OutputChannelInfos[2 * i + 1].name));
+      end;
+      ComboBoxOutput.ItemIndex := 0;
+      if Assigned(OnReset) then
+        OnReset(Self);
+      Active := True;
+    end;
 end;
 
-procedure TFmSetup.CBOutputChange(Sender: TObject);
+procedure TFormSetup.ComboBoxOutputChange(Sender: TObject);
 begin
- FmASIOMP3VST.OutputChannelOffset := CBOutput.ItemIndex * 2;
+  FormASIOMP3VST.OutputChannelOffset := ComboBoxOutput.ItemIndex * 2;
 end;
 
 {$IFDEF FPC}

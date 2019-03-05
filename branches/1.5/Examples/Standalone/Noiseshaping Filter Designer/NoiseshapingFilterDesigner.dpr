@@ -3,17 +3,17 @@ program NoiseshapingFilterDesigner;
 {$I DAV_Compiler.inc}
 
 uses
-  FastMM4, // either download the library or comment if there is an error here
+  FastMM4,
   {$IFDEF UseFastMove}
-  FastMove, // either download the library or disable the feature
-  {$ENDIF}
+  FastMove,
+  {$ENDIF }
   Forms,
-  NfdMain in 'NfdMain.pas' {FmNoiseshapingFilterDesigner};
+  NfdMain in 'NfdMain.pas' {FormNoiseshapingFilterDesigner};
 
 {$R *.res}
 
 begin
   Application.Initialize;
-  Application.CreateForm(TFmNoiseshapingFilterDesigner, FmNoiseshapingFilterDesigner);
+  Application.CreateForm(TFormNoiseshapingFilterDesigner, FormNoiseshapingFilterDesigner);
   Application.Run;
 end.

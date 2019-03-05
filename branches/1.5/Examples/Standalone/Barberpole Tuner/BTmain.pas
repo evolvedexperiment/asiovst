@@ -42,17 +42,17 @@ uses
 
 type
   TGuitarString = (gtLowE, gtA, gtD, gtG, gtH, gtE);
-  TFmBarberpoleTuner = class(TForm)
+  TFormBarberpoleTuner = class(TForm)
     ASIOHost: TASIOHost;
     Barberpole: TPaintBox;
-    LbA: TGuiLabel;
-    LbD: TGuiLabel;
-    LbDisplay: TGuiLabel;
-    LbE: TGuiLabel;
-    LbG: TGuiLabel;
-    LbGuitarTuning: TGuiLabel;
-    LbH: TGuiLabel;
-    LbLowE: TGuiLabel;
+    LabelA: TGuiLabel;
+    LabelD: TGuiLabel;
+    LabelDisplay: TGuiLabel;
+    LabelE: TGuiLabel;
+    LabelG: TGuiLabel;
+    LabelGuitarTuning: TGuiLabel;
+    LabelH: TGuiLabel;
+    LabelLowE: TGuiLabel;
     Timer: TTimer;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -63,17 +63,17 @@ type
       const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
     procedure ASIOHostSampleRateChanged(Sender: TObject);
     procedure BarberpolePaint(Sender: TObject);
-    procedure LbNoteClick(Sender: TObject);
+    procedure LabelNoteClick(Sender: TObject);
     procedure TimerTimer(Sender: TObject);
   private
-    FBackground       : TGuiCustomPixelMap;
-    FLowpass          : TButterworthLowPassFilter;
-    FLimiter          : array [0..1] of TLightweightSoftKneeLimiter;
-    FBarberpoleFilter : TBarberpoleFilter;
-    FDownSamplePos    : Integer;
-    FDownSampleCount  : Integer;
-    FLinearBuffer     : PDAVSingleFixedArray;
-    FGuitarString     : TGuitarString;
+    FBackground: TGuiCustomPixelMap;
+    FLowpass: TButterworthLowPassFilter;
+    FLimiter: array [0..1] of TLightweightSoftKneeLimiter;
+    FBarberpoleFilter: TBarberpoleFilter;
+    FDownSamplePos: Integer;
+    FDownSampleCount: Integer;
+    FLinearBuffer: PDAVSingleFixedArray;
+    FGuitarString: TGuitarString;
     procedure SetGuitarString(const Value: TGuitarString);
   protected  
     procedure GuitarStringChanged; virtual;
@@ -83,7 +83,7 @@ type
   end;
 
 var
-  FmBarberpoleTuner: TFmBarberpoleTuner;
+  FormBarberpoleTuner: TFormBarberpoleTuner;
 
 implementation
 
@@ -95,169 +95,197 @@ resourcestring
 
 {$R *.dfm}
 
-procedure TFmBarberpoleTuner.FormCreate(Sender: TObject);
+procedure TFormBarberpoleTuner.FormCreate(Sender: TObject);
 var
-  DrvIndx : Integer;
+  DrvIndx: Integer;
 begin
- // create and setup initial lowpass filter
- FLowpass := TButterworthLowPassFilter.Create(3);
- with FLowpass do
+  // create and setup initial lowpass filter
+  FLowpass := TButterworthLowPassFilter.Create(3);
+  with FLowpass do
   begin
-   SampleRate := ASIOHost.SampleRate;
-   Frequency := 8000;
+    SampleRate := ASIOHost.SampleRate;
+    Frequency := 8000;
   end;
 
- // create and setup barberpole tuner filter
- FBarberpoleFilter := TBarberpoleFilter.Create;
- FBarberpoleFilter.SampleRate := ASIOHost.SampleRate;
+  // create and setup barberpole tuner filter
+  FBarberpoleFilter := TBarberpoleFilter.Create;
+  FBarberpoleFilter.SampleRate := ASIOHost.SampleRate;
 
- FLimiter[0] := TLightweightSoftKneeLimiter.Create;
- with FLimiter[0] do
+  FLimiter[0] := TLightweightSoftKneeLimiter.Create;
+  with FLimiter[0] do
   begin
-   SampleRate := ASIOHost.SampleRate;
-   Attack := 0.1;
-   Release := 200;
-   Threshold_dB := -40;
-   AutoMakeUp := True;
-   Knee_dB := 2;
+    SampleRate := ASIOHost.SampleRate;
+    Attack := 0.1;
+    Release := 200;
+    Threshold_dB := -40;
+    AutoMakeUp := True;
+    Knee_dB := 2;
   end;
 
- FLimiter[1] := TLightweightSoftKneeLimiter.Create;
- with FLimiter[1] do
+  FLimiter[1] := TLightweightSoftKneeLimiter.Create;
+  with FLimiter[1] do
   begin
-   SampleRate := ASIOHost.SampleRate;
-   Attack := 0.1;
-   Release := 200;
-   Threshold_dB := -20;
-   MakeUpGain_dB := 40;
-   Knee_dB := 2;
+    SampleRate := ASIOHost.SampleRate;
+    Attack := 0.1;
+    Release := 200;
+    Threshold_dB := -20;
+    MakeUpGain_dB := 40;
+    Knee_dB := 2;
   end;
 
- FDownSamplePos    := 0;
- FDownSampleCount  := 1 shl 8;
- GetMem(FLinearBuffer, 256 * SizeOf(Single));
+  FDownSamplePos := 0;
+  FDownSampleCount := 1 shl 8;
+  GetMem(FLinearBuffer, 256 * SizeOf(Single));
 
- // Create Background Image
- FBackground := TGuiPixelMapMemory.Create;
- Barberpole.ControlStyle := Barberpole.ControlStyle + [csOpaque];
- FormResize(Sender);
+  // Create Background Image
+  FBackground := TGuiPixelMapMemory.Create;
+  Barberpole.ControlStyle := Barberpole.ControlStyle + [csOpaque];
+  FormResize(Sender);
 
- try
-  DrvIndx := ASIOHost.DriverList.IndexOf('ASIO4ALL v2');
-  if DrvIndx < 0
-   then raise Exception.Create(RCStrASIO4ALLV2NotFound);
-  ASIOHost.DriverIndex := DrvIndx;
-  ASIOHost.Active := True;
- except
-  on E: Exception do MessageDlg(E.Message, mtError, [mbOK], 0);
- end;
+  try
+    DrvIndx := ASIOHost.DriverList.IndexOf('ASIO4ALL v2');
+   if DrvIndx < 0 then
+     raise Exception.Create(RCStrASIO4ALLV2NotFound);
+   ASIOHost.DriverIndex := DrvIndx;
+   ASIOHost.Active := True;
+  except
+    on E: Exception do MessageDlg(E.Message, mtError, [mbOK], 0);
+  end;
 end;
 
-procedure TFmBarberpoleTuner.FormDestroy(Sender: TObject);
+procedure TFormBarberpoleTuner.FormDestroy(Sender: TObject);
 begin
- ASIOHost.Active := False;
+  ASIOHost.Active := False;
 
- FreeAndNil(FBarberpoleFilter);
- FreeAndNil(FBackground);
- FreeAndNil(FLowpass);
- FreeAndNil(FLimiter[0]);
- FreeAndNil(FLimiter[1]);
+  FreeAndNil(FBarberpoleFilter);
+  FreeAndNil(FBackground);
+  FreeAndNil(FLowpass);
+  FreeAndNil(FLimiter[0]);
+  FreeAndNil(FLimiter[1]);
 end;
 
-procedure TFmBarberpoleTuner.FormShow(Sender: TObject);
+procedure TFormBarberpoleTuner.FormShow(Sender: TObject);
 begin
- // workaround, please remove these lines if fixed!!!
- LbDisplay.Width := LbDisplay.Width + 1;
- LbGuitarTuning.Width := LbGuitarTuning.Width + 1;
- LbGuitarTuning.Width := LbGuitarTuning.Width + 1;
- LbLowE.Height := LbLowE.Height - 1;
- LbA.Height := LbA.Height - 1;
- LbD.Height := LbD.Height - 1;
- LbG.Height := LbG.Height - 1;
- LbH.Height := LbH.Height - 1;
- LbE.Height := LbE.Height - 1;
+  // workaround, please remove these lines if fixed!!!
+  LabelDisplay.Width := LabelDisplay.Width + 1;
+  LabelGuitarTuning.Width := LabelGuitarTuning.Width + 1;
+  LabelGuitarTuning.Width := LabelGuitarTuning.Width + 1;
+  LabelLowE.Height := LabelLowE.Height - 1;
+  LabelA.Height := LabelA.Height - 1;
+  LabelD.Height := LabelD.Height - 1;
+  LabelG.Height := LabelG.Height - 1;
+  LabelH.Height := LabelH.Height - 1;
+  LabelE.Height := LabelE.Height - 1;
 end;
 
-procedure TFmBarberpoleTuner.FormPaint(Sender: TObject);
+procedure TFormBarberpoleTuner.FormPaint(Sender: TObject);
 begin
- if Assigned(FBackground)
-  then FBackground.PaintTo(Canvas);
+  if Assigned(FBackground) then
+    FBackground.PaintTo(Canvas);
 end;
 
-procedure TFmBarberpoleTuner.FormResize(Sender: TObject);
+procedure TFormBarberpoleTuner.FormResize(Sender: TObject);
 var
-  x, y    : Integer;
-  Filter  : array [0..1] of Single;
-  h, hr   : Single;
-  ScnLn   : PPixel32Array;
+  x, y: Integer;
+  Filter: array [0..1] of Single;
+  h, hr: Single;
+  ScnLn: PPixel32Array;
 begin
- with FBackground do
+  with FBackground do
   begin
-   SetSize(ClientWidth, ClientHeight);
-   Filter[0] := 0;
-   Filter[1] := 0;
-   hr   := 1 / Height;
-   for y := 0 to Height - 1 do
+    SetSize(ClientWidth, ClientHeight);
+    Filter[0] := 0;
+    Filter[1] := 0;
+    hr := 1 / Height;
+    for y := 0 to Height - 1 do
     begin
-     ScnLn := Scanline[y];
-     h    := 0.1 * (1 - Sqr(2 * (y - Height div 2) * hr));
-     for x := 0 to Width - 1 do
+      ScnLn := Scanline[y];
+      h    := 0.1 * (1 - Sqr(2 * (y - Height div 2) * hr));
+      for x := 0 to Width - 1 do
       begin
-       Filter[1] := 0.97 * Filter[0] + 0.03 * Random;
-       Filter[0] := Filter[1];
+        Filter[1] := 0.97 * Filter[0] + 0.03 * Random;
+        Filter[0] := Filter[1];
 
-       ScnLn[x].B := Round($70 - $34 * (Filter[1] - h));
-       ScnLn[x].G := Round($84 - $48 * (Filter[1] - h));
-       ScnLn[x].R := Round($8D - $50 * (Filter[1] - h));
+        ScnLn[x].B := Round($70 - $34 * (Filter[1] - h));
+        ScnLn[x].G := Round($84 - $48 * (Filter[1] - h));
+        ScnLn[x].R := Round($8D - $50 * (Filter[1] - h));
       end;
     end;
   end;
 end;
 
-procedure TFmBarberpoleTuner.ASIOHostSampleRateChanged(Sender: TObject);
+procedure TFormBarberpoleTuner.ASIOHostSampleRateChanged(Sender: TObject);
 begin
- if Assigned(FBarberpoleFilter) then FBarberpoleFilter.SampleRate := ASIOHost.SampleRate;
- if Assigned(FLowpass) then FLowpass.SampleRate := ASIOHost.SampleRate;
- if Assigned(FLimiter[0]) then FLimiter[0].SampleRate := ASIOHost.SampleRate;
- if Assigned(FLimiter[1]) then FLimiter[1].SampleRate := ASIOHost.SampleRate;
+  if Assigned(FBarberpoleFilter) then
+    FBarberpoleFilter.SampleRate := ASIOHost.SampleRate;
+  if Assigned(FLowpass) then
+    FLowpass.SampleRate := ASIOHost.SampleRate;
+  if Assigned(FLimiter[0]) then
+    FLimiter[0].SampleRate := ASIOHost.SampleRate;
+  if Assigned(FLimiter[1]) then
+    FLimiter[1].SampleRate := ASIOHost.SampleRate;
 end;
 
-procedure TFmBarberpoleTuner.BarberpolePaint(Sender: TObject);
+procedure TFormBarberpoleTuner.BarberpolePaint(Sender: TObject);
 var
-  Column : Integer;
+  Column: Integer;
 begin
- with Barberpole.Canvas do
+  with Barberpole.Canvas do
   begin
-   Pen.Color := clBlack;
-   Pen.Style := psSolid;
-   Brush.Color := clBlack;
-   Brush.Style := bsSolid;
-   FrameRect(Barberpole.ClientRect);
+    Pen.Color := clBlack;
+    Pen.Style := psSolid;
+    Brush.Color := clBlack;
+    Brush.Style := bsSolid;
+    FrameRect(Barberpole.ClientRect);
   end;
 
- if Assigned(BufferPointer) then
-  for Column := 0 to Barberpole.Width - 3 do
-   begin
-    Barberpole.Canvas.Pen.Color :=
-      Round($70 - $34 * BufferPointer^[Column]) shl 16 +
-      Round($84 - $48 * BufferPointer^[Column]) shl  8 +
-      Round($8D - $50 * BufferPointer^[Column]);
-    Barberpole.Canvas.MoveTo(Column + 1, 1);
-    Barberpole.Canvas.LineTo(Column + 1, Barberpole.Height - 1);
-   end;
+  if Assigned(BufferPointer) then
+    for Column := 0 to Barberpole.Width - 3 do
+    begin
+      Barberpole.Canvas.Pen.Color :=
+        Round($70 - $34 * BufferPointer^[Column]) shl 16 +
+        Round($84 - $48 * BufferPointer^[Column]) shl  8 +
+        Round($8D - $50 * BufferPointer^[Column]);
+      Barberpole.Canvas.MoveTo(Column + 1, 1);
+      Barberpole.Canvas.LineTo(Column + 1, Barberpole.Height - 1);
+    end;
 end;
 
-procedure TFmBarberpoleTuner.LbNoteClick(Sender: TObject);
+procedure TFormBarberpoleTuner.LabelNoteClick(Sender: TObject);
 begin
- if Sender <> LbLowE then LbLowE.Font.Color := $4F4F4F else begin LbLowE.Font.Color := clBlack; GuitarString := gtLowE; end;
- if Sender <> LbA then LbA.Font.Color := $4F4F4F else begin LbA.Font.Color := clBlack; GuitarString := gtA; end;
- if Sender <> LbD then LbD.Font.Color := $4F4F4F else begin LbD.Font.Color := clBlack; GuitarString := gtD; end;
- if Sender <> LbG then LbG.Font.Color := $4F4F4F else begin LbG.Font.Color := clBlack; GuitarString := gtG; end;
- if Sender <> LbH then LbH.Font.Color := $4F4F4F else begin LbH.Font.Color := clBlack; GuitarString := gtH; end;
- if Sender <> LbE then LbE.Font.Color := $4F4F4F else begin LbE.Font.Color := clBlack; GuitarString := gtE; end;
+  if Sender <> LabelLowE then LabelLowE.Font.Color := $4F4F4F else
+  begin
+    LabelLowE.Font.Color := clBlack;
+    GuitarString := gtLowE;
+  end;
+  if Sender <> LabelA then LabelA.Font.Color := $4F4F4F else
+  begin
+    LabelA.Font.Color := clBlack;
+    GuitarString := gtA;
+  end;
+  if Sender <> LabelD then LabelD.Font.Color := $4F4F4F else
+  begin
+    LabelD.Font.Color := clBlack;
+    GuitarString := gtD;
+  end;
+  if Sender <> LabelG then LabelG.Font.Color := $4F4F4F else
+  begin
+    LabelG.Font.Color := clBlack;
+    GuitarString := gtG;
+  end;
+  if Sender <> LabelH then LabelH.Font.Color := $4F4F4F else
+  begin
+    LabelH.Font.Color := clBlack;
+    GuitarString := gtH;
+  end;
+  if Sender <> LabelE then LabelE.Font.Color := $4F4F4F else
+  begin
+    LabelE.Font.Color := clBlack;
+    GuitarString := gtE;
+  end;
 end;
 
-procedure TFmBarberpoleTuner.SetGuitarString(const Value: TGuitarString);
+procedure TFormBarberpoleTuner.SetGuitarString(const Value: TGuitarString);
 begin
  if FGuitarString <> Value then
   begin
@@ -266,53 +294,60 @@ begin
   end;
 end;
 
-procedure TFmBarberpoleTuner.GuitarStringChanged;
+procedure TFormBarberpoleTuner.GuitarStringChanged;
 var
-  CenterFrequency : Single;
+  CenterFrequency: Single;
 begin
- case FGuitarString of
-  gtLowE : CenterFrequency := 329.62755691286992973584176104656;
-  gtA    : CenterFrequency := 440;
-  gtD    : CenterFrequency := 587.32953583481512052556602772116;
-  gtG    : CenterFrequency := 783.99087196349858817139906091965;
-  gtH    : CenterFrequency := 987.76660251224822366150908371768;
-  gtE    : CenterFrequency := 1318.5102276514797189433670441862;
-  else raise Exception.Create('Current Frequency doesn''t exist');
- end;
+  case FGuitarString of
+    gtLowE:
+      CenterFrequency := 329.62755691286992973584176104656;
+    gtA  :
+      CenterFrequency := 440;
+    gtD  :
+      CenterFrequency := 587.32953583481512052556602772116;
+    gtG  :
+      CenterFrequency := 783.99087196349858817139906091965;
+    gtH  :
+      CenterFrequency := 987.76660251224822366150908371768;
+    gtE  :
+      CenterFrequency := 1318.5102276514797189433670441862;
+    else
+      raise Exception.Create('Current Frequency doesn''t exist');
+  end;
 
- if Assigned(FBarberpoleFilter)
-  then FBarberpoleFilter.Frequency := CenterFrequency;
- if Assigned(FLowpass)
-  then FLowpass.Frequency := 4 * CenterFrequency; 
+  if Assigned(FBarberpoleFilter) then
+    FBarberpoleFilter.Frequency := CenterFrequency;
+  if Assigned(FLowpass) then
+    FLowpass.Frequency := 4 * CenterFrequency;
 end;
 
-procedure TFmBarberpoleTuner.TimerTimer(Sender: TObject);
+procedure TFormBarberpoleTuner.TimerTimer(Sender: TObject);
 begin
- Barberpole.Invalidate;
+  Barberpole.Invalidate;
 end;
 
-procedure TFmBarberpoleTuner.ASIOHostBufferSwitch32(Sender: TObject;
+procedure TFormBarberpoleTuner.ASIOHostBufferSwitch32(Sender: TObject;
   const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
 var
-  Sample, c1 : Integer;
-  Signal     : Single;
+  Sample, c1: Integer;
+  Signal: Single;
 begin
- c1 := 1;
- for Sample := 0 to ASIOHost.BufferSize - 1 do
+  c1 := 1;
+  for Sample := 0 to ASIOHost.BufferSize - 1 do
   begin
-   Signal := FLimiter[0].ProcessSample64(FLowpass.ProcessSample64(InBuffer[0, Sample]));
-   Signal := FBarberpoleFilter.ProcessSample32(Signal + 2 * sqr(Signal) - 1);
-   Signal := FLimiter[1].ProcessSample64(Signal);
-   if FDownSamplePos = 0 then
+    Signal := FLimiter[0].ProcessSample64(FLowpass.ProcessSample64(InBuffer[0, Sample]));
+    Signal := FBarberpoleFilter.ProcessSample32(Signal + 2 * sqr(Signal) - 1);
+    Signal := FLimiter[1].ProcessSample64(Signal);
+    if FDownSamplePos = 0 then
     begin
-     Move(FLinearBuffer^[0], FLinearBuffer^[c1], 255 * SizeOf(Single));
-     FLinearBuffer^[0] := Limit(Signal, -1, 1);
+      Move(FLinearBuffer^[0], FLinearBuffer^[c1], 255 * SizeOf(Single));
+      FLinearBuffer^[0] := Limit(Signal, -1, 1);
     end;
 
-   // advance downsample position
-   Inc(FDownSamplePos);
-   if FDownSamplePos >= FDownSampleCount
-    then FDownSamplePos := 0;
+    // advance downsample position
+    Inc(FDownSamplePos);
+    if FDownSamplePos >= FDownSampleCount then
+      FDownSamplePos := 0;
   end;
 end;
 

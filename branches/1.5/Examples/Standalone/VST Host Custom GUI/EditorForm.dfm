@@ -1,4 +1,4 @@
-object FmVSTEditor: TFmVSTEditor
+object FormVSTEditor: TFormVSTEditor
   Left = 399
   Top = 298
   BorderIcons = [biSystemMenu]
@@ -48,8 +48,8 @@ object FmVSTEditor: TFmVSTEditor
     VstTimeInfo.Tempo = 120.000000000000000000
     VstTimeInfo.Flags = [vtiNanosValid, vtiPpqPosValid, vtiTempoValid, vtiBarsValid, vtiCyclePosValid, vtiTimeSigValid, vtiSmpteValid, vtiClockValid]
     VstVersion = 2400
-    Left = 96
-    Top = 75
+    Left = 140
+    Top = 67
   end
   object ASIOHost: TAsioHost
     AsioTime.SamplePos = 0
@@ -61,29 +61,25 @@ object FmVSTEditor: TFmVSTEditor
     OnBufferSwitch32 = ASIOHostBufferSwitch32
     OnLatencyChanged = ASIOHostReset
     OnReset = ASIOHostReset
-    Left = 124
-    Top = 75
-  end
-  object XPManifest: TXPManifest
-    Left = 152
-    Top = 75
+    Left = 140
+    Top = 19
   end
   object OpenDialog: TOpenDialog
     DefaultExt = 'fxp'
     Filter = 'VST Preset (*.fxp)|*.fxp|VST Bank (*.fxb)|*.fxb'
     Options = [ofHideReadOnly, ofFileMustExist, ofEnableSizing]
-    Left = 208
-    Top = 75
+    Left = 228
+    Top = 67
   end
   object SaveDialog: TSaveDialog
     DefaultExt = 'fxp'
     Filter = 'VST Preset (*.fxp)|*.fxp|VST Bank (*.fxb)|*.fxb'
-    Left = 180
-    Top = 75
+    Left = 228
+    Top = 19
   end
   object MainMenu: TMainMenu
-    Left = 68
-    Top = 75
+    Left = 28
+    Top = 19
     object MenuItemStandalone: TMenuItem
       Caption = '&Standalone'
       object MenuItemExit: TMenuItem

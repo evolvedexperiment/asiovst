@@ -1,4 +1,4 @@
-object FmPresetParser: TFmPresetParser
+object FormPresetParser: TFormPresetParser
   Left = 218
   Top = 77
   Caption = 'Preset Parser'

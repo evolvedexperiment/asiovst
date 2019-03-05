@@ -1,4 +1,4 @@
-object FmVST: TFmVST
+object FormVST: TFormVST
   Left = 343
   Top = 356
   Caption = 'VST Setup'
@@ -16,7 +16,7 @@ object FmVST: TFmVST
     128)
   PixelsPerInch = 96
   TextHeight = 13
-  object GbOutputVST: TGroupBox
+  object GroupBoxOutputVST: TGroupBox
     Left = 8
     Top = 67
     Width = 284
@@ -24,31 +24,31 @@ object FmVST: TFmVST
     Anchors = [akLeft, akTop, akRight]
     Caption = ' Output VST '
     TabOrder = 0
-    object LbOutputVST: TLabel
+    object LabelOutputVST: TLabel
       Left = 11
       Top = 25
       Width = 22
       Height = 13
       Caption = 'VST:'
     end
-    object EdOutputVST: TEdit
+    object EditOutputVST: TEdit
       Left = 39
       Top = 22
       Width = 185
       Height = 21
       TabOrder = 0
-      OnChange = EdOutputVSTChange
+      OnChange = EditOutputVSTChange
     end
-    object BtOutputVST: TButton
+    object ButtonOutputVST: TButton
       Left = 204
       Top = 24
       Width = 18
       Height = 18
       Caption = '...'
       TabOrder = 1
-      OnClick = BtOutputVSTClick
+      OnClick = ButtonOutputVSTClick
     end
-    object BtOutputEditor: TButton
+    object ButtonOutputEditor: TButton
       Left = 230
       Top = 22
       Width = 43
@@ -56,10 +56,10 @@ object FmVST: TFmVST
       Caption = 'Editor'
       Enabled = False
       TabOrder = 2
-      OnClick = BtOutputEditorClick
+      OnClick = ButtonOutputEditorClick
     end
   end
-  object GbRealtimeVST: TGroupBox
+  object GroupBoxRealtimeVST: TGroupBox
     Left = 8
     Top = 4
     Width = 284
@@ -67,31 +67,31 @@ object FmVST: TFmVST
     Anchors = [akLeft, akTop, akRight]
     Caption = ' Realtime FX VST '
     TabOrder = 1
-    object LbRealtimeVST: TLabel
+    object LabelRealtimeVST: TLabel
       Left = 11
       Top = 25
       Width = 22
       Height = 13
       Caption = 'VST:'
     end
-    object EdRealtimeVST: TEdit
+    object EditRealtimeVST: TEdit
       Left = 39
       Top = 22
       Width = 185
       Height = 21
       TabOrder = 0
-      OnChange = EdRealtimeVSTChange
+      OnChange = EditRealtimeVSTChange
     end
-    object BtRealtimeVST: TButton
+    object ButtonRealtimeVST: TButton
       Left = 204
       Top = 24
       Width = 18
       Height = 18
       Caption = '...'
       TabOrder = 1
-      OnClick = BtRealtimeVSTClick
+      OnClick = ButtonRealtimeVSTClick
     end
-    object BtRealtimeEditor: TButton
+    object ButtonRealtimeEditor: TButton
       Left = 230
       Top = 22
       Width = 43
@@ -99,7 +99,7 @@ object FmVST: TFmVST
       Caption = 'Editor'
       Enabled = False
       TabOrder = 2
-      OnClick = BtRealtimeEditorClick
+      OnClick = ButtonRealtimeEditorClick
     end
   end
 end

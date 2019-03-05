@@ -39,32 +39,32 @@ uses
   Graphics, Controls, Forms, Dialogs, StdCtrls, Menus, ActnList, ToolWin, 
   ActnMan, ActnCtrls, ActnMenus, PlatformDefaultStyleActnCtrls, StdActns, 
   ComCtrls, ImgList, ExtCtrls, DAV_Types, DAV_AsioHost, DAV_MpegAudio, 
-  DAV_DspBufferedMp3Player, DAV_VSTHost;
+  DAV_DspBufferedMp3Player, DAV_VSTHost, System.ImageList, System.Actions;
 
 type
-  TFmASIOMP3VST = class(TForm)
-    AcAsioSettings: TAction;
-    AcFileExit: TFileExit;
-    AcFileOpenMP3: TFileOpen;
-    AcFileOpenVST: TFileOpen;
-    AcPlay: TAction;
+  TFormASIOMP3VST = class(TForm)
+    ActionAsioSettings: TAction;
+    ActionFileExit: TFileExit;
+    ActionFileOpenMP3: TFileOpen;
+    ActionFileOpenVST: TFileOpen;
+    ActionPlay: TAction;
     ActionMainMenuBar: TActionMainMenuBar;
     ActionManager: TActionManager;
     ActionToolBar: TActionToolBar;
     ASIOHost: TASIOHost;
     CoolBar: TCoolBar;
     ImageList: TImageList;
-    PnVSTPlugin: TPanel;
+    PanelVSTPlugin: TPanel;
     VstHost: TVstHost;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
-    procedure AcAsioSettingsExecute(Sender: TObject);
+    procedure ActionAsioSettingsExecute(Sender: TObject);
     procedure ASIOHostBufferSwitch32(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
-    procedure AcFileOpenVSTAccept(Sender: TObject);
-    procedure AcPlayExecute(Sender: TObject);
-    procedure AcFileOpenMP3Accept(Sender: TObject);
+    procedure ActionFileOpenVSTAccept(Sender: TObject);
+    procedure ActionPlayExecute(Sender: TObject);
+    procedure ActionFileOpenMP3Accept(Sender: TObject);
     procedure ASIOHostDriverChanged(Sender: TObject);
     procedure ASIOHostSampleRateChanged(Sender: TObject);
   private
@@ -81,7 +81,7 @@ type
   end;
 
 var
-  FmASIOMP3VST: TFmASIOMP3VST;
+  FormASIOMP3VST: TFormASIOMP3VST;
 
 implementation
 
@@ -97,193 +97,193 @@ uses
 resourcestring
   RCStrNoASIODriverPresent = 'No ASIO Driver present! Application Terminated!';
 
-procedure TFmASIOMP3VST.FormCreate(Sender: TObject);
+procedure TFormASIOMP3VST.FormCreate(Sender: TObject);
 begin
- if ASIOHost.DriverList.Count = 0 then
+  if ASIOHost.DriverList.Count = 0 then
   try
-   raise Exception.Create(RCStrNoASIODriverPresent);
+    raise Exception.Create(RCStrNoASIODriverPresent);
   except
-   on E: Exception do
+    on E: Exception do
     begin
-     MessageDlg(E.Message , mtError, [mbOK], 0);
-     Application.Terminate;
+      MessageDlg(E.Message , mtError, [mbOK], 0);
+      Application.Terminate;
     end;
   end;
 
- FVolumeFactor := 1;
- FChannelOffset := 0;
+  FVolumeFactor := 1;
+  FChannelOffset := 0;
 
- FBufferedPlayer := TBufferedMP3FilePlayer.Create;
- with FBufferedPlayer do
+  FBufferedPlayer := TBufferedMP3FilePlayer.Create;
+  with FBufferedPlayer do
   begin
-   BufferSize := 65536;
-   BlockSize  := 4096;
-   Pitch := 0;
-   Interpolation := biBSpline6Point5thOrder;
-   SampleRate := ASIOHost.SampleRate;
+    BufferSize := 65536;
+    BlockSize  := 4096;
+    Pitch := 0;
+    Interpolation := biBSpline6Point5thOrder;
+    SampleRate := ASIOHost.SampleRate;
   end;
 end;
 
-procedure TFmASIOMP3VST.FormDestroy(Sender: TObject);
+procedure TFormASIOMP3VST.FormDestroy(Sender: TObject);
 begin
- Dispose(FVstBuffers[0, 0]);
- Dispose(FVstBuffers[0, 1]);
- Dispose(FVstBuffers[1, 0]);
- Dispose(FVstBuffers[1, 1]);
- FreeAndNil(FBufferedPlayer);
+  Dispose(FVstBuffers[0, 0]);
+  Dispose(FVstBuffers[0, 1]);
+  Dispose(FVstBuffers[1, 0]);
+  Dispose(FVstBuffers[1, 1]);
+  FreeAndNil(FBufferedPlayer);
 end;
 
-procedure TFmASIOMP3VST.FormShow(Sender: TObject);
+procedure TFormASIOMP3VST.FormShow(Sender: TObject);
 var
   Index : Integer;
 begin
- with TIniFile.Create(ExtractFilePath(ParamStr(0)) + 'ASIOMP3VST.INI') do
+  with TIniFile.Create(ExtractFilePath(ParamStr(0)) + 'ASIOMP3VST.INI') do
   try
-   // load MP3 file
-   FBufferedPlayer.Filename := ReadString('Audio', 'MP3 File', '');
-   AcPlay.Enabled := FileExists(FBufferedPlayer.Filename);
+    // load MP3 file
+    FBufferedPlayer.Filename := ReadString('Audio', 'MP3 File', '');
+    ActionPlay.Enabled := FileExists(FBufferedPlayer.Filename);
 
-   // load VST plugin
-   FVstFileName := ReadString('Audio', 'VST Plugin', FVstFileName);
-   if FileExists(FVstFileName)
-    then LoadVSTPlugin(FVstFileName);
+    // load VST plugin
+    FVstFileName := ReadString('Audio', 'VST Plugin', FVstFileName);
+    if FileExists(FVstFileName) then
+      LoadVSTPlugin(FVstFileName);
 
-   with FmSetup do
+    with FormSetup do
     begin
-     CBDrivers.Items := FmASIOMP3VST.ASIOHost.DriverList;
-     CBDrivers.ItemIndex := CBDrivers.Items.IndexOf(ReadString('Audio', 'ASIO Driver', 'ASIO4ALL v2'));
-     if CBDrivers.ItemIndex >= 0 then
+      ComboBoxDrivers.Items := FormASIOMP3VST.ASIOHost.DriverList;
+      ComboBoxDrivers.ItemIndex := ComboBoxDrivers.Items.IndexOf(ReadString('Audio', 'ASIO Driver', 'ASIO4ALL v2'));
+      if ComboBoxDrivers.ItemIndex >= 0 then
       begin
-       ASIOHost.DriverIndex := CBDrivers.ItemIndex;
-       CBOutput.Clear;
-       for Index := 0 to (ASIOHost.OutputChannelCount div 2) - 1 do
-         CBOutput.Items.Add(
-           string(ASIOHost.OutputChannelInfos[2 * Index].Name) + ' / ' +
-           string(ASIOHost.OutputChannelInfos[2 * Index + 1].Name));
+        ASIOHost.DriverIndex := ComboBoxDrivers.ItemIndex;
+        ComboBoxOutput.Clear;
+        for Index := 0 to (ASIOHost.OutputChannelCount div 2) - 1 do
+          ComboBoxOutput.Items.Add(
+            string(ASIOHost.OutputChannelInfos[2 * Index].Name) + ' / ' +
+            string(ASIOHost.OutputChannelInfos[2 * Index + 1].Name));
 
-       BtControlPanel.Enabled := True;
+        ButtonControlPanel.Enabled := True;
       end;
-     CBOutput.ItemIndex := ReadInteger('Audio', 'Output Channel Offset', 0);
+      ComboBoxOutput.ItemIndex := ReadInteger('Audio', 'Output Channel Offset', 0);
     end;
   finally
-   Free;
+    Free;
   end;
 end;
 
-procedure TFmASIOMP3VST.FormClose(Sender: TObject; var Action: TCloseAction);
+procedure TFormASIOMP3VST.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
- with TIniFile.Create(ExtractFilePath(ParamStr(0)) + 'ASIOMP3VST.INI') do
+  with TIniFile.Create(ExtractFilePath(ParamStr(0)) + 'ASIOMP3VST.INI') do
   try
-   WriteInteger('Layout', 'Audio Left', Left);
-   WriteInteger('Layout', 'Audio Top', Top);
-   WriteString('Audio', 'MP3 File', FBufferedPlayer.Filename);
-   WriteString('Audio', 'ASIO Driver', ASIOHost.DriverName);
-   WriteString('Audio', 'VST Plugin', FVstFileName);
-   WriteInteger('Audio', 'Output Channel Offset', FChannelOffset);
+    WriteInteger('Layout', 'Audio Left', Left);
+    WriteInteger('Layout', 'Audio Top', Top);
+    WriteString('Audio', 'MP3 File', FBufferedPlayer.Filename);
+    WriteString('Audio', 'ASIO Driver', ASIOHost.DriverName);
+    WriteString('Audio', 'VST Plugin', FVstFileName);
+    WriteInteger('Audio', 'Output Channel Offset', FChannelOffset);
   finally
-   Free;
+    Free;
   end;
 
- ASIOHost.Active := False;
- VSTHost[0].Close;
+  ASIOHost.Active := False;
+  VSTHost[0].Close;
 end;
 
-procedure TFmASIOMP3VST.LoadVSTPlugin(FileName: TFileName);
+procedure TFormASIOMP3VST.LoadVSTPlugin(FileName: TFileName);
 var
   rct : TRect;
 begin
- with VstHost[0] do
+  with VstHost[0] do
   begin
-   LoadFromFile(FileName);
-   Active := True;
-   Idle;
-   ShowEdit(PnVSTPlugin);
-   Idle;
-   EditIdle;
-   Caption := 'MP3 ASIO & VST Host' + GetVendorString + ' ' + GetEffectName;
+    LoadFromFile(FileName);
+    Active := True;
+    Idle;
+    ShowEdit(PanelVSTPlugin);
+    Idle;
+    EditIdle;
+    Caption := 'MP3 ASIO & VST Host' + GetVendorString + ' ' + GetEffectName;
   end;
 
- if (effFlagsHasEditor in VstHost[0].EffectOptions) then
+  if (effFlagsHasEditor in VstHost[0].EffectOptions) then
   begin
-   rct := VstHost[0].GetRect;
-   ClientWidth := rct.Right - rct.Left;
-   ClientHeight := rct.Bottom - rct.Top + ActionToolBar.Height;
+    rct := VstHost[0].GetRect;
+    ClientWidth := rct.Right - rct.Left;
+    ClientHeight := rct.Bottom - rct.Top + ActionToolBar.Height;
   end;
 end;
 
 
-procedure TFmASIOMP3VST.LoadMP3File(FileName: TFileName);
+procedure TFormASIOMP3VST.LoadMP3File(FileName: TFileName);
 begin
- FBufferedPlayer.Filename := Filename;
- AcPlay.Enabled := FileExists(FBufferedPlayer.Filename);
+  FBufferedPlayer.Filename := Filename;
+  ActionPlay.Enabled := FileExists(FBufferedPlayer.Filename);
 end;
 
-procedure TFmASIOMP3VST.AcAsioSettingsExecute(Sender: TObject);
+procedure TFormASIOMP3VST.ActionAsioSettingsExecute(Sender: TObject);
 begin
- FmSetup.ShowModal;
+  FormSetup.ShowModal;
 end;
 
-procedure TFmASIOMP3VST.AcFileOpenMP3Accept(Sender: TObject);
+procedure TFormASIOMP3VST.ActionFileOpenMP3Accept(Sender: TObject);
 begin
- if FileExists(AcFileOpenMP3.Dialog.FileName)
-  then LoadMP3File(AcFileOpenMP3.Dialog.FileName);
+  if FileExists(ActionFileOpenMP3.Dialog.FileName) then
+    LoadMP3File(ActionFileOpenMP3.Dialog.FileName);
 end;
 
-procedure TFmASIOMP3VST.AcFileOpenVSTAccept(Sender: TObject);
+procedure TFormASIOMP3VST.ActionFileOpenVSTAccept(Sender: TObject);
 begin
- FVstFileName := AcFileOpenVST.Dialog.FileName;
- if FileExists(FVstFileName)
-  then LoadVSTPlugin(FVstFileName);
+  FVstFileName := ActionFileOpenVST.Dialog.FileName;
+  if FileExists(FVstFileName) then
+    LoadVSTPlugin(FVstFileName);
 end;
 
-procedure TFmASIOMP3VST.AcPlayExecute(Sender: TObject);
+procedure TFormASIOMP3VST.ActionPlayExecute(Sender: TObject);
 begin
- if AcPlay.Caption = '&Play' then
+  if ActionPlay.Caption = '&Play' then
   begin
-   ASIOHost.Active := True;
-   AcPlay.Caption := '&Stop';
+    ASIOHost.Active := True;
+    ActionPlay.Caption := '&Stop';
   end
- else
+  else
   begin
-   ASIOHost.Active := False;
-   FBufferedPlayer.Reset;
-   AcPlay.Caption := '&Play';
+    ASIOHost.Active := False;
+    FBufferedPlayer.Reset;
+    ActionPlay.Caption := '&Play';
   end;
 end;
 
-procedure TFmASIOMP3VST.ASIOHostDriverChanged(Sender: TObject);
+procedure TFormASIOMP3VST.ASIOHostDriverChanged(Sender: TObject);
 begin
- ReallocMem(FVstBuffers[0, 0], ASIOHost.BufferSize * SizeOf(Single));
- ReallocMem(FVstBuffers[0, 1], ASIOHost.BufferSize * SizeOf(Single));
- ReallocMem(FVstBuffers[1, 0], ASIOHost.BufferSize * SizeOf(Single));
- ReallocMem(FVstBuffers[1, 1], ASIOHost.BufferSize * SizeOf(Single));
+  ReallocMem(FVstBuffers[0, 0], ASIOHost.BufferSize * SizeOf(Single));
+  ReallocMem(FVstBuffers[0, 1], ASIOHost.BufferSize * SizeOf(Single));
+  ReallocMem(FVstBuffers[1, 0], ASIOHost.BufferSize * SizeOf(Single));
+  ReallocMem(FVstBuffers[1, 1], ASIOHost.BufferSize * SizeOf(Single));
 end;
 
-procedure TFmASIOMP3VST.ASIOHostSampleRateChanged(Sender: TObject);
+procedure TFormASIOMP3VST.ASIOHostSampleRateChanged(Sender: TObject);
 begin
- if Assigned(FBufferedPlayer)
-  then FBufferedPlayer.SampleRate := ASIOHost.SampleRate;
+  if Assigned(FBufferedPlayer) then
+    FBufferedPlayer.SampleRate := ASIOHost.SampleRate;
 end;
 
-procedure TFmASIOMP3VST.ASIOHostBufferSwitch32(Sender: TObject;
+procedure TFormASIOMP3VST.ASIOHostBufferSwitch32(Sender: TObject;
   const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
 var
   Index : Integer;
 begin
- FBufferedPlayer.GetSamples(FVstBuffers[0, 0], FVstBuffers[0, 1], ASIOHost.Buffersize);
+  FBufferedPlayer.GetSamples(FVstBuffers[0, 0], FVstBuffers[0, 1], ASIOHost.Buffersize);
 
- if VSTHost[0].Active then
+  if VSTHost[0].Active then
   begin
-   VSTHost[0].Process32Replacing(@FVstBuffers[0, 0], @FVstBuffers[1, 0],
-     ASIOHost.BufferSize);
+    VSTHost[0].Process32Replacing(@FVstBuffers[0, 0], @FVstBuffers[1, 0],
+      ASIOHost.BufferSize);
 
-   Move(FVstBuffers[1, 0]^, OutBuffer[0]^, ASIOHost.Buffersize * SizeOf(Single));
-   Move(FVstBuffers[1, 1]^, OutBuffer[1]^, ASIOHost.Buffersize * SizeOf(Single));
+    Move(FVstBuffers[1, 0]^, OutBuffer[0]^, ASIOHost.Buffersize * SizeOf(Single));
+    Move(FVstBuffers[1, 1]^, OutBuffer[1]^, ASIOHost.Buffersize * SizeOf(Single));
   end
- else
+  else
   begin
-   Move(FVstBuffers[0, 0]^, OutBuffer[0]^, ASIOHost.Buffersize * SizeOf(Single));
-   Move(FVstBuffers[0, 1]^, OutBuffer[1]^, ASIOHost.Buffersize * SizeOf(Single));
+    Move(FVstBuffers[0, 0]^, OutBuffer[0]^, ASIOHost.Buffersize * SizeOf(Single));
+    Move(FVstBuffers[0, 1]^, OutBuffer[1]^, ASIOHost.Buffersize * SizeOf(Single));
   end;
 end;
 

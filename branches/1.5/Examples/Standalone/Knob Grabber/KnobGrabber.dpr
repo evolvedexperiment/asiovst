@@ -3,17 +3,17 @@ program KnobGrabber;
 {$I DAV_Compiler.inc}
 
 uses
-  FastMM4, // either download the library or comment if there is an error here
+  FastMM4,
   {$IFDEF UseFastMove}
-  FastMove, // either download the library or disable the feature
-  {$ENDIF}
+  FastMove,
+  {$ENDIF }
   Forms,
-  KGmain in 'KGmain.pas' {FmKnobGrabber};
+  KGmain in 'KGmain.pas' {FormKnobGrabber};
 
 {$R *.res}
 
 begin
   Application.Initialize;
-  Application.CreateForm(TFmKnobGrabber, FmKnobGrabber);
+  Application.CreateForm(TFormKnobGrabber, FormKnobGrabber);
   Application.Run;
 end.
