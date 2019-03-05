@@ -46,13 +46,13 @@ type
     LabelPreset: TGuiLabel;
     SelectBoxChannels: TGuiSelectBox;
     SelectBoxDrivers: TGuiSelectBox;
-    BtControlPanel: TGuiButton;
+    ButtonControlPanel: TGuiButton;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormResize(Sender: TObject);
     procedure FormPaint(Sender: TObject);
     procedure SelectBoxDriversChange(Sender: TObject);
-    procedure BtControlPanelClick(Sender: TObject);
+    procedure ButtonControlPanelClick(Sender: TObject);
     procedure SelectBoxChannelsChange(Sender: TObject);
   private
     FBackgroundBitmap: TGuiCustomPixelMap;
@@ -149,7 +149,7 @@ begin
     end;
 end;
 
-procedure TFormSetup.BtControlPanelClick(Sender: TObject);
+procedure TFormSetup.ButtonControlPanelClick(Sender: TObject);
 begin
   FormJNDEQT.ASIOHost.ControlPanel;
 end;

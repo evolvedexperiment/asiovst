@@ -46,7 +46,7 @@ const
     2000, 2500, 3150, 4000, 5000, 6300, 8000, 10000, 12500, 16000, 20000);
 
 type
-  TFmASIO = class(TForm)
+  TFormMultiSineGenerator = class(TForm)
     ASIOHost: TASIOHost;
     ButtonAllOctaves: TButton;
     ButtonAllThirdOctaves: TButton;
@@ -56,45 +56,45 @@ type
     CheckBoxLinkChannels: TCheckBox;
     ComboBoxChannel: TComboBox;
     ComboBoxDriver: TComboBox;
-    Lb0L: TLabel;
-    Lb0R: TLabel;
-    Lb100: TLabel;
-    Lb10kHz: TLabel;
-    Lb125: TLabel;
-    Lb12AL: TLabel;
-    Lb12AR: TLabel;
-    Lb12k5Hz: TLabel;
-    Lb160: TLabel;
-    Lb16kHz: TLabel;
-    Lb1k: TLabel;
-    Lb1k25: TLabel;
-    Lb1k6: TLabel;
-    Lb200: TLabel;
-    Lb20Hz: TLabel;
-    Lb20kHz: TLabel;
-    Lb24AL: TLabel;
-    Lb24AR: TLabel;
-    Lb250: TLabel;
-    Lb25Hz: TLabel;
-    Lb2k: TLabel;
-    Lb2k5: TLabel;
-    Lb315: TLabel;
-    Lb31Hz: TLabel;
-    Lb3k15: TLabel;
-    Lb400: TLabel;
-    Lb40Hz: TLabel;
-    Lb4k: TLabel;
-    Lb50: TLabel;
-    Lb500: TLabel;
-    Lb5k: TLabel;
-    Lb63: TLabel;
-    Lb630: TLabel;
-    Lb6k3Hz: TLabel;
-    Lb80: TLabel;
-    Lb800: TLabel;
-    Lb8kHz: TLabel;
-    LbChannels: TLabel;
-    LbDrivername: TLabel;
+    Label0L: TLabel;
+    Label0R: TLabel;
+    Label100: TLabel;
+    Label10kHz: TLabel;
+    Label125: TLabel;
+    Label12AL: TLabel;
+    Label12AR: TLabel;
+    Label12k5Hz: TLabel;
+    Label160: TLabel;
+    Label16kHz: TLabel;
+    Label1k: TLabel;
+    Label1k25: TLabel;
+    Label1k6: TLabel;
+    Label200: TLabel;
+    Label20Hz: TLabel;
+    Label20kHz: TLabel;
+    Label24AL: TLabel;
+    Label24AR: TLabel;
+    Label250: TLabel;
+    Label25Hz: TLabel;
+    Label2k: TLabel;
+    Label2k5: TLabel;
+    Label315: TLabel;
+    Label31Hz: TLabel;
+    Label3k15: TLabel;
+    Label400: TLabel;
+    Label40Hz: TLabel;
+    Label4k: TLabel;
+    Label50: TLabel;
+    Label500: TLabel;
+    Label5k: TLabel;
+    Label63: TLabel;
+    Label630: TLabel;
+    Label6k3Hz: TLabel;
+    Label80: TLabel;
+    Label800: TLabel;
+    Label8kHz: TLabel;
+    LabelChannels: TLabel;
+    LabelDrivername: TLabel;
     LabelLeftOrMid: TLabel;
     LabelRightOrSide: TLabel;
     LedClipL: TGuiLED;
@@ -184,7 +184,7 @@ type
     procedure ButtonStartStopClick(Sender: TObject);
     procedure ComboBoxChannelChange(Sender: TObject);
     procedure ComboBoxDriverChange(Sender: TObject);
-    procedure LbFrequencyDblClick(Sender: TObject);
+    procedure LabelFrequencyDblClick(Sender: TObject);
     procedure LedClipLClick(Sender: TObject);
     procedure LedClipRClick(Sender: TObject);
     procedure MeterTimerTimer(Sender: TObject);
@@ -202,7 +202,7 @@ type
   end;
 
 var
-  FmASIO: TFmASIO;
+  FormMultiSineGenerator: TFormMultiSineGenerator;
 
 implementation
 
@@ -217,7 +217,7 @@ uses
   DAV_AudioData, DAV_AudioFileWAV, DAV_AudioFileAIFF, DAV_AudioFileAU,
   MultiSineGeneratorFrequency;
 
-procedure TFmASIO.FormCreate(Sender: TObject);
+procedure TFormMultiSineGenerator.FormCreate(Sender: TObject);
 var
   BandIndex: Integer;
 begin
@@ -259,7 +259,7 @@ begin
   end;
 end;
 
-procedure TFmASIO.FormDestroy(Sender: TObject);
+procedure TFormMultiSineGenerator.FormDestroy(Sender: TObject);
 var
   BandIndex: Integer;
 begin
@@ -280,7 +280,7 @@ begin
     FreeAndNil(FOscillators[BandIndex]);
 end;
 
-procedure TFmASIO.LbFrequencyDblClick(Sender: TObject);
+procedure TFormMultiSineGenerator.LabelFrequencyDblClick(Sender: TObject);
 var
   FormatSettings: TFormatSettings;
   ShiftAllFreqs: Boolean;
@@ -289,15 +289,14 @@ var
   Band: Integer;
 begin
   GetLocaleFormatSettings(1033, FormatSettings);
-  with TFmSetFrequency.Create(Self) do
+  with TFormSetFrequency.Create(Self) do
     try
-      EdFrequency.Text := FloatToStr(FOscillators[TLabel(Sender).Tag]
-        .Frequency);
+      EditFrequency.Text := FloatToStr(FOscillators[TLabel(Sender).Tag].Frequency);
       ShiftAllFreqs := ssShift in KeyboardStateToShiftState;
 
       if ShowModal = mrOK then
         try
-          NewFrequency := StrToFloat(EdFrequency.Text);
+          NewFrequency := StrToFloat(EditFrequency.Text);
           if ShiftAllFreqs then
           begin
             Ratio := NewFrequency / FOscillators[TLabel(Sender).Tag].Frequency;
@@ -306,9 +305,10 @@ begin
               NewFrequency := FOscillators[Band].Frequency * Ratio;
               FOscillators[Band].Frequency := NewFrequency;
               (*
-                if NewFrequency > 1000
-                then TLabel(Sender).Caption := FloatToStrF(1E-3 * NewFrequency, ffGeneral, 3, 3, FormatSettings) + ' kHz'
-                else TLabel(Sender).Caption := FloatToStrF(       NewFrequency, ffGeneral, 3, 3, FormatSettings) + ' Hz';
+              if NewFrequency > 1000 then
+                TLabel(Sender).Caption := FloatToStrF(1E-3 * NewFrequency, ffGeneral, 3, 3, FormatSettings) + ' kHz'
+              else
+                TLabel(Sender).Caption := FloatToStrF(       NewFrequency, ffGeneral, 3, 3, FormatSettings) + ' Hz';
               *)
             end;
           end
@@ -331,17 +331,17 @@ begin
     end;
 end;
 
-procedure TFmASIO.LedClipLClick(Sender: TObject);
+procedure TFormMultiSineGenerator.LedClipLClick(Sender: TObject);
 begin
   LedClipL.Brightness_Percent := 0;
 end;
 
-procedure TFmASIO.LedClipRClick(Sender: TObject);
+procedure TFormMultiSineGenerator.LedClipRClick(Sender: TObject);
 begin
   LedClipR.Brightness_Percent := 0;
 end;
 
-procedure TFmASIO.MeterTimerTimer(Sender: TObject);
+procedure TFormMultiSineGenerator.MeterTimerTimer(Sender: TObject);
 begin
   if FPeak[0] > 1 then
     LedClipL.Brightness_Percent := 100;
@@ -352,7 +352,7 @@ begin
   PeakMeterRight.PeakLevel := FPeak[1];
 end;
 
-procedure TFmASIO.ComboBoxDriverChange(Sender: TObject);
+procedure TFormMultiSineGenerator.ComboBoxDriverChange(Sender: TObject);
 var
   ChannelIndex: Integer;
 begin
@@ -384,7 +384,7 @@ begin
   end;
 end;
 
-procedure TFmASIO.ButtonAllOctavesClick(Sender: TObject);
+procedure TFormMultiSineGenerator.ButtonAllOctavesClick(Sender: TObject);
 begin
   SB20L.Position := 100;
   SB25L.Position := 100;
@@ -451,7 +451,7 @@ begin
   SB20kR.Position := 100;
 end;
 
-procedure TFmASIO.ButtonAllThirdOctavesClick(Sender: TObject);
+procedure TFormMultiSineGenerator.ButtonAllThirdOctavesClick(Sender: TObject);
 begin
   SB20L.Position := 93;
   SB25L.Position := 93;
@@ -518,12 +518,12 @@ begin
   SB20kR.Position := 93;
 end;
 
-procedure TFmASIO.ButtonControlPanelClick(Sender: TObject);
+procedure TFormMultiSineGenerator.ButtonControlPanelClick(Sender: TObject);
 begin
   ASIOHost.ControlPanel;
 end;
 
-procedure TFmASIO.ButtonExportClick(Sender: TObject);
+procedure TFormMultiSineGenerator.ButtonExportClick(Sender: TObject);
 begin
   with TSaveDialog.Create(Self) do
     try
@@ -537,7 +537,7 @@ begin
     end;
 end;
 
-procedure TFmASIO.ExportToFilename(Filename: TFilename);
+procedure TFormMultiSineGenerator.ExportToFilename(Filename: TFilename);
 var
   SampleIndex: Integer;
   BandIndex: Integer;
@@ -574,7 +574,7 @@ begin
     end;
 end;
 
-procedure TFmASIO.ButtonMuteClick(Sender: TObject);
+procedure TFormMultiSineGenerator.ButtonMuteClick(Sender: TObject);
 begin
   SB20L.Position := 100;
   SB25L.Position := 100;
@@ -640,7 +640,7 @@ begin
   SB20kR.Position := 100;
 end;
 
-procedure TFmASIO.SBVolumeChange(Sender: TObject);
+procedure TFormMultiSineGenerator.SBVolumeChange(Sender: TObject);
 var
   Channel: Integer;
 begin
@@ -652,7 +652,7 @@ begin
     end;
 end;
 
-procedure TFmASIO.ButtonStartStopClick(Sender: TObject);
+procedure TFormMultiSineGenerator.ButtonStartStopClick(Sender: TObject);
 begin
   if ButtonStartStop.Caption = 'Start Audio' then
   begin
@@ -666,12 +666,12 @@ begin
   end;
 end;
 
-procedure TFmASIO.ComboBoxChannelChange(Sender: TObject);
+procedure TFormMultiSineGenerator.ComboBoxChannelChange(Sender: TObject);
 begin
   FChannelOffset := ComboBoxChannel.ItemIndex * 2;
 end;
 
-procedure TFmASIO.ASIOHostSampleRateChanged(Sender: TObject);
+procedure TFormMultiSineGenerator.ASIOHostSampleRateChanged(Sender: TObject);
 var
   BandIndex: Integer;
 begin
@@ -680,14 +680,14 @@ begin
   CalculatePeakDecay
 end;
 
-procedure TFmASIO.CalculatePeakDecay;
+procedure TFormMultiSineGenerator.CalculatePeakDecay;
 begin
   // fixed time = 4 second
   FPeakDecay := FastPower2ContinousError3(-ASIOHost.BufferSize /
     (4 * ASIOHost.SampleRate));
 end;
 
-procedure TFmASIO.ASIOHostBufferSwitch32(Sender: TObject;
+procedure TFormMultiSineGenerator.ASIOHostBufferSwitch32(Sender: TObject;
   const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
 var
   SampleIndex: Integer;
@@ -720,7 +720,7 @@ begin
   FPeak[1] := FPeakDecay * FPeak[1];
 end;
 
-procedure TFmASIO.ASIOHostBufferSwitch64(Sender: TObject;
+procedure TFormMultiSineGenerator.ASIOHostBufferSwitch64(Sender: TObject;
   const InBuffer, OutBuffer: TDAVArrayOfDoubleFixedArray);
 var
   SampleIndex: Integer;
@@ -753,7 +753,7 @@ begin
   FPeak[1] := FPeakDecay * FPeak[1];
 end;
 
-procedure TFmASIO.ASIOHostReset(Sender: TObject);
+procedure TFormMultiSineGenerator.ASIOHostReset(Sender: TObject);
 begin
   ASIOHost.Active := True;
 end;

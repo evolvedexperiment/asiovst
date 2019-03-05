@@ -1,4 +1,4 @@
-object FmSetup: TFmSetup
+object FormSetup: TFormSetup
   Left = 412
   Top = 277
   BorderStyle = bsDialog
@@ -20,7 +20,7 @@ object FmSetup: TFmSetup
     92)
   PixelsPerInch = 96
   TextHeight = 13
-  object LbPreset: TLabel
+  object LabelDriver: TLabel
     Left = 8
     Top = 7
     Width = 81
@@ -29,7 +29,7 @@ object FmSetup: TFmSetup
     Caption = 'ASIO Driver:'
     Layout = tlCenter
   end
-  object LbInput: TLabel
+  object LabelInput: TLabel
     Left = 8
     Top = 39
     Width = 46
@@ -38,7 +38,7 @@ object FmSetup: TFmSetup
     Caption = 'Input:'
     Layout = tlCenter
   end
-  object LbOutput: TLabel
+  object LabelOutput: TLabel
     Left = 8
     Top = 63
     Width = 48
@@ -47,7 +47,7 @@ object FmSetup: TFmSetup
     Caption = 'Output:'
     Layout = tlCenter
   end
-  object CBDrivers: TComboBox
+  object ComboBoxDrivers: TComboBox
     Left = 95
     Top = 8
     Width = 132
@@ -56,9 +56,9 @@ object FmSetup: TFmSetup
     Anchors = [akLeft, akTop, akRight]
     Color = clBtnFace
     TabOrder = 0
-    OnChange = CBDriversChange
+    OnChange = ComboBoxDriversChange
   end
-  object CBInput: TComboBox
+  object ComboBoxInput: TComboBox
     Left = 60
     Top = 39
     Width = 167
@@ -67,9 +67,9 @@ object FmSetup: TFmSetup
     Anchors = [akLeft, akTop, akRight]
     Color = clBtnFace
     TabOrder = 1
-    OnChange = CBInputChange
+    OnChange = ComboBoxInputChange
   end
-  object CBOutput: TComboBox
+  object ComboBoxOutput: TComboBox
     Left = 60
     Top = 63
     Width = 167
@@ -78,6 +78,6 @@ object FmSetup: TFmSetup
     Anchors = [akLeft, akTop, akRight]
     Color = clBtnFace
     TabOrder = 2
-    OnChange = CBOutputChange
+    OnChange = ComboBoxOutputChange
   end
 end

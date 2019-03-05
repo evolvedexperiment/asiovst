@@ -62,7 +62,7 @@ type
     pos: Integer;
   end;
 
-  { TFmMiniHost }
+  { TFormMiniHost }
 
   TRecordState = (rsStop, rsRecord, rsPause);
 
@@ -204,7 +204,7 @@ type
     FNumIn,
     FNumOut: Integer;
     FColBack: Boolean;
-    FAboutForm: TFmAbout;
+    FAboutForm: TFormAbout;
 
     FMIDIInput: TMidiInput;
     FMIDIOutput: TMidiOutput;
@@ -435,7 +435,7 @@ begin
 end;
 
 
-{ TFmMiniHost }
+{ TFormMiniHost }
 
 procedure TFormMiniHost.FormCreate(Sender: TObject);
 var
@@ -1890,7 +1890,7 @@ end;
 procedure TFormMiniHost.MenuItemAboutClick(Sender: TObject);
 begin
   if not Assigned(FAboutForm) then
-    FAboutForm := TFmAbout.Create(Self);
+    FAboutForm := TFormAbout.Create(Self);
   FAboutForm.ShowModal;
 end;
 

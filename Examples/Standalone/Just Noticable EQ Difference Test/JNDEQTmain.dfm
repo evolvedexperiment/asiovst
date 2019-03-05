@@ -369,7 +369,7 @@ object FormJNDEQT: TFormJNDEQT
       Shadow.Color = 10333885
       Shadow.Visible = True
       Transparent = True
-      OnClick = LbAutoVolumeAdjustmentClick
+      OnClick = LabelAutoVolumeAdjustmentClick
     end
     object LabelAutoVolumeAdjValue: TGuiLabel
       Left = 270
@@ -390,7 +390,7 @@ object FormJNDEQT: TFormJNDEQT
       Shadow.Color = 10333885
       Shadow.Visible = True
       Transparent = True
-      OnClick = LbAutoVolumeAdjustmentClick
+      OnClick = LabelAutoVolumeAdjustmentClick
     end
     object SliderBandwidth: TGuiSlider
       Left = 68
@@ -468,8 +468,8 @@ object FormJNDEQT: TFormJNDEQT
     ParentColor = True
     TabOrder = 3
     UseDockManager = True
-    OnMouseDown = LbSelectionMouseDown
-    OnMouseUp = LbSelectionMouseUp
+    OnMouseDown = LabelSelectionMouseDown
+    OnMouseUp = LabelSelectionMouseUp
     object LabelSelectionA: TGuiLabel
       Tag = 1
       Left = 25
@@ -489,8 +489,8 @@ object FormJNDEQT: TFormJNDEQT
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = 5663873
       Shadow.Visible = True
-      OnMouseDown = LbSelectionMouseDown
-      OnMouseUp = LbSelectionMouseUp
+      OnMouseDown = LabelSelectionMouseDown
+      OnMouseUp = LabelSelectionMouseUp
     end
   end
   object PanelSelectorB: TGuiPanel
@@ -506,8 +506,8 @@ object FormJNDEQT: TFormJNDEQT
     ParentColor = True
     TabOrder = 4
     UseDockManager = True
-    OnMouseDown = LbSelectionMouseDown
-    OnMouseUp = LbSelectionMouseUp
+    OnMouseDown = LabelSelectionMouseDown
+    OnMouseUp = LabelSelectionMouseUp
     object LabelSelectionB: TGuiLabel
       Tag = 2
       Left = 27
@@ -527,8 +527,8 @@ object FormJNDEQT: TFormJNDEQT
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = 5663873
       Shadow.Visible = True
-      OnMouseDown = LbSelectionMouseDown
-      OnMouseUp = LbSelectionMouseUp
+      OnMouseDown = LabelSelectionMouseDown
+      OnMouseUp = LabelSelectionMouseUp
     end
   end
   object PanelSelectorX: TGuiPanel
@@ -543,7 +543,7 @@ object FormJNDEQT: TFormJNDEQT
     ParentColor = True
     TabOrder = 5
     UseDockManager = True
-    OnMouseDown = LbSelectionMouseDown
+    OnMouseDown = LabelSelectionMouseDown
     object LabelSelectionX: TGuiLabel
       Left = 25
       Top = 3
@@ -562,7 +562,7 @@ object FormJNDEQT: TFormJNDEQT
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = 5663873
       Shadow.Visible = True
-      OnMouseDown = LbSelectionMouseDown
+      OnMouseDown = LabelSelectionMouseDown
     end
   end
   object PanelSelectorXisA: TGuiPanel

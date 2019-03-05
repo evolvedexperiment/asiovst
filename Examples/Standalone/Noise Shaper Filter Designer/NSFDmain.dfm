@@ -1,4 +1,4 @@
-object FmNoiseshapingFilterDesigner: TFmNoiseshapingFilterDesigner
+object FormNoiseshapingFilterDesigner: TFormNoiseshapingFilterDesigner
   Left = 286
   Top = 81
   Caption = 'Noiseshaping Filter Designer'

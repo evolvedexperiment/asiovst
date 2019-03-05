@@ -5,17 +5,17 @@ program SemMerger;
 {$R 'SEMerger.res' 'SEMerger.rc'}
 
 uses
-  FastMM4, // either download the library or comment if there is an error here
+  FastMM4,
   {$IFDEF UseFastMove}
-  FastMove, // either download the library or disable the feature
-  {$ENDIF}
+  FastMove,
+  {$ENDIF }
   Forms,
-  SEmain in 'SEmain.pas' {FmSEModuleExplorer};
+  SEmain in 'SEmain.pas' {FormSEModuleExplorer};
 
 {$R *.res}
 
 begin
   Application.Initialize;
-  Application.CreateForm(TFmSEModuleExplorer, FmSEModuleExplorer);
+  Application.CreateForm(TFormSEModuleExplorer, FormSEModuleExplorer);
   Application.Run;
 end.

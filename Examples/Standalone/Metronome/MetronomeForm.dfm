@@ -1,4 +1,4 @@
-object FmASIO: TFmASIO
+object FormASIO: TFormASIO
   Left = 291
   Top = 266
   BorderIcons = [biSystemMenu, biMinimize]
@@ -17,44 +17,44 @@ object FmASIO: TFmASIO
   OnDestroy = FormDestroy
   PixelsPerInch = 96
   TextHeight = 13
-  object LbDrivername: TLabel
+  object LabelDrivername: TLabel
     Left = 8
     Top = 8
     Width = 31
     Height = 13
     Caption = 'Driver:'
   end
-  object LbTempo: TLabel
+  object LabelTempo: TLabel
     Left = 8
     Top = 35
     Width = 36
     Height = 13
     Caption = 'Tempo:'
   end
-  object LbBPM: TLabel
+  object LabelBPM: TLabel
     Left = 111
     Top = 36
     Width = 23
     Height = 13
     Caption = 'BPM'
   end
-  object LbVolume: TLabel
+  object LabelVolume: TLabel
     Left = 8
     Top = 60
     Width = 38
     Height = 13
     Caption = 'Volume:'
   end
-  object DriverCombo: TComboBox
+  object ComboBoxDriver: TComboBox
     Left = 45
     Top = 5
     Width = 105
     Height = 21
     Style = csDropDownList
     TabOrder = 0
-    OnChange = DriverComboChange
+    OnChange = ComboBoxDriverChange
   end
-  object BtControlPanel: TButton
+  object ButtonControlPanel: TButton
     Left = 156
     Top = 5
     Width = 81
@@ -62,9 +62,9 @@ object FmASIO: TFmASIO
     Caption = 'Control Panel'
     Enabled = False
     TabOrder = 1
-    OnClick = BtControlPanelClick
+    OnClick = ButtonControlPanelClick
   end
-  object BtPlay: TButton
+  object ButtonPlay: TButton
     Left = 156
     Top = 32
     Width = 81
@@ -73,9 +73,9 @@ object FmASIO: TFmASIO
     Default = True
     Enabled = False
     TabOrder = 2
-    OnClick = BtPlayClick
+    OnClick = ButtonPlayClick
   end
-  object SETempo: TSpinEdit
+  object SpinEditTempo: TSpinEdit
     Left = 50
     Top = 32
     Width = 55
@@ -84,9 +84,9 @@ object FmASIO: TFmASIO
     MinValue = 20
     TabOrder = 3
     Value = 120
-    OnChange = SETempoChange
+    OnChange = SpinEditTempoChange
   end
-  object SBVolume: TScrollBar
+  object ScrollBarVolume: TScrollBar
     Left = 52
     Top = 59
     Width = 185
@@ -95,9 +95,10 @@ object FmASIO: TFmASIO
     Min = -100
     PageSize = 0
     TabOrder = 4
-    OnChange = SbVolumeChange
+    OnChange = ScrollBarVolumeChange
   end
   object ASIOHost: TAsioHost
+    AsioTime.SamplePos = 0
     AsioTime.Speed = 1.000000000000000000
     AsioTime.SampleRate = 44100.000000000000000000
     AsioTime.Flags = [atSystemTimeValid, atSamplePositionValid, atSampleRateValid, atSpeedValid]

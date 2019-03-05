@@ -1,4 +1,4 @@
-object FmBarberpoleTuner: TFmBarberpoleTuner
+object FormBarberpoleTuner: TFormBarberpoleTuner
   Left = 489
   Top = 77
   Caption = 'Barberpole Tuner'
@@ -18,7 +18,7 @@ object FmBarberpoleTuner: TFmBarberpoleTuner
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
-  object LbDisplay: TGuiLabel
+  object LabelDisplay: TGuiLabel
     Left = 8
     Top = 8
     Width = 137
@@ -42,7 +42,7 @@ object FmBarberpoleTuner: TFmBarberpoleTuner
     Height = 26
     OnPaint = BarberpolePaint
   end
-  object LbGuitarTuning: TGuiLabel
+  object LabelGuitarTuning: TGuiLabel
     Left = 8
     Top = 63
     Width = 105
@@ -58,7 +58,7 @@ object FmBarberpoleTuner: TFmBarberpoleTuner
     Shadow.Blur = 4.000000000000000000
     Transparent = True
   end
-  object LbLowE: TGuiLabel
+  object LabelLowE: TGuiLabel
     Left = 127
     Top = 60
     Width = 18
@@ -73,9 +73,9 @@ object FmBarberpoleTuner: TFmBarberpoleTuner
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Transparent = True
-    OnClick = LbNoteClick
+    OnClick = LabelNoteClick
   end
-  object LbA: TGuiLabel
+  object LabelA: TGuiLabel
     Left = 151
     Top = 60
     Width = 18
@@ -90,9 +90,9 @@ object FmBarberpoleTuner: TFmBarberpoleTuner
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Transparent = True
-    OnClick = LbNoteClick
+    OnClick = LabelNoteClick
   end
-  object LbD: TGuiLabel
+  object LabelD: TGuiLabel
     Left = 175
     Top = 60
     Width = 18
@@ -107,9 +107,9 @@ object FmBarberpoleTuner: TFmBarberpoleTuner
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Transparent = True
-    OnClick = LbNoteClick
+    OnClick = LabelNoteClick
   end
-  object LbG: TGuiLabel
+  object LabelG: TGuiLabel
     Left = 199
     Top = 60
     Width = 18
@@ -124,9 +124,9 @@ object FmBarberpoleTuner: TFmBarberpoleTuner
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Transparent = True
-    OnClick = LbNoteClick
+    OnClick = LabelNoteClick
   end
-  object LbH: TGuiLabel
+  object LabelH: TGuiLabel
     Left = 223
     Top = 60
     Width = 18
@@ -141,9 +141,9 @@ object FmBarberpoleTuner: TFmBarberpoleTuner
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Transparent = True
-    OnClick = LbNoteClick
+    OnClick = LabelNoteClick
   end
-  object LbE: TGuiLabel
+  object LabelE: TGuiLabel
     Left = 247
     Top = 60
     Width = 18
@@ -158,7 +158,7 @@ object FmBarberpoleTuner: TFmBarberpoleTuner
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Transparent = True
-    OnClick = LbNoteClick
+    OnClick = LabelNoteClick
   end
   object Timer: TTimer
     Interval = 33
@@ -167,6 +167,7 @@ object FmBarberpoleTuner: TFmBarberpoleTuner
     Top = 8
   end
   object ASIOHost: TAsioHost
+    AsioTime.SamplePos = 0
     AsioTime.Speed = 1.000000000000000000
     AsioTime.SampleRate = 44100.000000000000000000
     AsioTime.Flags = [atSystemTimeValid, atSamplePositionValid, atSampleRateValid, atSpeedValid]

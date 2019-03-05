@@ -41,21 +41,21 @@ uses
 {$IFDEF Use_CUDA}, DAV_DspFftReal2ComplexCUDA{$ENDIF};
 
 type
-  TFmNoiseshapingFilterDesigner = class(TForm)
-    BtCalculate: TButton;
-    LbCoefficients: TLabel;
-    LbFrequency: TLabel;
-    LbFrequencyUnit: TLabel;
-    LbSampleRate: TLabel;
-    LbSampleRateUnit: TLabel;
+  TFormNoiseshapingFilterDesigner = class(TForm)
+    ButtonCalculate: TButton;
+    LabelCoefficients: TLabel;
+    LabelFrequency: TLabel;
+    LabelFrequencyUnit: TLabel;
+    LabelSampleRate: TLabel;
+    LabelSampleRateUnit: TLabel;
     Memo: TMemo;
-    SECoefficientCount: TSpinEdit;
-    SeFrequency: TSpinEdit;
-    SeSampleRate: TSpinEdit;
+    SpinEditCoefficientCount: TSpinEdit;
+    SpinEditFrequency: TSpinEdit;
+    SpinEditSampleRate: TSpinEdit;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure BtCalculateClick(Sender: TObject);
-    procedure SECoefficientCountChange(Sender: TObject);
+    procedure ButtonCalculateClick(Sender: TObject);
+    procedure SpinEditCoefficientCountChange(Sender: TObject);
   private
     FDiffEvol: TDifferentialEvolution;
     FFFT: TFftReal2Complex;
@@ -75,7 +75,7 @@ type
   end;
 
 var
-  FmNoiseshapingFilterDesigner: TFmNoiseshapingFilterDesigner;
+  FormNoiseshapingFilterDesigner: TFormNoiseshapingFilterDesigner;
 
 implementation
 
@@ -88,7 +88,7 @@ implementation
 uses
   Math, DAV_Common;
 
-procedure TFmNoiseshapingFilterDesigner.FormCreate(Sender: TObject);
+procedure TFormNoiseshapingFilterDesigner.FormCreate(Sender: TObject);
 begin
 {$IFDEF Use_IPPS}
   FFFT := TFftReal2ComplexIPPSFloat32.Create(9);
@@ -114,7 +114,7 @@ begin
   with FDiffEvol do
   begin
     PopulationCount := 500;
-    VariableCount := SECoefficientCount.Value;
+    VariableCount := SpinEditCoefficientCount.Value;
     GainBest := 0.3;
     GainR1 := -0.6;
     GainR2 := 0.6;
@@ -125,7 +125,7 @@ begin
   end;
 end;
 
-procedure TFmNoiseshapingFilterDesigner.FormDestroy(Sender: TObject);
+procedure TFormNoiseshapingFilterDesigner.FormDestroy(Sender: TObject);
 begin
   FreeAndNil(FDiffEvol);
   Dispose(FImpResp);
@@ -133,26 +133,26 @@ begin
   FreeAndNil(FFFT);
 end;
 
-procedure TFmNoiseshapingFilterDesigner.SECoefficientCountChange
+procedure TFormNoiseshapingFilterDesigner.SpinEditCoefficientCountChange
   (Sender: TObject);
 begin
-  FDiffEvol.VariableCount := SECoefficientCount.Value;
+  FDiffEvol.VariableCount := SpinEditCoefficientCount.Value;
 end;
 
-procedure TFmNoiseshapingFilterDesigner.BtCalculateClick(Sender: TObject);
+procedure TFormNoiseshapingFilterDesigner.ButtonCalculateClick(Sender: TObject);
 var
   VariableNo: Integer;
   EvolveCounter: Integer;
   BestPopulation: TDifferentialEvolutionPopulation;
 begin
-  BtCalculate.Tag := 1 - BtCalculate.Tag;
-  SECoefficientCount.Enabled := BtCalculate.Tag = 0;
-  SeFrequency.Enabled := BtCalculate.Tag = 0;
-  SeSampleRate.Enabled := BtCalculate.Tag = 0;
+  ButtonCalculate.Tag := 1 - ButtonCalculate.Tag;
+  SpinEditCoefficientCount.Enabled := ButtonCalculate.Tag = 0;
+  SpinEditFrequency.Enabled := ButtonCalculate.Tag = 0;
+  SpinEditSampleRate.Enabled := ButtonCalculate.Tag = 0;
 
-  if BtCalculate.Tag = 1 then
+  if ButtonCalculate.Tag = 1 then
   begin
-    BtCalculate.Caption := 'Stop!';
+    ButtonCalculate.Caption := 'Stop!';
     for VariableNo := 0 to FDiffEvol.VariableCount - 1 do
     begin
       FDiffEvol.MinConstraints[VariableNo] := -4;
@@ -162,7 +162,7 @@ begin
     EvolveCounter := 0;
     FDiffEvol.Initialize;
 
-    while (BtCalculate.Tag = 1) and not Application.Terminated do
+    while (ButtonCalculate.Tag = 1) and not Application.Terminated do
     begin
       FDiffEvol.Evolve;
       if EvolveCounter mod 8 = 0 then
@@ -180,10 +180,10 @@ begin
     end;
   end
   else
-    BtCalculate.Caption := 'Calculate';
+    ButtonCalculate.Caption := 'Calculate';
 end;
 
-function TFmNoiseshapingFilterDesigner.DiffEvolInitPopulation(Sender: TObject;
+function TFormNoiseshapingFilterDesigner.DiffEvolInitPopulation(Sender: TObject;
   const Population: TDifferentialEvolutionPopulation): Double;
 var
   i: Integer;
@@ -191,7 +191,7 @@ begin
   if Length(Population) = FDiffEvol.VariableCount then
     for i := 0 to FDiffEvol.VariableCount - 1 do
       Population[i] := 8 * random - 4;
-  result := 1000;
+  Result := 1000;
 end;
 
 function AbsoluteThresholdOfHearing(Frequency: Single;
@@ -225,13 +225,13 @@ begin
   Frequency := Max(0.1, Frequency); // clip value for lower frequency (100 Hz)
   // Frequency := Min(21.0, Frequency);
 
-  result := 3.640 * Power(Frequency, -0.8) - 6.800 *
+  Result := 3.640 * Power(Frequency, -0.8) - 6.800 *
     Exp(-0.6 * Power(Frequency - 3.4, 2.0)) + 6.000 *
     Exp(-0.15 * Power(Frequency - 8.7, 2.0)) +
     (0.6 + 0.04 * HighFrequencyModification) * 0.001 * Power(Frequency, 4.0);
 end;
 
-procedure TFmNoiseshapingFilterDesigner.RenderImpulseResponse(const Population
+procedure TFormNoiseshapingFilterDesigner.RenderImpulseResponse(const Population
   : TDifferentialEvolutionPopulation);
 var
   VarNo: Integer;
@@ -243,7 +243,7 @@ begin
   FFFT.PerformFFT(FFreqResp, FImpResp);
 end;
 
-procedure TFmNoiseshapingFilterDesigner.CalculateMagnitude;
+procedure TFormNoiseshapingFilterDesigner.CalculateMagnitude;
 var
   BinNo: Integer;
 begin
@@ -256,7 +256,7 @@ begin
     Amp_to_dB(CDenorm32 + abs(FFreqResp[FFFT.BinCount - 1].Re));
 end;
 
-function TFmNoiseshapingFilterDesigner.DiffEvolCalcSharpCosts(Sender: TObject;
+function TFormNoiseshapingFilterDesigner.DiffEvolCalcSharpCosts(Sender: TObject;
   const Population: TDifferentialEvolutionPopulation): Double;
 var
   BinNo: Integer;
@@ -273,10 +273,10 @@ begin
   // evaluate magnitude
   Above := 0;
   Below := 0;
-  result := 0;
+  Result := 0;
   Min := 1000;
   Max := -1000;
-  RelFrq := SeFrequency.Value * FFFT.FFTSize / SeSampleRate.Value;
+  RelFrq := SpinEditFrequency.Value * FFFT.FFTSize / SpinEditSampleRate.Value;
   for BinNo := 0 to FFFT.BinCount - 1 do
   begin
     if FMagnitude[BinNo] > 0 then
@@ -285,18 +285,18 @@ begin
       Below := Below - FMagnitude[BinNo];
     if BinNo < RelFrq then
     begin
-      result := result + FMagnitude[BinNo];
+      Result := Result + FMagnitude[BinNo];
       if FMagnitude[BinNo] > Max then
         Max := FMagnitude[BinNo];
       if FMagnitude[BinNo] < Min then
         Min := FMagnitude[BinNo];
     end;
   end;
-  Avg := result / round(RelFrq);
-  result := 2 * Avg + 2 * Max - Min + abs(Above - Below);
+  Avg := Result / round(RelFrq);
+  Result := 2 * Avg + 2 * Max - Min + abs(Above - Below);
 end;
 
-function TFmNoiseshapingFilterDesigner.DiffEvolCalcSoftCosts(Sender: TObject;
+function TFormNoiseshapingFilterDesigner.DiffEvolCalcSoftCosts(Sender: TObject;
   var Population: TDifferentialEvolutionPopulation): Double;
 var
   BinNo, Coeff: Integer;
@@ -315,11 +315,11 @@ begin
   // evaluate magnitude
   Above := 0;
   Below := 0;
-  result := 0;
+  Result := 0;
   Min := 1000;
   Max := -1000;
   Weights := 0;
-  RelFrq := SeFrequency.Value * FFFT.FFTSize / SeSampleRate.Value;
+  RelFrq := SpinEditFrequency.Value * FFFT.FFTSize / SpinEditSampleRate.Value;
   for BinNo := 0 to FFFT.BinCount - 1 do
   begin
     if FMagnitude[BinNo] > 0 then
@@ -330,14 +330,14 @@ begin
     begin
       if BinNo > 0.8 * RelFrq then
       begin
-        result := result + 0.7 * FMagnitude[BinNo];
+        Result := Result + 0.7 * FMagnitude[BinNo];
         Weights := Weights + 0.7;
         if (FMagnitude[BinNo] > Max) and (BinNo < 0.9 * RelFrq) then
           Max := FMagnitude[BinNo];
       end
       else
       begin
-        result := result + FMagnitude[BinNo];
+        Result := Result + FMagnitude[BinNo];
         Weights := Weights + 1;
         if FMagnitude[BinNo] > Max then
           Max := FMagnitude[BinNo];
@@ -347,8 +347,8 @@ begin
     end;
   end;
 
-  Avg := result / Weights;
-  result := 2 * Avg + 1.7 * Max - Min + abs(Above - Below);
+  Avg := Result / Weights;
+  Result := 2 * Avg + 1.7 * Max - Min + abs(Above - Below);
 
   // penalties
   MaxCoeff := 0;
@@ -356,11 +356,11 @@ begin
     if abs(Population[Coeff]) > MaxCoeff then
       MaxCoeff := abs(Population[Coeff]);
   if MaxCoeff > 6 then
-    result := 1000 + result;
+    Result := 1000 + Result;
 
   for Coeff := 1 to Length(Population) - 1 do
     if abs(Population[Coeff - 1]) < abs(Population[Coeff]) then
-      result := result + 10 * abs(abs(Population[Coeff - 1]) -
+      Result := Result + 10 * abs(abs(Population[Coeff - 1]) -
         abs(Population[Coeff]));
 end;
 

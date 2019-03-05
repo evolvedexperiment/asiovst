@@ -3,25 +3,25 @@ program PortAudioDemo;
 {$I DAV_Compiler.inc}
 
 uses
-  FastMM4, // either download the library or comment if there is an error here
-  {$IFDEF UseMadExcept}
-  madExcept, // either download the library or disable the feature
+  FastMM4,
   madLinkDisAsm,
   madListHardware,
   madListProcesses,
   madListModules,
-  {$ENDIF}
+  {$IFDEF UseMadExcept}
+  madExcept,
+  {$ENDIF }
   {$IFDEF UseFastMove}
-  FastMove, // either download the library or disable the feature
-  {$ENDIF}
+  FastMove,
+  {$ENDIF }
   Forms,
-  PortAudioDemoForm in 'PortAudioDemoForm.pas' {FmPortAudio};
+  PortAudioDemoForm in 'PortAudioDemoForm.pas' {FormPortAudio};
 
 {$R *.RES}
 
 begin
   Application.Initialize;
   Application.Title := 'Demo application for PortAudio-Host';
-  Application.CreateForm(TFmPortAudio, FmPortAudio);
+  Application.CreateForm(TFormPortAudio, FormPortAudio);
   Application.Run;
 end.

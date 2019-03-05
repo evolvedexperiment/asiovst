@@ -40,7 +40,7 @@ uses
   DAV_DspSimpleOscillator;
 
 type
-  TFmASIO = class(TForm)
+  TFormASIO = class(TForm)
     ASIOHost: TASIOHost;
     ButtonControlPanel: TButton;
     ButtonStartStop: TButton;
@@ -87,7 +87,7 @@ type
   end;
 
 var
-  FmASIO: TFmASIO;
+  FormASIO: TFormASIO;
 
 implementation
 
@@ -103,7 +103,7 @@ uses
 resourcestring
   RCStrNoASIODriverPresent = 'No ASIO Driver present! Application Terminated!';
 
-procedure TFmASIO.FormCreate(Sender: TObject);
+procedure TFormASIO.FormCreate(Sender: TObject);
 begin
   ComboBoxDriver.Items := ASIOHost.DriverList;
 
@@ -144,7 +144,7 @@ begin
   end;
 end;
 
-procedure TFmASIO.ComboBoxDriverChange(Sender: TObject);
+procedure TFormASIO.ComboBoxDriverChange(Sender: TObject);
 var
   Channel: Integer;
 begin
@@ -174,13 +174,13 @@ begin
   end;
 end;
 
-procedure TFmASIO.ButtonControlPanelClick(Sender: TObject);
+procedure TFormASIO.ButtonControlPanelClick(Sender: TObject);
 begin
   ASIOHost.Active := False;
   ASIOHost.ControlPanel;
 end;
 
-procedure TFmASIO.FormDestroy(Sender: TObject);
+procedure TFormASIO.FormDestroy(Sender: TObject);
 begin
   with TIniFile.Create(FIniFileName) do
     try
@@ -196,7 +196,7 @@ begin
   FreeAndNil(FOscillator);
 end;
 
-procedure TFmASIO.ButtonStartStopClick(Sender: TObject);
+procedure TFormASIO.ButtonStartStopClick(Sender: TObject);
 begin
   if ButtonStartStop.Caption = '&Start Audio' then
   begin
@@ -210,17 +210,17 @@ begin
   end;
 end;
 
-procedure TFmASIO.ComboBoxChannelChange(Sender: TObject);
+procedure TFormASIO.ComboBoxChannelChange(Sender: TObject);
 begin
   FChannelOffset := ComboBoxChannel.ItemIndex * 2;
 end;
 
-procedure TFmASIO.ScrollBarFreqChange(Sender: TObject);
+procedure TFormASIO.ScrollBarFreqChange(Sender: TObject);
 begin
   Frequency := FreqLinearToLog(ScrollBarFreq.Position * 0.00001);
 end;
 
-procedure TFmASIO.SetAmplitude(const Value: Double);
+procedure TFormASIO.SetAmplitude(const Value: Double);
 begin
   if FAmp <> Value then
   begin
@@ -229,7 +229,7 @@ begin
   end;
 end;
 
-procedure TFmASIO.SetFrequency(const Value: Double);
+procedure TFormASIO.SetFrequency(const Value: Double);
 begin
   if FFreq <> Value then
   begin
@@ -238,7 +238,7 @@ begin
   end;
 end;
 
-procedure TFmASIO.AmplitudeChanged;
+procedure TFormASIO.AmplitudeChanged;
 begin
   FOscillator.Amplitude := FAmp;
   if FAmp = 0 then
@@ -248,18 +248,18 @@ begin
       ' equals ' + FloatToStrF(Amp_to_dB(FAmp), ffGeneral, 2, 2) + ' dB';
 end;
 
-procedure TFmASIO.FrequencyChanged;
+procedure TFormASIO.FrequencyChanged;
 begin
   FOscillator.Frequency := FFreq;
   LabelFreq.Caption := 'Frequency: ' + FloatToStrF(FFreq, ffGeneral, 5, 5) + ' Hz';
 end;
 
-procedure TFmASIO.ScrollBarVolumeChange(Sender: TObject);
+procedure TFormASIO.ScrollBarVolumeChange(Sender: TObject);
 begin
   Amplitude := ScrollBarVolume.Position * 0.00001;
 end;
 
-procedure TFmASIO.ScrollBarPanChange(Sender: TObject);
+procedure TFormASIO.ScrollBarPanChange(Sender: TObject);
 begin
   FPan := ScrollBarPan.Position * 0.01;
   if FPan = 0.5 then
@@ -268,13 +268,13 @@ begin
     LabelPanorama.Caption := 'Panorama: ' + IntToStr(round(100 * (FPan * 2 - 1)));
 end;
 
-procedure TFmASIO.ASIOHostSampleRateChanged(Sender: TObject);
+procedure TFormASIO.ASIOHostSampleRateChanged(Sender: TObject);
 begin
   if Assigned(FOscillator) then
     FOscillator.SampleRate := ASIOHost.SampleRate;
 end;
 
-procedure TFmASIO.ASIOHostBufferSwitch32(Sender: TObject;
+procedure TFormASIO.ASIOHostBufferSwitch32(Sender: TObject;
   const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
 var
   Sample: Integer;
@@ -290,7 +290,7 @@ begin
   end;
 end;
 
-procedure TFmASIO.ASIOHostBufferSwitch64(Sender: TObject;
+procedure TFormASIO.ASIOHostBufferSwitch64(Sender: TObject;
   const InBuffer, OutBuffer: TDAVArrayOfDoubleFixedArray);
 var
   Sample: Integer;
@@ -306,7 +306,7 @@ begin
   end;
 end;
 
-procedure TFmASIO.ASIOHostReset(Sender: TObject);
+procedure TFormASIO.ASIOHostReset(Sender: TObject);
 begin
   if ButtonStartStop.Caption = '&Stop Audio' then
     ASIOHost.Active := True;

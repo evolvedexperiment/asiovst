@@ -1,4 +1,4 @@
-object FmSetup: TFmSetup
+object FormSetup: TFormSetup
   Left = 541
   Top = 364
   BorderStyle = bsDialog
@@ -18,7 +18,7 @@ object FmSetup: TFmSetup
     95)
   PixelsPerInch = 96
   TextHeight = 13
-  object LbPreset: TLabel
+  object LabelPreset: TLabel
     Left = 8
     Top = 7
     Width = 63
@@ -27,7 +27,7 @@ object FmSetup: TFmSetup
     Caption = 'ASIO Driver:'
     Layout = tlCenter
   end
-  object LbOutput: TLabel
+  object LabelOutput: TLabel
     Left = 8
     Top = 35
     Width = 37
@@ -36,7 +36,7 @@ object FmSetup: TFmSetup
     Caption = 'Output:'
     Layout = tlCenter
   end
-  object CbDrivers: TComboBox
+  object ComboBoxDrivers: TComboBox
     Left = 71
     Top = 8
     Width = 156
@@ -45,9 +45,9 @@ object FmSetup: TFmSetup
     Anchors = [akLeft, akTop, akRight]
     Color = clBtnFace
     TabOrder = 0
-    OnChange = CbDriversChange
+    OnChange = ComboBoxDriversChange
   end
-  object CBOutput: TComboBox
+  object ComboBoxOutput: TComboBox
     Left = 51
     Top = 35
     Width = 176
@@ -56,9 +56,9 @@ object FmSetup: TFmSetup
     Anchors = [akLeft, akTop, akRight]
     Color = clBtnFace
     TabOrder = 1
-    OnChange = CBOutputChange
+    OnChange = ComboBoxOutputChange
   end
-  object BtControlPanel: TButton
+  object ButtonControlPanel: TButton
     Left = 8
     Top = 62
     Width = 219
@@ -67,6 +67,6 @@ object FmSetup: TFmSetup
     Caption = 'Control Panel'
     Default = True
     TabOrder = 2
-    OnClick = BtControlPanelClick
+    OnClick = ButtonControlPanelClick
   end
 end

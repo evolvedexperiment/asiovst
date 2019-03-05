@@ -1,4 +1,4 @@
-object FmAbout: TFmAbout
+object FormAbout: TFormAbout
   Left = 384
   Top = 373
   BorderStyle = bsNone
@@ -16,7 +16,7 @@ object FmAbout: TFmAbout
   OnClick = FormClick
   PixelsPerInch = 96
   TextHeight = 13
-  object LbTitle: TLabel
+  object LabelTitle: TLabel
     Left = 24
     Top = 17
     Width = 258
@@ -30,7 +30,7 @@ object FmAbout: TFmAbout
     ParentFont = False
     OnClick = FormClick
   end
-  object LbCopyright: TLabel
+  object LabelCopyright: TLabel
     Left = 88
     Top = 55
     Width = 141
@@ -38,7 +38,7 @@ object FmAbout: TFmAbout
     Caption = 'originally created by BramBos'
     OnClick = FormClick
   end
-  object LbInfo: TLabel
+  object LabelInfo: TLabel
     Left = 86
     Top = 69
     Width = 155

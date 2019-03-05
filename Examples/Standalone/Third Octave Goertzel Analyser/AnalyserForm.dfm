@@ -1,4 +1,4 @@
-object FmAnalyser: TFmAnalyser
+object FormAnalyser: TFormAnalyser
   Left = 287
   Top = 277
   BorderIcons = [biSystemMenu, biMinimize]

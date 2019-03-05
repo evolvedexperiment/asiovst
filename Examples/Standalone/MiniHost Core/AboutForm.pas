@@ -10,23 +10,23 @@ uses
   ExtCtrls;
 
 type
-  TFmAbout = class(TForm)
-    BtOK: TButton;
-    LbTitle: TLabel;
-    LbCopyright: TLabel;
-    LbMail: TLabel;
-    LbWeb: TLabel;
-    LbDonate: TLabel;
-    Lbml: TLabel;
-    LbTrademarks: TLabel;
-    LbHours: TLabel;
-    LbReadManual: TLabel;
-    LbWb: TLabel;
-    procedure LbWebClick(Sender: TObject);
-    procedure LbMailClick(Sender: TObject);
-    procedure BtOKClick(Sender: TObject);
+  TFormAbout = class(TForm)
+    ButtonOK: TButton;
+    LabelTitle: TLabel;
+    LabelCopyright: TLabel;
+    LabelMail: TLabel;
+    LabelWebSite: TLabel;
+    LabelDonate: TLabel;
+    LabelEmail: TLabel;
+    LabelTrademarks: TLabel;
+    LabelHours: TLabel;
+    LabelReadManual: TLabel;
+    LabelWeb: TLabel;
+    procedure LabelWebSiteClick(Sender: TObject);
+    procedure LabelMailClick(Sender: TObject);
+    procedure ButtonOKClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure LbDonateClick(Sender: TObject);
+    procedure LabelDonateClick(Sender: TObject);
   end;
 
 implementation
@@ -40,38 +40,38 @@ implementation
 uses
   ShellAPI, MiniHostForm;
 
-procedure TFmAbout.LbWebClick(Sender: TObject);
+procedure TFormAbout.LabelWebSiteClick(Sender: TObject);
 begin
- {$IFNDEF FPC}
- ShellExecute(Self.WindowHandle, 'open', PChar('http://www.tobybear.de'), nil,
-   nil, SW_SHOWNORMAL);
- {$ENDIF}
+{$IFNDEF FPC}
+  ShellExecute(Self.WindowHandle, 'open', PChar('http://www.tobybear.de'), nil,
+    nil, SW_SHOWNORMAL);
+{$ENDIF}
 end;
 
-procedure TFmAbout.LbMailClick(Sender: TObject);
+procedure TFormAbout.LabelMailClick(Sender: TObject);
 begin
- {$IFNDEF FPC}
- ShellExecute(Self.WindowHandle, 'open', PChar('mailto:tobybear@web.de'), nil,
-   nil, SW_SHOWNORMAL);
- {$ENDIF}
+{$IFNDEF FPC}
+  ShellExecute(Self.WindowHandle, 'open', PChar('mailto:tobybear@web.de'), nil,
+    nil, SW_SHOWNORMAL);
+{$ENDIF}
 end;
 
-procedure TFmAbout.BtOKClick(Sender: TObject);
+procedure TFormAbout.ButtonOKClick(Sender: TObject);
 begin
- Close;
+  Close;
 end;
 
-procedure TFmAbout.FormShow(Sender: TObject);
+procedure TFormAbout.FormShow(Sender: TObject);
 begin
- LbTitle.caption := 'Tobybear ' + appname + ' ' + appversion;
+  LabelTitle.caption := 'Tobybear ' + appname + ' ' + appversion;
 end;
 
-procedure TFmAbout.LbDonateClick(Sender: TObject);
+procedure TFormAbout.LabelDonateClick(Sender: TObject);
 begin
- {$IFNDEF FPC}
- ShellExecute(Self.WindowHandle, 'open',
-   PChar('https://www.paypal.com/xclick/business=tobybear%40web.de&item_name=MiniHost'), nil, nil, SW_SHOWNORMAL);
- {$ENDIF}
+{$IFNDEF FPC}
+  ShellExecute(Self.WindowHandle, 'open',
+    PChar('https://www.paypal.com/xclick/business=tobybear%40web.de&item_name=MiniHost'), nil, nil, SW_SHOWNORMAL);
+{$ENDIF}
 end;
 
 end.

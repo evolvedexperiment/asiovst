@@ -1,4 +1,4 @@
-object FmSurvey: TFmSurvey
+object FormSurvey: TFormSurvey
   Left = 395
   Top = 240
   BorderStyle = bsDialog
@@ -22,7 +22,7 @@ object FmSurvey: TFmSurvey
     66)
   PixelsPerInch = 96
   TextHeight = 14
-  object LbSetup: TGuiLabel
+  object LabelSetup: TGuiLabel
     Left = 8
     Top = 13
     Width = 141
@@ -40,7 +40,7 @@ object FmSurvey: TFmSurvey
     Shadow.Visible = True
     Transparent = True
   end
-  object LbGender: TGuiLabel
+  object LabelGender: TGuiLabel
     Left = 8
     Top = 41
     Width = 44
@@ -69,7 +69,7 @@ object FmSurvey: TFmSurvey
     BorderWidth = 2.500000000000000000
     Uniformity_Percent = 40.000000000000000000
     Transparent = True
-    OnClick = LbGenderMaleClick
+    OnClick = LabelGenderMaleClick
   end
   object LEDGenderFemale: TGuiLED
     Left = 102
@@ -82,9 +82,9 @@ object FmSurvey: TFmSurvey
     BorderWidth = 2.500000000000000000
     Uniformity_Percent = 40.000000000000000000
     Transparent = True
-    OnClick = LbGenderFemaleClick
+    OnClick = LabelGenderFemaleClick
   end
-  object LbGenderMale: TGuiLabel
+  object LabelGenderMale: TGuiLabel
     Left = 72
     Top = 41
     Width = 27
@@ -101,9 +101,9 @@ object FmSurvey: TFmSurvey
     Shadow.Color = 10333885
     Shadow.Visible = True
     Transparent = True
-    OnClick = LbGenderMaleClick
+    OnClick = LabelGenderMaleClick
   end
-  object LbGenderFemale: TGuiLabel
+  object LabelGenderFemale: TGuiLabel
     Left = 123
     Top = 41
     Width = 38
@@ -120,9 +120,9 @@ object FmSurvey: TFmSurvey
     Shadow.Color = 10333885
     Shadow.Visible = True
     Transparent = True
-    OnClick = LbGenderFemaleClick
+    OnClick = LabelGenderFemaleClick
   end
-  object LbAge: TGuiLabel
+  object LabelAge: TGuiLabel
     Left = 179
     Top = 41
     Width = 25
@@ -140,7 +140,7 @@ object FmSurvey: TFmSurvey
     Shadow.Visible = True
     Transparent = True
   end
-  object PnSetup: TGuiPanel
+  object PanelSetup: TGuiPanel
     Left = 155
     Top = 8
     Width = 156
@@ -156,7 +156,7 @@ object FmSurvey: TFmSurvey
     DesignSize = (
       156
       22)
-    object EdSetup: TEdit
+    object EditSetup: TEdit
       Left = 5
       Top = 4
       Width = 146
@@ -173,7 +173,7 @@ object FmSurvey: TFmSurvey
       TabOrder = 0
     end
   end
-  object PnAge: TGuiPanel
+  object PanelAge: TGuiPanel
     Left = 210
     Top = 36
     Width = 47
@@ -189,7 +189,7 @@ object FmSurvey: TFmSurvey
     DesignSize = (
       47
       22)
-    object EdAge: TEdit
+    object EditAge: TEdit
       Left = 5
       Top = 4
       Width = 37
@@ -206,7 +206,7 @@ object FmSurvey: TFmSurvey
       TabOrder = 0
     end
   end
-  object PnOK: TGuiPanel
+  object PanelOK: TGuiPanel
     Left = 263
     Top = 36
     Width = 48
@@ -218,11 +218,11 @@ object FmSurvey: TFmSurvey
     ParentColor = True
     TabOrder = 2
     UseDockManager = True
-    OnClick = PnOKClick
+    OnClick = PanelOKClick
     DesignSize = (
       48
       22)
-    object LbOK: TGuiLabel
+    object LabelOK: TGuiLabel
       Left = 12
       Top = 3
       Width = 23
@@ -241,7 +241,7 @@ object FmSurvey: TFmSurvey
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = 5663873
       Shadow.Visible = True
-      OnClick = PnOKClick
+      OnClick = PanelOKClick
     end
   end
 end

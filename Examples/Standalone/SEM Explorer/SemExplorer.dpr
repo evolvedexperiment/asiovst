@@ -5,19 +5,19 @@ program SemExplorer;
 {$R 'SEMagicHealer.res' 'SEMagicHealer.rc'}
 
 uses
-  FastMM4,  // if this line makes trouble, remove or download this library!
+  FastMM4,
   {$IFDEF UseFastMove}
-  FastMove, // either download the library or disable the feature
-  {$ENDIF}
+  FastMove,
+  {$ENDIF }
   Forms,
-  SEmain in 'SEmain.pas' {FmSEModuleExplorer},
-  SEabout in 'SEabout.pas' {FmAbout};
+  SEmain in 'SEmain.pas' {FormSEModuleExplorer},
+  SEabout in 'SEabout.pas' {FormAbout};
 
 {$R *.res}
 
 begin
   Application.Initialize;
-  Application.CreateForm(TFmSEModuleExplorer, FmSEModuleExplorer);
-  Application.CreateForm(TFmAbout, FmAbout);
+  Application.CreateForm(TFormSEModuleExplorer, FormSEModuleExplorer);
+  Application.CreateForm(TFormAbout, FormAbout);
   Application.Run;
 end.

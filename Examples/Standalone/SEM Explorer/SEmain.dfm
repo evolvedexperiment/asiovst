@@ -1,4 +1,4 @@
-object FmSEModuleExplorer: TFmSEModuleExplorer
+object FormSEModuleExplorer: TFormSEModuleExplorer
   Left = 188
   Top = 77
   Caption = 'SE Module Explorer'
@@ -28,32 +28,32 @@ object FmSEModuleExplorer: TFmSEModuleExplorer
   object MainMenu: TMainMenu
     Left = 8
     Top = 8
-    object MIFile: TMenuItem
+    object MenuItemFile: TMenuItem
       Caption = '&File'
-      object MIOpen: TMenuItem
+      object MenuItemOpen: TMenuItem
         Caption = '&Open...'
-        OnClick = MIOpenClick
+        OnClick = MenuItemOpenClick
       end
       object N1: TMenuItem
         Caption = '-'
       end
-      object MIExit: TMenuItem
+      object MenuItemExit: TMenuItem
         Caption = 'E&xit'
-        OnClick = MIExitClick
+        OnClick = MenuItemExitClick
       end
     end
-    object MISettings: TMenuItem
+    object MenuItemSettings: TMenuItem
       Caption = '&Settings'
-      object MIEnableWrapper: TMenuItem
+      object MenuItemEnableWrapper: TMenuItem
         Caption = 'Enable fixing SEM'
-        OnClick = MIEnableWrapperClick
+        OnClick = MenuItemEnableWrapperClick
       end
     end
-    object MIHelp: TMenuItem
+    object MenuItemHelp: TMenuItem
       Caption = '&Help'
-      object MIAbout: TMenuItem
+      object MenuItemAbout: TMenuItem
         Caption = '&About'
-        OnClick = MIAboutClick
+        OnClick = MenuItemAboutClick
       end
     end
   end

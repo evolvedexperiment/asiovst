@@ -40,27 +40,27 @@ uses
   DAV_PortAudioHost, DAV_PortAudioTypes;
 
 type
-  TFmPortAudio = class(TForm)
-    BtStartStop: TButton;
-    DriverCombo: TComboBox;
-    LbCopyright: TLabel;
-    LbDrivername: TLabel;
-    LbFreq: TLabel;
-    LbVolume: TLabel;
-    SbFreq: TScrollBar;
-    SbVolume: TScrollBar;
+  TFormPortAudio = class(TForm)
+    ButtonStartStop: TButton;
+    ComboBoxDriver: TComboBox;
+    LabelCopyright: TLabel;
+    LabelDrivername: TLabel;
+    LabelFreq: TLabel;
+    LabelVolume: TLabel;
+    ScrollBarFreq: TScrollBar;
+    ScrollBarVolume: TScrollBar;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure BtStartStopClick(Sender: TObject);
-    procedure DriverComboChange(Sender: TObject);
+    procedure ButtonStartStopClick(Sender: TObject);
+    procedure ComboBoxDriverChange(Sender: TObject);
     function PortAudioCallback(Sender: TObject;
       InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray; FrameCount: NativeUInt;
       TimeInfo: PPaStreamCallbackTimeInfo;
       StatusFlags: TPaStreamCallbackFlags): LongInt;
     procedure PortAudioReset(Sender: TObject);
     procedure PortAudioSampleRateChanged(Sender: TObject);
-    procedure SbFreqChange(Sender: TObject);
-    procedure SbVolumeChange(Sender: TObject);
+    procedure ScrollBarFreqChange(Sender: TObject);
+    procedure ScrollBarVolumeChange(Sender: TObject);
   private
     procedure SetFrequency(const Value: Double);
     procedure SetAmplitude(const Value: Double);
@@ -77,7 +77,7 @@ type
   end;
 
 var
-  FmPortAudio: TFmPortAudio;
+  FormPortAudio: TFormPortAudio;
 
 implementation
 
@@ -94,14 +94,14 @@ resourcestring
   RCStrNoPortAudioDriverPresent =
     'No PortAudio Driver present! Application Terminated!';
 
-procedure TFmPortAudio.FormCreate(Sender: TObject);
+procedure TFormPortAudio.FormCreate(Sender: TObject);
 begin
   FPortAudio := TPortAudioHost.Create;
   FPortAudio.OnSampleRateChanged := PortAudioSampleRateChanged;
   FPortAudio.OnStreamCallback := PortAudioCallback;
-  DriverCombo.Items := FPortAudio.OutputDeviceList;
+  ComboBoxDriver.Items := FPortAudio.OutputDeviceList;
 
-  if DriverCombo.Items.Count = 0 then
+  if ComboBoxDriver.Items.Count = 0 then
     try
       raise Exception.Create(RCStrNoPortAudioDriverPresent);
     except
@@ -113,9 +113,9 @@ begin
     try
       Left := ReadInteger('Layout', 'Audio Left', Left);
       Top := ReadInteger('Layout', 'Audio Top', Top);
-      DriverCombo.ItemIndex := ReadInteger('Audio', 'PortAudio Driver', -1);
-      if DriverCombo.ItemIndex >= 0 then
-        DriverComboChange(DriverCombo);
+      ComboBoxDriver.ItemIndex := ReadInteger('Audio', 'PortAudio Driver', -1);
+      if ComboBoxDriver.ItemIndex >= 0 then
+        ComboBoxDriverChange(ComboBoxDriver);
     finally
       Free;
     end;
@@ -132,39 +132,39 @@ begin
   end;
 end;
 
-procedure TFmPortAudio.DriverComboChange(Sender: TObject);
+procedure TFormPortAudio.ComboBoxDriverChange(Sender: TObject);
 var
   Channel: Integer;
 begin
-  BtStartStop.Enabled := False;
-  DriverCombo.ItemIndex := DriverCombo.Items.IndexOf(DriverCombo.Text);
-  if DriverCombo.ItemIndex >= 0 then
+  ButtonStartStop.Enabled := False;
+  ComboBoxDriver.ItemIndex := ComboBoxDriver.Items.IndexOf(ComboBoxDriver.Text);
+  if ComboBoxDriver.ItemIndex >= 0 then
   begin
     FPortAudio.Close;
     FPortAudio.OutputDevice :=
-      Integer(DriverCombo.Items.Objects[DriverCombo.ItemIndex]);
+      Integer(ComboBoxDriver.Items.Objects[ComboBoxDriver.ItemIndex]);
     FPortAudio.InputDevice := -1;
     FPortAudio.Open;
 
     // store current PortAudio driver index
     with TIniFile.Create(ExtractFilePath(ParamStr(0)) + 'PortAudioDemo.INI') do
       try
-        WriteInteger('Audio', 'PortAudio Driver', DriverCombo.ItemIndex);
+        WriteInteger('Audio', 'PortAudio Driver', ComboBoxDriver.ItemIndex);
       finally
         Free;
       end;
 
-    BtStartStop.Enabled := True;
+    ButtonStartStop.Enabled := True;
   end;
 end;
 
-procedure TFmPortAudio.FormDestroy(Sender: TObject);
+procedure TFormPortAudio.FormDestroy(Sender: TObject);
 begin
   with TIniFile.Create(ExtractFilePath(ParamStr(0)) + 'PortAudioDemo.INI') do
     try
       WriteInteger('Layout', 'Audio Left', Left);
       WriteInteger('Layout', 'Audio Top', Top);
-      WriteInteger('Audio', 'PortAudio Driver', DriverCombo.ItemIndex);
+      WriteInteger('Audio', 'PortAudio Driver', ComboBoxDriver.ItemIndex);
     finally
       Free;
     end;
@@ -174,26 +174,26 @@ begin
   FreeAndNil(FPortAudio);
 end;
 
-procedure TFmPortAudio.BtStartStopClick(Sender: TObject);
+procedure TFormPortAudio.ButtonStartStopClick(Sender: TObject);
 begin
-  if BtStartStop.Caption = '&Start Audio' then
+  if ButtonStartStop.Caption = '&Start Audio' then
   begin
     FPortAudio.Start; // Start Audio
-    BtStartStop.Caption := '&Stop Audio';
+    ButtonStartStop.Caption := '&Stop Audio';
   end
   else
   begin
     FPortAudio.Abort; // Stop Audio
-    BtStartStop.Caption := '&Start Audio';
+    ButtonStartStop.Caption := '&Start Audio';
   end;
 end;
 
-procedure TFmPortAudio.SbFreqChange(Sender: TObject);
+procedure TFormPortAudio.ScrollBarFreqChange(Sender: TObject);
 begin
-  Frequency := FreqLinearToLog(SbFreq.Position * 0.00001);
+  Frequency := FreqLinearToLog(ScrollBarFreq.Position * 0.00001);
 end;
 
-procedure TFmPortAudio.SetAmplitude(const Value: Double);
+procedure TFormPortAudio.SetAmplitude(const Value: Double);
 begin
   if FAmp <> Value then
   begin
@@ -202,7 +202,7 @@ begin
   end;
 end;
 
-procedure TFmPortAudio.SetFrequency(const Value: Double);
+procedure TFormPortAudio.SetFrequency(const Value: Double);
 begin
   if FFreq <> Value then
   begin
@@ -211,34 +211,34 @@ begin
   end;
 end;
 
-procedure TFmPortAudio.AmplitudeChanged;
+procedure TFormPortAudio.AmplitudeChanged;
 begin
   FOscillator.Amplitude := FAmp;
   if FAmp = 0 then
-    LbVolume.Caption := 'Volume: 0 equals -oo dB'
+    LabelVolume.Caption := 'Volume: 0 equals -oo dB'
   else
-    LbVolume.Caption := 'Volume: ' + FloatToStrF(FAmp, ffFixed, 2, 2) +
+    LabelVolume.Caption := 'Volume: ' + FloatToStrF(FAmp, ffFixed, 2, 2) +
       ' equals ' + FloatToStrF(Amp_to_dB(FAmp), ffGeneral, 2, 2) + ' dB';
 end;
 
-procedure TFmPortAudio.FrequencyChanged;
+procedure TFormPortAudio.FrequencyChanged;
 begin
   FOscillator.Frequency := FFreq;
-  LbFreq.Caption := 'Frequency: ' + FloatToStrF(FFreq, ffGeneral, 5, 5) + ' Hz';
+  LabelFreq.Caption := 'Frequency: ' + FloatToStrF(FFreq, ffGeneral, 5, 5) + ' Hz';
 end;
 
-procedure TFmPortAudio.SbVolumeChange(Sender: TObject);
+procedure TFormPortAudio.ScrollBarVolumeChange(Sender: TObject);
 begin
-  Amplitude := SbVolume.Position * 0.00001;
+  Amplitude := ScrollBarVolume.Position * 0.00001;
 end;
 
-procedure TFmPortAudio.PortAudioSampleRateChanged(Sender: TObject);
+procedure TFormPortAudio.PortAudioSampleRateChanged(Sender: TObject);
 begin
   if Assigned(FOscillator) then
     FOscillator.SampleRate := FPortAudio.SampleRate;
 end;
 
-function TFmPortAudio.PortAudioCallback(Sender: TObject;
+function TFormPortAudio.PortAudioCallback(Sender: TObject;
   InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray; FrameCount: NativeUInt;
   TimeInfo: PPaStreamCallbackTimeInfo;
   StatusFlags: TPaStreamCallbackFlags): LongInt;
@@ -255,9 +255,9 @@ begin
   Result := paContinue;
 end;
 
-procedure TFmPortAudio.PortAudioReset(Sender: TObject);
+procedure TFormPortAudio.PortAudioReset(Sender: TObject);
 begin
-  if BtStartStop.Caption = '&Stop Audio' then
+  if ButtonStartStop.Caption = '&Stop Audio' then
     FPortAudio.Active := True;
 end;
 

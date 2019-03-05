@@ -1,25 +1,25 @@
 program Analyser;
 
 uses
-  FastMM4, // either download the library or comment if there is an error here
-  {$IFDEF UseFastMove}
-  FastMove, // either download the library or disable the feature
-  {$ENDIF}
+  FastMM4,
   {$IFDEF UseMadExcept}
   madExcept,
   madLinkDisAsm,
   madListHardware,
   madListProcesses,
   madListModules,
-  {$ENDIF}
+  {$ENDIF }
+  {$IFDEF UseFastMove}
+  FastMove,
+  {$ENDIF }
   Forms,
-  AnalyserForm in 'AnalyserForm.pas' {FmASIO};
+  AnalyserForm in 'AnalyserForm.pas' {FormAnalyser};
 
 {$R *.RES}
 
 begin
   Application.Initialize;
   Application.Title := 'Third-Octave ASIO Analyser';
-  Application.CreateForm(TFmAnalyser, FmAnalyser);
+  Application.CreateForm(TFormAnalyser, FormAnalyser);
   Application.Run;
 end.

@@ -3,25 +3,25 @@ program ASIODemo;
 {$I DAV_Compiler.inc}
 
 uses
-  FastMM4,  // either download the library or comment if there is an error here
-  {$IFDEF UseMadExcept}
-  madExcept,
+  FastMM4,
   madLinkDisAsm,
   madListHardware,
   madListProcesses,
   madListModules,
-  {$ENDIF}
+  {$IFDEF UseMadExcept}
+  madExcept,
+  {$ENDIF }
   {$IFDEF UseFastMove}
   FastMove,
-  {$ENDIF}
+  {$ENDIF }
   Forms,
-  AsioDemoForm in 'ASIODemoForm.pas' {FmASIO};
+  ASIODemoForm in 'ASIODemoForm.pas' {FormASIO};
 
 {$R *.RES}
 
 begin
   Application.Initialize;
   Application.Title := 'Demo application for ASIO-Host';
-  Application.CreateForm(TFmASIO, FmASIO);
+  Application.CreateForm(TFormASIO, FormASIO);
   Application.Run;
 end.

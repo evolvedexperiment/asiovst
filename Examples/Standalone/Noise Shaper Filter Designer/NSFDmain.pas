@@ -40,7 +40,7 @@ uses
   DAV_DspNoiseShapingFilterDesigner;
 
 type
-  TFmNoiseshapingFilterDesigner = class(TForm)
+  TFormNoiseshapingFilterDesigner = class(TForm)
     Memo: TMemo;
     MainMenu: TMainMenu;
     MIFile: TMenuItem;
@@ -57,7 +57,7 @@ type
   end;
 
 var
-  FmNoiseshapingFilterDesigner: TFmNoiseshapingFilterDesigner;
+  FormNoiseshapingFilterDesigner: TFormNoiseshapingFilterDesigner;
 
 implementation
 
@@ -67,12 +67,12 @@ implementation
 {$R *.lfm}
 {$ENDIF}
 
-procedure TFmNoiseshapingFilterDesigner.MIExitClick(Sender: TObject);
+procedure TFormNoiseshapingFilterDesigner.MIExitClick(Sender: TObject);
 begin
   Close;
 end;
 
-procedure TFmNoiseshapingFilterDesigner.MISaveAsClick(Sender: TObject);
+procedure TFormNoiseshapingFilterDesigner.MISaveAsClick(Sender: TObject);
 begin
   with TSaveDialog.Create(Self) do
     try
@@ -87,7 +87,7 @@ begin
     end;
 end;
 
-procedure TFmNoiseshapingFilterDesigner.CoefficientUpdate(Sender: TObject;
+procedure TFormNoiseshapingFilterDesigner.CoefficientUpdate(Sender: TObject;
   Coefficients: PDAVDoubleFixedArray; Best: Double);
 var
   Sample: Integer;
@@ -102,7 +102,7 @@ begin
   Application.ProcessMessages;
 end;
 
-procedure TFmNoiseshapingFilterDesigner.MICalculationClick(Sender: TObject);
+procedure TFormNoiseshapingFilterDesigner.MICalculationClick(Sender: TObject);
 begin
   with TNoiseShapingFilterDesigner.Create do
     try

@@ -25,7 +25,7 @@ type
     RMS: Double;
   end;
 
-  TFmAnalyser = class(TForm)
+  TFormAnalyser = class(TForm)
     ASIOHost: TASIOHost;
     BarSeries: TBarSeries;
     ButtonAnalyse: TButton;
@@ -87,7 +87,7 @@ type
   end;
 
 var
-  FmAnalyser: TFmAnalyser;
+  FormAnalyser: TFormAnalyser;
 
 implementation
 
@@ -96,7 +96,7 @@ implementation
 uses
   Inifiles, Registry, DAV_Common;
 
-procedure TFmAnalyser.FormCreate(Sender: TObject);
+procedure TFormAnalyser.FormCreate(Sender: TObject);
 var
   Band: Integer;
 begin
@@ -141,7 +141,7 @@ begin
     ASIOHost.OnBufferSwitch32 := BSDownSampled;
 end;
 
-procedure TFmAnalyser.FormDestroy(Sender: TObject);
+procedure TFormAnalyser.FormDestroy(Sender: TObject);
 var
   FreqIndex: Integer;
 begin
@@ -155,7 +155,7 @@ begin
   end;
 end;
 
-procedure TFmAnalyser.FormShow(Sender: TObject);
+procedure TFormAnalyser.FormShow(Sender: TObject);
 begin
   // and make sure all controls are enabled or disabled
   with TIniFile.Create(ExtractFilePath(ParamStr(0)) + 'ASIODemo.INI') do
@@ -172,7 +172,7 @@ begin
   end;
 end;
 
-procedure TFmAnalyser.FormClose(Sender: TObject; var Action: TCloseAction);
+procedure TFormAnalyser.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   // save settings
   with TIniFile.Create(ExtractFilePath(ParamStr(0)) + 'ASIODemo.INI') do
@@ -187,7 +187,7 @@ begin
   end;
 end;
 
-procedure TFmAnalyser.UpdateFilters;
+procedure TFormAnalyser.UpdateFilters;
 var
   Band: Integer;
   Downsampling: Integer;
@@ -235,50 +235,50 @@ begin
   FDownSampleMax := 1 shl Downsampling;
 end;
 
-function TFmAnalyser.GetBandReserve: Single;
+function TFormAnalyser.GetBandReserve: Single;
 begin
   Result := 100 * FBandReserve;
 end;
 
-function TFmAnalyser.GetSamplerate: Single;
+function TFormAnalyser.GetSamplerate: Single;
 begin
   Result := ASIOHost.SampleRate;
 end;
 
-procedure TFmAnalyser.RadioButtonFastClick(Sender: TObject);
+procedure TFormAnalyser.RadioButtonFastClick(Sender: TObject);
 begin
   FSpeedConst[0] := 0.99;
   CalculateSmoothingFactor;
 end;
 
-procedure TFmAnalyser.RadioButtonMediumClick(Sender: TObject);
+procedure TFormAnalyser.RadioButtonMediumClick(Sender: TObject);
 begin
   FSpeedConst[0] := 0.999;
   CalculateSmoothingFactor;
 end;
 
-procedure TFmAnalyser.RadioButtonSlowClick(Sender: TObject);
+procedure TFormAnalyser.RadioButtonSlowClick(Sender: TObject);
 begin
   FSpeedConst[0] := 0.9999;
   CalculateSmoothingFactor;
 end;
 
-procedure TFmAnalyser.CalculateSmoothingFactor;
+procedure TFormAnalyser.CalculateSmoothingFactor;
 begin
   FSpeedConst[1] := 1 - FSpeedConst[0];
 end;
 
-procedure TFmAnalyser.SpinEditFullscaleGainChange(Sender: TObject);
+procedure TFormAnalyser.SpinEditFullscaleGainChange(Sender: TObject);
 begin
   FFSGain := SpinEditFullscaleGain.Value;
 end;
 
-procedure TFmAnalyser.SetBandReserve(const Value: Single);
+procedure TFormAnalyser.SetBandReserve(const Value: Single);
 begin
   FBandReserve := 0.01 * Value;
 end;
 
-procedure TFmAnalyser.SetUseDownsampling(const Value: Boolean);
+procedure TFormAnalyser.SetUseDownsampling(const Value: Boolean);
 begin
   if FUseDownsampling <> Value then
   begin
@@ -287,7 +287,7 @@ begin
   end;
 end;
 
-procedure TFmAnalyser.DownsamplingChanged;
+procedure TFormAnalyser.DownsamplingChanged;
 begin
   if FUseDownsampling then
     FDownSampleCount := 0
@@ -295,7 +295,7 @@ begin
     FDownSampleCount := -1
 end;
 
-procedure TFmAnalyser.ComboBoxDriverChange(Sender: TObject);
+procedure TFormAnalyser.ComboBoxDriverChange(Sender: TObject);
 var
   i: Integer;
 begin
@@ -321,12 +321,12 @@ begin
   end;
 end;
 
-procedure TFmAnalyser.ButtonControlPanelClick(Sender: TObject);
+procedure TFormAnalyser.ButtonControlPanelClick(Sender: TObject);
 begin
   ASIOHost.ControlPanel;
 end;
 
-procedure TFmAnalyser.ButtonAnalyseClick(Sender: TObject);
+procedure TFormAnalyser.ButtonAnalyseClick(Sender: TObject);
 begin
   if ButtonAnalyse.Caption = 'Analyse' then
   begin
@@ -341,7 +341,7 @@ begin
   Timer.Enabled := ASIOHost.Active;
 end;
 
-procedure TFmAnalyser.UpdateBarGraph;
+procedure TFormAnalyser.UpdateBarGraph;
 var
   Band: Integer;
 begin
@@ -356,7 +356,7 @@ begin
   {$ENDIF}
 end;
 
-procedure TFmAnalyser.AnalyserChartDblClick(Sender: TObject);
+procedure TFormAnalyser.AnalyserChartDblClick(Sender: TObject);
 begin
   if ChartAnalyser.Align <> alClient then
     ChartAnalyser.Align := alClient
@@ -368,12 +368,12 @@ begin
   end;
 end;
 
-procedure TFmAnalyser.TimerTimer(Sender: TObject);
+procedure TFormAnalyser.TimerTimer(Sender: TObject);
 begin
   UpdateBarGraph;
 end;
 
-procedure TFmAnalyser.LabelDriverNameClick(Sender: TObject);
+procedure TFormAnalyser.LabelDriverNameClick(Sender: TObject);
 begin
   if FDownSampleCount > 0 then
     FDownSampleCount := -1
@@ -383,7 +383,7 @@ begin
   UpdateFilters;
 end;
 
-procedure TFmAnalyser.BSNormal(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
+procedure TFormAnalyser.BSNormal(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
 var
   i,j: Integer;
   d,z: Double;
@@ -403,12 +403,12 @@ begin
   UpdateBarGraph;
 end;
 
-procedure TFmAnalyser.ASIOHostSampleRateChanged(Sender: TObject);
+procedure TFormAnalyser.ASIOHostSampleRateChanged(Sender: TObject);
 begin
   UpdateFilters;
 end;
 
-procedure TFmAnalyser.BSDownSampled(Sender: TObject; const InBuffer,
+procedure TFormAnalyser.BSDownSampled(Sender: TObject; const InBuffer,
   OutBuffer: TDAVArrayOfSingleFixedArray);
 var
   i, j: Integer;

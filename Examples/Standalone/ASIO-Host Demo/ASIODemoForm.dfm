@@ -1,4 +1,4 @@
-object FmASIO: TFmASIO
+object FormASIO: TFormASIO
   Left = 291
   Top = 266
   BorderIcons = [biSystemMenu, biMinimize]

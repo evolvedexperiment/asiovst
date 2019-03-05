@@ -1,4 +1,4 @@
-object FmAbout: TFmAbout
+object FormAbout: TFormAbout
   Left = 370
   Top = 241
   BorderIcons = []
@@ -20,7 +20,7 @@ object FmAbout: TFmAbout
     314)
   PixelsPerInch = 96
   TextHeight = 14
-  object LbTitle: TLabel
+  object LabelTitle: TLabel
     Left = 46
     Top = 16
     Width = 129
@@ -34,7 +34,7 @@ object FmAbout: TFmAbout
     Font.Style = [fsBold]
     ParentFont = False
   end
-  object LbCopyright: TLabel
+  object LabelCopyright: TLabel
     Left = 4
     Top = 184
     Width = 216
@@ -42,10 +42,10 @@ object FmAbout: TFmAbout
     Alignment = taCenter
     Anchors = [akLeft, akTop, akRight]
     Caption = 
-      '(C)opyright in 2004-2009 by Tobias Fleischer'#13#10'based on the Delph' +
+      '(C)opyright in 2004-2019 by Tobias Fleischer'#13#10'based on the Delph' +
       'i ASIO && VST '#13#10'host code by Christian Budde'
   end
-  object LbMail: TLabel
+  object LabelMail: TLabel
     Left = 40
     Top = 160
     Width = 101
@@ -59,9 +59,9 @@ object FmAbout: TFmAbout
     Font.Name = 'Arial'
     Font.Style = [fsBold]
     ParentFont = False
-    OnClick = LbMailClick
+    OnClick = LabelMailClick
   end
-  object LbWeb: TLabel
+  object LabelWebSite: TLabel
     Left = 40
     Top = 144
     Width = 129
@@ -75,9 +75,9 @@ object FmAbout: TFmAbout
     Font.Name = 'Arial'
     Font.Style = [fsBold]
     ParentFont = False
-    OnClick = LbWebClick
+    OnClick = LabelWebSiteClick
   end
-  object LbDonate: TLabel
+  object LabelDonate: TLabel
     Left = 24
     Top = 120
     Width = 175
@@ -91,9 +91,9 @@ object FmAbout: TFmAbout
     Font.Name = 'Arial'
     Font.Style = [fsBold]
     ParentFont = False
-    OnClick = LbDonateClick
+    OnClick = LabelDonateClick
   end
-  object Lbml: TLabel
+  object LabelEmail: TLabel
     Left = 8
     Top = 160
     Width = 27
@@ -101,7 +101,7 @@ object FmAbout: TFmAbout
     Anchors = [akLeft, akTop, akRight]
     Caption = 'email:'
   end
-  object LbTrademarks: TLabel
+  object LabelTrademarks: TLabel
     Left = 40
     Top = 240
     Width = 150
@@ -110,7 +110,7 @@ object FmAbout: TFmAbout
     Anchors = [akLeft, akTop, akRight]
     Caption = 'VST and ASIO are registered '#13#10'trademarks by Steinberg GmbH'
   end
-  object LbHours: TLabel
+  object LabelHours: TLabel
     Left = 8
     Top = 64
     Width = 203
@@ -121,7 +121,7 @@ object FmAbout: TFmAbout
       'Countless hours of coding were needed'#13#10'to make this little appli' +
       'cation, so please '#13#10'donate some money if you use it regularly!'
   end
-  object LbReadManual: TLabel
+  object LabelReadManual: TLabel
     Left = 8
     Top = 36
     Width = 203
@@ -129,7 +129,7 @@ object FmAbout: TFmAbout
     Anchors = [akLeft, akTop, akRight]
     Caption = 'Read the included manual for detailed help'
   end
-  object LbWb: TLabel
+  object LabelWeb: TLabel
     Left = 8
     Top = 144
     Width = 25
@@ -137,13 +137,13 @@ object FmAbout: TFmAbout
     Anchors = [akLeft, akTop, akRight]
     Caption = 'web:'
   end
-  object BtOK: TButton
+  object ButtonOK: TButton
     Left = 72
     Top = 280
     Width = 75
     Height = 25
     Caption = 'OK'
     TabOrder = 0
-    OnClick = BtOKClick
+    OnClick = ButtonOKClick
   end
 end

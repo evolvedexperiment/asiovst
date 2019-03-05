@@ -74,7 +74,7 @@ object FormSetup: TFormSetup
     SelectBoxColor = 10333885
     OnChange = SelectBoxChannelsChange
   end
-  object BtControlPanel: TGuiButton
+  object ButtonControlPanel: TGuiButton
     Left = 304
     Top = 8
     Width = 86
@@ -90,6 +90,6 @@ object FormSetup: TFormSetup
     Shadow.Color = 5663873
     Shadow.Visible = True
     Transparent = False
-    OnClick = BtControlPanelClick
+    OnClick = ButtonControlPanelClick
   end
 end

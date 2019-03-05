@@ -64,7 +64,6 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure ASIOHostBufferSwitch32(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
-    procedure BtControlPanelClick(Sender: TObject);
     procedure ASIOHostSampleRateChanged(Sender: TObject);
     procedure TimerTimer(Sender: TObject);
     procedure ButtonPlayClick(Sender: TObject);
@@ -101,7 +100,7 @@ implementation
 uses
   IniFiles, SmpSetup, DAV_MpegAudio;
 
-{ TFmSmp }
+{ TFormSimpleMp3Player }
 
 procedure TFormSimpleMp3Player.FormCreate(Sender: TObject);
 var
@@ -202,11 +201,6 @@ procedure TFormSimpleMp3Player.ASIOHostSampleRateChanged(Sender: TObject);
 begin
   if Assigned(FBufferedPlayer) then
     FBufferedPlayer.SampleRate := ASIOHost.SampleRate;
-end;
-
-procedure TFormSimpleMp3Player.BtControlPanelClick(Sender: TObject);
-begin
-  ASIOHost.ControlPanel;
 end;
 
 procedure TFormSimpleMp3Player.ButtonPauseClick(Sender: TObject);

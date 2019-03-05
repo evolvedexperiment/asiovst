@@ -1,4 +1,4 @@
-object FmASIO: TFmASIO
+object FormMultiSineGenerator: TFormMultiSineGenerator
   Tag = 4
   Left = 279
   Top = 98
@@ -21,14 +21,14 @@ object FmASIO: TFmASIO
     503)
   PixelsPerInch = 96
   TextHeight = 13
-  object LbDrivername: TLabel
+  object LabelDrivername: TLabel
     Left = 8
     Top = 13
     Width = 31
     Height = 13
     Caption = 'Driver:'
   end
-  object LbChannels: TLabel
+  object LabelChannels: TLabel
     Left = 8
     Top = 37
     Width = 82
@@ -51,7 +51,7 @@ object FmASIO: TFmASIO
     Height = 2
     Pen.Color = clBtnShadow
   end
-  object Lb50: TLabel
+  object Label50: TLabel
     Tag = 4
     Left = 117
     Top = 245
@@ -67,9 +67,9 @@ object FmASIO: TFmASIO
     ParentColor = False
     ParentFont = False
     Transparent = True
-    OnDblClick = LbFrequencyDblClick
+    OnDblClick = LabelFrequencyDblClick
   end
-  object Lb63: TLabel
+  object Label63: TLabel
     Tag = 5
     Left = 135
     Top = 258
@@ -85,9 +85,9 @@ object FmASIO: TFmASIO
     ParentColor = False
     ParentFont = False
     Transparent = True
-    OnDblClick = LbFrequencyDblClick
+    OnDblClick = LabelFrequencyDblClick
   end
-  object Lb80: TLabel
+  object Label80: TLabel
     Tag = 6
     Left = 150
     Top = 271
@@ -103,9 +103,9 @@ object FmASIO: TFmASIO
     ParentColor = False
     ParentFont = False
     Transparent = True
-    OnDblClick = LbFrequencyDblClick
+    OnDblClick = LabelFrequencyDblClick
   end
-  object Lb100: TLabel
+  object Label100: TLabel
     Tag = 7
     Left = 170
     Top = 245
@@ -121,9 +121,9 @@ object FmASIO: TFmASIO
     ParentColor = False
     ParentFont = False
     Transparent = True
-    OnDblClick = LbFrequencyDblClick
+    OnDblClick = LabelFrequencyDblClick
   end
-  object Lb125: TLabel
+  object Label125: TLabel
     Tag = 8
     Left = 188
     Top = 258
@@ -139,9 +139,9 @@ object FmASIO: TFmASIO
     ParentColor = False
     ParentFont = False
     Transparent = True
-    OnDblClick = LbFrequencyDblClick
+    OnDblClick = LabelFrequencyDblClick
   end
-  object Lb160: TLabel
+  object Label160: TLabel
     Tag = 9
     Left = 204
     Top = 271
@@ -157,9 +157,9 @@ object FmASIO: TFmASIO
     ParentColor = False
     ParentFont = False
     Transparent = True
-    OnDblClick = LbFrequencyDblClick
+    OnDblClick = LabelFrequencyDblClick
   end
-  object Lb200: TLabel
+  object Label200: TLabel
     Tag = 10
     Left = 223
     Top = 245
@@ -175,9 +175,9 @@ object FmASIO: TFmASIO
     ParentColor = False
     ParentFont = False
     Transparent = True
-    OnDblClick = LbFrequencyDblClick
+    OnDblClick = LabelFrequencyDblClick
   end
-  object Lb250: TLabel
+  object Label250: TLabel
     Tag = 11
     Left = 243
     Top = 258
@@ -193,9 +193,9 @@ object FmASIO: TFmASIO
     ParentColor = False
     ParentFont = False
     Transparent = True
-    OnDblClick = LbFrequencyDblClick
+    OnDblClick = LabelFrequencyDblClick
   end
-  object Lb500: TLabel
+  object Label500: TLabel
     Tag = 14
     Left = 294
     Top = 258
@@ -211,9 +211,9 @@ object FmASIO: TFmASIO
     ParentColor = False
     ParentFont = False
     Transparent = True
-    OnDblClick = LbFrequencyDblClick
+    OnDblClick = LabelFrequencyDblClick
   end
-  object Lb630: TLabel
+  object Label630: TLabel
     Tag = 15
     Left = 311
     Top = 271
@@ -229,9 +229,9 @@ object FmASIO: TFmASIO
     ParentColor = False
     ParentFont = False
     Transparent = True
-    OnDblClick = LbFrequencyDblClick
+    OnDblClick = LabelFrequencyDblClick
   end
-  object Lb800: TLabel
+  object Label800: TLabel
     Tag = 16
     Left = 332
     Top = 245
@@ -247,7 +247,7 @@ object FmASIO: TFmASIO
     ParentColor = False
     ParentFont = False
     Transparent = True
-    OnDblClick = LbFrequencyDblClick
+    OnDblClick = LabelFrequencyDblClick
   end
   object LabelLeftOrMid: TLabel
     Left = 8
@@ -284,7 +284,7 @@ object FmASIO: TFmASIO
     Height = 2
     Pen.Color = clBtnShadow
   end
-  object Lb24AL: TLabel
+  object Label24AL: TLabel
     Left = 607
     Top = 225
     Width = 11
@@ -297,7 +297,7 @@ object FmASIO: TFmASIO
     Font.Style = []
     ParentFont = False
   end
-  object Lb12AL: TLabel
+  object Label12AL: TLabel
     Left = 607
     Top = 152
     Width = 11
@@ -310,7 +310,7 @@ object FmASIO: TFmASIO
     Font.Style = []
     ParentFont = False
   end
-  object Lb12AR: TLabel
+  object Label12AR: TLabel
     Left = 607
     Top = 386
     Width = 11
@@ -323,7 +323,7 @@ object FmASIO: TFmASIO
     Font.Style = []
     ParentFont = False
   end
-  object Lb24AR: TLabel
+  object Label24AR: TLabel
     Left = 607
     Top = 460
     Width = 11
@@ -336,7 +336,7 @@ object FmASIO: TFmASIO
     Font.Style = []
     ParentFont = False
   end
-  object Lb0R: TLabel
+  object Label0R: TLabel
     Left = 614
     Top = 313
     Width = 4
@@ -349,7 +349,7 @@ object FmASIO: TFmASIO
     Font.Style = []
     ParentFont = False
   end
-  object Lb1k6: TLabel
+  object Label1k6: TLabel
     Tag = 19
     Left = 382
     Top = 245
@@ -365,9 +365,9 @@ object FmASIO: TFmASIO
     ParentColor = False
     ParentFont = False
     Transparent = True
-    OnDblClick = LbFrequencyDblClick
+    OnDblClick = LabelFrequencyDblClick
   end
-  object Lb1k25: TLabel
+  object Label1k25: TLabel
     Tag = 18
     Left = 365
     Top = 271
@@ -383,9 +383,9 @@ object FmASIO: TFmASIO
     ParentColor = False
     ParentFont = False
     Transparent = True
-    OnDblClick = LbFrequencyDblClick
+    OnDblClick = LabelFrequencyDblClick
   end
-  object Lb1k: TLabel
+  object Label1k: TLabel
     Tag = 17
     Left = 351
     Top = 258
@@ -401,9 +401,9 @@ object FmASIO: TFmASIO
     ParentColor = False
     ParentFont = False
     Transparent = True
-    OnDblClick = LbFrequencyDblClick
+    OnDblClick = LabelFrequencyDblClick
   end
-  object Lb2k: TLabel
+  object Label2k: TLabel
     Tag = 20
     Left = 405
     Top = 258
@@ -419,9 +419,9 @@ object FmASIO: TFmASIO
     ParentColor = False
     ParentFont = False
     Transparent = True
-    OnDblClick = LbFrequencyDblClick
+    OnDblClick = LabelFrequencyDblClick
   end
-  object Lb2k5: TLabel
+  object Label2k5: TLabel
     Tag = 21
     Left = 418
     Top = 271
@@ -437,9 +437,9 @@ object FmASIO: TFmASIO
     ParentColor = False
     ParentFont = False
     Transparent = True
-    OnDblClick = LbFrequencyDblClick
+    OnDblClick = LabelFrequencyDblClick
   end
-  object Lb3k15: TLabel
+  object Label3k15: TLabel
     Tag = 22
     Left = 437
     Top = 245
@@ -455,9 +455,9 @@ object FmASIO: TFmASIO
     ParentColor = False
     ParentFont = False
     Transparent = True
-    OnDblClick = LbFrequencyDblClick
+    OnDblClick = LabelFrequencyDblClick
   end
-  object Lb4k: TLabel
+  object Label4k: TLabel
     Tag = 23
     Left = 455
     Top = 258
@@ -473,9 +473,9 @@ object FmASIO: TFmASIO
     ParentColor = False
     ParentFont = False
     Transparent = True
-    OnDblClick = LbFrequencyDblClick
+    OnDblClick = LabelFrequencyDblClick
   end
-  object Lb315: TLabel
+  object Label315: TLabel
     Tag = 12
     Left = 259
     Top = 271
@@ -491,9 +491,9 @@ object FmASIO: TFmASIO
     ParentColor = False
     ParentFont = False
     Transparent = True
-    OnDblClick = LbFrequencyDblClick
+    OnDblClick = LabelFrequencyDblClick
   end
-  object Lb400: TLabel
+  object Label400: TLabel
     Tag = 13
     Left = 278
     Top = 245
@@ -509,9 +509,9 @@ object FmASIO: TFmASIO
     ParentColor = False
     ParentFont = False
     Transparent = True
-    OnDblClick = LbFrequencyDblClick
+    OnDblClick = LabelFrequencyDblClick
   end
-  object Lb5k: TLabel
+  object Label5k: TLabel
     Tag = 24
     Left = 475
     Top = 271
@@ -527,7 +527,7 @@ object FmASIO: TFmASIO
     ParentColor = False
     ParentFont = False
     Transparent = True
-    OnDblClick = LbFrequencyDblClick
+    OnDblClick = LabelFrequencyDblClick
   end
   object PeakMeterLeft: TGuiColorLevelMeter
     Left = 624
@@ -549,7 +549,7 @@ object FmASIO: TFmASIO
     ContrastLuminance = 0.300000011920929000
     Upper = 1.000000000000000000
   end
-  object Lb0L: TLabel
+  object Label0L: TLabel
     Left = 614
     Top = 80
     Width = 4
@@ -562,7 +562,7 @@ object FmASIO: TFmASIO
     Font.Style = []
     ParentFont = False
   end
-  object Lb20Hz: TLabel
+  object Label20Hz: TLabel
     Left = 44
     Top = 271
     Width = 24
@@ -577,9 +577,9 @@ object FmASIO: TFmASIO
     ParentColor = False
     ParentFont = False
     Transparent = True
-    OnDblClick = LbFrequencyDblClick
+    OnDblClick = LabelFrequencyDblClick
   end
-  object Lb25Hz: TLabel
+  object Label25Hz: TLabel
     Tag = 1
     Left = 63
     Top = 245
@@ -595,9 +595,9 @@ object FmASIO: TFmASIO
     ParentColor = False
     ParentFont = False
     Transparent = True
-    OnDblClick = LbFrequencyDblClick
+    OnDblClick = LabelFrequencyDblClick
   end
-  object Lb31Hz: TLabel
+  object Label31Hz: TLabel
     Tag = 2
     Left = 79
     Top = 258
@@ -613,9 +613,9 @@ object FmASIO: TFmASIO
     ParentColor = False
     ParentFont = False
     Transparent = True
-    OnDblClick = LbFrequencyDblClick
+    OnDblClick = LabelFrequencyDblClick
   end
-  object Lb40Hz: TLabel
+  object Label40Hz: TLabel
     Tag = 3
     Left = 99
     Top = 271
@@ -631,9 +631,9 @@ object FmASIO: TFmASIO
     ParentColor = False
     ParentFont = False
     Transparent = True
-    OnDblClick = LbFrequencyDblClick
+    OnDblClick = LabelFrequencyDblClick
   end
-  object Lb6k3Hz: TLabel
+  object Label6k3Hz: TLabel
     Tag = 25
     Left = 492
     Top = 245
@@ -649,9 +649,9 @@ object FmASIO: TFmASIO
     ParentColor = False
     ParentFont = False
     Transparent = True
-    OnDblClick = LbFrequencyDblClick
+    OnDblClick = LabelFrequencyDblClick
   end
-  object Lb8kHz: TLabel
+  object Label8kHz: TLabel
     Tag = 26
     Left = 511
     Top = 258
@@ -667,9 +667,9 @@ object FmASIO: TFmASIO
     ParentColor = False
     ParentFont = False
     Transparent = True
-    OnDblClick = LbFrequencyDblClick
+    OnDblClick = LabelFrequencyDblClick
   end
-  object Lb10kHz: TLabel
+  object Label10kHz: TLabel
     Tag = 27
     Left = 528
     Top = 271
@@ -685,9 +685,9 @@ object FmASIO: TFmASIO
     ParentColor = False
     ParentFont = False
     Transparent = True
-    OnDblClick = LbFrequencyDblClick
+    OnDblClick = LabelFrequencyDblClick
   end
-  object Lb12k5Hz: TLabel
+  object Label12k5Hz: TLabel
     Tag = 28
     Left = 542
     Top = 245
@@ -703,9 +703,9 @@ object FmASIO: TFmASIO
     ParentColor = False
     ParentFont = False
     Transparent = True
-    OnDblClick = LbFrequencyDblClick
+    OnDblClick = LabelFrequencyDblClick
   end
-  object Lb16kHz: TLabel
+  object Label16kHz: TLabel
     Tag = 29
     Left = 564
     Top = 258
@@ -721,9 +721,9 @@ object FmASIO: TFmASIO
     ParentColor = False
     ParentFont = False
     Transparent = True
-    OnDblClick = LbFrequencyDblClick
+    OnDblClick = LabelFrequencyDblClick
   end
-  object Lb20kHz: TLabel
+  object Label20kHz: TLabel
     Tag = 30
     Left = 579
     Top = 271
@@ -739,7 +739,7 @@ object FmASIO: TFmASIO
     ParentColor = False
     ParentFont = False
     Transparent = True
-    OnDblClick = LbFrequencyDblClick
+    OnDblClick = LabelFrequencyDblClick
   end
   object LedClipR: TGuiLED
     Left = 621

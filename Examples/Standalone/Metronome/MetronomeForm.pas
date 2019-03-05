@@ -40,27 +40,27 @@ uses
   ExtCtrls, Spin, Buttons, DAV_Types, DAV_Complex, DAV_AsioHost;
 
 type
-  TFmASIO = class(TForm)
+  TFormASIO = class(TForm)
     ASIOHost: TASIOHost;
-    BtControlPanel: TButton;
-    BtPlay: TButton;
-    DriverCombo: TComboBox;
-    LbDrivername: TLabel;
-    LbBPM: TLabel;
-    LbTempo: TLabel;
-    LbVolume: TLabel;
-    SBVolume: TScrollBar;
-    SETempo: TSpinEdit;
+    ButtonControlPanel: TButton;
+    ButtonPlay: TButton;
+    ComboBoxDriver: TComboBox;
+    LabelDrivername: TLabel;
+    LabelBPM: TLabel;
+    LabelTempo: TLabel;
+    LabelVolume: TLabel;
+    ScrollBarVolume: TScrollBar;
+    SpinEditTempo: TSpinEdit;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure ASIOHostBufferSwitch(Sender: TObject;
       InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
     procedure ASIOHostSampleRateChanged(Sender: TObject);
-    procedure BtControlPanelClick(Sender: TObject);
-    procedure BtPlayClick(Sender: TObject);
-    procedure DriverComboChange(Sender: TObject);
-    procedure SBVolumeChange(Sender: TObject);
-    procedure SETempoChange(Sender: TObject);
+    procedure ButtonControlPanelClick(Sender: TObject);
+    procedure ButtonPlayClick(Sender: TObject);
+    procedure ComboBoxDriverChange(Sender: TObject);
+    procedure ScrollBarVolumeChange(Sender: TObject);
+    procedure SpinEditTempoChange(Sender: TObject);
   private
     FAngle: TComplex64;
     FPosition: TComplex64;
@@ -76,7 +76,7 @@ type
   end;
 
 var
-  FmASIO: TFmASIO;
+  FormASIO: TFormASIO;
 
 implementation
 
@@ -89,15 +89,15 @@ implementation
 uses
   Inifiles, DAV_Common, DAV_Math;
 
-procedure TFmASIO.FormCreate(Sender: TObject);
+procedure TFormASIO.FormCreate(Sender: TObject);
 begin
-  DriverCombo.Items := ASIOHost.DriverList;
-  FSamplesPerBeat := 60 / SETempo.Value * ASIOHost.SampleRate;
+  ComboBoxDriver.Items := ASIOHost.DriverList;
+  FSamplesPerBeat := 60 / SpinEditTempo.Value * ASIOHost.SampleRate;
   FSamplesCount := 0;
   FMetroVolume := 1;
   FVolume := 1;
   CalculateSineAngles;
-  if DriverCombo.Items.Count = 0 then
+  if ComboBoxDriver.Items.Count = 0 then
     try
       raise Exception.Create('No ASIO Driver present! Application Terminated!');
     except
@@ -111,77 +111,77 @@ begin
     try
       Left := ReadInteger('Layout', 'Audio Left', Left);
       Top := ReadInteger('Layout', 'Audio Top', Top);
-      DriverCombo.ItemIndex := ReadInteger('Audio', 'Asio Driver', -1);
-      if DriverCombo.ItemIndex >= 0 then
-        DriverComboChange(DriverCombo);
+      ComboBoxDriver.ItemIndex := ReadInteger('Audio', 'Asio Driver', -1);
+      if ComboBoxDriver.ItemIndex >= 0 then
+        ComboBoxDriverChange(ComboBoxDriver);
     finally
       Free;
     end;
 end;
 
-procedure TFmASIO.FormDestroy(Sender: TObject);
+procedure TFormASIO.FormDestroy(Sender: TObject);
 begin
   with TIniFile.Create(FIniFile) do
     try
       WriteInteger('Layout', 'Audio Left', Left);
       WriteInteger('Layout', 'Audio Top', Top);
-      WriteInteger('Audio', 'ASIO Driver', DriverCombo.ItemIndex);
+      WriteInteger('Audio', 'ASIO Driver', ComboBoxDriver.ItemIndex);
     finally
       Free;
     end;
 end;
 
-procedure TFmASIO.DriverComboChange(Sender: TObject);
+procedure TFormASIO.ComboBoxDriverChange(Sender: TObject);
 begin
-  BtControlPanel.Enabled := False;
-  BtPlay.Enabled := False;
-  DriverCombo.ItemIndex := DriverCombo.Items.IndexOf(DriverCombo.Text);
-  if DriverCombo.ItemIndex >= 0 then
+  ButtonControlPanel.Enabled := False;
+  ButtonPlay.Enabled := False;
+  ComboBoxDriver.ItemIndex := ComboBoxDriver.Items.IndexOf(ComboBoxDriver.Text);
+  if ComboBoxDriver.ItemIndex >= 0 then
   begin
-    ASIOHost.DriverIndex := DriverCombo.ItemIndex;
+    ASIOHost.DriverIndex := ComboBoxDriver.ItemIndex;
     with TIniFile.Create(FIniFile) do
       try
-        WriteInteger('Audio', 'Asio Driver', DriverCombo.ItemIndex);
+        WriteInteger('Audio', 'Asio Driver', ComboBoxDriver.ItemIndex);
       finally
         Free;
       end;
-    BtControlPanel.Enabled := True;
-    BtPlay.Enabled := True;
+    ButtonControlPanel.Enabled := True;
+    ButtonPlay.Enabled := True;
   end;
 end;
 
-procedure TFmASIO.CalculateSineAngles;
+procedure TFormASIO.CalculateSineAngles;
 begin
   GetSinCos(2 * Pi * 1000 / ASIOHost.SampleRate, FAngle.Im, FAngle.Re);
 end;
 
-procedure TFmASIO.ASIOHostSampleRateChanged(Sender: TObject);
+procedure TFormASIO.ASIOHostSampleRateChanged(Sender: TObject);
 begin
-  FSamplesPerBeat := 60 / SETempo.Value * ASIOHost.SampleRate;
+  FSamplesPerBeat := 60 / SpinEditTempo.Value * ASIOHost.SampleRate;
   CalculateSineAngles;
 end;
 
-procedure TFmASIO.BtControlPanelClick(Sender: TObject);
+procedure TFormASIO.ButtonControlPanelClick(Sender: TObject);
 begin
   ASIOHost.ControlPanel;
 end;
 
-procedure TFmASIO.SBVolumeChange(Sender: TObject);
+procedure TFormASIO.ScrollBarVolumeChange(Sender: TObject);
 begin
-  FVolume := db_to_Amp(SBVolume.Position);
+  FVolume := db_to_Amp(ScrollBarVolume.Position);
 end;
 
-procedure TFmASIO.SETempoChange(Sender: TObject);
+procedure TFormASIO.SpinEditTempoChange(Sender: TObject);
 begin
-  FSamplesPerBeat := 60 / SETempo.Value * ASIOHost.SampleRate;
+  FSamplesPerBeat := 60 / SpinEditTempo.Value * ASIOHost.SampleRate;
 end;
 
-procedure TFmASIO.BtPlayClick(Sender: TObject);
+procedure TFormASIO.ButtonPlayClick(Sender: TObject);
 begin
-  if BtPlay.Caption = 'Start Audio' then
+  if ButtonPlay.Caption = 'Start Audio' then
   begin
     ASIOHost.Active := True; // Start Audio
-    BtPlay.Caption := 'Stop Audio';
+    ButtonPlay.Caption := 'Stop Audio';
     FMetroVolume := 1;
     FSamplesCount := 0;
     FPosition.Re := 1;
@@ -190,12 +190,12 @@ begin
   else
   begin
     ASIOHost.Active := False; // Stop Audio
-    BtPlay.Caption := 'Start Audio';
+    ButtonPlay.Caption := 'Start Audio';
     FBeatPos := 0;
   end;
 end;
 
-procedure TFmASIO.ASIOHostBufferSwitch(Sender: TObject;
+procedure TFormASIO.ASIOHostBufferSwitch(Sender: TObject;
   InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
 var
   i, j: Integer;

@@ -41,24 +41,24 @@ uses
 type
   TStitchType = (stHorizontal, stVertical);
 
-  TFmKnobGrabber = class(TForm)
+  TFormKnobGrabber = class(TForm)
     MainMenu: TMainMenu;
-    MIAutoStitch: TMenuItem;
-    MIExit: TMenuItem;
-    MIFile: TMenuItem;
-    MIGrabKnobs: TMenuItem;
-    MIHorizontalStitch: TMenuItem;
-    MIOpen: TMenuItem;
-    MIStitch: TMenuItem;
-    MIVerticalStitch: TMenuItem;
+    MenuItemAutoStitch: TMenuItem;
+    MenuItemExit: TMenuItem;
+    MenuItemFile: TMenuItem;
+    MenuItemGrabKnobs: TMenuItem;
+    MenuItemHorizontalStitch: TMenuItem;
+    MenuItemOpen: TMenuItem;
+    MenuItemStitch: TMenuItem;
+    MenuItemVerticalStitch: TMenuItem;
     N1: TMenuItem;
     OpenDialog: TOpenDialog;
-    PnGUI: TPanel;
+    PanelGUI: TPanel;
     VstHost: TVstHost;
     procedure FormCreate(Sender: TObject);
-    procedure MIExitClick(Sender: TObject);
-    procedure MIOpenClick(Sender: TObject);
-    procedure MIGrabKnobsClick(Sender: TObject);
+    procedure MenuItemExitClick(Sender: TObject);
+    procedure MenuItemOpenClick(Sender: TObject);
+    procedure MenuItemGrabKnobsClick(Sender: TObject);
   private
     FFileName: TFileName;
     FCheckParameterString: Boolean;
@@ -70,7 +70,7 @@ type
   end;
 
 var
-  FmKnobGrabber: TFmKnobGrabber;
+  FormKnobGrabber: TFormKnobGrabber;
 
 implementation
 
@@ -83,19 +83,19 @@ implementation
 uses
   Types, FileCtrl, PngImage, DAV_GuiCommon;
 
-procedure TFmKnobGrabber.FormCreate(Sender: TObject);
+procedure TFormKnobGrabber.FormCreate(Sender: TObject);
 begin
   FCheckParameterString := True;
   if FileExists(ParamStr(1)) then
     LoadVstPlugin(ParamStr(1));
 end;
 
-procedure TFmKnobGrabber.MIExitClick(Sender: TObject);
+procedure TFormKnobGrabber.MenuItemExitClick(Sender: TObject);
 begin
   Close;
 end;
 
-procedure TFmKnobGrabber.MIGrabKnobsClick(Sender: TObject);
+procedure TFormKnobGrabber.MenuItemGrabKnobsClick(Sender: TObject);
 var
   Dir: string;
   rct: TRect;
@@ -119,7 +119,7 @@ begin
     end;
 end;
 
-function TFmKnobGrabber.FindKnobBounds(ParameterNo: Integer): TRect;
+function TFormKnobGrabber.FindKnobBounds(ParameterNo: Integer): TRect;
 var
   Bmp: array [0 .. 2] of TBitmap;
   Param: Single;
@@ -226,7 +226,7 @@ begin
       Result := Rect(0, 0, 0, 0);
 end;
 
-procedure TFmKnobGrabber.GrabKnob(ParameterNo: Integer; rct: TRect;
+procedure TFormKnobGrabber.GrabKnob(ParameterNo: Integer; rct: TRect;
   FileName: string);
 var
   Png: TPNGObject;
@@ -236,7 +236,7 @@ var
   vrct: TRect;
   x, y: Integer;
   Scln: array [0 .. 1] of PIntegerArray;
-  sttyp: TStitchType;
+  StitchType: TStitchType;
 
 label
   next;
@@ -265,12 +265,13 @@ begin
           Bmp[2].PixelFormat := pf32bit;
 
           // define stitch type
-          if MIHorizontalStitch.Checked then
-            sttyp := stHorizontal
-          else if MIVerticalStitch.Checked then
-            sttyp := stVertical
+          if MenuItemHorizontalStitch.Checked then
+            StitchType := stHorizontal
           else
-            sttyp := TStitchType(Bmp[1].Width > Bmp[1].Height);
+          if MenuItemVerticalStitch.Checked then
+            StitchType := stVertical
+          else
+            StitchType := TStitchType(Bmp[1].Width > Bmp[1].Height);
 
           // render basic image
           Parameter[ParameterNo] := 0;
@@ -316,7 +317,7 @@ begin
                 if Scln[0]^[x] <> Scln[1]^[x] then
                 begin
                   // a change found, copy to PNG and break
-                  case sttyp of
+                  case StitchType of
                     stHorizontal:
                       begin
 
@@ -365,14 +366,14 @@ begin
   end;
 end;
 
-procedure TFmKnobGrabber.MIOpenClick(Sender: TObject);
+procedure TFormKnobGrabber.MenuItemOpenClick(Sender: TObject);
 begin
   with OpenDialog do
     if Execute then
       LoadVstPlugin(FileName);
 end;
 
-procedure TFmKnobGrabber.LoadVstPlugin(FileName: TFileName);
+procedure TFormKnobGrabber.LoadVstPlugin(FileName: TFileName);
 var
   rct: TRect;
 begin
@@ -380,13 +381,13 @@ begin
   begin
     LoadFromFile(FileName);
     Active := True;
-    ShowEdit(PnGUI);
+    ShowEdit(PanelGUI);
     rct := GetRect;
     ClientWidth := rct.Right - rct.Left;
     ClientHeight := (rct.Bottom - rct.Top);
     // Image.Height := (rct.Bottom - rct.Top);
     FFileName := FileName;
-    MIGrabKnobs.Enabled := True;
+    MenuItemGrabKnobs.Enabled := True;
   end;
 end;
 

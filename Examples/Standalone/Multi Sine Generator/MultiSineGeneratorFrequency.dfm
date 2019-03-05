@@ -1,4 +1,4 @@
-object FmSetFrequency: TFmSetFrequency
+object FormSetFrequency: TFormSetFrequency
   Left = 406
   Top = 321
   BorderStyle = bsDialog
@@ -18,21 +18,21 @@ object FmSetFrequency: TFmSetFrequency
     72)
   PixelsPerInch = 96
   TextHeight = 13
-  object LbNewFrequency: TLabel
+  object LabelNewFrequency: TLabel
     Left = 8
     Top = 13
     Width = 79
     Height = 13
     Caption = 'New Frequency:'
   end
-  object LbFrequencyUnit: TLabel
+  object LabelFrequencyUnit: TLabel
     Left = 93
     Top = 44
     Width = 12
     Height = 13
     Caption = 'Hz'
   end
-  object BtOK: TButton
+  object ButtonOK: TButton
     Left = 127
     Top = 8
     Width = 75
@@ -43,7 +43,7 @@ object FmSetFrequency: TFmSetFrequency
     ModalResult = 1
     TabOrder = 0
   end
-  object BtCancel: TButton
+  object ButtonCancel: TButton
     Left = 127
     Top = 39
     Width = 75
@@ -53,7 +53,7 @@ object FmSetFrequency: TFmSetFrequency
     ModalResult = 2
     TabOrder = 1
   end
-  object EdFrequency: TEdit
+  object EditFrequency: TEdit
     Left = 24
     Top = 41
     Width = 63

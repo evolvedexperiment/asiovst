@@ -13,7 +13,7 @@ uses
   MiniHostForm in 'MiniHostForm.pas' {FormMiniHost},
   OptionsForm in 'OptionsForm.pas' {FormOptions},
   PlayerForm in 'PlayerForm.pas' {Player},
-  AboutForm in 'AboutForm.pas' {FmAbout};
+  AboutForm in 'AboutForm.pas' {FormAbout};
 
 {$R *.RES}
 begin
