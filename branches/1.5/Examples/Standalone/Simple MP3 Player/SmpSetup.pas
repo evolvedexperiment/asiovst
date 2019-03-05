@@ -39,21 +39,21 @@ uses
   SysUtils, Classes, Controls, Forms, StdCtrls;
 
 type
-  TFmSetup = class(TForm)
-    LbAsioDriver: TLabel;
-    LbOutput: TLabel;
-    CBDrivers: TComboBox;
-    CBOutput: TComboBox;
-    BtControlPanel: TButton;
+  TFormSetup = class(TForm)
+    LabelAsioDriver: TLabel;
+    LabelOutput: TLabel;
+    ComboBoxDrivers: TComboBox;
+    ComboBoxOutput: TComboBox;
+    ButtonControlPanel: TButton;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure CBDriversChange(Sender: TObject);
-    procedure CBOutputChange(Sender: TObject);
-    procedure BtControlPanelClick(Sender: TObject);
+    procedure ComboBoxDriversChange(Sender: TObject);
+    procedure ComboBoxOutputChange(Sender: TObject);
+    procedure ButtonControlPanelClick(Sender: TObject);
   end;
 
 var
-  FmSetup: TFmSetup;
+  FormSetup: TFormSetup;
 
 implementation
 
@@ -69,77 +69,77 @@ uses
 resourcestring
   RCStrNoASIODriverPresent = 'No ASIO Driver present! Application Terminated!';
 
-procedure TFmSetup.FormCreate(Sender: TObject);
+procedure TFormSetup.FormCreate(Sender: TObject);
 begin
-  CBDrivers.Items := FmSimpleMp3Player.ASIOHost.DriverList;
-  if CBDrivers.Items.Count = 0 then
+  ComboBoxDrivers.Items := FormSimpleMp3Player.ASIOHost.DriverList;
+  if ComboBoxDrivers.Items.Count = 0 then
   begin
     MessageDlg(RCStrNoASIODriverPresent, mtError, [mbOK], 0);
     Application.Terminate;
   end;
 
-  with TIniFile.Create(FmSimpleMp3Player.IniFile) do
+  with TIniFile.Create(FormSimpleMp3Player.IniFile) do
     try
       Top := ReadInteger('Layout', 'Setup Top', Top);
       Left := ReadInteger('Layout', 'Setup Left', Left);
-      CBDrivers.ItemIndex := ReadInteger('Setup', 'ASIO Driver',
-        CBDrivers.ItemIndex);
-      CBDriversChange(Self);
+      ComboBoxDrivers.ItemIndex := ReadInteger('Setup', 'ASIO Driver',
+        ComboBoxDrivers.ItemIndex);
+      ComboBoxDriversChange(Self);
     finally
       Free;
     end;
 end;
 
-procedure TFmSetup.FormDestroy(Sender: TObject);
+procedure TFormSetup.FormDestroy(Sender: TObject);
 begin
-  with TIniFile.Create(FmSimpleMp3Player.IniFile) do
+  with TIniFile.Create(FormSimpleMp3Player.IniFile) do
     try
       WriteInteger('Layout', 'Setup Top', Top);
       WriteInteger('Layout', 'Setup Left', Left);
-      WriteInteger('Setup', 'ASIO Driver', CBDrivers.ItemIndex);
+      WriteInteger('Setup', 'ASIO Driver', ComboBoxDrivers.ItemIndex);
     finally
       Free;
     end;
 end;
 
-procedure TFmSetup.CBDriversChange(Sender: TObject);
+procedure TFormSetup.ComboBoxDriversChange(Sender: TObject);
 var
   i: Integer;
 begin
-  with FmSimpleMp3Player.ASIOHost do
-    if CBDrivers.ItemIndex >= 0 then
+  with FormSimpleMp3Player.ASIOHost do
+    if ComboBoxDrivers.ItemIndex >= 0 then
     begin
       Active := False;
-      DriverIndex := CBDrivers.ItemIndex;
-      CBOutput.Clear;
+      DriverIndex := ComboBoxDrivers.ItemIndex;
+      ComboBoxOutput.Clear;
       for i := 0 to (OutputChannelCount div 2) - 1 do
       begin
-        CBOutput.Items.Add(OutputChannelInfos[2 * i].name + ' / ' +
+        ComboBoxOutput.Items.Add(OutputChannelInfos[2 * i].name + ' / ' +
           OutputChannelInfos[2 * i + 1].name);
       end;
-      CBOutput.ItemIndex := 0;
+      ComboBoxOutput.ItemIndex := 0;
       if Assigned(OnReset) then
         OnReset(Self);
 
-      with TIniFile.Create(FmSimpleMp3Player.IniFile) do
+      with TIniFile.Create(FormSimpleMp3Player.IniFile) do
         try
-          WriteInteger('Setup', 'Asio Driver', CBDrivers.ItemIndex);
+          WriteInteger('Setup', 'Asio Driver', ComboBoxDrivers.ItemIndex);
         finally
           Free;
         end;
 
-      BtControlPanel.Enabled := True;
+      ButtonControlPanel.Enabled := True;
     end;
 end;
 
-procedure TFmSetup.CBOutputChange(Sender: TObject);
+procedure TFormSetup.ComboBoxOutputChange(Sender: TObject);
 begin
-  FmSimpleMp3Player.OutputChannelOffset := CBOutput.ItemIndex * 2;
+  FormSimpleMp3Player.OutputChannelOffset := ComboBoxOutput.ItemIndex * 2;
 end;
 
-procedure TFmSetup.BtControlPanelClick(Sender: TObject);
+procedure TFormSetup.ButtonControlPanelClick(Sender: TObject);
 begin
-  FmSimpleMp3Player.ASIOHost.ControlPanel;
+  FormSimpleMp3Player.ASIOHost.ControlPanel;
 end;
 
 end.

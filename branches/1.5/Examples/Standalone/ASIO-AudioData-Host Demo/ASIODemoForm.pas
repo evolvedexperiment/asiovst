@@ -10,45 +10,45 @@ uses
   DAV_AudioData, DAV_ASIOHost, DAV_ASIOHostAudioData;
 
 type
-  TFmASIO = class(TForm)
+  TFormAnalyserGoertzel = class(TForm)
     ASIOHostAudioData: TASIOHostAudioData;
-    BtControlPanel: TButton;
-    BtStartStop: TButton;
-    ChannelBox: TComboBox;
-    DriverCombo: TComboBox;
-    Lb_Channels: TLabel;
-    Lb_Copyright: TLabel;
-    Lb_Drivername: TLabel;
-    LbFreq: TLabel;
-    LbPanorama: TLabel;
-    LbVolume: TLabel;
-    SbFreq: TScrollBar;
-    SbPan: TScrollBar;
-    SbVolume: TScrollBar;
+    ButtonControlPanel: TButton;
+    ButtonStartStop: TButton;
+    ComboBoxChannel: TComboBox;
+    ComboBoxDriver: TComboBox;
+    LabelChannels: TLabel;
+    LabelCopyright: TLabel;
+    LabelDrivername: TLabel;
+    LabelFrequency: TLabel;
+    LabelPanorama: TLabel;
+    LabelVolume: TLabel;
+    ScrollBarFreq: TScrollBar;
+    ScrollBarPan: TScrollBar;
+    ScrollBarVolume: TScrollBar;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure ASIOHostAudioDataBufferSwitch32(Sender: TObject; const InBuffer, OutBuffer: TASIOAudioDataCollection32);
     procedure ASIOHostAudioDataBufferSwitch64(Sender: TObject; const InBuffer, OutBuffer: TASIOAudioDataCollection64);
     procedure ASIOHostSampleRateChanged(Sender: TObject);
-    procedure BtControlPanelClick(Sender: TObject);
-    procedure BtStartStopClick(Sender: TObject);
-    procedure ChannelBoxChange(Sender: TObject);
-    procedure DriverComboChange(Sender: TObject);
-    procedure SbFreqChange(Sender: TObject);
-    procedure SbPanChange(Sender: TObject);
-    procedure SbVolumeChange(Sender: TObject);
+    procedure ButtonControlPanelClick(Sender: TObject);
+    procedure ButtonStartStopClick(Sender: TObject);
+    procedure ComboBoxChannelChange(Sender: TObject);
+    procedure ComboBoxDriverChange(Sender: TObject);
+    procedure ScrollBarFreqChange(Sender: TObject);
+    procedure ScrollBarPanChange(Sender: TObject);
+    procedure ScrollBarVolumeChange(Sender: TObject);
   private
     procedure SetFrequency(const CurrentValue: Double);
   public
-    FAngle, FPosition : TComplex64;
-    FPan, FFreq, FVol : Double;
-    FChannelOffset    : Byte;
+    FAngle, FPosition: TComplex64;
+    FPan, FFreq, FVol: Double;
+    FChannelOffset: Byte;
   published
-    property Frequency : Double read FFreq write SetFrequency;
+    property Frequency: Double read FFreq write SetFrequency;
   end;
 
 var
-  FmASIO        : TFmASIO;
+  FormAnalyserGoertzel: TFormAnalyserGoertzel;
 
 implementation
 
@@ -57,7 +57,7 @@ implementation
 {$ENDIF}
 
 uses
-  SysUtils, Inifiles;
+  SysUtils, Inifiles, DAV_Math, DAV_Common;
 
 resourcestring
   RCStrPanorama = 'Panorama';
@@ -67,170 +67,174 @@ resourcestring
   RCStrStopAudio = 'Stop Audio';
   RCStrNoASIODriverPresent = 'No ASIO Driver present! Application Terminated!';
 
-procedure TFmASIO.FormCreate(Sender: TObject);
+procedure TFormAnalyserGoertzel.FormCreate(Sender: TObject);
 begin
- DriverCombo.Items := ASIOHostAudioData.DriverList;
- if DriverCombo.Items.Count = 0 then
+  ComboBoxDriver.Items := ASIOHostAudioData.DriverList;
+  if ComboBoxDriver.Items.Count = 0 then
   try
-   raise Exception.Create(RCStrNoASIODriverPresent);
+    raise Exception.Create(RCStrNoASIODriverPresent);
   except
-   Application.Terminate;
+    Application.Terminate;
   end;
 
- // and make sure all controls are enabled or disabled
- with TIniFile.Create(ExtractFilePath(ParamStr(0)) + 'ASIODemo.INI') do
+  // and make sure all controls are enabled or disabled
+  with TIniFile.Create(ExtractFilePath(ParamStr(0)) + 'ASIODemo.INI') do
   try
-   Left := ReadInteger('Layout', 'Audio Left', Left);
-   Top := ReadInteger('Layout', 'Audio Top', Top);
-   DriverCombo.ItemIndex := ReadInteger('Audio', 'Asio Driver', -1);
-   if DriverCombo.ItemIndex >= 0 then DriverComboChange(DriverCombo);
-   ChannelBox.ItemIndex := ReadInteger('Audio', 'Channels', 0);
+    Left := ReadInteger('Layout', 'Audio Left', Left);
+    Top := ReadInteger('Layout', 'Audio Top', Top);
+    ComboBoxDriver.ItemIndex := ReadInteger('Audio', 'Asio Driver', -1);
+    if ComboBoxDriver.ItemIndex >= 0 then
+      ComboBoxDriverChange(ComboBoxDriver);
+    ComboBoxChannel.ItemIndex := ReadInteger('Audio', 'Channels', 0);
   finally
-   Free;
+    Free;
   end;
 
- FPosition.Re   :=    0;
- FPosition.Im   :=   -1;
- FFreq          := 1000;
- FPan           :=    0.5;
- FVol           :=    1;
- FChannelOffset :=    0;
- GetSinCos(2 * Pi * FFreq / ASIOHostAudioData.SampleRate, FAngle.Im, FAngle.Re);
+  FPosition.Re   := 0;
+  FPosition.Im   := -1;
+  FFreq          := 1000;
+  FPan           := 0.5;
+  FVol           := 1;
+  FChannelOffset := 0;
+  GetSinCos(2 * Pi * FFreq / ASIOHostAudioData.SampleRate, FAngle.Im, FAngle.Re);
 end;
 
-procedure TFmASIO.DriverComboChange(Sender: TObject);
-var i : Integer;
+procedure TFormAnalyserGoertzel.ComboBoxDriverChange(Sender: TObject);
+var
+  i: Integer;
 begin
- BtControlPanel.Enabled := False;
- BtStartStop.Enabled := False;
- DriverCombo.ItemIndex := DriverCombo.Items.IndexOf(DriverCombo.Text);
- if DriverCombo.ItemIndex >= 0 then
+  ButtonControlPanel.Enabled := False;
+  ButtonStartStop.Enabled := False;
+  ComboBoxDriver.ItemIndex := ComboBoxDriver.Items.IndexOf(ComboBoxDriver.Text);
+  if ComboBoxDriver.ItemIndex >= 0 then
   begin
-   ASIOHostAudioData.DriverIndex := DriverCombo.ItemIndex;
-   ChannelBox.Clear;
-   for i := 0 to (ASIOHostAudioData.OutputChannelCount div 2) - 1 do
-   begin
-    ChannelBox.Items.Add(
-     ASIOHostAudioData.OutputChannelInfos[2 * i].Name + ' / ' +
-     ASIOHostAudioData.OutputChannelInfos[2 * i + 1].Name);
-   end;
-   with TIniFile.Create(ExtractFilePath(ParamStr(0)) + 'ASIODemo.INI') do
-    try
-     WriteInteger('Audio', 'Asio Driver', DriverCombo.ItemIndex);
-    finally
-     Free;
+    ASIOHostAudioData.DriverIndex := ComboBoxDriver.ItemIndex;
+    ComboBoxChannel.Clear;
+    for i := 0 to (ASIOHostAudioData.OutputChannelCount div 2) - 1 do
+    begin
+      ComboBoxChannel.Items.Add(
+        ASIOHostAudioData.OutputChannelInfos[2 * i].Name + ' / ' +
+       ASIOHostAudioData.OutputChannelInfos[2 * i + 1].Name);
     end;
-   BtControlPanel.Enabled := True;
-   BtStartStop.Enabled := True;
-   ChannelBox.ItemIndex := 0;
+    with TIniFile.Create(ExtractFilePath(ParamStr(0)) + 'ASIODemo.INI') do
+    try
+      WriteInteger('Audio', 'Asio Driver', ComboBoxDriver.ItemIndex);
+    finally
+      Free;
+    end;
+    ButtonControlPanel.Enabled := True;
+    ButtonStartStop.Enabled := True;
+    ComboBoxChannel.ItemIndex := 0;
   end;
 end;
 
-procedure TFmASIO.BtControlPanelClick(Sender: TObject);
+procedure TFormAnalyserGoertzel.ButtonControlPanelClick(Sender: TObject);
 begin
- ASIOHostAudioData.ControlPanel;
+  ASIOHostAudioData.ControlPanel;
 end;
 
-procedure TFmASIO.FormDestroy(Sender: TObject);
+procedure TFormAnalyserGoertzel.FormDestroy(Sender: TObject);
 begin
- with TIniFile.Create(ExtractFilePath(ParamStr(0)) + 'ASIODemo.INI') do
+  with TIniFile.Create(ExtractFilePath(ParamStr(0)) + 'ASIODemo.INI') do
   try
-   WriteInteger('Layout', 'Audio Left', Left);
-   WriteInteger('Layout', 'Audio Top', Top);
-   WriteInteger('Audio', 'ASIO Driver', DriverCombo.ItemIndex);
-   WriteInteger('Audio', 'Channels', ChannelBox.ItemIndex);
+    WriteInteger('Layout', 'Audio Left', Left);
+    WriteInteger('Layout', 'Audio Top', Top);
+    WriteInteger('Audio', 'ASIO Driver', ComboBoxDriver.ItemIndex);
+    WriteInteger('Audio', 'Channels', ComboBoxChannel.ItemIndex);
   finally
-   Free;
+    Free;
   end; 
 end;
 
-procedure TFmASIO.BtStartStopClick(Sender: TObject);
+procedure TFormAnalyserGoertzel.ButtonStartStopClick(Sender: TObject);
 begin
- if BtStartStop.Caption = RCStrStartAudio then
+  if ButtonStartStop.Caption = RCStrStartAudio then
   begin
-   ASIOHostAudioData.Active := True; // Start Audio
-   BtStartStop.Caption := RCStrStopAudio;
+    ASIOHostAudioData.Active := True; // Start Audio
+    ButtonStartStop.Caption := RCStrStopAudio;
   end
- else
+  else
   begin
-   ASIOHostAudioData.Active := False; // Stop Audio
-   BtStartStop.Caption := RCStrStartAudio;
+    ASIOHostAudioData.Active := False; // Stop Audio
+    ButtonStartStop.Caption := RCStrStartAudio;
   end;
 end;
 
-procedure TFmASIO.ChannelBoxChange(Sender: TObject);
+procedure TFormAnalyserGoertzel.ComboBoxChannelChange(Sender: TObject);
 begin
- FChannelOffset := ChannelBox.ItemIndex * 2;
+  FChannelOffset := ComboBoxChannel.ItemIndex * 2;
 end;
 
-procedure TFmASIO.SbFreqChange(Sender: TObject);
+procedure TFormAnalyserGoertzel.ScrollBarFreqChange(Sender: TObject);
 begin
- Frequency := FreqLinearToLog(SbFreq.Position * 0.00001);
+  Frequency := FreqLinearToLog(ScrollBarFreq.Position * 0.00001);
 end;
 
-procedure TFmASIO.SetFrequency(const CurrentValue: Double);
+procedure TFormAnalyserGoertzel.SetFrequency(const CurrentValue: Double);
 begin
- if FFreq<>CurrentValue then
+  if FFreq <> CurrentValue then
   begin
-   FFreq := CurrentValue;
-   LbFreq.Caption := RCStrFrequency + ': ' + FloatTostrF(FFreq, ffGeneral, 5, 5) + ' Hz';
-   GetSinCos(2 * Pi * FFreq / ASIOHostAudioData.SampleRate, FAngle.Im, FAngle.Re);
+    FFreq := CurrentValue;
+    LabelFrequency.Caption := RCStrFrequency + ': ' + FloatTostrF(FFreq, ffGeneral, 5, 5) + ' Hz';
+    GetSinCos(2 * Pi * FFreq / ASIOHostAudioData.SampleRate, FAngle.Im, FAngle.Re);
   end;
 end;
 
-procedure TFmASIO.ASIOHostAudioDataBufferSwitch32(Sender: TObject;
+procedure TFormAnalyserGoertzel.ASIOHostAudioDataBufferSwitch32(Sender: TObject;
   const InBuffer, OutBuffer: TASIOAudioDataCollection32);
 var
-  Sample, Channel : Integer;
-  CurrentValue      : Double;
+  Sample, Channel: Integer;
+  CurrentValue: Double;
 begin
- for Sample := 0 to OutBuffer.SampleFrames - 1 do
+  for Sample := 0 to OutBuffer.SampleFrames - 1 do
   begin
-   CurrentValue := FPosition.Re * FAngle.Re - FPosition.Im * FAngle.Im;
-   FPosition.Im := FPosition.Im * FAngle.Re + FPosition.Re * FAngle.Im;
-   FPosition.Re := CurrentValue; CurrentValue := CurrentValue * FVol;
-   for Channel := 0 to ASIOHostAudioData.OutputChannelCount - 1
-    do OutBuffer[Channel].ChannelDataPointer[Sample] := CurrentValue;
+    CurrentValue := FPosition.Re * FAngle.Re - FPosition.Im * FAngle.Im;
+    FPosition.Im := FPosition.Im * FAngle.Re + FPosition.Re * FAngle.Im;
+    FPosition.Re := CurrentValue; CurrentValue := CurrentValue * FVol;
+    for Channel := 0 to ASIOHostAudioData.OutputChannelCount - 1 do
+      OutBuffer[Channel].ChannelDataPointer[Sample] := CurrentValue;
   end;
 end;
 
-procedure TFmASIO.ASIOHostAudioDataBufferSwitch64(Sender: TObject;
+procedure TFormAnalyserGoertzel.ASIOHostAudioDataBufferSwitch64(Sender: TObject;
   const InBuffer, OutBuffer: TASIOAudioDataCollection64);
 var
-  Sample, Channel : Integer;
-  CurrentValue    : Double;
+  Sample, Channel: Integer;
+  CurrentValue: Double;
 begin
- for Sample := 0 to ASIOHostAudioData.BufferSize - 1 do
+  for Sample := 0 to ASIOHostAudioData.BufferSize - 1 do
   begin
-   CurrentValue := FPosition.Re * FAngle.Re - FPosition.Im * FAngle.Im;
-   FPosition.Im := FPosition.Im * FAngle.Re + FPosition.Re * FAngle.Im;
-   FPosition.Re := CurrentValue; CurrentValue := CurrentValue * FVol;
-   for Channel := 0 to ASIOHostAudioData.OutputChannelCount - 1
-    do OutBuffer[Channel].ChannelDataPointer[Sample] := CurrentValue;
+    CurrentValue := FPosition.Re * FAngle.Re - FPosition.Im * FAngle.Im;
+    FPosition.Im := FPosition.Im * FAngle.Re + FPosition.Re * FAngle.Im;
+    FPosition.Re := CurrentValue; CurrentValue := CurrentValue * FVol;
+    for Channel := 0 to ASIOHostAudioData.OutputChannelCount - 1 do
+      OutBuffer[Channel].ChannelDataPointer[Sample] := CurrentValue;
   end;
 end;
 
-procedure TFmASIO.ASIOHostSampleRateChanged(Sender: TObject);
+procedure TFormAnalyserGoertzel.ASIOHostSampleRateChanged(Sender: TObject);
 begin
- GetSinCos(2 * Pi * FFreq / ASIOHostAudioData.SampleRate, FAngle.Im, FAngle.Re);
+  GetSinCos(2 * Pi * FFreq / ASIOHostAudioData.SampleRate, FAngle.Im, FAngle.Re);
 end;
 
-procedure TFmASIO.SbVolumeChange(Sender: TObject);
+procedure TFormAnalyserGoertzel.ScrollBarVolumeChange(Sender: TObject);
 begin
- FVol := SbVolume.Position * 0.00001;
- if FVol = 0
-  then LbVolume.Caption := RCStrVolume + ': 0 equals -oo dB'
-  else LbVolume.Caption := RCStrVolume + ': ' +
-                           FloattostrF(FVol, ffFixed, 2, 2) + ' equals ' +
-                           FloattostrF(Amp_to_dB(FVol), ffGeneral, 2, 2) + ' dB';
+  FVol := ScrollBarVolume.Position * 0.00001;
+  if FVol = 0 then
+    LabelVolume.Caption := RCStrVolume + ': 0 equals -oo dB'
+  else
+    LabelVolume.Caption := RCStrVolume + ': ' +
+      FloattostrF(FVol, ffFixed, 2, 2) + ' equals ' +
+      FloattostrF(Amp_to_dB(FVol), ffGeneral, 2, 2) + ' dB';
 end;
 
-procedure TFmASIO.SbPanChange(Sender: TObject);
+procedure TFormAnalyserGoertzel.ScrollBarPanChange(Sender: TObject);
 begin
- FPan := SbPan.Position * 0.01;
- if FPan = 0.5
-  then LbPanorama.Caption := RCStrPanorama + ': C'
-  else LbPanorama.Caption := RCStrPanorama + ': ' + Inttostr(round(100 * (FPan * 2 - 1)));
+  FPan := ScrollBarPan.Position * 0.01;
+  if FPan = 0.5 then
+    LabelPanorama.Caption := RCStrPanorama + ': C'
+  else
+    LabelPanorama.Caption := RCStrPanorama + ': ' + IntToStr(round(100 * (FPan * 2 - 1)));
 end;
 
 {$IFDEF FPC}

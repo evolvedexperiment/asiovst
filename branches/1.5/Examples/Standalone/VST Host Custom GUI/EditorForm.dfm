@@ -21,7 +21,7 @@ object FmVSTEditor: TFmVSTEditor
   OnDeactivate = FormDeactivate
   PixelsPerInch = 96
   TextHeight = 13
-  object PnPlugin: TPanel
+  object PanelPlugin: TPanel
     Left = 0
     Top = 0
     Width = 289
@@ -68,14 +68,14 @@ object FmVSTEditor: TFmVSTEditor
     Left = 152
     Top = 75
   end
-  object OD: TOpenDialog
+  object OpenDialog: TOpenDialog
     DefaultExt = 'fxp'
     Filter = 'VST Preset (*.fxp)|*.fxp|VST Bank (*.fxb)|*.fxb'
     Options = [ofHideReadOnly, ofFileMustExist, ofEnableSizing]
     Left = 208
     Top = 75
   end
-  object SD: TSaveDialog
+  object SaveDialog: TSaveDialog
     DefaultExt = 'fxp'
     Filter = 'VST Preset (*.fxp)|*.fxp|VST Bank (*.fxb)|*.fxb'
     Left = 180
@@ -84,55 +84,55 @@ object FmVSTEditor: TFmVSTEditor
   object MainMenu: TMainMenu
     Left = 68
     Top = 75
-    object MiStandalone: TMenuItem
+    object MenuItemStandalone: TMenuItem
       Caption = '&Standalone'
-      object MiExit: TMenuItem
+      object MenuItemExit: TMenuItem
         Caption = 'E&xit'
-        OnClick = MiExitClick
+        OnClick = MenuItemExitClick
       end
     end
-    object GUI1: TMenuItem
+    object MenuItemGUI: TMenuItem
       Caption = 'GUI'
-      object MiGuiDefault: TMenuItem
+      object MenuItemGuiDefault: TMenuItem
         Caption = 'Default'
         Checked = True
         RadioItem = True
-        OnClick = MiGuiDefaultClick
+        OnClick = MenuItemGuiDefaultClick
       end
-      object MiGuiList: TMenuItem
+      object MenuItemGuiList: TMenuItem
         Caption = 'List'
         RadioItem = True
-        OnClick = MiGuiListClick
+        OnClick = MenuItemGuiListClick
       end
-      object MiGuiSelector: TMenuItem
+      object MenuItemGuiSelector: TMenuItem
         Caption = 'Selector'
         RadioItem = True
-        OnClick = MiGuiSelectorClick
+        OnClick = MenuItemGuiSelectorClick
       end
-      object MiGuiCustom: TMenuItem
+      object MenuItemGuiCustom: TMenuItem
         Caption = 'Custom'
         RadioItem = True
-        OnClick = MiGuiCustomClick
+        OnClick = MenuItemGuiCustomClick
       end
     end
-    object MiProgram: TMenuItem
+    object MenuItemProgram: TMenuItem
       Caption = '&Presets'
-      object MiLoadPreset: TMenuItem
+      object MenuItemLoadPreset: TMenuItem
         Caption = '&Load Preset...'
-        OnClick = MILoadPresetClick
+        OnClick = MenuItemLoadPresetClick
       end
-      object MiSavePreset: TMenuItem
+      object MenuItemSavePreset: TMenuItem
         Caption = '&Save Preset...'
       end
       object N1: TMenuItem
         Caption = '-'
       end
     end
-    object MiAudio: TMenuItem
+    object MenuItemAudio: TMenuItem
       Caption = 'Audio'
-      object MiSetup: TMenuItem
+      object MenuItemSetup: TMenuItem
         Caption = 'Setup'
-        OnClick = MiSetupClick
+        OnClick = MenuItemSetupClick
       end
     end
   end

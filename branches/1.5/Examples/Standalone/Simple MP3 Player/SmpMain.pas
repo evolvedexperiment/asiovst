@@ -40,26 +40,26 @@ uses
   DAV_DspBufferedMp3Player, DAV_DspBufferedAudioFilePlayer, DAV_ASIOHost;
 
 type
-  TFmSimpleMp3Player = class(TForm)
+  TFormSimpleMp3Player = class(TForm)
     ASIOHost: TASIOHost;
-    BtAddFile: TButton;
-    BtDeleteItem: TButton;
-    BtForward: TButton;
-    BtPause: TButton;
-    BtPlay: TButton;
-    BtRewind: TButton;
-    BtSetup: TButton;
-    BtStop: TButton;
-    LbBitrateInfo: TLabel;
-    LbBuffer: TLabel;
-    LbBufferValue: TLabel;
-    LbInformation: TLabel;
-    LbTimeInfo: TLabel;
+    ButtonAddFile: TButton;
+    ButtonDeleteItem: TButton;
+    ButtonForward: TButton;
+    ButtonPause: TButton;
+    ButtonPlay: TButton;
+    ButtonRewind: TButton;
+    ButtonSetup: TButton;
+    ButtonStop: TButton;
+    LabelBitrateInfo: TLabel;
+    LabelBuffer: TLabel;
+    LabelBufferValue: TLabel;
+    LabelInformation: TLabel;
+    LabelTimeInfo: TLabel;
     OpenDialog: TOpenDialog;
     PlayList: TListBox;
-    PnInformation: TPanel;
-    TbPosition: TTrackBar;
-    TbVolume: TTrackBar;
+    PanelInformation: TPanel;
+    TrackBarPosition: TTrackBar;
+    TrackBarVolume: TTrackBar;
     Timer: TTimer;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -67,20 +67,20 @@ type
     procedure BtControlPanelClick(Sender: TObject);
     procedure ASIOHostSampleRateChanged(Sender: TObject);
     procedure TimerTimer(Sender: TObject);
-    procedure BtPlayClick(Sender: TObject);
-    procedure BtPauseClick(Sender: TObject);
-    procedure BtStopClick(Sender: TObject);
-    procedure BtAddFileClick(Sender: TObject);
+    procedure ButtonPlayClick(Sender: TObject);
+    procedure ButtonPauseClick(Sender: TObject);
+    procedure ButtonStopClick(Sender: TObject);
+    procedure ButtonAddFileClick(Sender: TObject);
     procedure PlayListClick(Sender: TObject);
-    procedure BtSetupClick(Sender: TObject);
-    procedure TbVolumeChange(Sender: TObject);
-    procedure BtDeleteItemClick(Sender: TObject);
-    procedure BtRewindClick(Sender: TObject);
-    procedure BtForwardClick(Sender: TObject);
+    procedure ButtonSetupClick(Sender: TObject);
+    procedure TrackBarVolumeChange(Sender: TObject);
+    procedure ButtonDeleteItemClick(Sender: TObject);
+    procedure ButtonRewindClick(Sender: TObject);
+    procedure ButtonForwardClick(Sender: TObject);
   private
-    FIniFile             : TFileName;
-    FVolumeFactor        : Single;
-    FBufferedPlayer      : TBufferedMP3FilePlayer;
+    FIniFile: TFileName;
+    FVolumeFactor: Single;
+    FBufferedPlayer: TBufferedMP3FilePlayer;
     FOutputChannelOffset : Integer;
   public
     property IniFile: TFileName read FIniFile;
@@ -88,7 +88,7 @@ type
   end;
 
 var
-  FmSimpleMp3Player: TFmSimpleMp3Player;
+  FormSimpleMp3Player: TFormSimpleMp3Player;
 
 implementation
 
@@ -103,172 +103,173 @@ uses
 
 { TFmSmp }
 
-procedure TFmSimpleMp3Player.FormCreate(Sender: TObject);
+procedure TFormSimpleMp3Player.FormCreate(Sender: TObject);
 var
   Item : Integer;
 begin
- FIniFile := ExtractFilePath(ParamStr(0)) + 'Simple MP3 Player.ini';
+  FIniFile := ExtractFilePath(ParamStr(0)) + 'Simple MP3 Player.ini';
 
- FVolumeFactor := 1;
- FOutputChannelOffset := 0;
- FBufferedPlayer := TBufferedMP3FilePlayer.Create;
- with FBufferedPlayer do
+  FVolumeFactor := 1;
+  FOutputChannelOffset := 0;
+  FBufferedPlayer := TBufferedMP3FilePlayer.Create;
+  with FBufferedPlayer do
   begin
-   BufferSize := 65536;
-   BlockSize  := 4096
+    BufferSize := 65536;
+    BlockSize  := 4096
   end;
 
- // and make sure all controls are enabled or disabled
- with TIniFile.Create(FIniFile) do
+  // and make sure all controls are enabled or disabled
+  with TIniFile.Create(FIniFile) do
   try
-   Left := ReadInteger('Layout', 'Main Left', Left);
-   Top := ReadInteger('Layout', 'Main Top', Top);
+    Left := ReadInteger('Layout', 'Main Left', Left);
+    Top := ReadInteger('Layout', 'Main Top', Top);
 
-   ReadSection('Playlist', PlayList.Items);
-   for Item := 0 to PlayList.Items.Count - 1
-    do PlayList.Items[Item] := ReadString('Playlist', PlayList.Items[Item], PlayList.Items[Item]);
+    ReadSection('Playlist', PlayList.Items);
+    for Item := 0 to PlayList.Items.Count - 1 do
+      PlayList.Items[Item] := ReadString('Playlist', PlayList.Items[Item], PlayList.Items[Item]);
     
-   EraseSection('Playlist');
+    EraseSection('Playlist');
   finally
-   Free;
+    Free;
   end;
-
 end;
 
-procedure TFmSimpleMp3Player.FormDestroy(Sender: TObject);
+procedure TFormSimpleMp3Player.FormDestroy(Sender: TObject);
 var
   Item : Integer;
 begin
- ASIOHost.Active := False;
- FreeAndNil(FBufferedPlayer);
+  ASIOHost.Active := False;
+  FreeAndNil(FBufferedPlayer);
 
- with TIniFile.Create(FIniFile) do
+  with TIniFile.Create(FIniFile) do
   try
-   WriteInteger('Layout', 'Main Left', Left);
-   WriteInteger('Layout', 'Main Top', Top);
+    WriteInteger('Layout', 'Main Left', Left);
+    WriteInteger('Layout', 'Main Top', Top);
 
-   for Item := 0 to PlayList.Count - 1
-    do WriteString('Playlist', 'File ' + IntToStr(Item + 1), PlayList.Items[Item]);
+    for Item := 0 to PlayList.Count - 1 do
+      WriteString('Playlist', 'File ' + IntToStr(Item + 1), PlayList.Items[Item]);
   finally
-   Free;
+    Free;
   end;
 end;
 
-procedure TFmSimpleMp3Player.PlayListClick(Sender: TObject);
+procedure TFormSimpleMp3Player.PlayListClick(Sender: TObject);
 begin
- if (PlayList.ItemIndex >= 0) and FileExists(PlayList.Items[PlayList.ItemIndex]) then
+  if (PlayList.ItemIndex >= 0) and FileExists(PlayList.Items[PlayList.ItemIndex]) then
   begin
-   FBufferedPlayer.Filename := PlayList.Items[PlayList.ItemIndex];
-   if Assigned(FBufferedPlayer.MpegAudio) then
-    with FBufferedPlayer.MpegAudio do
-     begin
-      LbInformation.Caption := Id3Artist + ' - ' + Id3Album + ' - ' +
-        Id3Title + ' (' + Id3Year + ')';
-     end;
+    FBufferedPlayer.Filename := PlayList.Items[PlayList.ItemIndex];
+    if Assigned(FBufferedPlayer.MpegAudio) then
+      with FBufferedPlayer.MpegAudio do
+      begin
+        LabelInformation.Caption := Id3Artist + ' - ' + Id3Album + ' - ' +
+          Id3Title + ' (' + Id3Year + ')';
+       end;
   end;
 end;
 
-procedure TFmSimpleMp3Player.TbVolumeChange(Sender: TObject);
+procedure TFormSimpleMp3Player.TrackBarVolumeChange(Sender: TObject);
 begin
- FVolumeFactor := 0.01 * TbVolume.Position;
+  FVolumeFactor := 0.01 * TrackBarVolume.Position;
 end;
 
-procedure TFmSimpleMp3Player.TimerTimer(Sender: TObject);
+procedure TFormSimpleMp3Player.TimerTimer(Sender: TObject);
 var
-  Sec, Min : Integer;
-  TmpStr   : string;
+  Sec, Min: Integer;
+  TmpStr: string;
 begin
- LbBufferValue.Caption := IntToStr(Round(FBufferedPlayer.BufferFill)) + ' %';
- if Assigned(FBufferedPlayer.MpegAudio) then
-  with FBufferedPlayer.MpegAudio do
-   begin
-    LbBitrateInfo.Caption := IntToStr(Bitrate div 1000) + 'kB/s';
-    Min := Round(CurrentSamplePosition / SampleFrames * TotalLength / 60 - 0.5);
-    Sec := Round(CurrentSamplePosition / SampleFrames * TotalLength - 60 * Min);
-    if Min < 10
-     then TmpStr := '0' + IntToStr(Min)
-     else TmpStr := IntToStr(Min);
-    TmpStr := TmpStr + ':';
-    if Sec < 10
-     then TmpStr := TmpStr + '0' + IntToStr(Sec)
-     else TmpStr := TmpStr + IntToStr(Sec);
-    LbTimeInfo.Caption := TmpStr;
-    TbPosition.Position := Round(1000 * CurrentSamplePosition / SampleFrames);
-   end;
+  LabelBufferValue.Caption := IntToStr(Round(FBufferedPlayer.BufferFill)) + ' %';
+  if Assigned(FBufferedPlayer.MpegAudio) then
+    with FBufferedPlayer.MpegAudio do
+    begin
+      LabelBitrateInfo.Caption := IntToStr(Bitrate div 1000) + 'kB/s';
+      Min := Round(CurrentSamplePosition / SampleFrames * TotalLength / 60 - 0.5);
+      Sec := Round(CurrentSamplePosition / SampleFrames * TotalLength - 60 * Min);
+      if Min < 10 then
+        TmpStr := '0' + IntToStr(Min)
+      else
+        TmpStr := IntToStr(Min);
+      TmpStr := TmpStr + ':';
+      if Sec < 10 then
+        TmpStr := TmpStr + '0' + IntToStr(Sec)
+      else
+        TmpStr := TmpStr + IntToStr(Sec);
+      LabelTimeInfo.Caption := TmpStr;
+      TrackBarPosition.Position := Round(1000 * CurrentSamplePosition / SampleFrames);
+    end;
 end;
 
-procedure TFmSimpleMp3Player.ASIOHostSampleRateChanged(Sender: TObject);
+procedure TFormSimpleMp3Player.ASIOHostSampleRateChanged(Sender: TObject);
 begin
- if Assigned(FBufferedPlayer)
-  then FBufferedPlayer.SampleRate := ASIOHost.SampleRate;
+  if Assigned(FBufferedPlayer) then
+    FBufferedPlayer.SampleRate := ASIOHost.SampleRate;
 end;
 
-procedure TFmSimpleMp3Player.BtControlPanelClick(Sender: TObject);
+procedure TFormSimpleMp3Player.BtControlPanelClick(Sender: TObject);
 begin
- ASIOHost.ControlPanel;
+  ASIOHost.ControlPanel;
 end;
 
-procedure TFmSimpleMp3Player.BtPauseClick(Sender: TObject);
+procedure TFormSimpleMp3Player.ButtonPauseClick(Sender: TObject);
 begin
- ASIOHost.Active := False;
+  ASIOHost.Active := False;
 end;
 
-procedure TFmSimpleMp3Player.BtPlayClick(Sender: TObject);
+procedure TFormSimpleMp3Player.ButtonPlayClick(Sender: TObject);
 begin
- ASIOHost.Active := True;
+  ASIOHost.Active := True;
 end;
 
-procedure TFmSimpleMp3Player.BtRewindClick(Sender: TObject);
+procedure TFormSimpleMp3Player.ButtonRewindClick(Sender: TObject);
 begin
- if PlayList.ItemIndex > 0 then
+  if PlayList.ItemIndex > 0 then
   begin
-   PlayList.ItemIndex := PlayList.ItemIndex - 1;
-   FBufferedPlayer.Filename := PlayList.Items[PlayList.ItemIndex];
+    PlayList.ItemIndex := PlayList.ItemIndex - 1;
+    FBufferedPlayer.Filename := PlayList.Items[PlayList.ItemIndex];
   end;
 end;
 
-procedure TFmSimpleMp3Player.BtStopClick(Sender: TObject);
+procedure TFormSimpleMp3Player.ButtonStopClick(Sender: TObject);
 begin
- ASIOHost.Active := False;
- FBufferedPlayer.Reset;
+  ASIOHost.Active := False;
+  FBufferedPlayer.Reset;
 end;
 
-procedure TFmSimpleMp3Player.BtAddFileClick(Sender: TObject);
+procedure TFormSimpleMp3Player.ButtonAddFileClick(Sender: TObject);
 begin
- if OpenDialog.Execute
-  then PlayList.Items.Add(OpenDialog.FileName);
+  if OpenDialog.Execute then
+    PlayList.Items.Add(OpenDialog.FileName);
 end;
 
-procedure TFmSimpleMp3Player.BtDeleteItemClick(Sender: TObject);
+procedure TFormSimpleMp3Player.ButtonDeleteItemClick(Sender: TObject);
 begin
- if PlayList.ItemIndex >= 0
-  then PlayList.Items.Delete(PlayList.ItemIndex);
+  if PlayList.ItemIndex >= 0 then
+    PlayList.Items.Delete(PlayList.ItemIndex);
 end;
 
-procedure TFmSimpleMp3Player.BtForwardClick(Sender: TObject);
+procedure TFormSimpleMp3Player.ButtonForwardClick(Sender: TObject);
 begin
- if PlayList.ItemIndex < PlayList.Count - 1 then
+  if PlayList.ItemIndex < PlayList.Count - 1 then
   begin
-   PlayList.ItemIndex := PlayList.ItemIndex + 1;
-   FBufferedPlayer.Filename := PlayList.Items[PlayList.ItemIndex];
+    PlayList.ItemIndex := PlayList.ItemIndex + 1;
+    FBufferedPlayer.Filename := PlayList.Items[PlayList.ItemIndex];
   end;
 end;
 
-procedure TFmSimpleMp3Player.BtSetupClick(Sender: TObject);
+procedure TFormSimpleMp3Player.ButtonSetupClick(Sender: TObject);
 begin
- FmSetup.ShowModal;
+  FormSetup.ShowModal;
 end;
 
-procedure TFmSimpleMp3Player.ASIOHostBufferSwitch32(Sender: TObject;
+procedure TFormSimpleMp3Player.ASIOHostBufferSwitch32(Sender: TObject;
   const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
 var
-  Sample : Integer;
+  Sample: Integer;
 begin
- FBufferedPlayer.GetSamples(OutBuffer[0], OutBuffer[1], ASIOHost.Buffersize);
- for Sample := 0 to ASIOHost.Buffersize - 1 do
+  FBufferedPlayer.GetSamples(OutBuffer[0], OutBuffer[1], ASIOHost.Buffersize);
+  for Sample := 0 to ASIOHost.Buffersize - 1 do
   begin
-   OutBuffer[0, Sample] := FVolumeFactor * OutBuffer[0, Sample];
-   OutBuffer[1, Sample] := FVolumeFactor * OutBuffer[1, Sample];
+    OutBuffer[0, Sample] := FVolumeFactor * OutBuffer[0, Sample];
+    OutBuffer[1, Sample] := FVolumeFactor * OutBuffer[1, Sample];
   end;
 end;
 

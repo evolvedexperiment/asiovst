@@ -1,4 +1,4 @@
-object FmOptions: TFmOptions
+object FormOptions: TFormOptions
   Left = 213
   Top = 173
   BorderIcons = [biSystemMenu]
@@ -19,49 +19,49 @@ object FmOptions: TFmOptions
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 14
-  object GbASIO: TGroupBox
+  object GroupBoxASIO: TGroupBox
     Left = 8
     Top = 9
     Width = 305
     Height = 169
     Caption = ' ASIO '
     TabOrder = 0
-    object LbASIODriver: TLabel
+    object LabelASIODriver: TLabel
       Left = 8
       Top = 16
       Width = 60
       Height = 14
       Caption = 'ASIO Driver:'
     end
-    object LbOutputs: TLabel
+    object LabelOutputs: TLabel
       Left = 8
       Top = 40
       Width = 41
       Height = 14
       Caption = 'Outputs:'
     end
-    object LbBufferSize: TLabel
+    object LabelBufferSize: TLabel
       Left = 8
       Top = 88
       Width = 54
       Height = 14
       Caption = 'Buffersize:'
     end
-    object LbSampleRate: TLabel
+    object LabelSampleRate: TLabel
       Left = 8
       Top = 112
       Width = 57
       Height = 14
       Caption = 'Samplerate:'
     end
-    object LbInputs: TLabel
+    object LabelInputs: TLabel
       Left = 8
       Top = 64
       Width = 32
       Height = 14
       Caption = 'Inputs:'
     end
-    object LbFormat: TLabel
+    object LabelFormat: TLabel
       Left = 8
       Top = 136
       Width = 39
@@ -84,59 +84,59 @@ object FmOptions: TFmOptions
       TabOrder = 1
       Visible = False
     end
-    object BtInfo: TButton
+    object ButtonInfo: TButton
       Left = 256
       Top = 16
       Width = 41
       Height = 17
       Caption = 'Info'
       TabOrder = 0
-      OnClick = BtInfoClick
+      OnClick = ButtonInfoClick
     end
   end
-  object GbGlobalSetting: TGroupBox
+  object GroupBoxGlobalSetting: TGroupBox
     Left = 8
     Top = 184
     Width = 305
     Height = 265
     Caption = ' Global Settings '
     TabOrder = 1
-    object LbOverallVolume: TLabel
+    object LabelOverallVolume: TLabel
       Left = 8
       Top = 216
-      Width = 76
+      Width = 75
       Height = 14
       Caption = 'Overall Volume:'
     end
-    object LbWavVolume: TLabel
+    object LabelWavVolume: TLabel
       Left = 8
       Top = 72
-      Width = 68
+      Width = 66
       Height = 14
       Caption = 'WAV Volume:'
     end
-    object LbTempo: TLabel
+    object LabelTempo: TLabel
       Left = 8
       Top = 24
-      Width = 35
+      Width = 34
       Height = 14
       Caption = 'Tempo:'
     end
-    object LbInputVolume: TLabel
+    object LabelInputVolume: TLabel
       Left = 8
       Top = 120
-      Width = 65
+      Width = 64
       Height = 14
       Caption = 'Input Volume:'
     end
-    object LbVSTVolume: TLabel
+    object LabelVSTVolume: TLabel
       Left = 8
       Top = 168
-      Width = 63
+      Width = 62
       Height = 14
       Caption = 'VST Volume:'
     end
-    object SbTempo: TScrollBar
+    object ScrollBarTempo: TScrollBar
       Left = 8
       Top = 40
       Width = 289
@@ -146,9 +146,9 @@ object FmOptions: TFmOptions
       PageSize = 0
       Position = 10
       TabOrder = 0
-      OnChange = SbTempoChange
+      OnChange = ScrollBarTempoChange
     end
-    object SbWavVolume: TScrollBar
+    object ScrollBarWavVolume: TScrollBar
       Left = 8
       Top = 88
       Width = 289
@@ -156,9 +156,9 @@ object FmOptions: TFmOptions
       PageSize = 0
       Position = 100
       TabOrder = 1
-      OnChange = SbTempoChange
+      OnChange = ScrollBarTempoChange
     end
-    object SbInputVolume: TScrollBar
+    object ScrollBarInputVolume: TScrollBar
       Left = 8
       Top = 136
       Width = 289
@@ -166,9 +166,9 @@ object FmOptions: TFmOptions
       PageSize = 0
       Position = 100
       TabOrder = 2
-      OnChange = SbTempoChange
+      OnChange = ScrollBarTempoChange
     end
-    object SbVSTVolume: TScrollBar
+    object ScrollBarVSTVolume: TScrollBar
       Left = 8
       Top = 184
       Width = 289
@@ -176,9 +176,9 @@ object FmOptions: TFmOptions
       PageSize = 0
       Position = 100
       TabOrder = 3
-      OnChange = SbTempoChange
+      OnChange = ScrollBarTempoChange
     end
-    object SbOverallVolume: TScrollBar
+    object ScrollBarOverallVolume: TScrollBar
       Left = 8
       Top = 232
       Width = 289
@@ -186,7 +186,7 @@ object FmOptions: TFmOptions
       PageSize = 0
       Position = 100
       TabOrder = 4
-      OnChange = SbTempoChange
+      OnChange = ScrollBarTempoChange
     end
   end
 end

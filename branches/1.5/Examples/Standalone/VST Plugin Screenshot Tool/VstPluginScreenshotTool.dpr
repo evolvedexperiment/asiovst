@@ -37,7 +37,7 @@ uses
 {$IFNDEF FPC}
   PngImage, DAV_GuiPng,
 {$ELSE}
-  Interfaces, LazPng, imagesforlazarus,
+  Interfaces, LazPng, ImagesForLazarus,
 {$ENDIF}
   Windows, Messages, Classes, Controls, Forms, Graphics, SysUtils, FileCtrl,
   DAV_VstEffect, DAV_VstHost, DAV_GuiPixelMap;

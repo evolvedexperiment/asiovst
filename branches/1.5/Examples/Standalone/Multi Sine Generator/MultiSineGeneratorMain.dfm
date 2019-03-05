@@ -35,7 +35,7 @@ object FmASIO: TFmASIO
     Height = 13
     Caption = 'Output Channels:'
   end
-  object ShBackText: TShape
+  object ShapeBackText: TShape
     Left = 36
     Top = 242
     Width = 579
@@ -249,7 +249,7 @@ object FmASIO: TFmASIO
     Transparent = True
     OnDblClick = LbFrequencyDblClick
   end
-  object LbLM: TLabel
+  object LabelLeftOrMid: TLabel
     Left = 8
     Top = 122
     Width = 27
@@ -263,7 +263,7 @@ object FmASIO: TFmASIO
     ParentFont = False
     Transparent = False
   end
-  object LbRS: TLabel
+  object LabelRightOrSide: TLabel
     Left = 8
     Top = 358
     Width = 34
@@ -767,7 +767,7 @@ object FmASIO: TFmASIO
     Transparent = False
     OnClick = LedClipLClick
   end
-  object DriverCombo: TComboBox
+  object ComboBoxDriver: TComboBox
     Left = 45
     Top = 8
     Width = 506
@@ -775,9 +775,9 @@ object FmASIO: TFmASIO
     Style = csDropDownList
     Anchors = [akLeft, akTop, akRight]
     TabOrder = 0
-    OnChange = DriverComboChange
+    OnChange = ComboBoxDriverChange
   end
-  object BtControlPanel: TButton
+  object ButtonControlPanel: TButton
     Left = 557
     Top = 8
     Width = 79
@@ -786,9 +786,9 @@ object FmASIO: TFmASIO
     Caption = 'Control Panel'
     Enabled = False
     TabOrder = 1
-    OnClick = BtControlPanelClick
+    OnClick = ButtonControlPanelClick
   end
-  object ChannelBox: TComboBox
+  object ComboBoxChannel: TComboBox
     Left = 96
     Top = 33
     Width = 455
@@ -796,9 +796,9 @@ object FmASIO: TFmASIO
     Style = csDropDownList
     Anchors = [akLeft, akTop, akRight]
     TabOrder = 2
-    OnChange = ChannelBoxChange
+    OnChange = ComboBoxChannelChange
   end
-  object BtStartStop: TButton
+  object ButtonStartStop: TButton
     Left = 557
     Top = 33
     Width = 79
@@ -808,7 +808,7 @@ object FmASIO: TFmASIO
     Default = True
     Enabled = False
     TabOrder = 3
-    OnClick = BtStartStopClick
+    OnClick = ButtonStartStopClick
   end
   object SB200L: TScrollBar
     Tag = 10
@@ -1553,34 +1553,34 @@ object FmASIO: TFmASIO
     TabOrder = 65
     OnChange = SBVolumeChange
   end
-  object BtMute: TButton
+  object ButtonMute: TButton
     Left = 48
     Top = 476
     Width = 67
     Height = 21
     Caption = '&Mute'
     TabOrder = 66
-    OnClick = BtMuteClick
+    OnClick = ButtonMuteClick
   end
-  object BtAllThirdOctaves: TButton
+  object ButtonAllThirdOctaves: TButton
     Left = 121
     Top = 476
     Width = 156
     Height = 21
     Caption = '&All Third Octaves (equal level)'
     TabOrder = 67
-    OnClick = BtAllThirdOctavesClick
+    OnClick = ButtonAllThirdOctavesClick
   end
-  object BtAllOctaves: TButton
+  object ButtonAllOctaves: TButton
     Left = 285
     Top = 476
     Width = 136
     Height = 21
     Caption = '&All Octaves (equal level)'
     TabOrder = 68
-    OnClick = BtAllOctavesClick
+    OnClick = ButtonAllOctavesClick
   end
-  object CbLinkChannels: TCheckBox
+  object CheckBoxLinkChannels: TCheckBox
     Left = 427
     Top = 478
     Width = 86
@@ -1589,16 +1589,17 @@ object FmASIO: TFmASIO
     Enabled = False
     TabOrder = 69
   end
-  object BtExport: TButton
+  object ButtonExport: TButton
     Left = 573
     Top = 476
     Width = 63
     Height = 21
     Caption = 'E&xport...'
     TabOrder = 70
-    OnClick = BtExportClick
+    OnClick = ButtonExportClick
   end
   object ASIOHost: TAsioHost
+    AsioTime.SamplePos = 0
     AsioTime.Speed = 1.000000000000000000
     AsioTime.SampleRate = 44100.000000000000000000
     AsioTime.Flags = [atSystemTimeValid, atSamplePositionValid, atSampleRateValid, atSpeedValid]

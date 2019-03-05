@@ -41,25 +41,25 @@ uses
   DAV_GuiCustomControl, DAV_GuiButton;
 
 type
-  TFmSetup = class(TForm)
-    LbOutputChannels: TGuiLabel;
-    LbPreset: TGuiLabel;
-    SbChannels: TGuiSelectBox;
-    SbDrivers: TGuiSelectBox;
+  TFormSetup = class(TForm)
+    LabelOutputChannels: TGuiLabel;
+    LabelPreset: TGuiLabel;
+    SelectBoxChannels: TGuiSelectBox;
+    SelectBoxDrivers: TGuiSelectBox;
     BtControlPanel: TGuiButton;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormResize(Sender: TObject);
     procedure FormPaint(Sender: TObject);
-    procedure SbDriversChange(Sender: TObject);
+    procedure SelectBoxDriversChange(Sender: TObject);
     procedure BtControlPanelClick(Sender: TObject);
-    procedure SbChannelsChange(Sender: TObject);
+    procedure SelectBoxChannelsChange(Sender: TObject);
   private
     FBackgroundBitmap: TGuiCustomPixelMap;
   end;
 
 var
-  FmSetup: TFmSetup;
+  FormSetup: TFormSetup;
 
 implementation
 
@@ -72,39 +72,39 @@ implementation
 uses
   IniFiles, DAV_GuiCommon, JNDEQTmain;
 
-procedure TFmSetup.FormCreate(Sender: TObject);
+procedure TFormSetup.FormCreate(Sender: TObject);
 begin
   // create background bitmap
   FBackgroundBitmap := TGuiPixelMapMemory.Create;
   FormResize(Self);
 
-  SbDrivers.Items := FmJNDEQT.ASIOHost.DriverList;
-  with TIniFile.Create(FmJNDEQT.IniFile) do
+  SelectBoxDrivers.Items := FormJNDEQT.ASIOHost.DriverList;
+  with TIniFile.Create(FormJNDEQT.IniFile) do
     try
       Top := ReadInteger('Layout', 'Setup Top', Top);
       Left := ReadInteger('Layout', 'Setup Left', Left);
-      SbDrivers.ItemIndex := ReadInteger('Setup', 'ASIO Driver',
-        SbDrivers.ItemIndex);
-      if SbDrivers.ItemIndex = -1 then
-        SbDrivers.ItemIndex := FmJNDEQT.ASIOHost.DriverList.IndexOf
+      SelectBoxDrivers.ItemIndex := ReadInteger('Setup', 'ASIO Driver',
+        SelectBoxDrivers.ItemIndex);
+      if SelectBoxDrivers.ItemIndex = -1 then
+        SelectBoxDrivers.ItemIndex := FormJNDEQT.ASIOHost.DriverList.IndexOf
           ('ASIO4ALL v2');
-      SbDriversChange(Self);
+      SelectBoxDriversChange(Self);
 
-      SbChannels.ItemIndex := ReadInteger('Setup',
+      SelectBoxChannels.ItemIndex := ReadInteger('Setup',
         'Output Channel Pair Index', 0);
-      SbChannelsChange(Self);
+      SelectBoxChannelsChange(Self);
     finally
       Free;
     end;
 end;
 
-procedure TFmSetup.FormDestroy(Sender: TObject);
+procedure TFormSetup.FormDestroy(Sender: TObject);
 begin
-  with TIniFile.Create(FmJNDEQT.IniFile) do
+  with TIniFile.Create(FormJNDEQT.IniFile) do
     try
       WriteInteger('Layout', 'Setup Top', Top);
       WriteInteger('Layout', 'Setup Left', Left);
-      WriteInteger('Setup', 'ASIO Driver', SbDrivers.ItemIndex);
+      WriteInteger('Setup', 'ASIO Driver', SelectBoxDrivers.ItemIndex);
     finally
       Free;
     end;
@@ -112,13 +112,13 @@ begin
   FreeAndNil(FBackgroundBitmap);
 end;
 
-procedure TFmSetup.FormPaint(Sender: TObject);
+procedure TFormSetup.FormPaint(Sender: TObject);
 begin
   if Assigned(FBackgroundBitmap) then
     FBackgroundBitmap.PaintTo(Canvas);
 end;
 
-procedure TFmSetup.FormResize(Sender: TObject);
+procedure TFormSetup.FormResize(Sender: TObject);
 var
   x, y: Integer;
   s: array [0 .. 1] of Single;
@@ -149,34 +149,34 @@ begin
     end;
 end;
 
-procedure TFmSetup.BtControlPanelClick(Sender: TObject);
+procedure TFormSetup.BtControlPanelClick(Sender: TObject);
 begin
-  FmJNDEQT.ASIOHost.ControlPanel;
+  FormJNDEQT.ASIOHost.ControlPanel;
 end;
 
-procedure TFmSetup.SbChannelsChange(Sender: TObject);
+procedure TFormSetup.SelectBoxChannelsChange(Sender: TObject);
 begin
-  FmJNDEQT.OutputChannelOffset := SbChannels.ItemIndex * 2;
+  FormJNDEQT.OutputChannelOffset := SelectBoxChannels.ItemIndex * 2;
 end;
 
-procedure TFmSetup.SbDriversChange(Sender: TObject);
+procedure TFormSetup.SelectBoxDriversChange(Sender: TObject);
 var
   ChannelIndex: Integer;
 begin
-  with FmJNDEQT.ASIOHost do
-    if SbDrivers.ItemIndex >= 0 then
+  with FormJNDEQT.ASIOHost do
+    if SelectBoxDrivers.ItemIndex >= 0 then
     begin
-      DriverIndex := SbDrivers.ItemIndex;
+      DriverIndex := SelectBoxDrivers.ItemIndex;
       if Assigned(OnReset) then
         OnReset(Self);
 
-      SbChannels.Clear;
+      SelectBoxChannels.Clear;
       for ChannelIndex :=
-        0 to (FmJNDEQT.ASIOHost.OutputChannelCount div 2) - 1 do
+        0 to (FormJNDEQT.ASIOHost.OutputChannelCount div 2) - 1 do
       begin
-        SbChannels.Items.Add(string(FmJNDEQT.ASIOHost.OutputChannelInfos
+        SelectBoxChannels.Items.Add(string(FormJNDEQT.ASIOHost.OutputChannelInfos
           [2 * ChannelIndex].Name) + ' / ' + string(
-          FmJNDEQT.ASIOHost.OutputChannelInfos[2 * ChannelIndex + 1].Name));
+          FormJNDEQT.ASIOHost.OutputChannelInfos[2 * ChannelIndex + 1].Name));
       end;
     end;
 end;

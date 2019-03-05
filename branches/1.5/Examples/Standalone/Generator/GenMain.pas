@@ -46,52 +46,52 @@ uses
 type
   TFadeDirection = (fdNone, fdUp, fdDown);
 
-  TFmGenerator = class(TForm)
+  TFormGenerator = class(TForm)
     ADC: TAudioDataCollection32;
-    AdTimeDomain: TGuiAudioDataDisplay;
     ASIOHost: TASIOHost;
-    BtPause: TSpeedButton;
-    BtPlay: TSpeedButton;
-    BtSelectWavFile: TButton;
-    BtStop: TSpeedButton;
-    CbChannelSine: TComboBox;
-    CbChannelSweep: TComboBox;
-    CbIdenticalChannelsSine: TCheckBox;
-    CbIdenticalChannelsSweep: TCheckBox;
-    CbSine: TComboBox;
-    CbTimeLimit: TCheckBox;
-    DriverCombo: TComboBox;
-    EdEndFreq: TEdit;
-    EdFrequency: TEdit;
-    EdGainSweep: TEdit;
-    EdInitialPhase: TEdit;
-    EdSineGain: TEdit;
-    EdStartFreq: TEdit;
-    EdSweepModulationTime: TEdit;
-    EdWavFile: TEdit;
-    GbParameterSine: TGroupBox;
-    GbSweep: TGroupBox;
+    AudioDisplayTimeDomain: TGuiAudioDataDisplay;
+    ButtonPause: TSpeedButton;
+    ButtonPlay: TSpeedButton;
+    ButtonSelectWavFile: TButton;
+    ButtonStop: TSpeedButton;
+    CheckBoxIdenticalChannelsSine: TCheckBox;
+    CheckBoxIdenticalChannelsSweep: TCheckBox;
+    CheckBoxTimeLimit: TCheckBox;
+    ComboBoxChannelSine: TComboBox;
+    ComboBoxChannelSweep: TComboBox;
+    ComboBoxDriver: TComboBox;
+    ComboBoxSine: TComboBox;
+    EditEndFreq: TEdit;
+    EditFrequency: TEdit;
+    EditGainSweep: TEdit;
+    EditInitialPhase: TEdit;
+    EditSineGain: TEdit;
+    EditStartFreq: TEdit;
+    EditSweepModulationTime: TEdit;
+    EditWavFile: TEdit;
+    GroupBoxParameterSine: TGroupBox;
+    GroupBoxSweep: TGroupBox;
     GuiTimer: TTimer;
-    LbChannelCount: TLabel;
-    LbDistribution: TLabel;
-    LbEndFreq: TLabel;
-    LbFrequency: TLabel;
-    LbGain: TLabel;
-    LbGainSweep: TLabel;
-    LbInitialPhase: TLabel;
-    LbM30: TLabel;
-    LbModulationTime: TLabel;
-    LbNoChannelSine: TLabel;
-    LbNoChannelSweep: TLabel;
-    LbP30: TLabel;
-    LbPinkNoiseGain: TLabel;
-    LbSineCount: TLabel;
-    LbSineNo: TLabel;
-    LbStartFreq: TLabel;
-    LbTime: TLabel;
-    LbVolume: TLabel;
-    LbWhiteNoiseGain: TLabel;
-    LbZero: TLabel;
+    LabelChannelCount: TLabel;
+    LabelDistribution: TLabel;
+    LabelEndFreq: TLabel;
+    LabelFrequency: TLabel;
+    LabelGain: TLabel;
+    LabelGainSweep: TLabel;
+    LabelInitialPhase: TLabel;
+    LabelM30: TLabel;
+    LabelModulationTime: TLabel;
+    LabelNoChannelSine: TLabel;
+    LabelNoChannelSweep: TLabel;
+    LabelP30: TLabel;
+    LabelPinkNoiseGain: TLabel;
+    LabelSineCount: TLabel;
+    LabelSineNo: TLabel;
+    LabelStartFreq: TLabel;
+    LabelTime: TLabel;
+    LabelVolume: TLabel;
+    LabelWhiteNoiseGain: TLabel;
+    LabelZero: TLabel;
     LED1: TGuiLED;
     LED2: TGuiLED;
     LED3: TGuiLED;
@@ -99,23 +99,23 @@ type
     LED5: TGuiLED;
     LED6: TGuiLED;
     OpenWavDialog: TOpenDialog;
-    PcSelect: TPageControl;
-    PnTime: TPanel;
-    PnTimeDomain: TPanel;
-    RbFallingSweep: TRadioButton;
-    RbRectangle: TRadioButton;
-    RbRisingSweep: TRadioButton;
-    RbTriangle: TRadioButton;
-    SeChannelCount: TSpinEdit;
-    SePinkNoiseGain: TSpinEdit;
-    SeSineCount: TSpinEdit;
-    SeWhiteNoiseGain: TSpinEdit;
-    TbVolume: TTrackBar;
-    TsPinkNoise: TTabSheet;
-    TsSine: TTabSheet;
-    TsSweep: TTabSheet;
-    TsWavFile: TTabSheet;
-    TsWhiteNoise: TTabSheet;
+    PageControlSelect: TPageControl;
+    PanelTime: TPanel;
+    PanelTimeDomain: TPanel;
+    RadioButtonFallingSweep: TRadioButton;
+    RadioButtonRectangle: TRadioButton;
+    RadioButtonRisingSweep: TRadioButton;
+    RadioButtonTriangle: TRadioButton;
+    SpinEditChannelCount: TSpinEdit;
+    SpinEditPinkNoiseGain: TSpinEdit;
+    SpinEditSineCount: TSpinEdit;
+    SpinEditWhiteNoiseGain: TSpinEdit;
+    TabSheetPinkNoise: TTabSheet;
+    TabSheetSine: TTabSheet;
+    TabSheetSweep: TTabSheet;
+    TabSheetWavFile: TTabSheet;
+    TabSheetWhiteNoise: TTabSheet;
+    TrackBarVolume: TTrackBar;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure BufferSwitchWhiteNoise32(Sender: TObject;
@@ -128,33 +128,33 @@ type
       const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
     procedure BufferSwitchWave32(Sender: TObject;
       const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
-    procedure DriverComboChange(Sender: TObject);
-    procedure PcSelectChange(Sender: TObject);
-    procedure SeChannelCountChange(Sender: TObject);
-    procedure TbVolumeChange(Sender: TObject);
     procedure ASIOHostSampleRateChanged(Sender: TObject);
-    procedure SeWhiteNoiseGainChange(Sender: TObject);
-    procedure SePinkNoiseGainChange(Sender: TObject);
-    procedure BtSelectWavFileClick(Sender: TObject);
-    procedure BtPlayClick(Sender: TObject);
-    procedure BtStopClick(Sender: TObject);
-    procedure BtPauseClick(Sender: TObject);
-    procedure GuiTimerTimer(Sender: TObject);
-    procedure CbIdenticalChannelsSineClick(Sender: TObject);
-    procedure SeSineCountChange(Sender: TObject);
+    procedure ButtonPauseClick(Sender: TObject);
+    procedure ButtonPlayClick(Sender: TObject);
+    procedure ButtonSelectWavFileClick(Sender: TObject);
+    procedure ButtonStopClick(Sender: TObject);
     procedure CbSineChannelChange(Sender: TObject);
-    procedure EdFrequencyChange(Sender: TObject);
-    procedure EdSineGainChange(Sender: TObject);
-    procedure EdInitialPhaseChange(Sender: TObject);
-    procedure CbIdenticalChannelsSweepClick(Sender: TObject);
-    procedure EdWavFileChange(Sender: TObject);
-    procedure EdSweepModulationTimeChange(Sender: TObject);
-    procedure CbChannelSweepChange(Sender: TObject);
-    procedure EdStartFreqChange(Sender: TObject);
-    procedure EdEndFreqChange(Sender: TObject);
-    procedure EdGainSweepChange(Sender: TObject);
-    procedure RbRisingSweepClick(Sender: TObject);
-    procedure RbFallingSweepClick(Sender: TObject);
+    procedure CheckBoxIdenticalChannelsSineClick(Sender: TObject);
+    procedure CheckBoxIdenticalChannelsSweepClick(Sender: TObject);
+    procedure ComboBoxChannelSweepChange(Sender: TObject);
+    procedure ComboBoxDriverChange(Sender: TObject);
+    procedure EditEndFreqChange(Sender: TObject);
+    procedure EditFrequencyChange(Sender: TObject);
+    procedure EditGainSweepChange(Sender: TObject);
+    procedure EditInitialPhaseChange(Sender: TObject);
+    procedure EditSineGainChange(Sender: TObject);
+    procedure EditStartFreqChange(Sender: TObject);
+    procedure EditSweepModulationTimeChange(Sender: TObject);
+    procedure EditWavFileChange(Sender: TObject);
+    procedure GuiTimerTimer(Sender: TObject);
+    procedure PageControlSelectChange(Sender: TObject);
+    procedure RadioButtonFallingSweepClick(Sender: TObject);
+    procedure RadioButtonRisingSweepClick(Sender: TObject);
+    procedure SpinEditChannelCountChange(Sender: TObject);
+    procedure SpinEditPinkNoiseGainChange(Sender: TObject);
+    procedure SpinEditSineCountChange(Sender: TObject);
+    procedure SpinEditWhiteNoiseGainChange(Sender: TObject);
+    procedure TrackBarVolumeChange(Sender: TObject);
   private
     FIniFile: TFileName;
     FCriticalSection: TCriticalSection;
@@ -188,7 +188,7 @@ type
   end;
 
 var
-  FmGenerator: TFmGenerator;
+  FormGenerator: TFormGenerator;
 
 implementation
 
@@ -201,7 +201,7 @@ uses
 {$R *.dfm}
 {$ENDIF}
 
-procedure TFmGenerator.FormCreate(Sender: TObject);
+procedure TFormGenerator.FormCreate(Sender: TObject);
 begin
   FIniFile := ExtractFilePath(ParamStr(0)) + 'Generator.ini';
   FCriticalSection := TCriticalSection.Create;
@@ -214,7 +214,7 @@ begin
   FFadeDirection := fdUp;
 
   ChannelCountChanged;
-  TbVolumeChange(Sender);
+  TrackBarVolumeChange(Sender);
 
   FAudioFile := TBufferedAudioFilePlayer.Create;
   with FAudioFile do
@@ -223,8 +223,8 @@ begin
     Interpolation := biLinear;
   end;
 
-  DriverCombo.Items := ASIOHost.DriverList;
-  if DriverCombo.Items.Count = 0 then
+  ComboBoxDriver.Items := ASIOHost.DriverList;
+  if ComboBoxDriver.Items.Count = 0 then
     try
       raise Exception.Create('No ASIO Driver present! Application Terminated!');
     except
@@ -236,17 +236,17 @@ begin
     try
       Left := ReadInteger('Layout', 'Audio Left', Left);
       Top := ReadInteger('Layout', 'Audio Top', Top);
-      DriverCombo.ItemIndex := ReadInteger('Audio', 'Asio Driver', -1);
-      if DriverCombo.ItemIndex >= 0 then
-        DriverComboChange(DriverCombo);
+      ComboBoxDriver.ItemIndex := ReadInteger('Audio', 'Asio Driver', -1);
+      if ComboBoxDriver.ItemIndex >= 0 then
+        ComboBoxDriverChange(ComboBoxDriver);
 
-      EdWavFile.Text := ReadString('Recent', 'Audio File', EdWavFile.Text);
+      EditWavFile.Text := ReadString('Recent', 'Audio File', EditWavFile.Text);
     finally
       Free;
     end;
 end;
 
-procedure TFmGenerator.FormDestroy(Sender: TObject);
+procedure TFormGenerator.FormDestroy(Sender: TObject);
 var
   Channel: Integer;
   Band: Integer;
@@ -259,8 +259,8 @@ begin
     try
       WriteInteger('Layout', 'Audio Left', Left);
       WriteInteger('Layout', 'Audio Top', Top);
-      WriteInteger('Audio', 'Asio Driver', DriverCombo.ItemIndex);
-      WriteString('Recent', 'Audio File', EdWavFile.Text);
+      WriteInteger('Audio', 'Asio Driver', ComboBoxDriver.ItemIndex);
+      WriteString('Recent', 'Audio File', EditWavFile.Text);
     finally
       Free;
     end;
@@ -277,166 +277,166 @@ begin
   FreeAndNil(FCriticalSection);
 end;
 
-procedure TFmGenerator.DriverComboChange(Sender: TObject);
+procedure TFormGenerator.ComboBoxDriverChange(Sender: TObject);
 begin
-  BtPlay.Enabled := False;
-  BtStop.Enabled := False;
-  BtPause.Enabled := False;
-  DriverCombo.ItemIndex := DriverCombo.Items.IndexOf(DriverCombo.Text);
-  if DriverCombo.ItemIndex >= 0 then
+  ButtonPlay.Enabled := False;
+  ButtonStop.Enabled := False;
+  ButtonPause.Enabled := False;
+  ComboBoxDriver.ItemIndex := ComboBoxDriver.Items.IndexOf(ComboBoxDriver.Text);
+  if ComboBoxDriver.ItemIndex >= 0 then
   begin
-    ASIOHost.DriverIndex := DriverCombo.ItemIndex;
+    ASIOHost.DriverIndex := ComboBoxDriver.ItemIndex;
     with TIniFile.Create(FIniFile) do
       try
-        WriteInteger('Audio', 'Asio Driver', DriverCombo.ItemIndex);
+        WriteInteger('Audio', 'Asio Driver', ComboBoxDriver.ItemIndex);
       finally
         Free;
       end;
-    BtPlay.Enabled := True;
-    BtPause.Enabled := True;
-    BtStop.Enabled := True;
+    ButtonPlay.Enabled := True;
+    ButtonPause.Enabled := True;
+    ButtonStop.Enabled := True;
   end;
 end;
 
-procedure TFmGenerator.EdEndFreqChange(Sender: TObject);
+procedure TFormGenerator.EditEndFreqChange(Sender: TObject);
 var
   Channel: Integer;
   Freq: Single;
 begin
   try
-    Freq := StrToFloat(EdEndFreq.Text);
+    Freq := StrToFloat(EditEndFreq.Text);
   except
     Exit;
   end;
 
-  if CbIdenticalChannelsSweep.Checked then
+  if CheckBoxIdenticalChannelsSweep.Checked then
     for Channel := 0 to FChannelCount - 1 do
       FSweepOsc[Channel].StopFrequency := Freq
   else
   begin
-    Channel := CbChannelSine.ItemIndex;
+    Channel := ComboBoxChannelSine.ItemIndex;
     FSweepOsc[Channel].StopFrequency := Freq;
   end;
 end;
 
-procedure TFmGenerator.EdFrequencyChange(Sender: TObject);
+procedure TFormGenerator.EditFrequencyChange(Sender: TObject);
 var
   SineNo: Integer;
   Channel: Integer;
   Freq: Single;
 begin
   try
-    Freq := StrToFloat(EdFrequency.Text);
+    Freq := StrToFloat(EditFrequency.Text);
   except
     Exit;
   end;
 
-  SineNo := CbSine.ItemIndex;
-  if CbIdenticalChannelsSine.Checked then
+  SineNo := ComboBoxSine.ItemIndex;
+  if CheckBoxIdenticalChannelsSine.Checked then
     for Channel := 0 to FChannelCount - 1 do
       FSineOsc[Channel, SineNo].Frequency := Freq
   else
   begin
-    Channel := CbChannelSine.ItemIndex;
+    Channel := ComboBoxChannelSine.ItemIndex;
     FSineOsc[Channel, SineNo].Frequency := Freq;
   end;
 end;
 
-procedure TFmGenerator.EdGainSweepChange(Sender: TObject);
+procedure TFormGenerator.EditGainSweepChange(Sender: TObject);
 var
   Channel: Integer;
   Amp: Single;
 begin
   try
-    Amp := db_to_Amp(StrToFloat(EdGainSweep.Text));
+    Amp := db_to_Amp(StrToFloat(EditGainSweep.Text));
   except
     Exit;
   end;
 
-  if CbIdenticalChannelsSweep.Checked then
+  if CheckBoxIdenticalChannelsSweep.Checked then
     for Channel := 0 to FChannelCount - 1 do
       FSweepOsc[Channel].Amplitude := Amp
   else
   begin
-    Channel := CbChannelSine.ItemIndex;
+    Channel := ComboBoxChannelSine.ItemIndex;
     FSweepOsc[Channel].Amplitude := Amp;
   end;
 end;
 
-procedure TFmGenerator.EdInitialPhaseChange(Sender: TObject);
+procedure TFormGenerator.EditInitialPhaseChange(Sender: TObject);
 var
   SineNo: Integer;
   Channel: Integer;
   Phase: Single;
 begin
   try
-    Phase := StrToFloat(EdInitialPhase.Text);
+    Phase := StrToFloat(EditInitialPhase.Text);
   except
     Exit;
   end;
 
-  SineNo := CbSine.ItemIndex;
-  if CbIdenticalChannelsSine.Checked then
+  SineNo := ComboBoxSine.ItemIndex;
+  if CheckBoxIdenticalChannelsSine.Checked then
     for Channel := 0 to FChannelCount - 1 do
       FSineOsc[Channel, SineNo].Phase := Phase
   else
   begin
-    Channel := CbChannelSine.ItemIndex;
+    Channel := ComboBoxChannelSine.ItemIndex;
     FSineOsc[Channel, SineNo].Phase := Phase;
   end;
 end;
 
-procedure TFmGenerator.EdSineGainChange(Sender: TObject);
+procedure TFormGenerator.EditSineGainChange(Sender: TObject);
 var
   SineNo: Integer;
   Channel: Integer;
   Amplitude: Single;
 begin
   try
-    Amplitude := db_to_Amp(StrToFloat(EdSineGain.Text));
+    Amplitude := db_to_Amp(StrToFloat(EditSineGain.Text));
   except
     Exit;
   end;
 
-  SineNo := CbSine.ItemIndex;
-  if CbIdenticalChannelsSine.Checked then
+  SineNo := ComboBoxSine.ItemIndex;
+  if CheckBoxIdenticalChannelsSine.Checked then
     for Channel := 0 to FChannelCount - 1 do
       FSineOsc[Channel, SineNo].Amplitude := Amplitude
   else
   begin
-    Channel := CbChannelSine.ItemIndex;
+    Channel := ComboBoxChannelSine.ItemIndex;
     FSineOsc[Channel, SineNo].Amplitude := Amplitude;
   end;
 end;
 
-procedure TFmGenerator.EdStartFreqChange(Sender: TObject);
+procedure TFormGenerator.EditStartFreqChange(Sender: TObject);
 var
   Channel: Integer;
   Freq: Single;
 begin
   try
-    Freq := StrToFloat(EdStartFreq.Text);
+    Freq := StrToFloat(EditStartFreq.Text);
   except
     Exit;
   end;
 
-  if CbIdenticalChannelsSweep.Checked then
+  if CheckBoxIdenticalChannelsSweep.Checked then
     for Channel := 0 to FChannelCount - 1 do
       FSweepOsc[Channel].StartFrequency := Freq
   else
   begin
-    Channel := CbChannelSine.ItemIndex;
+    Channel := ComboBoxChannelSine.ItemIndex;
     FSweepOsc[Channel].StartFrequency := Freq;
   end;
 end;
 
-procedure TFmGenerator.EdSweepModulationTimeChange(Sender: TObject);
+procedure TFormGenerator.EditSweepModulationTimeChange(Sender: TObject);
 var
   Channel: Integer;
   ModTime: Single;
 begin
   try
-    ModTime := 0.001 * StrToFloat(EdSweepModulationTime.Text);
+    ModTime := 0.001 * StrToFloat(EditSweepModulationTime.Text);
   except
     Exit;
   end;
@@ -445,15 +445,15 @@ begin
     FSweepOsc[Channel].ModulationFrequency := 1 / ModTime;
 end;
 
-procedure TFmGenerator.EdWavFileChange(Sender: TObject);
+procedure TFormGenerator.EditWavFileChange(Sender: TObject);
 begin
-  if FileExists(EdWavFile.Text) then
-    FAudioFile.Filename := EdWavFile.Text
+  if FileExists(EditWavFile.Text) then
+    FAudioFile.Filename := EditWavFile.Text
 end;
 
-procedure TFmGenerator.PcSelectChange(Sender: TObject);
+procedure TFormGenerator.PageControlSelectChange(Sender: TObject);
 begin
-  case PcSelect.ActivePageIndex of
+  case PageControlSelect.ActivePageIndex of
     0:
       ASIOHost.OnBufferSwitch32 := BufferSwitchWhiteNoise32;
     1:
@@ -467,63 +467,63 @@ begin
   end;
 end;
 
-procedure TFmGenerator.RbFallingSweepClick(Sender: TObject);
+procedure TFormGenerator.RadioButtonFallingSweepClick(Sender: TObject);
 var
   Channel: Integer;
   Freq: Single;
 begin
   (*
-    if CbIdenticalChannelsSweep.Checked then
-    for Channel := 0 to FChannelCount - 1
-    do FSweepOsc[Channel].S
+    if CheckBoxIdenticalChannelsSweep.Checked then
+      for Channel := 0 to FChannelCount - 1 do
+        FSweepOsc[Channel].S
     else
     begin
-    Channel := CbChannelSine.ItemIndex;
-    FSweepOsc[Channel].StartFrequency := Freq;
+      Channel := ComboBoxChannelSine.ItemIndex;
+      FSweepOsc[Channel].StartFrequency := Freq;
     end;
   *)
 end;
 
-procedure TFmGenerator.RbRisingSweepClick(Sender: TObject);
+procedure TFormGenerator.RadioButtonRisingSweepClick(Sender: TObject);
 var
   Channel: Integer;
   Freq: Single;
 begin
   (*
     try
-    Freq := StrToFloat(EdStartFreq.Text);
+      Freq := StrToFloat(EditStartFreq.Text);
     except
-    Exit;
+      Exit;
     end;
 
-    if CbIdenticalChannelsSweep.Checked then
-    for Channel := 0 to FChannelCount - 1
-    do FSweepOsc[Channel].StartFrequency := Freq
+    if CheckBoxIdenticalChannelsSweep.Checked then
+      for Channel := 0 to FChannelCount - 1 do
+        FSweepOsc[Channel].StartFrequency := Freq
     else
     begin
-    Channel := CbChannelSine.ItemIndex;
-    FSweepOsc[Channel].StartFrequency := Freq;
+      Channel := ComboBoxChannelSine.ItemIndex;
+      FSweepOsc[Channel].StartFrequency := Freq;
     end;
   *)
 end;
 
-procedure TFmGenerator.SeChannelCountChange(Sender: TObject);
+procedure TFormGenerator.SpinEditChannelCountChange(Sender: TObject);
 begin
-  ChannelCount := SeChannelCount.Value;
+  ChannelCount := SpinEditChannelCount.Value;
 end;
 
-procedure TFmGenerator.SePinkNoiseGainChange(Sender: TObject);
+procedure TFormGenerator.SpinEditPinkNoiseGainChange(Sender: TObject);
 begin
-  FPinkNoiseGain := db_to_Amp(SePinkNoiseGain.Value);
+  FPinkNoiseGain := db_to_Amp(SpinEditPinkNoiseGain.Value);
 end;
 
-procedure TFmGenerator.SeSineCountChange(Sender: TObject);
+procedure TFormGenerator.SpinEditSineCountChange(Sender: TObject);
 begin
-  SineCount := SeSineCount.Value;
+  SineCount := SpinEditSineCount.Value;
   CbSineChannelChange(Sender);
 end;
 
-procedure TFmGenerator.SetChannelCount(const Value: Integer);
+procedure TFormGenerator.SetChannelCount(const Value: Integer);
 begin
   if FChannelCount <> Value then
   begin
@@ -532,7 +532,7 @@ begin
   end;
 end;
 
-procedure TFmGenerator.SetSineCount(const Value: Integer);
+procedure TFormGenerator.SetSineCount(const Value: Integer);
 begin
   if FSineCount <> Value then
   begin
@@ -541,7 +541,7 @@ begin
   end;
 end;
 
-procedure TFmGenerator.SineCountChanged;
+procedure TFormGenerator.SineCountChanged;
 var
   Channel: Integer;
   Band: Integer;
@@ -563,34 +563,34 @@ begin
         end;
     end;
 
-    CbSine.Visible := FSineCount > 1;
-    LbSineNo.Visible := CbSine.Visible;
-    if CbSine.Visible then
+    ComboBoxSine.Visible := FSineCount > 1;
+    LabelSineNo.Visible := ComboBoxSine.Visible;
+    if ComboBoxSine.Visible then
     begin
-      Band := CbSine.ItemIndex;
-      CbSine.Clear;
+      Band := ComboBoxSine.ItemIndex;
+      ComboBoxSine.Clear;
       for Channel := 1 to FSineCount do
-        CbSine.Items.Add(IntToStr(Channel));
-      CbSine.ItemIndex := Band;
+        ComboBoxSine.Items.Add(IntToStr(Channel));
+      ComboBoxSine.ItemIndex := Band;
     end
     else
-      CbSine.ItemIndex := 0;
+      ComboBoxSine.ItemIndex := 0;
   finally
     FCriticalSection.Leave;
   end;
 end;
 
-procedure TFmGenerator.SeWhiteNoiseGainChange(Sender: TObject);
+procedure TFormGenerator.SpinEditWhiteNoiseGainChange(Sender: TObject);
 begin
-  FWhiteNoiseGain := db_to_Amp(SeWhiteNoiseGain.Value);
+  FWhiteNoiseGain := db_to_Amp(SpinEditWhiteNoiseGain.Value);
 end;
 
-procedure TFmGenerator.BtPauseClick(Sender: TObject);
+procedure TFormGenerator.ButtonPauseClick(Sender: TObject);
 begin
   FFadeDirection := fdDown;
 end;
 
-procedure TFmGenerator.BtPlayClick(Sender: TObject);
+procedure TFormGenerator.ButtonPlayClick(Sender: TObject);
 begin
   FFadeGain := db_to_Amp(-90);
   FFadeDirection := fdUp;
@@ -598,14 +598,14 @@ begin
   GuiTimer.Enabled := True;
 end;
 
-procedure TFmGenerator.BtStopClick(Sender: TObject);
+procedure TFormGenerator.ButtonStopClick(Sender: TObject);
 begin
-  BtPauseClick(Sender);
+  ButtonPauseClick(Sender);
   FTime := 0;
-  LbTime.Caption := '0:00:00:000';
+  LabelTime.Caption := '0:00:00:000';
 end;
 
-procedure TFmGenerator.BtSelectWavFileClick(Sender: TObject);
+procedure TFormGenerator.ButtonSelectWavFileClick(Sender: TObject);
 begin
   // and make sure all controls are enabled or disabled
   with TIniFile.Create(FIniFile) do
@@ -614,7 +614,7 @@ begin
         OpenWavDialog.InitialDir);
       if OpenWavDialog.Execute then
       begin
-        EdWavFile.Text := OpenWavDialog.Filename;
+        EditWavFile.Text := OpenWavDialog.Filename;
         WriteString('Recent', 'Audio File Directory',
           ExtractFilePath(OpenWavDialog.Filename));
       end;
@@ -623,7 +623,7 @@ begin
     end;
 end;
 
-function TFmGenerator.GetCurrentGain: Single;
+function TFormGenerator.GetCurrentGain: Single;
 begin
   Result := FMainGain * FFadeGain;
   case FFadeDirection of
@@ -645,7 +645,7 @@ begin
   end;
 end;
 
-procedure TFmGenerator.GuiTimerTimer(Sender: TObject);
+procedure TFormGenerator.GuiTimerTimer(Sender: TObject);
 var
   NewTime: Double;
   Mil, Sec: Integer;
@@ -661,24 +661,24 @@ begin
   Mil := Trunc(1000 * NewTime);
 
   // hour
-  LbTime.Caption := IntToStr(Hr) + ':';
+  LabelTime.Caption := IntToStr(Hr) + ':';
 
   // minute
   if Min < 10 then
-    LbTime.Caption := LbTime.Caption + '0';
-  LbTime.Caption := LbTime.Caption + IntToStr(Min) + ':';
+    LabelTime.Caption := LabelTime.Caption + '0';
+  LabelTime.Caption := LabelTime.Caption + IntToStr(Min) + ':';
 
   // seconds
   if Sec < 10 then
-    LbTime.Caption := LbTime.Caption + '0';
-  LbTime.Caption := LbTime.Caption + IntToStr(Sec) + ':';
+    LabelTime.Caption := LabelTime.Caption + '0';
+  LabelTime.Caption := LabelTime.Caption + IntToStr(Sec) + ':';
 
   // milli seconds
   if Mil < 100 then
-    LbTime.Caption := LbTime.Caption + '0';
+    LabelTime.Caption := LabelTime.Caption + '0';
   if Mil < 10 then
-    LbTime.Caption := LbTime.Caption + '0';
-  LbTime.Caption := LbTime.Caption + IntToStr(Mil);
+    LabelTime.Caption := LabelTime.Caption + '0';
+  LabelTime.Caption := LabelTime.Caption + IntToStr(Mil);
 
   // display peak
   PeakdB := Amp_to_dB(1E-10 + FPeak);
@@ -715,67 +715,67 @@ begin
     FAudioFile.Reset;
   end;
 
-  AdTimeDomain.Refresh;
+  AudioDisplayTimeDomain.Refresh;
 end;
 
-procedure TFmGenerator.TbVolumeChange(Sender: TObject);
+procedure TFormGenerator.TrackBarVolumeChange(Sender: TObject);
 begin
-  FMainGain := db_to_Amp(-0.1 * TbVolume.Position);
+  FMainGain := db_to_Amp(-0.1 * TrackBarVolume.Position);
 end;
 
-procedure TFmGenerator.UpdateTime;
+procedure TFormGenerator.UpdateTime;
 begin
   if FFadeDirection = fdNone then
     FTime := FTime + ASIOHost.BufferSize / ASIOHost.SampleRate;
 end;
 
-procedure TFmGenerator.CalculatePeak(Data: Single);
+procedure TFormGenerator.CalculatePeak(Data: Single);
 begin
-  if abs(Data) > FPeak then
-    FPeak := abs(Data);
+  if Abs(Data) > FPeak then
+    FPeak := Abs(Data);
   FPeak := 0.9999 * FPeak;
 end;
 
-procedure TFmGenerator.CbChannelSweepChange(Sender: TObject);
+procedure TFormGenerator.ComboBoxChannelSweepChange(Sender: TObject);
 var
   Channel: Integer;
 begin
-  Channel := CbChannelSine.ItemIndex;
+  Channel := ComboBoxChannelSine.ItemIndex;
 
-  EdSweepModulationTime.Text :=
+  EditSweepModulationTime.Text :=
     FloatToStrF(FSweepOsc[Channel].ModulationFrequency, ffGeneral, 5, 5);
 end;
 
-procedure TFmGenerator.CbIdenticalChannelsSineClick(Sender: TObject);
+procedure TFormGenerator.CheckBoxIdenticalChannelsSineClick(Sender: TObject);
 begin
-  CbChannelSine.Visible := (not CbIdenticalChannelsSine.Checked) and
-    (SeChannelCount.Value > 0);
-  LbNoChannelSine.Visible := CbChannelSine.Visible;
+  ComboBoxChannelSine.Visible := (not CheckBoxIdenticalChannelsSine.Checked) and
+    (SpinEditChannelCount.Value > 0);
+  LabelNoChannelSine.Visible := ComboBoxChannelSine.Visible;
 end;
 
-procedure TFmGenerator.CbIdenticalChannelsSweepClick(Sender: TObject);
+procedure TFormGenerator.CheckBoxIdenticalChannelsSweepClick(Sender: TObject);
 begin
-  CbChannelSweep.Visible := (not CbIdenticalChannelsSweep.Checked) and
-    (SeChannelCount.Value > 0);
-  LbNoChannelSweep.Visible := CbChannelSweep.Visible;
+  ComboBoxChannelSweep.Visible := (not CheckBoxIdenticalChannelsSweep.Checked) and
+    (SpinEditChannelCount.Value > 0);
+  LabelNoChannelSweep.Visible := ComboBoxChannelSweep.Visible;
 end;
 
-procedure TFmGenerator.CbSineChannelChange(Sender: TObject);
+procedure TFormGenerator.CbSineChannelChange(Sender: TObject);
 var
   SineNo: Integer;
   Channel: Integer;
 begin
-  SineNo := CbSine.ItemIndex;
-  Channel := CbChannelSine.ItemIndex;
+  SineNo := ComboBoxSine.ItemIndex;
+  Channel := ComboBoxChannelSine.ItemIndex;
 
-  EdSineGain.Text := FloatToStrF(Amp_to_dB(FSineOsc[Channel, SineNo].Amplitude),
+  EditSineGain.Text := FloatToStrF(Amp_to_dB(FSineOsc[Channel, SineNo].Amplitude),
     ffGeneral, 3, 3);
-  EdFrequency.Text := FloatToStrF(FSineOsc[Channel, SineNo].Frequency,
+  EditFrequency.Text := FloatToStrF(FSineOsc[Channel, SineNo].Frequency,
     ffGeneral, 5, 5);
-  EdInitialPhase.Text := '0';
+  EditInitialPhase.Text := '0';
 end;
 
-procedure TFmGenerator.ChannelCountChanged;
+procedure TFormGenerator.ChannelCountChanged;
 var
   Channel: Integer;
   Band: Integer;
@@ -828,18 +828,18 @@ begin
   end;
 
   // update controls
-  CbIdenticalChannelsSine.Visible := SeChannelCount.Value > 1;
-  CbChannelSine.Visible := CbIdenticalChannelsSine.Visible and
-    (not CbIdenticalChannelsSine.Checked);
-  LbNoChannelSine.Visible := CbChannelSine.Visible;
+  CheckBoxIdenticalChannelsSine.Visible := SpinEditChannelCount.Value > 1;
+  ComboBoxChannelSine.Visible := CheckBoxIdenticalChannelsSine.Visible and
+    (not CheckBoxIdenticalChannelsSine.Checked);
+  LabelNoChannelSine.Visible := ComboBoxChannelSine.Visible;
 
-  CbIdenticalChannelsSweep.Visible := SeChannelCount.Value > 1;
-  CbChannelSweep.Visible := CbIdenticalChannelsSweep.Visible and
-    (not CbIdenticalChannelsSweep.Checked);
-  LbNoChannelSweep.Visible := CbChannelSweep.Visible;
+  CheckBoxIdenticalChannelsSweep.Visible := SpinEditChannelCount.Value > 1;
+  ComboBoxChannelSweep.Visible := CheckBoxIdenticalChannelsSweep.Visible and
+    (not CheckBoxIdenticalChannelsSweep.Checked);
+  LabelNoChannelSweep.Visible := ComboBoxChannelSweep.Visible;
 end;
 
-procedure TFmGenerator.ASIOHostSampleRateChanged(Sender: TObject);
+procedure TFormGenerator.ASIOHostSampleRateChanged(Sender: TObject);
 var
   Channel, Band: Integer;
 begin
@@ -861,7 +861,7 @@ end;
 // processing //
 /// /////////////
 
-procedure TFmGenerator.BufferSwitchWhiteNoise32(Sender: TObject;
+procedure TFormGenerator.BufferSwitchWhiteNoise32(Sender: TObject;
   const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
 var
   Channel: Integer;
@@ -870,7 +870,7 @@ var
 begin
   FCriticalSection.Enter;
   try
-    if RbRectangle.Checked then
+    if RadioButtonRectangle.Checked then
       for Sample := 0 to ASIOHost.BufferSize - 1 do
       begin
         Gain := CurrentGain;
@@ -907,7 +907,7 @@ begin
   UpdateTime;
 end;
 
-procedure TFmGenerator.BufferSwitchPinkNoise32(Sender: TObject;
+procedure TFormGenerator.BufferSwitchPinkNoise32(Sender: TObject;
   const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
 var
   Channel: Integer;
@@ -931,7 +931,7 @@ begin
         CalculatePeak(Gain * Data[Channel]);
 
       // distribute data
-      if CbIdenticalChannelsSine.Checked then
+      if CheckBoxIdenticalChannelsSine.Checked then
         for Channel := 0 to ASIOHost.OutputChannelCount - 1 do
           OutBuffer[Channel, Sample] := Gain * Data[0]
       else
@@ -953,7 +953,7 @@ begin
   UpdateTime;
 end;
 
-procedure TFmGenerator.BufferSwitchSine32(Sender: TObject;
+procedure TFormGenerator.BufferSwitchSine32(Sender: TObject;
   const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
 var
   Channel: Integer;
@@ -985,7 +985,7 @@ begin
         CalculatePeak(Gain * Data[Channel]);
 
       // distribute data
-      if CbIdenticalChannelsSine.Checked then
+      if CheckBoxIdenticalChannelsSine.Checked then
         for Channel := 0 to ASIOHost.OutputChannelCount - 1 do
           OutBuffer[Channel, Sample] := Gain * Data[0]
       else
@@ -1007,7 +1007,7 @@ begin
   UpdateTime;
 end;
 
-procedure TFmGenerator.BufferSwitchSweep32(Sender: TObject;
+procedure TFormGenerator.BufferSwitchSweep32(Sender: TObject;
   const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
 var
   Channel: Integer;
@@ -1034,7 +1034,7 @@ begin
         CalculatePeak(Gain * Data[Channel]);
 
       // distribute data
-      if CbIdenticalChannelsSine.Checked then
+      if CheckBoxIdenticalChannelsSine.Checked then
         for Channel := 0 to ASIOHost.OutputChannelCount - 1 do
           OutBuffer[Channel, Sample] := Gain * Data[0]
       else
@@ -1056,7 +1056,7 @@ begin
   UpdateTime;
 end;
 
-procedure TFmGenerator.BufferSwitchWave32(Sender: TObject;
+procedure TFormGenerator.BufferSwitchWave32(Sender: TObject;
   const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
 var
   Channel: Integer;

@@ -1,4 +1,4 @@
-object FmSimpleHDRecorder: TFmSimpleHDRecorder
+object FormSimpleHDRecorder: TFormSimpleHDRecorder
   Left = 258
   Top = 87
   BorderStyle = bsDialog
@@ -67,7 +67,7 @@ object FmSimpleHDRecorder: TFmSimpleHDRecorder
     Uniformity_Percent = 55.000000000000000000
     Transparent = True
   end
-  object LbMic1: TGuiLabel
+  object LabelMic1: TGuiLabel
     Left = 160
     Top = 48
     Width = 41
@@ -90,7 +90,7 @@ object FmSimpleHDRecorder: TFmSimpleHDRecorder
     Shadow.Visible = True
     Transparent = True
   end
-  object LbMic2: TGuiLabel
+  object LabelMic2: TGuiLabel
     Left = 207
     Top = 48
     Width = 41
@@ -113,7 +113,7 @@ object FmSimpleHDRecorder: TFmSimpleHDRecorder
     Shadow.Visible = True
     Transparent = True
   end
-  object LbMic3: TGuiLabel
+  object LabelMic3: TGuiLabel
     Left = 254
     Top = 48
     Width = 41
@@ -136,7 +136,7 @@ object FmSimpleHDRecorder: TFmSimpleHDRecorder
     Shadow.Visible = True
     Transparent = True
   end
-  object LbMic4: TGuiLabel
+  object LabelMic4: TGuiLabel
     Left = 301
     Top = 48
     Width = 41
@@ -159,7 +159,7 @@ object FmSimpleHDRecorder: TFmSimpleHDRecorder
     Shadow.Visible = True
     Transparent = True
   end
-  object BtStartStop: TGuiButton
+  object ButtonStartStop: TGuiButton
     Left = 8
     Top = 8
     Width = 146
@@ -184,9 +184,9 @@ object FmSimpleHDRecorder: TFmSimpleHDRecorder
     Shadow.Saturation = 2.000000000000000000
     Shadow.Visible = True
     Transparent = False
-    OnClick = BtStartStopClick
+    OnClick = ButtonStartStopClick
   end
-  object BtSetup: TGuiButton
+  object ButtonSetup: TGuiButton
     Left = 348
     Top = 8
     Width = 69
@@ -211,9 +211,9 @@ object FmSimpleHDRecorder: TFmSimpleHDRecorder
     Shadow.Saturation = 2.000000000000000000
     Shadow.Visible = True
     Transparent = False
-    OnClick = BtSetupClick
+    OnClick = ButtonSetupClick
   end
-  object BtExit: TGuiButton
+  object ButtonExit: TGuiButton
     Left = 348
     Top = 40
     Width = 69
@@ -238,7 +238,7 @@ object FmSimpleHDRecorder: TFmSimpleHDRecorder
     Shadow.Saturation = 2.000000000000000000
     Shadow.Visible = True
     Transparent = False
-    OnClick = BtExitClick
+    OnClick = ButtonExitClick
   end
   object Timer: TTimer
     Interval = 50
@@ -247,6 +247,7 @@ object FmSimpleHDRecorder: TFmSimpleHDRecorder
     Top = 16
   end
   object ASIOHost: TAsioHost
+    AsioTime.SamplePos = 0
     AsioTime.Speed = 1.000000000000000000
     AsioTime.SampleRate = 44100.000000000000000000
     AsioTime.Flags = [atSystemTimeValid, atSamplePositionValid, atSampleRateValid, atSpeedValid]

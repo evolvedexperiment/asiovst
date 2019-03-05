@@ -3,25 +3,25 @@ program Generator;
 {$I DAV_Compiler.inc}
 
 uses
-  FastMM4, // either download the library or comment if there is an error here
-  {$IFDEF UseMadExcept}
-  madExcept,
+  FastMM4,
   madLinkDisAsm,
   madListHardware,
   madListProcesses,
   madListModules,
-  {$ENDIF}
+  {$IFDEF UseMadExcept}
+  madExcept,
+  {$ENDIF }
   {$IFDEF UseFastMove}
-  FastMove, // either download the library or disable the feature
-  {$ENDIF}
+  FastMove,
+  {$ENDIF }
   Forms,
-  GenMain in 'GenMain.pas' {FmGenerator};
+  GenMain in 'GenMain.pas' {FormGenerator};
 
 {$R *.res}
 
 begin
   Application.Initialize;
   Application.Title := 'Generator';
-  Application.CreateForm(TFmGenerator, FmGenerator);
+  Application.CreateForm(TFormGenerator, FormGenerator);
   Application.Run;
 end.

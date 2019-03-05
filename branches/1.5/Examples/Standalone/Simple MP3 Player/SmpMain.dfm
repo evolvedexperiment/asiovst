@@ -1,4 +1,4 @@
-object FmSimpleMp3Player: TFmSimpleMp3Player
+object FormSimpleMp3Player: TFormSimpleMp3Player
   Left = 459
   Top = 285
   BorderStyle = bsSingle
@@ -19,7 +19,7 @@ object FmSimpleMp3Player: TFmSimpleMp3Player
     310)
   PixelsPerInch = 96
   TextHeight = 13
-  object LbBuffer: TLabel
+  object LabelBuffer: TLabel
     Left = 123
     Top = 286
     Width = 37
@@ -27,7 +27,7 @@ object FmSimpleMp3Player: TFmSimpleMp3Player
     Anchors = [akLeft, akBottom]
     Caption = 'Buffer: '
   end
-  object LbBufferValue: TLabel
+  object LabelBufferValue: TLabel
     Left = 163
     Top = 286
     Width = 32
@@ -35,16 +35,16 @@ object FmSimpleMp3Player: TFmSimpleMp3Player
     Anchors = [akLeft, akBottom]
     Caption = '100 %'
   end
-  object BtRewind: TButton
+  object ButtonRewind: TButton
     Left = 8
     Top = 111
     Width = 25
     Height = 25
     Caption = '<<'
     TabOrder = 0
-    OnClick = BtRewindClick
+    OnClick = ButtonRewindClick
   end
-  object PnInformation: TPanel
+  object PanelInformation: TPanel
     Left = 8
     Top = 8
     Width = 305
@@ -54,7 +54,7 @@ object FmSimpleMp3Player: TFmSimpleMp3Player
     DesignSize = (
       305
       65)
-    object LbInformation: TLabel
+    object LabelInformation: TLabel
       Left = 9
       Top = 44
       Width = 288
@@ -64,7 +64,7 @@ object FmSimpleMp3Player: TFmSimpleMp3Player
       AutoSize = False
       Caption = 'Artist Name - Album Name - Track No - Track Name'
     end
-    object LbTimeInfo: TLabel
+    object LabelTimeInfo: TLabel
       Left = 9
       Top = 12
       Width = 50
@@ -79,7 +79,7 @@ object FmSimpleMp3Player: TFmSimpleMp3Player
       Font.Style = [fsBold]
       ParentFont = False
     end
-    object LbBitrateInfo: TLabel
+    object LabelBitrateInfo: TLabel
       Left = 240
       Top = 20
       Width = 57
@@ -95,43 +95,43 @@ object FmSimpleMp3Player: TFmSimpleMp3Player
       ParentFont = False
     end
   end
-  object BtPlay: TButton
+  object ButtonPlay: TButton
     Left = 39
     Top = 111
     Width = 25
     Height = 25
     Caption = '>'
     TabOrder = 2
-    OnClick = BtPlayClick
+    OnClick = ButtonPlayClick
   end
-  object BtPause: TButton
+  object ButtonPause: TButton
     Left = 70
     Top = 111
     Width = 25
     Height = 25
     Caption = '||'
     TabOrder = 3
-    OnClick = BtPauseClick
+    OnClick = ButtonPauseClick
   end
-  object BtStop: TButton
+  object ButtonStop: TButton
     Left = 101
     Top = 111
     Width = 25
     Height = 25
     Caption = '#'
     TabOrder = 4
-    OnClick = BtStopClick
+    OnClick = ButtonStopClick
   end
-  object BtForward: TButton
+  object ButtonForward: TButton
     Left = 132
     Top = 111
     Width = 25
     Height = 25
     Caption = '>>'
     TabOrder = 5
-    OnClick = BtForwardClick
+    OnClick = ButtonForwardClick
   end
-  object TbVolume: TTrackBar
+  object TrackBarVolume: TTrackBar
     Left = 163
     Top = 111
     Width = 150
@@ -141,9 +141,9 @@ object FmSimpleMp3Player: TFmSimpleMp3Player
     Position = 100
     TabOrder = 6
     ThumbLength = 15
-    OnChange = TbVolumeChange
+    OnChange = TrackBarVolumeChange
   end
-  object TbPosition: TTrackBar
+  object TrackBarPosition: TTrackBar
     Left = 7
     Top = 79
     Width = 306
@@ -163,7 +163,7 @@ object FmSimpleMp3Player: TFmSimpleMp3Player
     TabOrder = 8
     OnClick = PlayListClick
   end
-  object BtAddFile: TButton
+  object ButtonAddFile: TButton
     Left = 8
     Top = 280
     Width = 25
@@ -171,9 +171,9 @@ object FmSimpleMp3Player: TFmSimpleMp3Player
     Anchors = [akLeft, akBottom]
     Caption = '+'
     TabOrder = 9
-    OnClick = BtAddFileClick
+    OnClick = ButtonAddFileClick
   end
-  object BtDeleteItem: TButton
+  object ButtonDeleteItem: TButton
     Left = 39
     Top = 280
     Width = 25
@@ -181,9 +181,9 @@ object FmSimpleMp3Player: TFmSimpleMp3Player
     Anchors = [akLeft, akBottom]
     Caption = '-'
     TabOrder = 10
-    OnClick = BtDeleteItemClick
+    OnClick = ButtonDeleteItemClick
   end
-  object BtSetup: TButton
+  object ButtonSetup: TButton
     Left = 258
     Top = 280
     Width = 55
@@ -191,9 +191,10 @@ object FmSimpleMp3Player: TFmSimpleMp3Player
     Anchors = [akLeft, akBottom]
     Caption = '&Setup'
     TabOrder = 11
-    OnClick = BtSetupClick
+    OnClick = ButtonSetupClick
   end
   object ASIOHost: TAsioHost
+    AsioTime.SamplePos = 0
     AsioTime.Speed = 1.000000000000000000
     AsioTime.SampleRate = 44100.000000000000000000
     AsioTime.Flags = [atSystemTimeValid, atSamplePositionValid, atSampleRateValid, atSpeedValid]

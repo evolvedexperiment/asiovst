@@ -20,43 +20,43 @@ object FmASIO: TFmASIO
     173)
   PixelsPerInch = 96
   TextHeight = 13
-  object LbDrivername: TLabel
+  object LabelDrivername: TLabel
     Left = 7
     Top = 12
     Width = 31
     Height = 13
     Caption = 'Driver:'
   end
-  object LbCopyright: TLabel
+  object LabelCopyright: TLabel
     Left = 34
     Top = 155
     Width = 259
     Height = 13
     Anchors = [akBottom]
-    Caption = '(C)opyright in 2004-2009 by Delphi ASIO && VST Project'
+    Caption = '(C)opyright in 2004-2019 by Delphi ASIO && VST Project'
   end
-  object LbFreq: TLabel
+  object LabelFreq: TLabel
     Left = 8
     Top = 112
     Width = 96
     Height = 13
     Caption = 'Frequency: 1000 Hz'
   end
-  object LbVolume: TLabel
+  object LabelVolume: TLabel
     Left = 8
     Top = 69
     Width = 121
     Height = 13
     Caption = 'Volume: 1,00 equals 0 dB'
   end
-  object LbSignal: TLabel
+  object LabelSignal: TLabel
     Left = 8
     Top = 37
     Width = 32
     Height = 13
     Caption = 'Signal:'
   end
-  object LbDistribution: TLabel
+  object LabelDistribution: TLabel
     Left = 8
     Top = 112
     Width = 55
@@ -64,7 +64,7 @@ object FmASIO: TFmASIO
     Caption = 'Distribution:'
     Visible = False
   end
-  object CbDriver: TComboBox
+  object ComboBoxDriver: TComboBox
     Left = 64
     Top = 7
     Width = 159
@@ -72,9 +72,9 @@ object FmASIO: TFmASIO
     Style = csDropDownList
     Anchors = [akLeft, akTop, akRight]
     TabOrder = 0
-    OnChange = CbDriverChange
+    OnChange = ComboBoxDriverChange
   end
-  object BtControlPanel: TButton
+  object ButtonControlPanel: TButton
     Left = 229
     Top = 7
     Width = 84
@@ -83,9 +83,9 @@ object FmASIO: TFmASIO
     Caption = 'Control Panel'
     Enabled = False
     TabOrder = 1
-    OnClick = BtControlPanelClick
+    OnClick = ButtonControlPanelClick
   end
-  object BtStartStop: TButton
+  object ButtonStartStop: TButton
     Left = 229
     Top = 34
     Width = 84
@@ -95,9 +95,9 @@ object FmASIO: TFmASIO
     Default = True
     Enabled = False
     TabOrder = 2
-    OnClick = BtStartStopClick
+    OnClick = ButtonStartStopClick
   end
-  object SbFreq: TScrollBar
+  object ScrollBarFreq: TScrollBar
     Left = 8
     Top = 128
     Width = 302
@@ -109,9 +109,9 @@ object FmASIO: TFmASIO
     Position = 56633
     SmallChange = 10
     TabOrder = 3
-    OnChange = SbFreqChange
+    OnChange = ScrollBarFreqChange
   end
-  object SbVolume: TScrollBar
+  object ScrollBarVolume: TScrollBar
     Left = 8
     Top = 85
     Width = 302
@@ -121,9 +121,9 @@ object FmASIO: TFmASIO
     PageSize = 0
     Position = 100000
     TabOrder = 4
-    OnChange = SbVolumeChange
+    OnChange = ScrollBarVolumeChange
   end
-  object CbSignal: TComboBox
+  object ComboBoxSignal: TComboBox
     Left = 64
     Top = 34
     Width = 159
@@ -133,15 +133,15 @@ object FmASIO: TFmASIO
     ItemIndex = 0
     TabOrder = 5
     Text = 'Sine'
-    OnChange = CbSignalChange
+    OnChange = ComboBoxSignalChange
     Items.Strings = (
       'Sine'
       'White Noise'
       'Pink Noise')
   end
-  object CbDistribution: TComboBox
-    Left = 69
-    Top = 107
+  object ComboBoxDistribution: TComboBox
+    Left = 64
+    Top = 109
     Width = 154
     Height = 21
     Style = csDropDownList
@@ -150,7 +150,7 @@ object FmASIO: TFmASIO
     TabOrder = 6
     Text = 'Triangular'
     Visible = False
-    OnChange = CbDistributionChange
+    OnChange = ComboBoxDistributionChange
     Items.Strings = (
       'Rectangle'
       'Triangular'
@@ -158,6 +158,7 @@ object FmASIO: TFmASIO
       'Gauss')
   end
   object ASIOHost: TAsioHost
+    AsioTime.SamplePos = 0
     AsioTime.Speed = 1.000000000000000000
     AsioTime.SampleRate = 44100.000000000000000000
     AsioTime.Flags = [atSystemTimeValid, atSamplePositionValid, atSampleRateValid, atSpeedValid]

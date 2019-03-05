@@ -45,33 +45,33 @@ type
 
   TFmASIO = class(TForm)
     ASIOHost: TASIOHost;
-    BtControlPanel: TButton;
-    BtStartStop: TButton;
-    CbDistribution: TComboBox;
-    CbDriver: TComboBox;
-    CbSignal: TComboBox;
-    LbCopyright: TLabel;
-    LbDistribution: TLabel;
-    LbDrivername: TLabel;
-    LbFreq: TLabel;
-    LbSignal: TLabel;
-    LbVolume: TLabel;
-    SbFreq: TScrollBar;
-    SbVolume: TScrollBar;
+    ButtonControlPanel: TButton;
+    ButtonStartStop: TButton;
+    ComboBoxDistribution: TComboBox;
+    ComboBoxDriver: TComboBox;
+    ComboBoxSignal: TComboBox;
+    LabelCopyright: TLabel;
+    LabelDistribution: TLabel;
+    LabelDrivername: TLabel;
+    LabelFreq: TLabel;
+    LabelSignal: TLabel;
+    LabelVolume: TLabel;
+    ScrollBarFreq: TScrollBar;
+    ScrollBarVolume: TScrollBar;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure ASIOHostSampleRateChanged(Sender: TObject);
-    procedure BtControlPanelClick(Sender: TObject);
-    procedure BtStartStopClick(Sender: TObject);
-    procedure CbDriverChange(Sender: TObject);
-    procedure SbFreqChange(Sender: TObject);
-    procedure SbVolumeChange(Sender: TObject);
     procedure ASIOHostBufferSwitch64(Sender: TObject;
       const InBuffer, OutBuffer: TDAVArrayOfDoubleFixedArray);
     procedure ASIOHostBufferSwitch32(Sender: TObject;
       const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
-    procedure CbSignalChange(Sender: TObject);
-    procedure CbDistributionChange(Sender: TObject);
+    procedure ButtonControlPanelClick(Sender: TObject);
+    procedure ButtonStartStopClick(Sender: TObject);
+    procedure ComboBoxDriverChange(Sender: TObject);
+    procedure ComboBoxSignalChange(Sender: TObject);
+    procedure ComboBoxDistributionChange(Sender: TObject);
+    procedure ScrollBarFreqChange(Sender: TObject);
+    procedure ScrollBarVolumeChange(Sender: TObject);
   private
     procedure SetFrequency(const Value: Double);
   public
@@ -102,8 +102,8 @@ uses
 
 procedure TFmASIO.FormCreate(Sender: TObject);
 begin
-  CbDriver.Items := ASIOHost.DriverList;
-  if CbDriver.Items.Count = 0 then
+  ComboBoxDriver.Items := ASIOHost.DriverList;
+  if ComboBoxDriver.Items.Count = 0 then
     try
       raise Exception.Create('No ASIO Driver present! Application Terminated!');
     except
@@ -115,9 +115,9 @@ begin
     try
       Left := ReadInteger('Layout', 'Audio Left', Left);
       Top := ReadInteger('Layout', 'Audio Top', Top);
-      CbDriver.ItemIndex := ReadInteger('Audio', 'Asio Driver', -1);
-      if CbDriver.ItemIndex >= 0 then
-        CbDriverChange(CbDriver);
+      ComboBoxDriver.ItemIndex := ReadInteger('Audio', 'Asio Driver', -1);
+      if ComboBoxDriver.ItemIndex >= 0 then
+        ComboBoxDriverChange(ComboBoxDriver);
     finally
       Free;
     end;
@@ -145,44 +145,44 @@ begin
     try
       WriteInteger('Layout', 'Audio Left', Left);
       WriteInteger('Layout', 'Audio Top', Top);
-      WriteInteger('Audio', 'ASIO Driver', CbDriver.ItemIndex);
+      WriteInteger('Audio', 'ASIO Driver', ComboBoxDriver.ItemIndex);
     finally
       Free;
     end;
 end;
 
-procedure TFmASIO.CbDistributionChange(Sender: TObject);
+procedure TFmASIO.ComboBoxDistributionChange(Sender: TObject);
 begin
-  FNoiseDistribution := TNoiseDistribution(CbDistribution.ItemIndex);
+  FNoiseDistribution := TNoiseDistribution(ComboBoxDistribution.ItemIndex);
 end;
 
-procedure TFmASIO.CbDriverChange(Sender: TObject);
+procedure TFmASIO.ComboBoxDriverChange(Sender: TObject);
 begin
-  BtControlPanel.Enabled := False;
-  BtStartStop.Enabled := False;
-  CbDriver.ItemIndex := CbDriver.Items.IndexOf(CbDriver.Text);
-  if CbDriver.ItemIndex >= 0 then
+  ButtonControlPanel.Enabled := False;
+  ButtonStartStop.Enabled := False;
+  ComboBoxDriver.ItemIndex := ComboBoxDriver.Items.IndexOf(ComboBoxDriver.Text);
+  if ComboBoxDriver.ItemIndex >= 0 then
   begin
-    ASIOHost.DriverIndex := CbDriver.ItemIndex;
+    ASIOHost.DriverIndex := ComboBoxDriver.ItemIndex;
     with TIniFile.Create(ExtractFilePath(ParamStr(0)) + 'ASIODemo.INI') do
       try
-        WriteInteger('Audio', 'Asio Driver', CbDriver.ItemIndex);
+        WriteInteger('Audio', 'Asio Driver', ComboBoxDriver.ItemIndex);
       finally
         Free;
       end;
-    BtControlPanel.Enabled := True;
-    BtStartStop.Enabled := True;
+    ButtonControlPanel.Enabled := True;
+    ButtonStartStop.Enabled := True;
   end;
 end;
 
-procedure TFmASIO.CbSignalChange(Sender: TObject);
+procedure TFmASIO.ComboBoxSignalChange(Sender: TObject);
 begin
-  FSignalType := TSignalType(CbSignal.ItemIndex);
+  FSignalType := TSignalType(ComboBoxSignal.ItemIndex);
 
-  SbFreq.Visible := FSignalType = stSine;
-  LbFreq.Visible := FSignalType = stSine;
-  LbDistribution.Visible := FSignalType = stWhiteNoise;
-  CbDistribution.Visible := FSignalType = stWhiteNoise;
+  ScrollBarFreq.Visible := FSignalType = stSine;
+  LabelFreq.Visible := FSignalType = stSine;
+  LabelDistribution.Visible := FSignalType = stWhiteNoise;
+  ComboBoxDistribution.Visible := FSignalType = stWhiteNoise;
   case FSignalType of
     stSine:
       ClientHeight := 173;
@@ -193,28 +193,28 @@ begin
   end;
 end;
 
-procedure TFmASIO.BtControlPanelClick(Sender: TObject);
+procedure TFmASIO.ButtonControlPanelClick(Sender: TObject);
 begin
   ASIOHost.ControlPanel;
 end;
 
-procedure TFmASIO.BtStartStopClick(Sender: TObject);
+procedure TFmASIO.ButtonStartStopClick(Sender: TObject);
 begin
-  if BtStartStop.Caption = 'Start Audio' then
+  if ButtonStartStop.Caption = 'Start Audio' then
   begin
     ASIOHost.Active := True; // Start Audio
-    BtStartStop.Caption := 'Stop Audio';
+    ButtonStartStop.Caption := 'Stop Audio';
   end
   else
   begin
     ASIOHost.Active := False; // Stop Audio
-    BtStartStop.Caption := 'Start Audio';
+    ButtonStartStop.Caption := 'Start Audio';
   end;
 end;
 
-procedure TFmASIO.SbFreqChange(Sender: TObject);
+procedure TFmASIO.ScrollBarFreqChange(Sender: TObject);
 begin
-  Frequency := FreqLinearToLog(SbFreq.Position * 0.00001);
+  Frequency := FreqLinearToLog(ScrollBarFreq.Position * 0.00001);
 end;
 
 procedure TFmASIO.SetFrequency(const Value: Double);
@@ -222,7 +222,7 @@ begin
   if FFreq <> Value then
   begin
     FFreq := Value;
-    LbFreq.Caption := 'Frequency: ' + FloatToStrF(FFreq, ffGeneral, 5,
+    LabelFreq.Caption := 'Frequency: ' + FloatToStrF(FFreq, ffGeneral, 5,
       5) + ' Hz';
     FSineLFO.Frequency := FFreq;
   end;
@@ -311,13 +311,13 @@ begin
   FSineLFO.SampleRate := ASIOHost.SampleRate;
 end;
 
-procedure TFmASIO.SbVolumeChange(Sender: TObject);
+procedure TFmASIO.ScrollBarVolumeChange(Sender: TObject);
 begin
-  FVol := SbVolume.Position * 0.00001;
+  FVol := ScrollBarVolume.Position * 0.00001;
   if FVol = 0 then
-    LbVolume.Caption := 'Volume: 0 equals -oo dB'
+    LabelVolume.Caption := 'Volume: 0 equals -oo dB'
   else
-    LbVolume.Caption := 'Volume: ' + FloatToStrF(FVol, ffFixed, 2, 2) +
+    LabelVolume.Caption := 'Volume: ' + FloatToStrF(FVol, ffFixed, 2, 2) +
       ' equals ' + FloatToStrF(Amp_to_dB(FVol), ffGeneral, 2, 2) + ' dB';
 end;
 

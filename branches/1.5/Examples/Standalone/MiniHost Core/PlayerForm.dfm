@@ -4,8 +4,8 @@ object Player: TPlayer
   BorderIcons = [biSystemMenu]
   BorderStyle = bsToolWindow
   Caption = 'MIDI/WAV Player/Recorder'
-  ClientHeight = 529
-  ClientWidth = 424
+  ClientHeight = 472
+  ClientWidth = 392
   Color = clGray
   Ctl3D = False
   Font.Charset = DEFAULT_CHARSET
@@ -18,208 +18,53 @@ object Player: TPlayer
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 14
-  object GbMidiFilePlayer: TGroupBox
-    Left = 7
+  object GroupBoxWavFilePlayer: TGroupBox
+    Left = 8
     Top = 0
-    Width = 201
-    Height = 417
-    Caption = ' MIDI File Player '
-    TabOrder = 0
-    object LbMidiCurrentFile: TLabel
-      Left = 8
-      Top = 294
-      Width = 55
-      Height = 14
-      Caption = 'current file:'
-    end
-    object LbMidiFile: TLabel
-      Left = 8
-      Top = 308
-      Width = 36
-      Height = 14
-      Caption = '<none>'
-      Transparent = True
-    end
-    object LbMidiTempo: TLabel
-      Left = 8
-      Top = 328
-      Width = 76
-      Height = 14
-      Caption = 'tempo: 120 bpm'
-    end
-    object LbMidiPosition: TLabel
-      Left = 8
-      Top = 366
-      Width = 62
-      Height = 14
-      Caption = 'position: 0 %'
-    end
-    object LbMidiPlayMode: TLabel
-      Left = 8
-      Top = 245
-      Width = 141
-      Height = 14
-      Caption = 'action when finished playing:'
-    end
-    object MidiBox: TListBox
-      Left = 8
-      Top = 24
-      Width = 185
-      Height = 161
-      AutoComplete = False
-      BevelInner = bvNone
-      BevelOuter = bvNone
-      Color = clBlack
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWhite
-      Font.Height = -11
-      Font.Name = 'Arial'
-      Font.Style = []
-      ItemHeight = 14
-      MultiSelect = True
-      ParentFont = False
-      TabOrder = 0
-      OnDblClick = MidiBoxDblClick
-    end
-    object BtMidiAdd: TButton
-      Left = 8
-      Top = 192
-      Width = 49
-      Height = 17
-      Caption = 'add'
-      TabOrder = 1
-      OnClick = BtMidiAddClick
-    end
-    object BtMidiRemove: TButton
-      Left = 64
-      Top = 192
-      Width = 49
-      Height = 17
-      Caption = 'remove'
-      TabOrder = 2
-      OnClick = BtMidiRemoveClick
-    end
-    object BtMidiStop: TButton
-      Left = 64
-      Top = 216
-      Width = 49
-      Height = 17
-      Caption = 'stop'
-      TabOrder = 3
-      OnClick = BtMidiStopClick
-    end
-    object BtMidiPlay: TButton
-      Left = 8
-      Top = 216
-      Width = 49
-      Height = 17
-      Caption = 'play'
-      TabOrder = 4
-      OnClick = BtMidiPlayClick
-    end
-    object CbOnlyChannel1: TCheckBox
-      Left = 124
-      Top = 192
-      Width = 69
-      Height = 17
-      Caption = 'only CH1'
-      TabOrder = 5
-    end
-    object CBMidiPlayMode: TComboBox
-      Left = 8
-      Top = 261
-      Width = 140
-      Height = 22
-      BevelInner = bvNone
-      BevelOuter = bvNone
-      Style = csDropDownList
-      Color = clBlack
-      Ctl3D = False
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWhite
-      Font.Height = -11
-      Font.Name = 'Arial'
-      Font.Style = []
-      ItemIndex = 1
-      ParentCtl3D = False
-      ParentFont = False
-      TabOrder = 6
-      Text = 'play same file again'
-      Items.Strings = (
-        'stop playback'
-        'play same file again'
-        'play next file in list'
-        'play random file in list')
-    end
-    object SbTempo: TScrollBar
-      Left = 8
-      Top = 344
-      Width = 185
-      Height = 16
-      Max = 240
-      Min = 20
-      PageSize = 0
-      Position = 120
-      TabOrder = 7
-      OnChange = SbTempoChange
-    end
-    object SbMidiPosition: TScrollBar
-      Left = 8
-      Top = 384
-      Width = 185
-      Height = 16
-      PageSize = 0
-      TabOrder = 8
-      OnChange = SbMidiPositionChange
-    end
-  end
-  object GbWavFilePlayer: TGroupBox
-    Left = 215
-    Top = 0
-    Width = 201
-    Height = 417
+    Width = 377
+    Height = 353
     Caption = ' WAV File Player '
-    TabOrder = 1
-    object LbWavCurrentFile: TLabel
+    TabOrder = 0
+    object LabelWavCurrentFile: TLabel
       Left = 8
-      Top = 294
+      Top = 247
       Width = 55
       Height = 14
       Caption = 'current file:'
     end
-    object LbWaveFile: TLabel
-      Left = 8
-      Top = 308
+    object LabelWaveFile: TLabel
+      Left = 77
+      Top = 247
       Width = 36
       Height = 14
       Caption = '<none>'
       Transparent = True
     end
-    object LbWavPitch: TLabel
+    object LabelWavPitch: TLabel
       Left = 8
-      Top = 328
+      Top = 272
       Width = 60
       Height = 14
       Caption = 'pitch: 100 %'
     end
-    object LbWavPosition: TLabel
+    object LabelWavPosition: TLabel
       Left = 8
-      Top = 368
+      Top = 312
       Width = 62
       Height = 14
       Caption = 'position: 0 %'
     end
-    object LbWavPlayMode: TLabel
-      Left = 8
-      Top = 245
+    object LabelWavPlayMode: TLabel
+      Left = 226
+      Top = 193
       Width = 141
       Height = 14
       Caption = 'action when finished playing:'
     end
-    object WavBox: TListBox
+    object ListBoxWavFiles: TListBox
       Left = 8
       Top = 24
-      Width = 185
+      Width = 359
       Height = 161
       AutoComplete = False
       BevelInner = bvNone
@@ -234,47 +79,47 @@ object Player: TPlayer
       MultiSelect = True
       ParentFont = False
       TabOrder = 0
-      OnDblClick = WavBoxDblClick
+      OnDblClick = ListBoxWavFilesDblClick
     end
-    object BtWavAdd: TButton
+    object ButtonWavAdd: TButton
       Left = 8
       Top = 192
       Width = 49
       Height = 17
       Caption = 'add'
       TabOrder = 1
-      OnClick = BtWavAddClick
+      OnClick = ButtonWavAddClick
     end
-    object BtWavRemove: TButton
+    object ButtonWavRemove: TButton
       Left = 64
       Top = 192
       Width = 49
       Height = 17
       Caption = 'remove'
       TabOrder = 2
-      OnClick = BtWavRemoveClick
+      OnClick = ButtonWavRemoveClick
     end
-    object BtWavStop: TButton
+    object ButtonWavStop: TButton
       Left = 64
       Top = 216
       Width = 49
       Height = 17
       Caption = 'stop'
       TabOrder = 3
-      OnClick = BtWavStopClick
+      OnClick = ButtonWavStopClick
     end
-    object BtWavPlay: TButton
+    object ButtonWavPlay: TButton
       Left = 8
       Top = 216
       Width = 49
       Height = 17
       Caption = 'play'
       TabOrder = 4
-      OnClick = BtWavPlayClick
+      OnClick = ButtonWavPlayClick
     end
-    object CBWavPlayMode: TComboBox
-      Left = 8
-      Top = 261
+    object ComboBoxWavPlayMode: TComboBox
+      Left = 226
+      Top = 209
       Width = 140
       Height = 22
       BevelInner = bvNone
@@ -292,50 +137,50 @@ object Player: TPlayer
       ParentFont = False
       TabOrder = 5
       Text = 'play same file again'
-      OnChange = CBWavPlayModeChange
+      OnChange = ComboBoxWavPlayModeChange
       Items.Strings = (
         'stop playback'
         'play same file again'
         'play next file in list'
         'play random file in list')
     end
-    object SbPitch: TScrollBar
+    object ScrollBarPitch: TScrollBar
       Left = 8
-      Top = 344
-      Width = 185
+      Top = 288
+      Width = 359
       Height = 16
       Max = 341
       Min = 1
       PageSize = 0
       Position = 170
       TabOrder = 6
-      OnChange = SbPitchChange
+      OnChange = ScrollBarPitchChange
     end
-    object SbWavPosition: TScrollBar
+    object ScrollBarWavPosition: TScrollBar
       Left = 8
-      Top = 384
-      Width = 185
+      Top = 328
+      Width = 359
       Height = 16
       PageSize = 0
       TabOrder = 7
-      OnChange = SbWavPositionChange
+      OnChange = ScrollBarWavPositionChange
     end
   end
-  object GbWavRecorder: TGroupBox
-    Left = 7
-    Top = 418
-    Width = 410
+  object GroupBoxWavRecorder: TGroupBox
+    Left = 8
+    Top = 359
+    Width = 378
     Height = 105
     Caption = ' WAV Recorder '
-    TabOrder = 2
-    object LbCurrentRecordFile: TLabel
+    TabOrder = 1
+    object LabelCurrentRecordFile: TLabel
       Left = 8
       Top = 48
       Width = 138
       Height = 14
       Caption = 'current file (click to change):'
     end
-    object LbRecordFile: TLabel
+    object LabelRecordFile: TLabel
       Left = 8
       Top = 62
       Width = 36
@@ -343,43 +188,43 @@ object Player: TPlayer
       Cursor = crHandPoint
       Caption = '<none>'
       Transparent = True
-      OnClick = LbRecordFileClick
+      OnClick = LabelRecordFileClick
     end
-    object LbStatus: TLabel
+    object LabelStatus: TLabel
       Left = 8
       Top = 80
       Width = 75
       Height = 14
       Caption = 'status: stopped'
     end
-    object BtWavPause: TButton
+    object ButtonWavPause: TButton
       Left = 64
       Top = 24
       Width = 49
       Height = 17
       Caption = 'pause'
       TabOrder = 0
-      OnClick = BtWavPauseClick
+      OnClick = ButtonWavPauseClick
     end
-    object BtWavStopRec: TButton
+    object ButtonWavStopRec: TButton
       Left = 120
       Top = 24
       Width = 49
       Height = 17
       Caption = 'stop'
       TabOrder = 1
-      OnClick = BtWavStopRecClick
+      OnClick = ButtonWavStopRecClick
     end
-    object BtWavRecord: TButton
+    object ButtonWavRecord: TButton
       Left = 8
       Top = 24
       Width = 49
       Height = 17
       Caption = 'record'
       TabOrder = 2
-      OnClick = BtWavRecordClick
+      OnClick = ButtonWavRecordClick
     end
-    object CbRecInMono: TCheckBox
+    object CheckBoxRecInMono: TCheckBox
       Left = 185
       Top = 24
       Width = 96
@@ -387,8 +232,8 @@ object Player: TPlayer
       Caption = 'record in mono'
       TabOrder = 3
     end
-    object CbRecordFormat: TComboBox
-      Left = 304
+    object ComboBoxRecordFormat: TComboBox
+      Left = 280
       Top = 22
       Width = 89
       Height = 22

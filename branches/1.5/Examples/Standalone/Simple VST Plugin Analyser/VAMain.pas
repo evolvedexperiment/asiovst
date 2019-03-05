@@ -40,22 +40,22 @@ uses
   StdCtrls, Menus, Dialogs, DAV_Types, DAV_VSTHost;
 
 type
-  TFmVSTAnalyser = class(TForm)
+  TFormVSTAnalyser = class(TForm)
     MainMenu: TMainMenu;
-    MIFile: TMenuItem;
-    MIIR: TMenuItem;
+    MenuItemFile: TMenuItem;
+    MenuItemIR: TMenuItem;
     MILoad: TMenuItem;
     MIOpen: TMenuItem;
     MIPlotIR: TMenuItem;
-    MIPrograms: TMenuItem;
+    MenuItemPrograms: TMenuItem;
     MIQuit: TMenuItem;
     MIRenderIR: TMenuItem;
     MISave: TMenuItem;
     N1: TMenuItem;
     N2: TMenuItem;
-    OD: TOpenDialog;
+    OpenDialogVst: TOpenDialog;
     VstHost: TVstHost;
-    VSTPanel: TPanel;
+    PanelVstPlugin: TPanel;
 {$IFNDEF FPC}
     XPManifest: TXPManifest;
 {$ENDIF}
@@ -69,7 +69,7 @@ type
     procedure MILoadClick(Sender: TObject);
     procedure MISaveClick(Sender: TObject);
     procedure MIPresetClick(Sender: TObject);
-    procedure VSTPanelClick(Sender: TObject);
+    procedure PanelVstPluginClick(Sender: TObject);
   private
     VSTInBuffer: TDAVArrayOfSingleDynArray;
     VSTOutBuffer: TDAVArrayOfSingleDynArray;
@@ -78,7 +78,7 @@ type
   end;
 
 var
-  FmVSTAnalyser: TFmVSTAnalyser;
+  FormVSTAnalyser: TFormVSTAnalyser;
 
 implementation
 
@@ -91,7 +91,7 @@ implementation
 uses
   IniFiles, VAPlotIR;
 
-procedure TFmVSTAnalyser.FormCreate(Sender: TObject);
+procedure TFormVSTAnalyser.FormCreate(Sender: TObject);
 begin
   if ParamCount > 0 then
     LoadVSTPlugin(ParamStr(1));
@@ -104,23 +104,23 @@ begin
     end;
 end;
 
-procedure TFmVSTAnalyser.FormActivate(Sender: TObject);
+procedure TFormVSTAnalyser.FormActivate(Sender: TObject);
 begin
   VstHost[0].EditActivate;
 end;
 
-procedure TFmVSTAnalyser.FormDeactivate(Sender: TObject);
+procedure TFormVSTAnalyser.FormDeactivate(Sender: TObject);
 begin
   VstHost[0].EditDeActivate;
 end;
 
-procedure TFmVSTAnalyser.MIOpenClick(Sender: TObject);
+procedure TFormVSTAnalyser.MIOpenClick(Sender: TObject);
 begin
-  if OD.Execute then
-    LoadVSTPlugin(OD.FileName);
+  if OpenDialogVst.Execute then
+    LoadVSTPlugin(OpenDialogVst.FileName);
 end;
 
-procedure TFmVSTAnalyser.MIPlotIRClick(Sender: TObject);
+procedure TFormVSTAnalyser.MIPlotIRClick(Sender: TObject);
 begin
   with VstHost[0] do
     if Active then
@@ -129,39 +129,39 @@ begin
       FillChar(VSTInBuffer[0, 1], (VstHost.BlockSize - 1) * SizeOf(Single), 0);
       Process32Replacing(@VSTInBuffer[0], @VSTOutBuffer[0], VstHost.BlockSize);
 
-      FmPlotIR.Waveform.SetWaveForm(VSTOutBuffer, True);
+      FormPlotIR.Waveform.SetWaveForm(VSTOutBuffer, True);
     end;
-  FmPlotIR.ShowModal;
+  FormPlotIR.ShowModal;
 end;
 
-procedure TFmVSTAnalyser.MIQuitClick(Sender: TObject);
+procedure TFormVSTAnalyser.MIQuitClick(Sender: TObject);
 begin
   Close;
 end;
 
-procedure TFmVSTAnalyser.MILoadClick(Sender: TObject);
+procedure TFormVSTAnalyser.MILoadClick(Sender: TObject);
 begin
   ShowMessage('ToDo');
 end;
 
-procedure TFmVSTAnalyser.MISaveClick(Sender: TObject);
+procedure TFormVSTAnalyser.MISaveClick(Sender: TObject);
 begin
   ShowMessage('ToDo');
 end;
 
-procedure TFmVSTAnalyser.VSTPanelClick(Sender: TObject);
+procedure TFormVSTAnalyser.PanelVstPluginClick(Sender: TObject);
 begin
   if not VstHost[0].Active then
     MIOpenClick(Sender);
 end;
 
-procedure TFmVSTAnalyser.MIPresetClick(Sender: TObject);
+procedure TFormVSTAnalyser.MIPresetClick(Sender: TObject);
 begin
   with Sender as TMenuItem do
     VstHost[0].CurrentProgram := Tag;
 end;
 
-procedure TFmVSTAnalyser.LoadVSTPlugin(DLLName: TFileName);
+procedure TFormVSTAnalyser.LoadVSTPlugin(DLLName: TFileName);
 var
   i: Integer;
   s: string;
@@ -174,7 +174,7 @@ begin
     DLLFileName := DLLName;
     Active := True;
     Idle;
-    ShowEdit(TForm(VSTPanel));
+    ShowEdit(TForm(PanelVstPlugin));
     Idle;
     EditIdle;
     Caption := GetVendorString + ' ' + GetEffectName;
@@ -186,8 +186,8 @@ begin
       SetLength(VSTOutBuffer[i], VstHost.BlockSize);
   end;
 
-  while MIPrograms.Count > 3 do
-    MIPrograms.Delete(3);
+  while MenuItemPrograms.Count > 3 do
+    MenuItemPrograms.Delete(3);
   for i := 0 to VstHost[0].numPrograms - 1 do
   begin
     VstHost[0].GetProgramNameIndexed(-1, i, temp);
@@ -197,14 +197,14 @@ begin
     else if i < 100 then
       s := '0' + s;
     s := s + ' - ' + temp;
-    MenuItem := TMenuItem.Create(MIPrograms);
+    MenuItem := TMenuItem.Create(MenuItemPrograms);
     with MenuItem do
     begin
       Caption := s;
       Tag := i;
       OnClick := MIPresetClick;
     end;
-    MIPrograms.Add(MenuItem);
+    MenuItemPrograms.Add(MenuItem);
   end;
 
   with VstHost[0].GetRect do
@@ -214,7 +214,7 @@ begin
   end;
 end;
 
-procedure TFmVSTAnalyser.FormClose(Sender: TObject; var Action: TCloseAction);
+procedure TFormVSTAnalyser.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   with TIniFile.Create(ExtractFilePath(ParamStr(0)) + 'VSTEditor.INI') do
     try

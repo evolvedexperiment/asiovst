@@ -1,4 +1,4 @@
-object FmASIO: TFmASIO
+object FormAnalyserGoertzel: TFormAnalyserGoertzel
   Left = 291
   Top = 266
   BorderIcons = [biSystemMenu, biMinimize]
@@ -17,21 +17,21 @@ object FmASIO: TFmASIO
   OnDestroy = FormDestroy
   PixelsPerInch = 96
   TextHeight = 13
-  object Lb_Drivername: TLabel
+  object LabelDrivername: TLabel
     Left = 7
     Top = 12
     Width = 31
     Height = 13
     Caption = 'Driver:'
   end
-  object Lb_Channels: TLabel
+  object LabelChannels: TLabel
     Left = 7
     Top = 36
     Width = 82
     Height = 13
     Caption = 'Output Channels:'
   end
-  object Lb_Copyright: TLabel
+  object LabelCopyright: TLabel
     Left = 87
     Top = 202
     Width = 310
@@ -40,37 +40,37 @@ object FmASIO: TFmASIO
       '(C)opyright in 2004-2008 by  Christian Budde and Tobias Fleische' +
       'r'
   end
-  object LbFreq: TLabel
+  object LabelFrequency: TLabel
     Left = 8
     Top = 72
     Width = 96
     Height = 13
     Caption = 'Frequency: 1000 Hz'
   end
-  object LbVolume: TLabel
+  object LabelVolume: TLabel
     Left = 8
     Top = 112
     Width = 121
     Height = 13
     Caption = 'Volume: 1,00 equals 0 dB'
   end
-  object LbPanorama: TLabel
+  object LabelPanorama: TLabel
     Left = 8
     Top = 152
     Width = 61
     Height = 13
     Caption = 'Panorama: C'
   end
-  object DriverCombo: TComboBox
+  object ComboBoxDriver: TComboBox
     Left = 64
     Top = 7
     Width = 273
     Height = 21
     Style = csDropDownList
     TabOrder = 0
-    OnChange = DriverComboChange
+    OnChange = ComboBoxDriverChange
   end
-  object BtControlPanel: TButton
+  object ButtonControlPanel: TButton
     Left = 352
     Top = 7
     Width = 121
@@ -78,18 +78,18 @@ object FmASIO: TFmASIO
     Caption = 'Control Panel'
     Enabled = False
     TabOrder = 1
-    OnClick = BtControlPanelClick
+    OnClick = ButtonControlPanelClick
   end
-  object ChannelBox: TComboBox
+  object ComboBoxChannel: TComboBox
     Left = 104
     Top = 32
     Width = 233
     Height = 21
     Style = csDropDownList
     TabOrder = 2
-    OnChange = ChannelBoxChange
+    OnChange = ComboBoxChannelChange
   end
-  object BtStartStop: TButton
+  object ButtonStartStop: TButton
     Left = 352
     Top = 32
     Width = 121
@@ -98,9 +98,9 @@ object FmASIO: TFmASIO
     Default = True
     Enabled = False
     TabOrder = 3
-    OnClick = BtStartStopClick
+    OnClick = ButtonStartStopClick
   end
-  object SbFreq: TScrollBar
+  object ScrollBarFreq: TScrollBar
     Left = 8
     Top = 88
     Width = 462
@@ -111,9 +111,9 @@ object FmASIO: TFmASIO
     Position = 56633
     SmallChange = 10
     TabOrder = 4
-    OnChange = SbFreqChange
+    OnChange = ScrollBarFreqChange
   end
-  object SbVolume: TScrollBar
+  object ScrollBarVolume: TScrollBar
     Left = 8
     Top = 128
     Width = 462
@@ -122,9 +122,9 @@ object FmASIO: TFmASIO
     PageSize = 0
     Position = 100000
     TabOrder = 5
-    OnChange = SbVolumeChange
+    OnChange = ScrollBarVolumeChange
   end
-  object SbPan: TScrollBar
+  object ScrollBarPan: TScrollBar
     Left = 8
     Top = 168
     Width = 462
@@ -132,7 +132,7 @@ object FmASIO: TFmASIO
     PageSize = 0
     Position = 50
     TabOrder = 6
-    OnChange = SbPanChange
+    OnChange = ScrollBarPanChange
   end
   object ASIOHostAudioData: TAsioHostAudioData
     AsioTime.SamplePos = 0
@@ -142,7 +142,7 @@ object FmASIO: TFmASIO
     ConvertOptimizations = [coSSE, co3DNow]
     SampleRate = 44100.000000000000000000
     OnBufferSwitch32 = ASIOHostAudioDataBufferSwitch32
-    Left = 24
-    Top = 16
+    Left = 64
+    Top = 24
   end
 end

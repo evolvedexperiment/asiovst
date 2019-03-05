@@ -44,24 +44,24 @@ type
   TFmVSTEditor = class(TForm)
     ASIOHost: TASIOHost;
     MainMenu: TMainMenu;
-    MiAudio: TMenuItem;
-    MiExit: TMenuItem;
-    MiLoadPreset: TMenuItem;
-    MiProgram: TMenuItem;
-    MiSavePreset: TMenuItem;
-    MiSetup: TMenuItem;
-    MiStandalone: TMenuItem;
+    MenuItemAudio: TMenuItem;
+    MenuItemExit: TMenuItem;
+    MenuItemGUI: TMenuItem;
+    MenuItemGuiCustom: TMenuItem;
+    MenuItemGuiDefault: TMenuItem;
+    MenuItemGuiList: TMenuItem;
+    MenuItemGuiSelector: TMenuItem;
+    MenuItemLoadPreset: TMenuItem;
+    MenuItemProgram: TMenuItem;
+    MenuItemSavePreset: TMenuItem;
+    MenuItemSetup: TMenuItem;
+    MenuItemStandalone: TMenuItem;
     N1: TMenuItem;
-    OD: TOpenDialog;
-    SD: TSaveDialog;
+    OpenDialog: TOpenDialog;
+    PanelPlugin: TPanel;
+    SaveDialog: TSaveDialog;
     VstHost: TVstHost;
     XPManifest: TXPManifest;
-    GUI1: TMenuItem;
-    MiGuiDefault: TMenuItem;
-    MiGuiList: TMenuItem;
-    MiGuiSelector: TMenuItem;
-    MiGuiCustom: TMenuItem;
-    PnPlugin: TPanel;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -70,19 +70,18 @@ type
     procedure ASIOHostBufferSwitch32(Sender: TObject;
       const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
     procedure ASIOHostReset(Sender: TObject);
-    procedure BtExitClick(Sender: TObject);
-    procedure MiExitClick(Sender: TObject);
-    procedure MILoadPresetClick(Sender: TObject);
+    procedure BackgroundPaint(Sender: TObject);
+    procedure CloseCustomEdit(Sender: TObject);
+    procedure MenuItemExitClick(Sender: TObject);
+    procedure MenuItemLoadPresetClick(Sender: TObject);
     procedure MiPresetClick(Sender: TObject);
     procedure MISavePresetClick(Sender: TObject);
-    procedure MiSetupClick(Sender: TObject);
-    procedure MiGuiDefaultClick(Sender: TObject);
-    procedure MiGuiListClick(Sender: TObject);
-    procedure MiGuiSelectorClick(Sender: TObject);
-    procedure MiGuiCustomClick(Sender: TObject);
+    procedure MenuItemSetupClick(Sender: TObject);
+    procedure MenuItemGuiDefaultClick(Sender: TObject);
+    procedure MenuItemGuiListClick(Sender: TObject);
+    procedure MenuItemGuiSelectorClick(Sender: TObject);
+    procedure MenuItemGuiCustomClick(Sender: TObject);
     procedure ShowCustomEdit(Sender: TObject; Control: TWinControl);
-    procedure CloseCustomEdit(Sender: TObject);
-    procedure BackgroundPaint(Sender: TObject);
   private
     FVSTInBuffer: array of PDAVSingleFixedArray;
     FVSTOutBuffer: array of PDAVSingleFixedArray;
@@ -168,13 +167,13 @@ begin
 
     Active := True;
     Idle;
-    ShowEdit(PnPlugin);
+    ShowEdit(PanelPlugin);
     Idle;
     EditIdle;
     Caption := string(GetVendorString) + ' ' + string(GetEffectName);
   end;
-  while MiProgram.Count > 3 do
-    MiProgram.Delete(3);
+  while MenuItemProgram.Count > 3 do
+    MenuItemProgram.Delete(3);
 
   for i := 0 to Min(64, VstHost[0].numPrograms) - 1 do
   begin
@@ -183,7 +182,7 @@ begin
     if i < 10 then
       s := '0' + s;
     s := s + ' - ' + p;
-    MenuItem := TMenuItem.Create(MiProgram);
+    MenuItem := TMenuItem.Create(MenuItemProgram);
     with MenuItem do
     begin
       Caption := string(s);
@@ -191,10 +190,10 @@ begin
       Tag := i;
       OnClick := MiPresetClick;
     end;
-    MiProgram.Add(MenuItem);
+    MenuItemProgram.Add(MenuItem);
   end;
-  if MiProgram.Count > 3 then
-    MiProgram.Items[3].Checked := True;
+  if MenuItemProgram.Count > 3 then
+    MenuItemProgram.Items[3].Checked := True;
 
   if (effFlagsHasEditor in VstHost[0].EffectOptions) then
   begin
@@ -228,7 +227,7 @@ procedure TFmVSTEditor.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   ASIOHost.Active := False;
   VstHost[0].Active := False;
-  sleep(10);
+  Sleep(10);
   Application.ProcessMessages;
   ASIOHost.Active := False;
   with TIniFile.Create(ExtractFilePath(ParamStr(0)) + 'VSTEditor.INI') do
@@ -250,60 +249,58 @@ begin
   VstHost[0].EditDeActivate;
 end;
 
-procedure TFmVSTEditor.MiExitClick(Sender: TObject);
+procedure TFmVSTEditor.MenuItemExitClick(Sender: TObject);
 begin
   Close;
 end;
 
-procedure TFmVSTEditor.MiGuiCustomClick(Sender: TObject);
+procedure TFmVSTEditor.MenuItemGuiCustomClick(Sender: TObject);
 begin
-  MiGuiCustom.Checked := True;
+  MenuItemGuiCustom.Checked := True;
   GUIStyle := gsCustom;
 end;
 
-procedure TFmVSTEditor.MiGuiDefaultClick(Sender: TObject);
+procedure TFmVSTEditor.MenuItemGuiDefaultClick(Sender: TObject);
 begin
-  MiGuiDefault.Checked := True;
+  MenuItemGuiDefault.Checked := True;
   GUIStyle := gsDefault;
 end;
 
-procedure TFmVSTEditor.MiGuiListClick(Sender: TObject);
+procedure TFmVSTEditor.MenuItemGuiListClick(Sender: TObject);
 begin
-  MiGuiList.Checked := True;
+  MenuItemGuiList.Checked := True;
   GUIStyle := gsParameterList;
 end;
 
-procedure TFmVSTEditor.MiGuiSelectorClick(Sender: TObject);
+procedure TFmVSTEditor.MenuItemGuiSelectorClick(Sender: TObject);
 begin
-  MiGuiSelector.Checked := True;
+  MenuItemGuiSelector.Checked := True;
   GUIStyle := gsParameterSelector;
 end;
 
-procedure TFmVSTEditor.MILoadPresetClick(Sender: TObject);
+procedure TFmVSTEditor.MenuItemLoadPresetClick(Sender: TObject);
 begin
-  with OD do
-    if Execute then
-      case FilterIndex of
-        1:
-          VstHost[0].LoadPreset(FileName);
-        2:
-          VstHost[0].LoadBank(FileName);
-      end;
+  if OpenDialog.Execute then
+    case OpenDialog.FilterIndex of
+      1:
+        VstHost[0].LoadPreset(OpenDialog.FileName);
+      2:
+        VstHost[0].LoadBank(OpenDialog.FileName);
+    end;
 end;
 
 procedure TFmVSTEditor.MISavePresetClick(Sender: TObject);
 begin
-  with SD do
-    if Execute then
-      case FilterIndex of
-        1:
-          VstHost[0].SavePreset(FileName);
-        2:
-          VstHost[0].SaveBank(FileName);
-      end;
+  if SaveDialog.Execute then
+    case SaveDialog.FilterIndex of
+      1:
+        VstHost[0].SavePreset(SaveDialog.FileName);
+      2:
+        VstHost[0].SaveBank(SaveDialog.FileName);
+    end;
 end;
 
-procedure TFmVSTEditor.MiSetupClick(Sender: TObject);
+procedure TFmVSTEditor.MenuItemSetupClick(Sender: TObject);
 begin
   FmSetup.ShowModal;
 end;
@@ -341,7 +338,7 @@ begin
       with TPaintBox
         (FGUIElements[FGUIElements.Add(TPaintBox.Create(Control))]) do
       begin
-        Parent := PnPlugin;
+        Parent := PanelPlugin;
         Align := alClient;
         OnPaint := BackgroundPaint;
         if not Assigned(FBackgroundBitmap) then
@@ -520,7 +517,7 @@ begin
     begin
       CloseEdit;
       GUIStyle := FGUIStyle;
-      ShowEdit(PnPlugin);
+      ShowEdit(PanelPlugin);
 
       if GUIStyle <> gsCustom then
       begin
@@ -546,11 +543,6 @@ procedure TFmVSTEditor.BackgroundPaint(Sender: TObject);
 begin
   if (FGUIStyle = gsCustom) and Assigned(FBackgroundBitmap) then
     TPaintBox(Sender).Canvas.Draw(0, 0, FBackgroundBitmap);
-end;
-
-procedure TFmVSTEditor.BtExitClick(Sender: TObject);
-begin
-  Close;
 end;
 
 procedure TFmVSTEditor.ASIOHostBufferSwitch32(Sender: TObject;

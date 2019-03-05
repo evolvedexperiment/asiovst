@@ -1,4 +1,4 @@
-object FmVSTPluginScanner: TFmVSTPluginScanner
+object FormVSTPluginScanner: TFormVSTPluginScanner
   Left = 218
   Top = 81
   Caption = 'VST Plugin Scanner'
@@ -19,7 +19,7 @@ object FmVSTPluginScanner: TFmVSTPluginScanner
     584)
   PixelsPerInch = 96
   TextHeight = 13
-  object BtScan: TButton
+  object ButtonScan: TButton
     Left = 786
     Top = 0
     Width = 45
@@ -28,19 +28,19 @@ object FmVSTPluginScanner: TFmVSTPluginScanner
     Caption = 'Scan!'
     Enabled = False
     TabOrder = 3
-    OnClick = BtScanClick
+    OnClick = ButtonScanClick
   end
-  object EdDirectory: TEdit
+  object EditDirectory: TEdit
     Left = 0
     Top = 0
     Width = 710
     Height = 21
     Anchors = [akLeft, akTop, akRight]
     TabOrder = 0
-    OnChange = EdDirectoryChange
-    OnClick = EdDirectoryClick
+    OnChange = EditDirectoryChange
+    OnClick = EditDirectoryClick
   end
-  object BtDirectorySelect: TButton
+  object ButtonDirectorySelect: TButton
     Left = 711
     Top = 0
     Width = 75
@@ -48,7 +48,7 @@ object FmVSTPluginScanner: TFmVSTPluginScanner
     Anchors = [akTop, akRight]
     Caption = 'Select...'
     TabOrder = 1
-    OnClick = BtDirectorySelectClick
+    OnClick = ButtonDirectorySelectClick
   end
   object ListView: TListView
     Left = 0

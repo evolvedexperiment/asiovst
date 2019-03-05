@@ -50,19 +50,19 @@ type
     constructor Create(CreateSuspended: Boolean = True);
   end;
 
-  TFmSimpleHDRecorder = class(TForm)
+  TFormSimpleHDRecorder = class(TForm)
     ASIOHost: TASIOHost;
-    BtExit: TGuiButton;
-    BtSetup: TGuiButton;
-    BtStartStop: TGuiButton;
+    ButtonExit: TGuiButton;
+    ButtonSetup: TGuiButton;
+    ButtonStartStop: TGuiButton;
     GuiLED1: TGuiLED;
     GuiLED2: TGuiLED;
     GuiLED3: TGuiLED;
     GuiLED4: TGuiLED;
-    LbMic1: TGuiLabel;
-    LbMic2: TGuiLabel;
-    LbMic3: TGuiLabel;
-    LbMic4: TGuiLabel;
+    LabelMic1: TGuiLabel;
+    LabelMic2: TGuiLabel;
+    LabelMic3: TGuiLabel;
+    LabelMic4: TGuiLabel;
     Timer: TTimer;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -71,9 +71,9 @@ type
       const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
     procedure ASIOHostBufferSwitch32Recording(Sender: TObject;
       const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
-    procedure BtExitClick(Sender: TObject);
-    procedure BtSetupClick(Sender: TObject);
-    procedure BtStartStopClick(Sender: TObject);
+    procedure ButtonExitClick(Sender: TObject);
+    procedure ButtonSetupClick(Sender: TObject);
+    procedure ButtonStartStopClick(Sender: TObject);
     procedure TimerTimer(Sender: TObject);
     procedure FormResize(Sender: TObject);
   private
@@ -99,7 +99,7 @@ type
   end;
 
 var
-  FmSimpleHDRecorder: TFmSimpleHDRecorder;
+  FormSimpleHDRecorder: TFormSimpleHDRecorder;
 
 implementation
 
@@ -125,11 +125,11 @@ procedure TStorageThread.Execute;
 begin
   while not Terminated do
   begin
-    if FCurrentIndex <> FmSimpleHDRecorder.DataBufferIndex then
+    if FCurrentIndex <> FormSimpleHDRecorder.DataBufferIndex then
     begin
-      FCurrentIndex := FmSimpleHDRecorder.DataBufferIndex;
+      FCurrentIndex := FormSimpleHDRecorder.DataBufferIndex;
       try
-        FmSimpleHDRecorder.StoreData(1 - FCurrentIndex);
+        FormSimpleHDRecorder.StoreData(1 - FCurrentIndex);
       finally
         Suspend;
       end;
@@ -140,7 +140,7 @@ end;
 
 { TFmSimpleHDRecorder }
 
-procedure TFmSimpleHDRecorder.ASIOHostBufferSwitch32Recording(Sender: TObject;
+procedure TFormSimpleHDRecorder.ASIOHostBufferSwitch32Recording(Sender: TObject;
   const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
 var
   Sample, Channel, AsioChannel: Integer;
@@ -163,7 +163,7 @@ begin
   end;
 end;
 
-procedure TFmSimpleHDRecorder.ASIOHostBufferSwitch32(Sender: TObject;
+procedure TFormSimpleHDRecorder.ASIOHostBufferSwitch32(Sender: TObject;
   const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
 var
   Sample, Channel, AsioChannel: Integer;
@@ -179,35 +179,35 @@ begin
     end;
 end;
 
-procedure TFmSimpleHDRecorder.BtExitClick(Sender: TObject);
+procedure TFormSimpleHDRecorder.ButtonExitClick(Sender: TObject);
 begin
   Close;
 end;
 
-procedure TFmSimpleHDRecorder.BtSetupClick(Sender: TObject);
+procedure TFormSimpleHDRecorder.ButtonSetupClick(Sender: TObject);
 begin
-  FmSetup.ShowModal;
+  FormSetup.ShowModal;
 end;
 
-procedure TFmSimpleHDRecorder.BtStartStopClick(Sender: TObject);
+procedure TFormSimpleHDRecorder.ButtonStartStopClick(Sender: TObject);
 begin
-  if BtStartStop.Caption = 'Start' then
+  if ButtonStartStop.Caption = 'Start' then
   begin
     ASIOHost.Active := True;
-    BtStartStop.Caption := 'Stop';
+    ButtonStartStop.Caption := 'Stop';
     Caption := 'Simple HD Recorder (running)';
     PrepareRecording;
   end
   else
   begin
     ASIOHost.Active := False;
-    BtStartStop.Caption := 'Start';
+    ButtonStartStop.Caption := 'Start';
     Caption := 'Simple HD Recorder';
     StopRecording;
   end;
 end;
 
-procedure TFmSimpleHDRecorder.FormCreate(Sender: TObject);
+procedure TFormSimpleHDRecorder.FormCreate(Sender: TObject);
 begin
   FBackground := TGuiPixelMapMemory.Create;
   FormResize(Sender);
@@ -218,7 +218,7 @@ begin
   FPeaks[3] := 0; // reset peaks
 end;
 
-procedure TFmSimpleHDRecorder.FormDestroy(Sender: TObject);
+procedure TFormSimpleHDRecorder.FormDestroy(Sender: TObject);
 begin
   FreeAndNil(FBackground);
   if Assigned(FStorageThread) then
@@ -239,13 +239,13 @@ begin
   Dispose(FDataBuffers[1, 3]);
 end;
 
-procedure TFmSimpleHDRecorder.FormPaint(Sender: TObject);
+procedure TFormSimpleHDRecorder.FormPaint(Sender: TObject);
 begin
   if Assigned(FBackground) then
     FBackground.PaintTo(Canvas);
 end;
 
-procedure TFmSimpleHDRecorder.FormResize(Sender: TObject);
+procedure TFormSimpleHDRecorder.FormResize(Sender: TObject);
 var
   x, y: Integer;
   s: array [0 .. 1] of Single;
@@ -276,7 +276,7 @@ begin
   end;
 end;
 
-procedure TFmSimpleHDRecorder.PrepareRecording;
+procedure TFormSimpleHDRecorder.PrepareRecording;
 begin
   FDataBufferSize := Round(ASIOHost.SampleRate * 10);
   ReallocMem(FDataBuffers[0, 0], FDataBufferSize * SizeOf(Single));
@@ -311,7 +311,7 @@ begin
   ASIOHost.OnBufferSwitch32 := ASIOHostBufferSwitch32Recording;
 end;
 
-procedure TFmSimpleHDRecorder.StoreData(const Index: Integer);
+procedure TFormSimpleHDRecorder.StoreData(const Index: Integer);
 var
   y, h, M, D, s, MO: Word;
   FileBaseName: TFileName;
@@ -330,7 +330,7 @@ begin
     Round(ASIOHost.SampleRate), 1, 16, FDataBufferSize);
 end;
 
-procedure TFmSimpleHDRecorder.SwitchRecordingBuffer;
+procedure TFormSimpleHDRecorder.SwitchRecordingBuffer;
 begin
   FDataBufferIndex := 1 - FDataBufferIndex;
   FDataBufferPos := 0;
@@ -340,7 +340,7 @@ begin
     FStorageThread.Resume;
 end;
 
-procedure TFmSimpleHDRecorder.StopRecording;
+procedure TFormSimpleHDRecorder.StopRecording;
 var
   y, h, M, D, MO: Word;
   FileBaseName: TFileName;
@@ -359,7 +359,7 @@ begin
     Round(ASIOHost.SampleRate), 1, 16, FDataBufferIndex);
 end;
 
-procedure TFmSimpleHDRecorder.TimerTimer(Sender: TObject);
+procedure TFormSimpleHDRecorder.TimerTimer(Sender: TObject);
 begin
   GuiLED1.Brightness_Percent := FPeaks[0] * 100;
   GuiLED2.Brightness_Percent := FPeaks[1] * 100;
