@@ -1,4 +1,4 @@
-object FmGenerator: TFmGenerator
+object FormGenerator: TFormGenerator
   Left = 379
   Top = 372
   BorderIcons = [biSystemMenu]
@@ -20,7 +20,7 @@ object FmGenerator: TFmGenerator
     239)
   PixelsPerInch = 96
   TextHeight = 13
-  object LbChannelCount: TLabel
+  object LabelChannelCount: TLabel
     Left = 203
     Top = 216
     Width = 75
@@ -28,7 +28,7 @@ object FmGenerator: TFmGenerator
     Anchors = [akLeft, akBottom]
     Caption = 'Channel Count:'
   end
-  object LbVolume: TLabel
+  object LabelVolume: TLabel
     Left = 359
     Top = 13
     Width = 41
@@ -42,7 +42,7 @@ object FmGenerator: TFmGenerator
     Font.Style = []
     ParentFont = False
   end
-  object LbP30: TLabel
+  object LabelP30: TLabel
     Left = 398
     Top = 34
     Width = 20
@@ -50,7 +50,7 @@ object FmGenerator: TFmGenerator
     Alignment = taCenter
     Caption = '+30'
   end
-  object LbM30: TLabel
+  object LabelM30: TLabel
     Left = 398
     Top = 128
     Width = 16
@@ -58,7 +58,7 @@ object FmGenerator: TFmGenerator
     Alignment = taCenter
     Caption = '-30'
   end
-  object LbZero: TLabel
+  object LabelZero: TLabel
     Left = 401
     Top = 81
     Width = 6
@@ -138,7 +138,7 @@ object FmGenerator: TFmGenerator
     Uniformity_Percent = 36.754447937011720000
     Transparent = True
   end
-  object BtPlay: TSpeedButton
+  object ButtonPlay: TSpeedButton
     Left = 441
     Top = 211
     Width = 48
@@ -152,9 +152,9 @@ object FmGenerator: TFmGenerator
       FFFFF6CCBBBA8646AFFFF6CCCBBBA98536AFF7DCCCBBBAA9851FF7DDCCCBBBA9
       724FF7DDDCCCBA7449FFF7EDDDCA8558FFFFF7EEDB7658FFFFFFF8ED8568FFFF
       FFFFF79469AFFFFFFFFFF059FFFFFFFFFFFFFFFFFFFFFFFFFFFF}
-    OnClick = BtPlayClick
+    OnClick = ButtonPlayClick
   end
-  object BtStop: TSpeedButton
+  object ButtonStop: TSpeedButton
     Left = 552
     Top = 211
     Width = 49
@@ -202,9 +202,9 @@ object FmGenerator: TFmGenerator
       1818181212120FBC002020001E1E1B1B1B1818181212120F002020001E1E1E1B
       1B1B18181812120F00202000201E1E1E1B1B1B18181812120020200000000000
       0000000000000000002020202020202020202020202020202020}
-    OnClick = BtStopClick
+    OnClick = ButtonStopClick
   end
-  object BtPause: TSpeedButton
+  object ButtonPause: TSpeedButton
     Left = 495
     Top = 211
     Width = 51
@@ -218,34 +218,34 @@ object FmGenerator: TFmGenerator
       220AA055550AA043320AA065550AA044330AA066550AA044430AA076650AA044
       440AA087660AA044440AA088760AA054440AA088870AA055440AA088880AA055
       540AA098880AA055550AA000000AA000000AAAAAAAAAAAAAAAAA}
-    OnClick = BtPauseClick
+    OnClick = ButtonPauseClick
   end
-  object PcSelect: TPageControl
+  object PageControlSelect: TPageControl
     Left = 8
     Top = 8
     Width = 313
     Height = 199
-    ActivePage = TsSweep
+    ActivePage = TabSheetPinkNoise
     Anchors = [akLeft, akTop, akBottom]
     TabOrder = 0
-    OnChange = PcSelectChange
-    object TsWhiteNoise: TTabSheet
+    OnChange = PageControlSelectChange
+    object TabSheetWhiteNoise: TTabSheet
       Caption = 'White Noise'
-      object LbWhiteNoiseGain: TLabel
+      object LabelWhiteNoiseGain: TLabel
         Left = 16
         Top = 24
         Width = 48
         Height = 13
         Caption = 'Gain [dB]:'
       end
-      object LbDistribution: TLabel
+      object LabelDistribution: TLabel
         Left = 16
         Top = 61
         Width = 58
         Height = 13
         Caption = 'Distribution:'
       end
-      object SeWhiteNoiseGain: TSpinEdit
+      object SpinEditWhiteNoiseGain: TSpinEdit
         Left = 86
         Top = 21
         Width = 67
@@ -254,9 +254,9 @@ object FmGenerator: TFmGenerator
         MinValue = 0
         TabOrder = 0
         Value = 0
-        OnChange = SeWhiteNoiseGainChange
+        OnChange = SpinEditWhiteNoiseGainChange
       end
-      object RbRectangle: TRadioButton
+      object RadioButtonRectangle: TRadioButton
         Left = 86
         Top = 60
         Width = 65
@@ -266,7 +266,7 @@ object FmGenerator: TFmGenerator
         TabOrder = 1
         TabStop = True
       end
-      object RbTriangle: TRadioButton
+      object RadioButtonTriangle: TRadioButton
         Left = 168
         Top = 60
         Width = 65
@@ -275,17 +275,17 @@ object FmGenerator: TFmGenerator
         TabOrder = 2
       end
     end
-    object TsPinkNoise: TTabSheet
+    object TabSheetPinkNoise: TTabSheet
       Caption = 'Pink Noise'
       ImageIndex = 1
-      object LbPinkNoiseGain: TLabel
+      object LabelPinkNoiseGain: TLabel
         Left = 16
         Top = 24
         Width = 48
         Height = 13
         Caption = 'Gain [dB]:'
       end
-      object SePinkNoiseGain: TSpinEdit
+      object SpinEditPinkNoiseGain: TSpinEdit
         Left = 86
         Top = 21
         Width = 67
@@ -294,23 +294,23 @@ object FmGenerator: TFmGenerator
         MinValue = 0
         TabOrder = 0
         Value = 0
-        OnChange = SePinkNoiseGainChange
+        OnChange = SpinEditPinkNoiseGainChange
       end
     end
-    object TsSine: TTabSheet
+    object TabSheetSine: TTabSheet
       Caption = 'Sine'
       ImageIndex = 2
       DesignSize = (
         305
         171)
-      object LbSineCount: TLabel
+      object LabelSineCount: TLabel
         Left = 16
         Top = 49
         Width = 117
         Height = 13
         Caption = 'Sine Count per Channel:'
       end
-      object LbNoChannelSine: TLabel
+      object LabelNoChannelSine: TLabel
         Left = 139
         Top = 3
         Width = 59
@@ -318,7 +318,7 @@ object FmGenerator: TFmGenerator
         Caption = 'No Channel:'
         Visible = False
       end
-      object LbSineNo: TLabel
+      object LabelSineNo: TLabel
         Left = 224
         Top = 31
         Width = 44
@@ -326,7 +326,7 @@ object FmGenerator: TFmGenerator
         Caption = 'Sine No.:'
         Visible = False
       end
-      object SeSineCount: TSpinEdit
+      object SpinEditSineCount: TSpinEdit
         Left = 139
         Top = 46
         Width = 59
@@ -335,9 +335,9 @@ object FmGenerator: TFmGenerator
         MinValue = 1
         TabOrder = 0
         Value = 1
-        OnChange = SeSineCountChange
+        OnChange = SpinEditSineCountChange
       end
-      object GbParameterSine: TGroupBox
+      object GroupBoxParameterSine: TGroupBox
         Left = 3
         Top = 74
         Width = 299
@@ -345,56 +345,56 @@ object FmGenerator: TFmGenerator
         Anchors = [akLeft, akTop, akBottom]
         Caption = ' Parameter Sine Voice '
         TabOrder = 1
-        object LbFrequency: TLabel
+        object LabelFrequency: TLabel
           Left = 13
           Top = 25
           Width = 78
           Height = 13
           Caption = 'Frequency [Hz]:'
         end
-        object LbInitialPhase: TLabel
+        object LabelInitialPhase: TLabel
           Left = 13
           Top = 52
           Width = 82
           Height = 13
           Caption = 'Initiap Phase ['#176']:'
         end
-        object LbGain: TLabel
+        object LabelGain: TLabel
           Left = 167
           Top = 25
           Width = 48
           Height = 13
           Caption = 'Gain [dB]:'
         end
-        object EdFrequency: TEdit
+        object EditFrequency: TEdit
           Left = 101
           Top = 22
           Width = 60
           Height = 21
           TabOrder = 0
           Text = '1000'
-          OnChange = EdFrequencyChange
+          OnChange = EditFrequencyChange
         end
-        object EdInitialPhase: TEdit
+        object EditInitialPhase: TEdit
           Left = 101
           Top = 49
           Width = 60
           Height = 21
           TabOrder = 1
           Text = '0'
-          OnChange = EdInitialPhaseChange
+          OnChange = EditInitialPhaseChange
         end
-        object EdSineGain: TEdit
+        object EditSineGain: TEdit
           Left = 221
           Top = 22
           Width = 59
           Height = 21
           TabOrder = 2
           Text = '0'
-          OnChange = EdSineGainChange
+          OnChange = EditSineGainChange
         end
       end
-      object CbIdenticalChannelsSine: TCheckBox
+      object CheckBoxIdenticalChannelsSine: TCheckBox
         Left = 16
         Top = 22
         Width = 105
@@ -402,9 +402,9 @@ object FmGenerator: TFmGenerator
         Caption = 'Identical Channels'
         TabOrder = 2
         Visible = False
-        OnClick = CbIdenticalChannelsSineClick
+        OnClick = CheckBoxIdenticalChannelsSineClick
       end
-      object CbChannelSine: TComboBox
+      object ComboBoxChannelSine: TComboBox
         Left = 139
         Top = 19
         Width = 59
@@ -421,7 +421,7 @@ object FmGenerator: TFmGenerator
           '3'
           '4')
       end
-      object CbSine: TComboBox
+      object ComboBoxSine: TComboBox
         Left = 224
         Top = 47
         Width = 59
@@ -436,13 +436,13 @@ object FmGenerator: TFmGenerator
           '1')
       end
     end
-    object TsSweep: TTabSheet
+    object TabSheetSweep: TTabSheet
       Caption = 'Sweep'
       ImageIndex = 3
       DesignSize = (
         305
         171)
-      object LbNoChannelSweep: TLabel
+      object LabelNoChannelSweep: TLabel
         Left = 139
         Top = 3
         Width = 59
@@ -450,14 +450,14 @@ object FmGenerator: TFmGenerator
         Caption = 'No Channel:'
         Visible = False
       end
-      object LbModulationTime: TLabel
+      object LabelModulationTime: TLabel
         Left = 16
         Top = 49
         Width = 103
         Height = 13
         Caption = 'Modulation time [ms]:'
       end
-      object CbIdenticalChannelsSweep: TCheckBox
+      object CheckBoxIdenticalChannelsSweep: TCheckBox
         Left = 16
         Top = 22
         Width = 105
@@ -465,9 +465,9 @@ object FmGenerator: TFmGenerator
         Caption = 'Identical Channels'
         TabOrder = 0
         Visible = False
-        OnClick = CbIdenticalChannelsSweepClick
+        OnClick = CheckBoxIdenticalChannelsSweepClick
       end
-      object CbChannelSweep: TComboBox
+      object ComboBoxChannelSweep: TComboBox
         Left = 139
         Top = 19
         Width = 59
@@ -477,23 +477,23 @@ object FmGenerator: TFmGenerator
         TabOrder = 1
         Text = '1'
         Visible = False
-        OnChange = CbChannelSweepChange
+        OnChange = ComboBoxChannelSweepChange
         Items.Strings = (
           '1'
           '2'
           '3'
           '4')
       end
-      object EdSweepModulationTime: TEdit
+      object EditSweepModulationTime: TEdit
         Left = 139
         Top = 46
         Width = 59
         Height = 21
         TabOrder = 2
         Text = '1000'
-        OnChange = EdSweepModulationTimeChange
+        OnChange = EditSweepModulationTimeChange
       end
-      object GbSweep: TGroupBox
+      object GroupBoxSweep: TGroupBox
         Left = 3
         Top = 74
         Width = 299
@@ -501,55 +501,55 @@ object FmGenerator: TFmGenerator
         Anchors = [akLeft, akTop, akBottom]
         Caption = ' Parameter Sweep Channel '
         TabOrder = 3
-        object LbStartFreq: TLabel
+        object LabelStartFreq: TLabel
           Left = 13
           Top = 25
           Width = 80
           Height = 13
           Caption = 'Start Freq. [Hz]:'
         end
-        object LbEndFreq: TLabel
+        object LabelEndFreq: TLabel
           Left = 13
           Top = 52
           Width = 74
           Height = 13
           Caption = 'End Freq. [Hz]:'
         end
-        object LbGainSweep: TLabel
+        object LabelGainSweep: TLabel
           Left = 167
           Top = 25
           Width = 48
           Height = 13
           Caption = 'Gain [dB]:'
         end
-        object EdStartFreq: TEdit
+        object EditStartFreq: TEdit
           Left = 101
           Top = 22
           Width = 60
           Height = 21
           TabOrder = 0
           Text = '20'
-          OnChange = EdStartFreqChange
+          OnChange = EditStartFreqChange
         end
-        object EdEndFreq: TEdit
+        object EditEndFreq: TEdit
           Left = 101
           Top = 49
           Width = 60
           Height = 21
           TabOrder = 1
           Text = '20000'
-          OnChange = EdEndFreqChange
+          OnChange = EditEndFreqChange
         end
-        object EdGainSweep: TEdit
+        object EditGainSweep: TEdit
           Left = 221
           Top = 22
           Width = 59
           Height = 21
           TabOrder = 2
           Text = '0'
-          OnChange = EdGainSweepChange
+          OnChange = EditGainSweepChange
         end
-        object RbRisingSweep: TRadioButton
+        object RadioButtonRisingSweep: TRadioButton
           Left = 13
           Top = 73
           Width = 113
@@ -558,9 +558,9 @@ object FmGenerator: TFmGenerator
           Checked = True
           TabOrder = 3
           TabStop = True
-          OnClick = RbRisingSweepClick
+          OnClick = RadioButtonRisingSweepClick
         end
-        object RbFallingSweep: TRadioButton
+        object RadioButtonFallingSweep: TRadioButton
           Left = 132
           Top = 73
           Width = 113
@@ -568,14 +568,14 @@ object FmGenerator: TFmGenerator
           Caption = 'Falling Sweep'
           Enabled = False
           TabOrder = 4
-          OnClick = RbFallingSweepClick
+          OnClick = RadioButtonFallingSweepClick
         end
       end
     end
-    object TsWavFile: TTabSheet
+    object TabSheetWavFile: TTabSheet
       Caption = 'WAV-File'
       ImageIndex = 4
-      object BtSelectWavFile: TButton
+      object ButtonSelectWavFile: TButton
         Left = 64
         Top = 37
         Width = 177
@@ -583,19 +583,19 @@ object FmGenerator: TFmGenerator
         Caption = 'Select WAV-File...'
         Default = True
         TabOrder = 0
-        OnClick = BtSelectWavFileClick
+        OnClick = ButtonSelectWavFileClick
       end
-      object EdWavFile: TEdit
+      object EditWavFile: TEdit
         Left = 16
         Top = 78
         Width = 273
         Height = 21
         TabOrder = 1
-        OnChange = EdWavFileChange
+        OnChange = EditWavFileChange
       end
     end
   end
-  object DriverCombo: TComboBox
+  object ComboBoxDriver: TComboBox
     Left = 8
     Top = 213
     Width = 189
@@ -603,9 +603,9 @@ object FmGenerator: TFmGenerator
     Style = csDropDownList
     Anchors = [akLeft, akBottom]
     TabOrder = 1
-    OnChange = DriverComboChange
+    OnChange = ComboBoxDriverChange
   end
-  object SeChannelCount: TSpinEdit
+  object SpinEditChannelCount: TSpinEdit
     Left = 284
     Top = 213
     Width = 37
@@ -615,9 +615,9 @@ object FmGenerator: TFmGenerator
     MinValue = 1
     TabOrder = 2
     Value = 1
-    OnChange = SeChannelCountChange
+    OnChange = SpinEditChannelCountChange
   end
-  object TbVolume: TTrackBar
+  object TrackBarVolume: TTrackBar
     Left = 367
     Top = 32
     Width = 25
@@ -629,9 +629,9 @@ object FmGenerator: TFmGenerator
     ShowSelRange = False
     TabOrder = 3
     ThumbLength = 14
-    OnChange = TbVolumeChange
+    OnChange = TrackBarVolumeChange
   end
-  object CbTimeLimit: TCheckBox
+  object CheckBoxTimeLimit: TCheckBox
     Left = 344
     Top = 151
     Width = 65
@@ -639,7 +639,7 @@ object FmGenerator: TFmGenerator
     Caption = 'Time Limit'
     TabOrder = 4
   end
-  object PnTimeDomain: TPanel
+  object PanelTimeDomain: TPanel
     Left = 440
     Top = 8
     Width = 161
@@ -647,11 +647,13 @@ object FmGenerator: TFmGenerator
     BevelOuter = bvLowered
     Color = clBlack
     TabOrder = 5
-    object AdTimeDomain: TGuiAudioDataDisplay
+    object AudioDisplayTimeDomain: TGuiAudioDataDisplay
       Left = 1
       Top = 1
       Width = 159
       Height = 158
+      Cursor.SampleActive = 0
+      Cursor.SamplePassive = 0
       Align = alClient
       AudioDataCollection = ADC
       DisplayChannels = <>
@@ -663,7 +665,7 @@ object FmGenerator: TFmGenerator
       XAxis.FractionalUpper = 0.500000000000000000
     end
   end
-  object PnTime: TPanel
+  object PanelTime: TPanel
     Left = 480
     Top = 174
     Width = 121
@@ -674,7 +676,7 @@ object FmGenerator: TFmGenerator
     DesignSize = (
       121
       31)
-    object LbTime: TLabel
+    object LabelTime: TLabel
       Left = 1
       Top = 4
       Width = 118
@@ -692,6 +694,7 @@ object FmGenerator: TFmGenerator
     end
   end
   object ASIOHost: TAsioHost
+    AsioTime.SamplePos = 0
     AsioTime.Speed = 1.000000000000000000
     AsioTime.SampleRate = 44100.000000000000000000
     AsioTime.Flags = [atSystemTimeValid, atSamplePositionValid, atSampleRateValid, atSpeedValid]

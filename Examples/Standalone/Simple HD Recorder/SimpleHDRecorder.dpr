@@ -3,27 +3,27 @@ program SimpleHDRecorder;
 {$I DAV_Compiler.inc}
 
 uses
-  FastMM4, // either download the library or comment if there is an error here
-  {$IFDEF UseMadExcept}
-  madExcept, // either download the library or disable the feature
+  FastMM4,
   madLinkDisAsm,
   madListHardware,
   madListProcesses,
   madListModules,
-  {$ENDIF}
+  {$IFDEF UseMadExcept}
+  madExcept,
+  {$ENDIF }
   {$IFDEF UseFastMove}
-  FastMove, // either download the library or disable the feature
-  {$ENDIF}
+  FastMove,
+  {$ENDIF }
   Forms,
-  SHRmain in 'SHRmain.pas' {FmSimpleHDRecorder},
-  SHRSetup in 'SHRSetup.pas' {FmSetup};
+  SHRmain in 'SHRmain.pas' {FormSimpleHDRecorder},
+  SHRSetup in 'SHRSetup.pas' {FormSetup};
 
 {$R *.res}
 
 begin
   Application.Initialize;
   Application.Title := 'Simple HD Recorder';
-  Application.CreateForm(TFmSimpleHDRecorder, FmSimpleHDRecorder);
-  Application.CreateForm(TFmSetup, FmSetup);
+  Application.CreateForm(TFormSimpleHDRecorder, FormSimpleHDRecorder);
+  Application.CreateForm(TFormSetup, FormSetup);
   Application.Run;
 end.

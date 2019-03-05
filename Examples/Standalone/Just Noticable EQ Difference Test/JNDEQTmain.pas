@@ -48,72 +48,72 @@ type
   TSelection = (sX, sA, sB);
   TTestParameter = (tpGain, tpFrequency, tpBandwidth);
 
-  TFmJNDEQT = class(TForm)
+  TFormJNDEQT = class(TForm)
     AsioHost: TAsioHost;
-    BtMedia: TGuiMediaButton;
+    ButtonMedia: TGuiMediaButton;
     ClipLED: TGuiLED;
-    GbEQFilter: TGuiGroup;
-    LbAudioFile: TGuiLabel;
-    LbAudioFileValue: TGuiLabel;
-    LbAutoVolumeAdj: TGuiLabel;
-    LbAutoVolumeAdjValue: TGuiLabel;
-    LbBandwidth: TGuiLabel;
-    LbBandwidthValue: TGuiLabel;
-    LbClipIndicator: TGuiLabel;
-    LbFrequency: TGuiLabel;
-    LbFrequencyValue: TGuiLabel;
-    LbGain: TGuiLabel;
-    LbGainValue: TGuiLabel;
-    LbInformation: TGuiLabel;
-    LbSelectionA: TGuiLabel;
-    LbSelectionB: TGuiLabel;
-    LbSelectionX: TGuiLabel;
-    LbSkip: TGuiLabel;
-    LbVolume: TGuiLabel;
-    LbVolumeValue: TGuiLabel;
-    LbXisA: TGuiLabel;
-    LbXisB: TGuiLabel;
+    GroupBoxEQFilter: TGuiGroup;
+    LabelAudioFile: TGuiLabel;
+    LabelAudioFileValue: TGuiLabel;
+    LabelAutoVolumeAdj: TGuiLabel;
+    LabelAutoVolumeAdjValue: TGuiLabel;
+    LabelBandwidth: TGuiLabel;
+    LabelBandwidthValue: TGuiLabel;
+    LabelClipIndicator: TGuiLabel;
+    LabelFrequency: TGuiLabel;
+    LabelFrequencyValue: TGuiLabel;
+    LabelGain: TGuiLabel;
+    LabelGainValue: TGuiLabel;
+    LabelInformation: TGuiLabel;
+    LabelSelectionA: TGuiLabel;
+    LabelSelectionB: TGuiLabel;
+    LabelSelectionX: TGuiLabel;
+    LabelSkip: TGuiLabel;
+    LabelVolume: TGuiLabel;
+    LabelVolumeValue: TGuiLabel;
+    LabelXisA: TGuiLabel;
+    LabelXisB: TGuiLabel;
     MainMenu: TMainMenu;
-    MiAudioSettings: TMenuItem;
-    MiDecryptJNDfile: TMenuItem;
-    MiExit: TMenuItem;
-    MiLatchButtons: TMenuItem;
-    MiPinkNoise: TMenuItem;
-    MiSettings: TMenuItem;
-    MiTest: TMenuItem;
-    MiTestFull: TMenuItem;
-    MiTestFullBandwidth: TMenuItem;
-    MiTestFullBandwidthReference: TMenuItem;
-    MiTestFullFrequency: TMenuItem;
-    MiTestFullFrequencyReference: TMenuItem;
-    MiTestFullGain: TMenuItem;
-    MiTestFullGainReference: TMenuItem;
-    MiTestStart: TMenuItem;
-    MiTestTraining: TMenuItem;
-    MiTestTrainingBandwidth: TMenuItem;
-    MiTestTrainingFrequency: TMenuItem;
-    MiTestTrainingGain: TMenuItem;
+    MenuItemAudioSettings: TMenuItem;
+    MenuItemDecryptJNDfile: TMenuItem;
+    MenuItemExit: TMenuItem;
+    MenuItemLatchButtons: TMenuItem;
+    MenuItemPinkNoise: TMenuItem;
+    MenuItemSettings: TMenuItem;
+    MenuItemTest: TMenuItem;
+    MenuItemTestFull: TMenuItem;
+    MenuItemTestFullBandwidth: TMenuItem;
+    MenuItemTestFullBandwidthReference: TMenuItem;
+    MenuItemTestFullFrequency: TMenuItem;
+    MenuItemTestFullFrequencyReference: TMenuItem;
+    MenuItemTestFullGain: TMenuItem;
+    MenuItemTestFullGainReference: TMenuItem;
+    MenuItemTestStart: TMenuItem;
+    MenuItemTestTraining: TMenuItem;
+    MenuItemTestTrainingBandwidth: TMenuItem;
+    MenuItemTestTrainingFrequency: TMenuItem;
+    MenuItemTestTrainingGain: TMenuItem;
     N1: TMenuItem;
     N2: TMenuItem;
     N3: TMenuItem;
     N4: TMenuItem;
-    OD: TOpenDialog;
+    OpenDialogMp3: TOpenDialog;
     OpenDialog: TOpenDialog;
-    PeakCheck: TTimer;
-    PnSelectorA: TGuiPanel;
-    PnSelectorB: TGuiPanel;
-    PnSelectorX: TGuiPanel;
-    PnSelectorXisA: TGuiPanel;
-    PnSelectorXisB: TGuiPanel;
-    PnSkip: TGuiPanel;
-    PuAudioFile: TPopupMenu;
-    ResultButtonEnabler: TTimer;
+    TimerPeakCheck: TTimer;
+    PanelSelectorA: TGuiPanel;
+    PanelSelectorB: TGuiPanel;
+    PanelSelectorX: TGuiPanel;
+    PanelSelectorXisA: TGuiPanel;
+    PanelSelectorXisB: TGuiPanel;
+    PanelSkip: TGuiPanel;
+    PopupMenuAudioFile: TPopupMenu;
+    TimerResultButtonEnabler: TTimer;
     SliderBandwidth: TGuiSlider;
     SliderFrequency: TGuiSlider;
     SliderGain: TGuiSlider;
     SliderVolume: TGuiSlider;
-    MiTestFullGainNarrow: TMenuItem;
-    MiTestFullGainWide: TMenuItem;
+    MenuItemTestFullGainNarrow: TMenuItem;
+    MenuItemTestFullGainWide: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -125,33 +125,33 @@ type
     procedure AsioHostBufferSwitch32(Sender: TObject;
       const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
     procedure AsioHostSampleRateChanged(Sender: TObject);
-    procedure BtMediaClick(Sender: TObject);
-    procedure LbAudioFileValueDblClick(Sender: TObject);
+    procedure ButtonMediaClick(Sender: TObject);
+    procedure LabelAudioFileValueDblClick(Sender: TObject);
     procedure LbAutoVolumeAdjustmentClick(Sender: TObject);
     procedure LbSelectionMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure LbSelectionMouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
-    procedure LbSkipClick(Sender: TObject);
-    procedure LbXisAClick(Sender: TObject);
-    procedure LbXisBClick(Sender: TObject);
-    procedure MiAudioSettingsClick(Sender: TObject);
-    procedure MiDecryptJNDfileClick(Sender: TObject);
-    procedure MiExitClick(Sender: TObject);
-    procedure MiLatchButtonsClick(Sender: TObject);
-    procedure MiPinkNoiseClick(Sender: TObject);
-    procedure MiTestFullGainReferenceClick(Sender: TObject);
-    procedure MiTestTrainingGainClick(Sender: TObject);
-    procedure PeakCheckTimer(Sender: TObject);
-    procedure ResultButtonEnablerTimer(Sender: TObject);
+    procedure LabelSkipClick(Sender: TObject);
+    procedure LabelXisAClick(Sender: TObject);
+    procedure LabelXisBClick(Sender: TObject);
+    procedure MenuItemAudioSettingsClick(Sender: TObject);
+    procedure MenuItemDecryptJNDfileClick(Sender: TObject);
+    procedure MenuItemExitClick(Sender: TObject);
+    procedure MenuItemLatchButtonsClick(Sender: TObject);
+    procedure MenuItemPinkNoiseClick(Sender: TObject);
+    procedure MenuItemTestFullGainReferenceClick(Sender: TObject);
+    procedure MenuItemTestTrainingGainClick(Sender: TObject);
+    procedure TimerPeakCheckTimer(Sender: TObject);
+    procedure TimerResultButtonEnablerTimer(Sender: TObject);
     procedure SliderBandwidthChange(Sender: TObject);
     procedure SliderFrequencyChange(Sender: TObject);
     procedure SliderGainChange(Sender: TObject);
     procedure SliderVolumeChange(Sender: TObject);
-    procedure MiTestTrainingFrequencyClick(Sender: TObject);
-    procedure MiTestTrainingBandwidthClick(Sender: TObject);
-    procedure MiTestFullGainNarrowClick(Sender: TObject);
-    procedure MiTestFullGainWideClick(Sender: TObject);
+    procedure MenuItemTestTrainingFrequencyClick(Sender: TObject);
+    procedure MenuItemTestTrainingBandwidthClick(Sender: TObject);
+    procedure MenuItemTestFullGainNarrowClick(Sender: TObject);
+    procedure MenuItemTestFullGainWideClick(Sender: TObject);
     procedure ClipLEDClick(Sender: TObject);
   private
     FBackgroundBitmap: TGuiCustomPixelMap;
@@ -211,7 +211,7 @@ type
   end;
 
 var
-  FmJNDEQT: TFmJNDEQT;
+  FormJNDEQT: TFormJNDEQT;
 
 implementation
 
@@ -225,7 +225,7 @@ uses
   IniFiles, Math, Mapi, ShellApi, AnsiStrings, System.ZLib, DAV_GuiCommon,
   DAV_Common, DAV_Approximations, JNDEQTaudio, JNDEQTsurvey;
 
-procedure TFmJNDEQT.FormCreate(Sender: TObject);
+procedure TFormJNDEQT.FormCreate(Sender: TObject);
 var
   ChannelIndex: Integer;
   BandIndex: Integer;
@@ -294,7 +294,7 @@ begin
   FAdditionalFactor := 1;
 end;
 
-procedure TFmJNDEQT.FormDestroy(Sender: TObject);
+procedure TFormJNDEQT.FormDestroy(Sender: TObject);
 var
   ChannelIndex: Integer;
   BandIndex: Integer;
@@ -330,7 +330,7 @@ begin
   FreeAndNil(FLog);
 end;
 
-procedure TFmJNDEQT.FormKeyPress(Sender: TObject; var Key: Char);
+procedure TFormJNDEQT.FormKeyPress(Sender: TObject; var Key: Char);
 begin
   case Key of
     '1', 'a', 'A':
@@ -342,13 +342,13 @@ begin
   end;
 end;
 
-procedure TFmJNDEQT.FormShow(Sender: TObject);
+procedure TFormJNDEQT.FormShow(Sender: TObject);
 var
   LastAudioFile: TFileName;
 begin
-  ClientHeight := BtMedia.Top + BtMedia.Height + 4;
+  ClientHeight := ButtonMedia.Top + ButtonMedia.Height + 4;
 
-  with TIniFile.Create(FmJNDEQT.IniFile) do
+  with TIniFile.Create(FormJNDEQT.IniFile) do
     try
       LastAudioFile := ReadString('Test', 'File', '');
       LoadFromFile(LastAudioFile);
@@ -359,17 +359,17 @@ begin
       FBandwidth := ReadFloat('Test', 'Bandwidth', FBandwidth);
       SliderFrequency.Value := FFrequency;
       SliderBandwidth.Value := FBandwidth;
-      MiLatchButtons.Checked := ReadBool('Settings', 'Latch Buttons',
-        MiLatchButtons.Checked);
+      MenuItemLatchButtons.Checked := ReadBool('Settings', 'Latch Buttons',
+        MenuItemLatchButtons.Checked);
     finally
       Free;
     end;
 end;
 
-procedure TFmJNDEQT.FormClose(Sender: TObject; var Action: TCloseAction);
+procedure TFormJNDEQT.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   // inifile
-  with TIniFile.Create(FmJNDEQT.IniFile) do
+  with TIniFile.Create(FormJNDEQT.IniFile) do
     try
       WriteFloat('Test', 'Volume', SliderVolume.Value);
       WriteFloat('Test', 'Peak Release Time', PeakRelease);
@@ -377,19 +377,19 @@ begin
       WriteFloat('Test', 'Frequency', SliderFrequency.Value);
       WriteFloat('Test', 'Bandwidth', SliderBandwidth.Value);
       WriteString('Test', 'File', FBufferedPlayer.FileName);
-      WriteBool('Settings', 'Latch Buttons', MiLatchButtons.Checked);
+      WriteBool('Settings', 'Latch Buttons', MenuItemLatchButtons.Checked);
     finally
       Free;
     end;
 end;
 
-procedure TFmJNDEQT.FormPaint(Sender: TObject);
+procedure TFormJNDEQT.FormPaint(Sender: TObject);
 begin
   if Assigned(FBackgroundBitmap) then
     FBackgroundBitmap.PaintTo(Canvas);
 end;
 
-procedure TFmJNDEQT.FormResize(Sender: TObject);
+procedure TFormJNDEQT.FormResize(Sender: TObject);
 var
   X, Y: Integer;
   s: array [0 .. 1] of Single;
@@ -420,7 +420,7 @@ begin
     end;
 end;
 
-procedure TFmJNDEQT.AsioHostSampleRateChanged(Sender: TObject);
+procedure TFormJNDEQT.AsioHostSampleRateChanged(Sender: TObject);
 var
   ChannelIndex: Integer;
   BandIndex: Integer;
@@ -443,7 +443,7 @@ begin
     FBufferedPlayer.SampleRate := AsioHost.SampleRate;
 end;
 
-procedure TFmJNDEQT.BtMediaClick(Sender: TObject);
+procedure TFormJNDEQT.ButtonMediaClick(Sender: TObject);
 begin
   with TGuiMediaButton(Sender) do
     if ButtonState = mbsPlay then
@@ -458,32 +458,29 @@ begin
     end;
 end;
 
-procedure TFmJNDEQT.LbAudioFileValueDblClick(Sender: TObject);
+procedure TFormJNDEQT.LabelAudioFileValueDblClick(Sender: TObject);
 begin
-  with OD do
-  begin
-    if Execute then
-      LoadFromFile(OD.FileName);
-  end;
+  if OpenDialogMP3.Execute then
+    LoadFromFile(OpenDialogMP3.FileName);
 end;
 
-procedure TFmJNDEQT.LbAutoVolumeAdjustmentClick(Sender: TObject);
+procedure TFormJNDEQT.LbAutoVolumeAdjustmentClick(Sender: TObject);
 begin
   VolumeAutoAdjustment := False; // not VolumeAutoAdjustment;
 
   if VolumeAutoAdjustment then
-    LbAutoVolumeAdjValue.Caption := 'On'
+    LabelAutoVolumeAdjValue.Caption := 'On'
   else
-    LbAutoVolumeAdjValue.Caption := 'Off';
+    LabelAutoVolumeAdjValue.Caption := 'Off';
 end;
 
-procedure TFmJNDEQT.LbSkipClick(Sender: TObject);
+procedure TFormJNDEQT.LabelSkipClick(Sender: TObject);
 var
-  str: string;
+  Str: string;
 begin
-  str := 'Trial ' + IntToStr(FTrialNo + 1) + ': Skipped';
-  str := TimeToStr(Now) + ' - ' + str;
-  FLog.Add(str + ' (' + FloatToStrF(FCurrentGainDelta, ffGeneral, 4, 4) + ')');
+  Str := 'Trial ' + IntToStr(FTrialNo + 1) + ': Skipped';
+  Str := TimeToStr(Now) + ' - ' + Str;
+  FLog.Add(Str + ' (' + FloatToStrF(FCurrentGainDelta, ffGeneral, 4, 4) + ')');
 
   Inc(FTrialNo);
   if (FTrialCount > 0) and (FTrialNo >= FTrialCount) then
@@ -493,10 +490,10 @@ begin
   end;
 
   // trial information
-  str := 'Trial: ' + IntToStr(FTrialNo + 1);
+  Str := 'Trial: ' + IntToStr(FTrialNo + 1);
   if FTrialCount > 0 then
-    str := str + ' / ' + IntToStr(FTrialCount);
-  LbInformation.Caption := str;
+    Str := Str + ' / ' + IntToStr(FTrialCount);
+  LabelInformation.Caption := Str;
 
   // temporarily disable buttons
   DisableResultButtons;
@@ -509,44 +506,44 @@ begin
   UpdateSelection;
 end;
 
-procedure TFmJNDEQT.DisableResultButtons;
+procedure TFormJNDEQT.DisableResultButtons;
 begin
   // temporarily disable buttons
-  PnSelectorXisA.OnClick := nil;
-  PnSelectorXisB.OnClick := nil;
-  PnSkip.OnClick := nil;
-  LbXisA.OnClick := nil;
-  LbXisB.OnClick := nil;
-  LbSkip.OnClick := nil;
-  ResultButtonEnabler.Enabled := True;
+  PanelSelectorXisA.OnClick := nil;
+  PanelSelectorXisB.OnClick := nil;
+  PanelSkip.OnClick := nil;
+  LabelXisA.OnClick := nil;
+  LabelXisB.OnClick := nil;
+  LabelSkip.OnClick := nil;
+  TimerResultButtonEnabler.Enabled := True;
 end;
 
-procedure TFmJNDEQT.LbSelectionMouseUp(Sender: TObject; Button: TMouseButton;
+procedure TFormJNDEQT.LbSelectionMouseUp(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
-  if MiLatchButtons.Checked then
+  if MenuItemLatchButtons.Checked then
     Selection := sX;
 end;
 
-procedure TFmJNDEQT.LbSelectionMouseDown(Sender: TObject; Button: TMouseButton;
+procedure TFormJNDEQT.LbSelectionMouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
   Selection := TSelection(TComponent(Sender).Tag);
 end;
 
-procedure TFmJNDEQT.LbXisAClick(Sender: TObject);
+procedure TFormJNDEQT.LabelXisAClick(Sender: TObject);
 begin
-  LbXisA.Font.Color := $00006CFF;
+  LabelXisA.Font.Color := $00006CFF;
   NextTrial(Integer(FCurrentX) = Integer(gXisA));
 end;
 
-procedure TFmJNDEQT.LbXisBClick(Sender: TObject);
+procedure TFormJNDEQT.LabelXisBClick(Sender: TObject);
 begin
-  LbXisB.Font.Color := $00006CFF;
+  LabelXisB.Font.Color := $00006CFF;
   NextTrial(Integer(FCurrentX) = Integer(gXisB));
 end;
 
-procedure TFmJNDEQT.SetSelection(const Value: TSelection);
+procedure TFormJNDEQT.SetSelection(const Value: TSelection);
 begin
   if FSelection <> Value then
   begin
@@ -555,7 +552,7 @@ begin
   end;
 end;
 
-procedure TFmJNDEQT.SetVolumeAutoAdjustment(const Value: Boolean);
+procedure TFormJNDEQT.SetVolumeAutoAdjustment(const Value: Boolean);
 begin
   if FVolumeAutoAdj <> Value then
   begin
@@ -564,33 +561,33 @@ begin
   end;
 end;
 
-procedure TFmJNDEQT.VolumeAutoAdjustmentChanged;
+procedure TFormJNDEQT.VolumeAutoAdjustmentChanged;
 begin
   // yet todo
 end;
 
-procedure TFmJNDEQT.SelectionChanged;
+procedure TFormJNDEQT.SelectionChanged;
 begin
-  LbSelectionA.Font.Color := clBlack;
-  LbSelectionB.Font.Color := clBlack;
-  LbSelectionX.Font.Color := clBlack;
+  LabelSelectionA.Font.Color := clBlack;
+  LabelSelectionB.Font.Color := clBlack;
+  LabelSelectionX.Font.Color := clBlack;
 
   case FSelection of
     sX:
       begin
-        LbSelectionX.Font.Color := $6CFF;
+        LabelSelectionX.Font.Color := $6CFF;
         FLog.Add(TimeToStr(Now) + ' - ' + 'Selection: X');
         FCurrentIndex := Integer(FCurrentX) - 1;
       end;
     sA:
       begin
-        LbSelectionA.Font.Color := $6CFF;
+        LabelSelectionA.Font.Color := $6CFF;
         FLog.Add(TimeToStr(Now) + ' - ' + 'Selection: A');
         FCurrentIndex := 0;
       end;
     sB:
       begin
-        LbSelectionB.Font.Color := $6CFF;
+        LabelSelectionB.Font.Color := $6CFF;
         FLog.Add(TimeToStr(Now) + ' - ' + 'Selection: B');
         FCurrentIndex := 1;
       end;
@@ -600,13 +597,13 @@ begin
   UpdateSelection;
 end;
 
-procedure TFmJNDEQT.UpdateSelection;
+procedure TFormJNDEQT.UpdateSelection;
 begin
   case FSelection of
     sX:
       begin
         SliderGain.Value := 0;
-        LbGainValue.Caption := '???';
+        LabelGainValue.Caption := '???';
       end;
     sA:
       SliderGain.Value := -0.5 * FCurrentGainDelta;
@@ -617,7 +614,7 @@ begin
   end;
 end;
 
-procedure TFmJNDEQT.SetPeakReleaseFactor(const Value: Double);
+procedure TFormJNDEQT.SetPeakReleaseFactor(const Value: Double);
 begin
   if FPeakRelease <> Value then
   begin
@@ -626,7 +623,7 @@ begin
   end;
 end;
 
-procedure TFmJNDEQT.PeakCheckTimer(Sender: TObject);
+procedure TFormJNDEQT.TimerPeakCheckTimer(Sender: TObject);
 var
   Peak: Double;
 begin
@@ -634,12 +631,12 @@ begin
   ClipLED.Brightness_Percent := Power(Limit(Peak - 1, 0, 1), 0.01) * 100;
 end;
 
-procedure TFmJNDEQT.PeakReleaseChanged;
+procedure TFormJNDEQT.PeakReleaseChanged;
 begin
   CalculatePeakReleaseFactor;
 end;
 
-procedure TFmJNDEQT.CalculatePeakReleaseFactor;
+procedure TFormJNDEQT.CalculatePeakReleaseFactor;
 begin
   if FPeakRelease = 0 then
     FPeakReleaseFactor := 0
@@ -648,39 +645,39 @@ begin
       (FPeakRelease * AsioHost.SampleRate));
 end;
 
-procedure TFmJNDEQT.LoadFromFile(FileName: TFileName);
+procedure TFormJNDEQT.LoadFromFile(FileName: TFileName);
 begin
   if FileExists(FileName) then
   begin
     FBufferedPlayer.FileName := FileName;
-    LbAudioFileValue.Caption := ExtractFileName(FileName);
+    LabelAudioFileValue.Caption := ExtractFileName(FileName);
     LogMessage('audio file ' + ExtractFileName(FileName) + ' selected');
   end;
 end;
 
-procedure TFmJNDEQT.MiAudioSettingsClick(Sender: TObject);
+procedure TFormJNDEQT.MenuItemAudioSettingsClick(Sender: TObject);
 begin
-  FmSetup.ShowModal;
+  FormSetup.ShowModal;
 end;
 
-procedure TFmJNDEQT.MiExitClick(Sender: TObject);
+procedure TFormJNDEQT.MenuItemExitClick(Sender: TObject);
 begin
   Close;
 end;
 
-procedure TFmJNDEQT.MiLatchButtonsClick(Sender: TObject);
+procedure TFormJNDEQT.MenuItemLatchButtonsClick(Sender: TObject);
 begin
-  MiLatchButtons.Checked := not MiLatchButtons.Checked;
+  MenuItemLatchButtons.Checked := not MenuItemLatchButtons.Checked;
 end;
 
-procedure TFmJNDEQT.MiPinkNoiseClick(Sender: TObject);
+procedure TFormJNDEQT.MenuItemPinkNoiseClick(Sender: TObject);
 begin
   FBufferedPlayer.FileName := '';
-  LbAudioFileValue.Caption := 'Pink Noise (double click to change)';
+  LabelAudioFileValue.Caption := 'Pink Noise (double click to change)';
   LogMessage('pink noise selected');
 end;
 
-procedure TFmJNDEQT.MiTestFullGainReferenceClick(Sender: TObject);
+procedure TFormJNDEQT.MenuItemTestFullGainReferenceClick(Sender: TObject);
 begin
   SliderGain.Enabled := False;
   SliderFrequency.Value := 1000;
@@ -690,13 +687,13 @@ begin
   FTrialCount := 20;
   FEncryptLogFile := True;
   StartTest(tpGain);
-  GbEQFilter.Visible := False;
+  GroupBoxEQFilter.Visible := False;
   LogMessage('Full test started (Gain: Reference)');
-  ClientHeight := LbInformation.Top + LbInformation.Height + 6;
-  ClipLED.Top := LbInformation.Top;
+  ClientHeight := LabelInformation.Top + LabelInformation.Height + 6;
+  ClipLED.Top := LabelInformation.Top;
 end;
 
-procedure TFmJNDEQT.MiTestFullGainNarrowClick(Sender: TObject);
+procedure TFormJNDEQT.MenuItemTestFullGainNarrowClick(Sender: TObject);
 begin
   SliderGain.Enabled := False;
   SliderFrequency.Value := 1000;
@@ -706,13 +703,13 @@ begin
   FTrialCount := 20;
   FEncryptLogFile := True;
   StartTest(tpGain);
-  GbEQFilter.Visible := False;
+  GroupBoxEQFilter.Visible := False;
   LogMessage('Full test started (Gain: Narrow)');
-  ClientHeight := LbInformation.Top + LbInformation.Height + 6;
-  ClipLED.Top := LbInformation.Top;
+  ClientHeight := LabelInformation.Top + LabelInformation.Height + 6;
+  ClipLED.Top := LabelInformation.Top;
 end;
 
-procedure TFmJNDEQT.MiTestFullGainWideClick(Sender: TObject);
+procedure TFormJNDEQT.MenuItemTestFullGainWideClick(Sender: TObject);
 begin
   SliderGain.Enabled := False;
   SliderFrequency.Value := 1000;
@@ -722,13 +719,13 @@ begin
   FTrialCount := 20;
   FEncryptLogFile := True;
   StartTest(tpGain);
-  GbEQFilter.Visible := False;
+  GroupBoxEQFilter.Visible := False;
   LogMessage('Full test started (Gain: Narrow)');
-  ClientHeight := LbInformation.Top + LbInformation.Height + 6;
-  ClipLED.Top := LbInformation.Top;
+  ClientHeight := LabelInformation.Top + LabelInformation.Height + 6;
+  ClipLED.Top := LabelInformation.Top;
 end;
 
-procedure TFmJNDEQT.MiTestTrainingGainClick(Sender: TObject);
+procedure TFormJNDEQT.MenuItemTestTrainingGainClick(Sender: TObject);
 begin
   SliderGain.Enabled := False;
   SliderFrequency.Enabled := True;
@@ -736,13 +733,13 @@ begin
   FTrialCount := 0;
   FEncryptLogFile := False;
   StartTest(tpGain);
-  GbEQFilter.Visible := True;
+  GroupBoxEQFilter.Visible := True;
   LogMessage('Training test started (Gain)');
-  ClientHeight := LbVolume.Top + LbVolume.Height + 8;
-  ClipLED.Top := LbVolume.Top;
+  ClientHeight := LabelVolume.Top + LabelVolume.Height + 8;
+  ClipLED.Top := LabelVolume.Top;
 end;
 
-procedure TFmJNDEQT.MiTestTrainingFrequencyClick(Sender: TObject);
+procedure TFormJNDEQT.MenuItemTestTrainingFrequencyClick(Sender: TObject);
 begin
   SliderGain.Enabled := True;
   SliderFrequency.Enabled := False;
@@ -750,13 +747,13 @@ begin
   FTrialCount := 0;
   FEncryptLogFile := False;
   StartTest(tpFrequency);
-  GbEQFilter.Visible := True;
+  GroupBoxEQFilter.Visible := True;
   LogMessage('Training test started (Frequency)');
-  ClientHeight := LbVolume.Top + LbVolume.Height + 8;
-  ClipLED.Top := LbVolume.Top;
+  ClientHeight := LabelVolume.Top + LabelVolume.Height + 8;
+  ClipLED.Top := LabelVolume.Top;
 end;
 
-procedure TFmJNDEQT.MiTestTrainingBandwidthClick(Sender: TObject);
+procedure TFormJNDEQT.MenuItemTestTrainingBandwidthClick(Sender: TObject);
 begin
   SliderGain.Enabled := True;
   SliderFrequency.Enabled := True;
@@ -764,50 +761,50 @@ begin
   FTrialCount := 0;
   FEncryptLogFile := False;
   StartTest(tpBandwidth);
-  GbEQFilter.Visible := True;
+  GroupBoxEQFilter.Visible := True;
   LogMessage('Training test started (Bandwidth)');
-  ClientHeight := LbVolume.Top + LbVolume.Height + 8;
-  ClipLED.Top := LbVolume.Top;
+  ClientHeight := LabelVolume.Top + LabelVolume.Height + 8;
+  ClipLED.Top := LabelVolume.Top;
 end;
 
-procedure TFmJNDEQT.LogMessage(MessageText: string);
+procedure TFormJNDEQT.LogMessage(MessageText: string);
 begin
   FLog.Add(TimeToStr(Now) + ' - ' + MessageText);
-  LbInformation.Caption := MessageText;
+  LabelInformation.Caption := MessageText;
 end;
 
-procedure TFmJNDEQT.RandomizeAssignment;
+procedure TFormJNDEQT.RandomizeAssignment;
 begin
   FCurrentX := TXAssignment(1 + Random(2));
   if FSelection = sX then
     FCurrentIndex := Integer(FCurrentX) - 1;
 end;
 
-procedure TFmJNDEQT.ResultButtonEnablerTimer(Sender: TObject);
+procedure TFormJNDEQT.TimerResultButtonEnablerTimer(Sender: TObject);
 begin
-  ResultButtonEnabler.Enabled := False;
-  PnSelectorXisA.OnClick := LbXisAClick;
-  PnSelectorXisB.OnClick := LbXisBClick;
-  PnSkip.OnClick := LbSkipClick;
-  LbXisA.OnClick := LbXisAClick;
-  LbXisB.OnClick := LbXisBClick;
-  LbSkip.OnClick := LbSkipClick;
-  LbXisA.Font.Color := clBlack;
-  LbXisB.Font.Color := clBlack;
-  LbSkip.Font.Color := clBlack;
+  TimerResultButtonEnabler.Enabled := False;
+  PanelSelectorXisA.OnClick := LabelXisAClick;
+  PanelSelectorXisB.OnClick := LabelXisBClick;
+  PanelSkip.OnClick := LabelSkipClick;
+  LabelXisA.OnClick := LabelXisAClick;
+  LabelXisB.OnClick := LabelXisBClick;
+  LabelSkip.OnClick := LabelSkipClick;
+  LabelXisA.Font.Color := clBlack;
+  LabelXisB.Font.Color := clBlack;
+  LabelSkip.Font.Color := clBlack;
 end;
 
-procedure TFmJNDEQT.NextTrial(GuessWasCorrect: Boolean);
+procedure TFormJNDEQT.NextTrial(GuessWasCorrect: Boolean);
 var
-  str: string;
+  Str: string;
 begin
-  str := 'Trial ' + IntToStr(FTrialNo + 1) + ': ';
+  Str := 'Trial ' + IntToStr(FTrialNo + 1) + ': ';
   if GuessWasCorrect then
-    str := str + 'Correct'
+    Str := Str + 'Correct'
   else
-    str := str + 'Wrong';
-  str := TimeToStr(Now) + ' - ' + str;
-  FLog.Add(str + ' (' + FloatToStrF(FCurrentGainDelta, ffGeneral, 4, 4) + ')');
+    Str := Str + 'Wrong';
+  Str := TimeToStr(Now) + ' - ' + Str;
+  FLog.Add(Str + ' (' + FloatToStrF(FCurrentGainDelta, ffGeneral, 4, 4) + ')');
 
   Inc(FTrialNo);
   if (FTrialCount > 0) and (FTrialNo >= FTrialCount) then
@@ -817,10 +814,10 @@ begin
   end;
 
   // trial information
-  str := 'Trial: ' + IntToStr(FTrialNo + 1);
+  Str := 'Trial: ' + IntToStr(FTrialNo + 1);
   if FTrialCount > 0 then
-    str := str + ' / ' + IntToStr(FTrialCount);
-  LbInformation.Caption := str;
+    Str := Str + ' / ' + IntToStr(FTrialCount);
+  LabelInformation.Caption := Str;
 
   // temporarily disable buttons
   DisableResultButtons;
@@ -835,7 +832,7 @@ begin
   UpdateSelection;
 end;
 
-procedure TFmJNDEQT.StartTest(TestParameter: TTestParameter = tpGain);
+procedure TFormJNDEQT.StartTest(TestParameter: TTestParameter = tpGain);
 begin
   FVolumeFactor := 1;
   FCurrentGainDelta := 10;
@@ -954,7 +951,7 @@ begin
   end;
 end;
 
-procedure TFmJNDEQT.TestDone;
+procedure TFormJNDEQT.TestDone;
 var
   FS: TFileStream;
   CS: TZCompressionStream;
@@ -962,10 +959,10 @@ var
   FileBaseName: TFileName;
   MailStrings: TStringList;
 begin
-  BtMedia.ButtonState := mbsPlay;
+  ButtonMedia.ButtonState := mbsPlay;
   AsioHost.Active := False;
-  LbInformation.Caption := 'Test Done';
-  ClientHeight := BtMedia.Top + BtMedia.Height + 4;
+  LabelInformation.Caption := 'Test Done';
+  ClientHeight := ButtonMedia.Top + ButtonMedia.Height + 4;
 
   DecodeTime(Now, h, M, D, MO);
   DecodeDate(Now, Y, MO, D);
@@ -1030,11 +1027,11 @@ begin
   Assert(FLog.Count = 0);
 end;
 
-function TFmJNDEQT.CheckDecryptEnabled: Boolean;
+function TFormJNDEQT.CheckDecryptEnabled: Boolean;
 const
   CDecryptPassword = 'tseTqEdnJ';
 begin
-  with TIniFile.Create(FmJNDEQT.IniFile) do
+  with TIniFile.Create(FormJNDEQT.IniFile) do
     try
       Result := (ReadString('Decrypt', 'Password', '') = CDecryptPassword) or
         (InputBox('Enter Password', 'Enter Password:', '') = CDecryptPassword);
@@ -1043,7 +1040,7 @@ begin
     end;
 end;
 
-procedure TFmJNDEQT.ClipLEDClick(Sender: TObject);
+procedure TFormJNDEQT.ClipLEDClick(Sender: TObject);
 begin
   FPeak[0, 0] := 0;
   FPeak[0, 1] := 0;
@@ -1052,7 +1049,7 @@ begin
   ClipLED.Brightness_Percent := 0;
 end;
 
-procedure TFmJNDEQT.MiDecryptJNDfileClick(Sender: TObject);
+procedure TFormJNDEQT.MenuItemDecryptJNDfileClick(Sender: TObject);
 var
   FS: TFileStream;
   CS: TZDecompressionStream;
@@ -1088,7 +1085,7 @@ begin
     end;
 end;
 
-procedure TFmJNDEQT.UpdateFilterGain;
+procedure TFormJNDEQT.UpdateFilterGain;
 var
   ChannelIndex: Integer;
 begin
@@ -1103,7 +1100,7 @@ begin
   FAdditionalFactor := dB_to_Amp(-0.5 * FCurrentGainDelta);
 end;
 
-procedure TFmJNDEQT.SliderBandwidthChange(Sender: TObject);
+procedure TFormJNDEQT.SliderBandwidthChange(Sender: TObject);
 begin
   if SliderBandwidth.Value <> FBandwidth then
   begin
@@ -1112,7 +1109,7 @@ begin
   end;
 end;
 
-procedure TFmJNDEQT.BandwidthChanged;
+procedure TFormJNDEQT.BandwidthChanged;
 var
   ChannelIndex: Integer;
   BandIndex: Integer;
@@ -1123,14 +1120,14 @@ begin
       FEQFilter[BandIndex, ChannelIndex].Bandwidth := SliderBandwidth.Value;
 
   // update GUI
-  LbBandwidthValue.Caption := FloatToStrF(SliderBandwidth.Value,
+  LabelBandwidthValue.Caption := FloatToStrF(SliderBandwidth.Value,
     ffGeneral, 4, 4);
 
   FLog.Add(TimeToStr(Now) + ' - ' + 'Bandwidth changed: ' +
-    LbBandwidthValue.Caption);
+    LabelBandwidthValue.Caption);
 end;
 
-procedure TFmJNDEQT.SliderFrequencyChange(Sender: TObject);
+procedure TFormJNDEQT.SliderFrequencyChange(Sender: TObject);
 begin
   if SliderFrequency.Value <> FFrequency then
   begin
@@ -1139,7 +1136,7 @@ begin
   end;
 end;
 
-procedure TFmJNDEQT.FrequencyChanged;
+procedure TFormJNDEQT.FrequencyChanged;
 var
   ChannelIndex: Integer;
   BandIndex: Integer;
@@ -1151,17 +1148,17 @@ begin
 
   // update GUI
   if SliderFrequency.Value > 1000 then
-    LbFrequencyValue.Caption := FloatToStrF(SliderFrequency.Value * 1E-3,
+    LabelFrequencyValue.Caption := FloatToStrF(SliderFrequency.Value * 1E-3,
       ffGeneral, 4, 4) + ' kHz'
   else
-    LbFrequencyValue.Caption := FloatToStrF(SliderFrequency.Value, ffGeneral, 4,
+    LabelFrequencyValue.Caption := FloatToStrF(SliderFrequency.Value, ffGeneral, 4,
       4) + ' Hz';
 
   FLog.Add(TimeToStr(Now) + ' - ' + 'Frequency changed: ' +
-    LbFrequencyValue.Caption);
+    LabelFrequencyValue.Caption);
 end;
 
-procedure TFmJNDEQT.SliderGainChange(Sender: TObject);
+procedure TFormJNDEQT.SliderGainChange(Sender: TObject);
 var
   ChannelIndex: Integer;
   BandIndex: Integer;
@@ -1173,23 +1170,22 @@ begin
         FEQFilter[BandIndex, ChannelIndex].Gain := SliderGain.Value;
 
   // update GUI
-  LbGainValue.Caption := FloatToStrF(SliderGain.Value, ffGeneral, 2, 2) + ' dB';
+  LabelGainValue.Caption := FloatToStrF(SliderGain.Value, ffGeneral, 2, 2) + ' dB';
 end;
 
-procedure TFmJNDEQT.SliderVolumeChange(Sender: TObject);
+procedure TFormJNDEQT.SliderVolumeChange(Sender: TObject);
 begin
   FVolumeFactor := dB_to_Amp(SliderVolume.Value);
-  LbVolumeValue.Caption := FloatToStrF(SliderVolume.Value, ffGeneral, 2,
-    2) + ' dB';
+  LabelVolumeValue.Caption := FloatToStrF(SliderVolume.Value, ffGeneral, 2, 2) + ' dB';
 end;
 
-procedure TFmJNDEQT.AsioHostBuffersCreate(Sender: TObject);
+procedure TFormJNDEQT.AsioHostBuffersCreate(Sender: TObject);
 var
   ChannelIndex: Integer;
   BandIndex: Integer;
 begin
   // enable playback in case an ASIO driver is selected
-  BtMedia.Enabled := AsioHost.DriverIndex >= 0;
+  ButtonMedia.Enabled := AsioHost.DriverIndex >= 0;
 
   // calculate release factor based on new buffer size
   CalculatePeakReleaseFactor;
@@ -1205,7 +1201,7 @@ begin
     end;
 end;
 
-procedure TFmJNDEQT.AsioHostBufferSwitch32(Sender: TObject;
+procedure TFormJNDEQT.AsioHostBufferSwitch32(Sender: TObject;
   const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
 var
   ChannelIndex: Integer;

@@ -7,18 +7,18 @@ uses
   madExcept,
   madLinkDisAsm,
   madListProcesses,
-  madListModules, // either download the library or comment if there is an error here
+  madListModules,
   {$IFDEF UseFastMove}
   FastMove,
-  {$ENDIF}
+  {$ENDIF }
   Forms,
-  VPSmain in 'VPSmain.pas' {FmVSTPluginScanner};
+  VPSmain in 'VPSmain.pas' {FormVSTPluginScanner};
 
 {$R *.res}
 
 begin
   Application.Initialize;
   Application.Title := 'VST Plugin Scanner';
-  Application.CreateForm(TFmVSTPluginScanner, FmVSTPluginScanner);
+  Application.CreateForm(TFormVSTPluginScanner, FormVSTPluginScanner);
   Application.Run;
 end.

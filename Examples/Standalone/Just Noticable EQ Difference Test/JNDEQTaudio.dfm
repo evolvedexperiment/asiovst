@@ -1,4 +1,4 @@
-object FmSetup: TFmSetup
+object FormSetup: TFormSetup
   Left = 454
   Top = 379
   BorderStyle = bsDialog
@@ -22,7 +22,7 @@ object FmSetup: TFmSetup
     66)
   PixelsPerInch = 96
   TextHeight = 14
-  object LbPreset: TGuiLabel
+  object LabelPreset: TGuiLabel
     Left = 8
     Top = 13
     Width = 67
@@ -33,7 +33,7 @@ object FmSetup: TFmSetup
     Shadow.Blur = 4.000000000000000000
     Transparent = True
   end
-  object LbOutputChannels: TGuiLabel
+  object LabelOutputChannels: TGuiLabel
     Left = 8
     Top = 41
     Width = 92
@@ -44,7 +44,7 @@ object FmSetup: TFmSetup
     Shadow.Blur = 4.000000000000000000
     Transparent = True
   end
-  object SbDrivers: TGuiSelectBox
+  object SelectBoxDrivers: TGuiSelectBox
     Left = 81
     Top = 8
     Width = 217
@@ -57,9 +57,9 @@ object FmSetup: TFmSetup
     ButtonColor = 8620693
     FontOversampling = fo4x
     SelectBoxColor = 10333885
-    OnChange = SbDriversChange
+    OnChange = SelectBoxDriversChange
   end
-  object SbChannels: TGuiSelectBox
+  object SelectBoxChannels: TGuiSelectBox
     Left = 106
     Top = 36
     Width = 284
@@ -72,7 +72,7 @@ object FmSetup: TFmSetup
     ButtonColor = 8620693
     FontOversampling = fo4x
     SelectBoxColor = 10333885
-    OnChange = SbChannelsChange
+    OnChange = SelectBoxChannelsChange
   end
   object BtControlPanel: TGuiButton
     Left = 304

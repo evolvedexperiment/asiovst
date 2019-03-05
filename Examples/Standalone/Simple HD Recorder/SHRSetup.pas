@@ -42,22 +42,22 @@ const
   IniFileName = 'Simple HD Recorder.INI';
 
 type
-  TFmSetup = class(TForm)
-    LbPreset: TLabel;
-    LbIn: TLabel;
-    Label1: TLabel;
-    CBDrivers: TComboBox;
-    CBInput: TComboBox;
-    CBOutput: TComboBox;
+  TFormSetup = class(TForm)
+    LabelDriver: TLabel;
+    LabelInput: TLabel;
+    LabelOutput: TLabel;
+    ComboBoxDrivers: TComboBox;
+    ComboBoxInput: TComboBox;
+    ComboBoxOutput: TComboBox;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure CBDriversChange(Sender: TObject);
-    procedure CBInputChange(Sender: TObject);
-    procedure CBOutputChange(Sender: TObject);
+    procedure ComboBoxDriversChange(Sender: TObject);
+    procedure ComboBoxInputChange(Sender: TObject);
+    procedure ComboBoxOutputChange(Sender: TObject);
   end;
 
 var
-  FmSetup: TFmSetup;
+  FormSetup: TFormSetup;
 
 implementation
 
@@ -68,70 +68,70 @@ uses
 {$R *.dfm}
 {$ENDIF}
 
-procedure TFmSetup.CBInputChange(Sender: TObject);
+procedure TFormSetup.ComboBoxInputChange(Sender: TObject);
 begin
-  FmSimpleHDRecorder.InputChannelOffset := CBInput.ItemIndex;
+  FormSimpleHDRecorder.InputChannelOffset := ComboBoxInput.ItemIndex;
 end;
 
-procedure TFmSetup.CBOutputChange(Sender: TObject);
+procedure TFormSetup.ComboBoxOutputChange(Sender: TObject);
 begin
-  FmSimpleHDRecorder.OutputChannelOffset := CBOutput.ItemIndex;
+  FormSimpleHDRecorder.OutputChannelOffset := ComboBoxOutput.ItemIndex;
 end;
 
-procedure TFmSetup.FormCreate(Sender: TObject);
+procedure TFormSetup.FormCreate(Sender: TObject);
 var
   i: Integer;
 begin
-  CBDrivers.Items := FmSimpleHDRecorder.ASIOHost.DriverList;
+  ComboBoxDrivers.Items := FormSimpleHDRecorder.ASIOHost.DriverList;
   with TIniFile.Create(ExtractFilePath(ParamStr(0)) + IniFileName) do
     try
       Top := ReadInteger('Layout', 'Setup Top', Top);
       Left := ReadInteger('Layout', 'Setup Left', Left);
 
-      for i := 0 to CBDrivers.Items.Count - 1 do
-        if Pos('M-Audio', CBDrivers.Items[i]) > 0 then
+      for i := 0 to ComboBoxDrivers.Items.Count - 1 do
+        if Pos('M-Audio', ComboBoxDrivers.Items[i]) > 0 then
         begin
-          CBDrivers.ItemIndex := i;
+          ComboBoxDrivers.ItemIndex := i;
           Break;
         end;
-      CBDrivers.ItemIndex := ReadInteger('Setup', 'ASIO Driver',
-        CBDrivers.ItemIndex);
-      CBDriversChange(Self);
+      ComboBoxDrivers.ItemIndex := ReadInteger('Setup', 'ASIO Driver',
+        ComboBoxDrivers.ItemIndex);
+        ComboBoxDriversChange(Self);
     finally
       Free;
     end;
 end;
 
-procedure TFmSetup.CBDriversChange(Sender: TObject);
+procedure TFormSetup.ComboBoxDriversChange(Sender: TObject);
 var
   i: Integer;
 begin
-  with FmSimpleHDRecorder.ASIOHost do
-    if CBDrivers.ItemIndex >= 0 then
+  with FormSimpleHDRecorder.ASIOHost do
+    if ComboBoxDrivers.ItemIndex >= 0 then
     begin
       Active := False;
-      DriverIndex := CBDrivers.ItemIndex;
-      CBInput.Clear;
+      DriverIndex := ComboBoxDrivers.ItemIndex;
+      ComboBoxInput.Clear;
       for i := 0 to InputChannelCount - 1 do
-        CBInput.Items.Add(InputChannelInfos[i].Name);
-      CBOutput.Clear;
+        ComboBoxInput.Items.Add(InputChannelInfos[i].Name);
+      ComboBoxOutput.Clear;
       for i := 0 to OutputChannelCount - 1 do
-        CBOutput.Items.Add(OutputChannelInfos[i].Name);
-      CBInput.ItemIndex := 0;
-      CBOutput.ItemIndex := 0;
+        ComboBoxOutput.Items.Add(OutputChannelInfos[i].Name);
+      ComboBoxInput.ItemIndex := 0;
+      ComboBoxOutput.ItemIndex := 0;
       if Assigned(OnReset) then
         OnReset(Self);
       Active := True;
     end;
 end;
 
-procedure TFmSetup.FormDestroy(Sender: TObject);
+procedure TFormSetup.FormDestroy(Sender: TObject);
 begin
   with TIniFile.Create(ExtractFilePath(ParamStr(0)) + IniFileName) do
     try
       WriteInteger('Layout', 'Setup Top', Top);
       WriteInteger('Layout', 'Setup Left', Left);
-      WriteInteger('Setup', 'ASIO Driver', CBDrivers.ItemIndex);
+      WriteInteger('Setup', 'ASIO Driver', ComboBoxDrivers.ItemIndex);
     finally
       Free;
     end;

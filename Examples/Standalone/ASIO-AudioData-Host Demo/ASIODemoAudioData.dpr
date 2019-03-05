@@ -1,4 +1,4 @@
-program NoiseGen;
+program ASIODemoAudioData;
 
 {$I DAV_Compiler.inc}
 
@@ -8,13 +8,13 @@ uses
   FastMove,
   {$ENDIF }
   Forms,
-  NoiseGenForm in 'NoiseGenForm.pas' {FormASIONoiseGenerator};
+  ASIODemoForm in 'ASIODemoForm.pas' {FormAnalyserGoertzel};
 
 {$R *.RES}
 
 begin
   Application.Initialize;
   Application.Title := 'Demo application for ASIO-Host';
-  Application.CreateForm(TFormASIONoiseGenerator, FormASIONoiseGenerator);
+  Application.CreateForm(TFormAnalyserGoertzel, FormAnalyserGoertzel);
   Application.Run;
 end.

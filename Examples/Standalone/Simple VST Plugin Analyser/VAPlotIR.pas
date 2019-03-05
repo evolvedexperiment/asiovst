@@ -40,16 +40,16 @@ uses
   DAV_GuiBaseControl, DAV_GuiStaticWaveform;
 
 type
-  TFmPlotIR = class(TForm)
+  TFormPlotIR = class(TForm)
     Waveform: TGuiStaticWaveform;
-    PUDisplay: TPopupMenu;
+    PopupMenuDisplay: TPopupMenu;
     MIWaveform: TMenuItem;
   private
   public
   end;
 
 var
-  FmPlotIR: TFmPlotIR;
+  FormPlotIR: TFormPlotIR;
 
 implementation
 

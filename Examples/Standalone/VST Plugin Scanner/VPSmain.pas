@@ -35,8 +35,8 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-{$IFDEF FPC} LCLIntf, LResources, {$IFDEF MSWINDOWS} Windows, {$ENDIF}
-{$ELSE} Windows, {$ENDIF} Messages, SysUtils, Classes, Graphics, Controls,
+  {$IFDEF FPC} LCLIntf, LResources, {$IFDEF MSWINDOWS} Windows, {$ENDIF}
+  {$ELSE} Windows, {$ENDIF} Messages, SysUtils, Classes, Graphics, Controls,
   Forms, Dialogs, ComCtrls, StdCtrls, DAV_VSTHost;
 
 { -$DEFINE UseThreads }
@@ -69,20 +69,20 @@ type
 {$ENDIF}
   { TFmVSTPluginScanner }
 
-  TFmVSTPluginScanner = class(TForm)
-    EdDirectory: TEdit;
-    BtDirectorySelect: TButton;
+  TFormVSTPluginScanner = class(TForm)
+    EditDirectory: TEdit;
+    ButtonDirectorySelect: TButton;
     ListView: TListView;
-    BtScan: TButton;
+    ButtonScan: TButton;
     StatusBar: TStatusBar;
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure BtDirectorySelectClick(Sender: TObject);
-    procedure BtScanClick(Sender: TObject);
-    procedure EdDirectoryClick(Sender: TObject);
-    procedure EdDirectoryChange(Sender: TObject);
+    procedure ButtonDirectorySelectClick(Sender: TObject);
+    procedure ButtonScanClick(Sender: TObject);
+    procedure EditDirectoryClick(Sender: TObject);
+    procedure EditDirectoryChange(Sender: TObject);
   private
 {$IFDEF UseThreads}
     FThreads: array [0 .. CNumThreads - 1] of TVSTScanThread;
@@ -104,7 +104,7 @@ type
   end;
 
 var
-  FmVSTPluginScanner: TFmVSTPluginScanner;
+  FormVSTPluginScanner: TFormVSTPluginScanner;
 
 implementation
 
@@ -234,7 +234,7 @@ end;
 {$ENDIF}
 { TFmVSTPluginScanner }
 
-procedure TFmVSTPluginScanner.FormCreate(Sender: TObject);
+procedure TFormVSTPluginScanner.FormCreate(Sender: TObject);
 begin
   with TRegistry.Create do
     try
@@ -242,7 +242,7 @@ begin
       OpenKey('SOFTWARE\Vst', False);
 
       if ValueExists('VstPluginsPath') then
-        EdDirectory.Text := ReadString('VstPluginsPath');
+        EditDirectory.Text := ReadString('VstPluginsPath');
       CloseKey;
     finally
       Free;
@@ -254,7 +254,7 @@ begin
 {$ENDIF}
 end;
 
-procedure TFmVSTPluginScanner.FormClose(Sender: TObject;
+procedure TFormVSTPluginScanner.FormClose(Sender: TObject;
   var CloseAction: TCloseAction);
 begin
   with TRegistry.Create do
@@ -262,14 +262,14 @@ begin
       RootKey := HKEY_LOCAL_MACHINE;
       OpenKey('SOFTWARE\Vst', True);
 
-      WriteString('VstPluginsPath', EdDirectory.Text);
+      WriteString('VstPluginsPath', EditDirectory.Text);
       CloseKey;
     finally
       Free;
     end;
 end;
 
-procedure TFmVSTPluginScanner.FormDestroy(Sender: TObject);
+procedure TFormVSTPluginScanner.FormDestroy(Sender: TObject);
 begin
 {$IFDEF UseThreads}
   if Assigned(FFilesToScan) then
@@ -280,10 +280,10 @@ begin
 {$ENDIF}
 end;
 
-procedure TFmVSTPluginScanner.FormShow(Sender: TObject);
+procedure TFormVSTPluginScanner.FormShow(Sender: TObject);
 begin
-  if DirectoryExists(EdDirectory.Text) then
-    BtScan.SetFocus;
+  if DirectoryExists(EditDirectory.Text) then
+    ButtonScan.SetFocus;
 end;
 
 {$IFDEF UseThreads}
@@ -297,18 +297,18 @@ begin
     Inc(FFileIndex);
   end
   else
-    result := '';
+    Result := '';
 end;
 {$ENDIF}
 
-procedure TFmVSTPluginScanner.BtDirectorySelectClick(Sender: TObject);
+procedure TFormVSTPluginScanner.ButtonDirectorySelectClick(Sender: TObject);
 var
   Dir: string;
 begin
   SelectDirectory('Select a directory', '', Dir);
-  EdDirectory.Text := Dir;
-  if DirectoryExists(EdDirectory.Text) then
-    BtScan.SetFocus;
+  EditDirectory.Text := Dir;
+  if DirectoryExists(EditDirectory.Text) then
+    ButtonScan.SetFocus;
 end;
 
 {$IFDEF UseThreads}
@@ -341,7 +341,7 @@ begin
 end;
 {$ENDIF}
 
-procedure TFmVSTPluginScanner.BtScanClick(Sender: TObject);
+procedure TFormVSTPluginScanner.ButtonScanClick(Sender: TObject);
 var
   SR: TSearchRec;
 {$IFDEF UseThreads}
@@ -351,7 +351,7 @@ var
 {$ENDIF}
 begin
   ListView.Clear;
-  if not DirectoryExists(EdDirectory.Text) then
+  if not DirectoryExists(EditDirectory.Text) then
     Exit;
 
 {$IFDEF UseThreads}
@@ -364,10 +364,10 @@ begin
   else
     FFilesToScan.Clear;
 
-  if FindFirst(EdDirectory.Text + '\' + '*.dll', faAnyFile, SR) = 0 then
+  if FindFirst(EditDirectory.Text + '\' + '*.dll', faAnyFile, SR) = 0 then
     try
       repeat
-        FFilesToScan.Add(EdDirectory.Text + '\' + SR.Name);
+        FFilesToScan.Add(EditDirectory.Text + '\' + SR.Name);
       until FindNext(SR) <> 0;
     finally
       // Must free up resources used by these successful finds
@@ -381,7 +381,7 @@ begin
   end;
 
 {$ELSE}
-  if FindFirst(EdDirectory.Text + '\' + '*.dll', faAnyFile, SR) = 0 then
+  if FindFirst(EditDirectory.Text + '\' + '*.dll', faAnyFile, SR) = 0 then
     try
       repeat
         with FVstHost[0], ListView.Items.Add do
@@ -389,7 +389,7 @@ begin
             Caption := SR.Name;
             QueryPerformanceFrequency(C);
             QueryPerformanceCounter(A);
-            LoadFromFile(EdDirectory.Text + '\' + SR.Name);
+            LoadFromFile(EditDirectory.Text + '\' + SR.Name);
             QueryPerformanceCounter(B);
             FLoadTime := (B - A) / C * 1000;
             if not Loaded then
@@ -427,7 +427,7 @@ begin
                 Close;
               end;
             finally
-              UnLoad;
+              Unload;
             end;
           except
             On E: Exception do
@@ -444,14 +444,14 @@ begin
 {$ENDIF}
 end;
 
-procedure TFmVSTPluginScanner.EdDirectoryChange(Sender: TObject);
+procedure TFormVSTPluginScanner.EditDirectoryChange(Sender: TObject);
 begin
-  BtScan.Enabled := DirectoryExists(EdDirectory.Text)
+  ButtonScan.Enabled := DirectoryExists(EditDirectory.Text)
 end;
 
-procedure TFmVSTPluginScanner.EdDirectoryClick(Sender: TObject);
+procedure TFormVSTPluginScanner.EditDirectoryClick(Sender: TObject);
 begin
-  EdDirectory.SelectAll;
+  EditDirectory.SelectAll;
 end;
 
 end.

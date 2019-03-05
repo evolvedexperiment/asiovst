@@ -48,14 +48,14 @@ const
 type
   TFmASIO = class(TForm)
     ASIOHost: TASIOHost;
-    BtAllOctaves: TButton;
-    BtAllThirdOctaves: TButton;
-    BtControlPanel: TButton;
-    BtMute: TButton;
-    BtStartStop: TButton;
-    CbLinkChannels: TCheckBox;
-    ChannelBox: TComboBox;
-    DriverCombo: TComboBox;
+    ButtonAllOctaves: TButton;
+    ButtonAllThirdOctaves: TButton;
+    ButtonControlPanel: TButton;
+    ButtonMute: TButton;
+    ButtonStartStop: TButton;
+    CheckBoxLinkChannels: TCheckBox;
+    ComboBoxChannel: TComboBox;
+    ComboBoxDriver: TComboBox;
     Lb0L: TLabel;
     Lb0R: TLabel;
     Lb100: TLabel;
@@ -95,8 +95,8 @@ type
     Lb8kHz: TLabel;
     LbChannels: TLabel;
     LbDrivername: TLabel;
-    LbLM: TLabel;
-    LbRS: TLabel;
+    LabelLeftOrMid: TLabel;
+    LabelRightOrSide: TLabel;
     LedClipL: TGuiLED;
     LedClipR: TGuiLED;
     MeterTimer: TTimer;
@@ -166,8 +166,8 @@ type
     SB80R: TScrollBar;
     SB8kL: TScrollBar;
     SB8kR: TScrollBar;
-    ShBackText: TShape;
-    BtExport: TButton;
+    ShapeBackText: TShape;
+    ButtonExport: TButton;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure ASIOHostBufferSwitch32(Sender: TObject;
@@ -176,14 +176,14 @@ type
       const InBuffer, OutBuffer: TDAVArrayOfDoubleFixedArray);
     procedure ASIOHostReset(Sender: TObject);
     procedure ASIOHostSampleRateChanged(Sender: TObject);
-    procedure BtAllOctavesClick(Sender: TObject);
-    procedure BtAllThirdOctavesClick(Sender: TObject);
-    procedure BtControlPanelClick(Sender: TObject);
-    procedure BtExportClick(Sender: TObject);
-    procedure BtMuteClick(Sender: TObject);
-    procedure BtStartStopClick(Sender: TObject);
-    procedure ChannelBoxChange(Sender: TObject);
-    procedure DriverComboChange(Sender: TObject);
+    procedure ButtonAllOctavesClick(Sender: TObject);
+    procedure ButtonAllThirdOctavesClick(Sender: TObject);
+    procedure ButtonControlPanelClick(Sender: TObject);
+    procedure ButtonExportClick(Sender: TObject);
+    procedure ButtonMuteClick(Sender: TObject);
+    procedure ButtonStartStopClick(Sender: TObject);
+    procedure ComboBoxChannelChange(Sender: TObject);
+    procedure ComboBoxDriverChange(Sender: TObject);
     procedure LbFrequencyDblClick(Sender: TObject);
     procedure LedClipLClick(Sender: TObject);
     procedure LedClipRClick(Sender: TObject);
@@ -221,11 +221,11 @@ procedure TFmASIO.FormCreate(Sender: TObject);
 var
   BandIndex: Integer;
 begin
-  DriverCombo.Items := ASIOHost.DriverList;
+  ComboBoxDriver.Items := ASIOHost.DriverList;
   LedClipL.Brightness_Percent := 0;
   LedClipR.Brightness_Percent := 0;
 
-  if DriverCombo.Items.Count = 0 then
+  if ComboBoxDriver.Items.Count = 0 then
     try
       raise Exception.Create('No ASIO Driver present! Application Terminated!');
     except
@@ -238,12 +238,12 @@ begin
     try
       Left := ReadInteger('Layout', 'Audio Left', Left);
       Top := ReadInteger('Layout', 'Audio Top', Top);
-      DriverCombo.ItemIndex := ReadInteger('Audio', 'Asio Driver', -1);
-      if DriverCombo.ItemIndex >= 0 then
-        DriverComboChange(DriverCombo);
+      ComboBoxDriver.ItemIndex := ReadInteger('Audio', 'Asio Driver', -1);
+      if ComboBoxDriver.ItemIndex >= 0 then
+        ComboBoxDriverChange(ComboBoxDriver);
       CalculatePeakDecay;
-      ChannelBox.ItemIndex := ReadInteger('Audio', 'Channels', 0);
-      FChannelOffset := ChannelBox.ItemIndex * 2;
+      ComboBoxChannel.ItemIndex := ReadInteger('Audio', 'Channels', 0);
+      FChannelOffset := ComboBoxChannel.ItemIndex * 2;
     finally
       Free;
     end;
@@ -268,8 +268,8 @@ begin
     try
       WriteInteger('Layout', 'Audio Left', Left);
       WriteInteger('Layout', 'Audio Top', Top);
-      WriteInteger('Audio', 'ASIO Driver', DriverCombo.ItemIndex);
-      WriteInteger('Audio', 'Channels', ChannelBox.ItemIndex);
+      WriteInteger('Audio', 'ASIO Driver', ComboBoxDriver.ItemIndex);
+      WriteInteger('Audio', 'Channels', ComboBoxChannel.ItemIndex);
     finally
       Free;
     end;
@@ -352,20 +352,20 @@ begin
   PeakMeterRight.PeakLevel := FPeak[1];
 end;
 
-procedure TFmASIO.DriverComboChange(Sender: TObject);
+procedure TFmASIO.ComboBoxDriverChange(Sender: TObject);
 var
   ChannelIndex: Integer;
 begin
-  BtControlPanel.Enabled := False;
-  BtStartStop.Enabled := False;
-  DriverCombo.ItemIndex := DriverCombo.Items.IndexOf(DriverCombo.Text);
-  if DriverCombo.ItemIndex >= 0 then
+  ButtonControlPanel.Enabled := False;
+  ButtonStartStop.Enabled := False;
+  ComboBoxDriver.ItemIndex := ComboBoxDriver.Items.IndexOf(ComboBoxDriver.Text);
+  if ComboBoxDriver.ItemIndex >= 0 then
   begin
-    ASIOHost.DriverIndex := DriverCombo.ItemIndex;
-    ChannelBox.Clear;
+    ASIOHost.DriverIndex := ComboBoxDriver.ItemIndex;
+    ComboBoxChannel.Clear;
     for ChannelIndex := 0 to (ASIOHost.OutputChannelCount div 2) - 1 do
     begin
-      ChannelBox.Items.Add(string(ASIOHost.OutputChannelInfos[2 * ChannelIndex]
+      ComboBoxChannel.Items.Add(string(ASIOHost.OutputChannelInfos[2 * ChannelIndex]
         .Name) + ' / ' + string(ASIOHost.OutputChannelInfos[2 * ChannelIndex +
         1].Name));
     end;
@@ -374,17 +374,17 @@ begin
     with TIniFile.Create(ExtractFilePath(ParamStr(0)) +
       'MultiSineGenerator.INI') do
       try
-        WriteInteger('Audio', 'Asio Driver', DriverCombo.ItemIndex);
+        WriteInteger('Audio', 'Asio Driver', ComboBoxDriver.ItemIndex);
       finally
         Free;
       end;
-    BtControlPanel.Enabled := True;
-    BtStartStop.Enabled := True;
-    ChannelBox.ItemIndex := 0;
+    ButtonControlPanel.Enabled := True;
+    ButtonStartStop.Enabled := True;
+    ComboBoxChannel.ItemIndex := 0;
   end;
 end;
 
-procedure TFmASIO.BtAllOctavesClick(Sender: TObject);
+procedure TFmASIO.ButtonAllOctavesClick(Sender: TObject);
 begin
   SB20L.Position := 100;
   SB25L.Position := 100;
@@ -451,7 +451,7 @@ begin
   SB20kR.Position := 100;
 end;
 
-procedure TFmASIO.BtAllThirdOctavesClick(Sender: TObject);
+procedure TFmASIO.ButtonAllThirdOctavesClick(Sender: TObject);
 begin
   SB20L.Position := 93;
   SB25L.Position := 93;
@@ -518,12 +518,12 @@ begin
   SB20kR.Position := 93;
 end;
 
-procedure TFmASIO.BtControlPanelClick(Sender: TObject);
+procedure TFmASIO.ButtonControlPanelClick(Sender: TObject);
 begin
   ASIOHost.ControlPanel;
 end;
 
-procedure TFmASIO.BtExportClick(Sender: TObject);
+procedure TFmASIO.ButtonExportClick(Sender: TObject);
 begin
   with TSaveDialog.Create(Self) do
     try
@@ -574,7 +574,7 @@ begin
     end;
 end;
 
-procedure TFmASIO.BtMuteClick(Sender: TObject);
+procedure TFmASIO.ButtonMuteClick(Sender: TObject);
 begin
   SB20L.Position := 100;
   SB25L.Position := 100;
@@ -652,23 +652,23 @@ begin
     end;
 end;
 
-procedure TFmASIO.BtStartStopClick(Sender: TObject);
+procedure TFmASIO.ButtonStartStopClick(Sender: TObject);
 begin
-  if BtStartStop.Caption = 'Start Audio' then
+  if ButtonStartStop.Caption = 'Start Audio' then
   begin
     ASIOHost.Active := True; // Start Audio
-    BtStartStop.Caption := 'Stop Audio';
+    ButtonStartStop.Caption := 'Stop Audio';
   end
   else
   begin
     ASIOHost.Active := False; // Stop Audio
-    BtStartStop.Caption := 'Start Audio';
+    ButtonStartStop.Caption := 'Start Audio';
   end;
 end;
 
-procedure TFmASIO.ChannelBoxChange(Sender: TObject);
+procedure TFmASIO.ComboBoxChannelChange(Sender: TObject);
 begin
-  FChannelOffset := ChannelBox.ItemIndex * 2;
+  FChannelOffset := ComboBoxChannel.ItemIndex * 2;
 end;
 
 procedure TFmASIO.ASIOHostSampleRateChanged(Sender: TObject);

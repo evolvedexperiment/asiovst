@@ -5,13 +5,13 @@ program MiniHost;
 {.$R 'EmbeddedPlugin.res' 'EmbeddedPlugin.rc'}
 
 uses
-  FastMM4, // either download the library or comment if there is an error here
+  FastMM4,
   {$IFDEF UseFastMove}
-  FastMove, // either download the library or disable the feature
-  {$ENDIF}
+  FastMove,
+  {$ENDIF }
   Forms,
-  MiniHostForm in 'MiniHostForm.pas' {FmMiniHost},
-  OptionsForm in 'OptionsForm.pas' {FmOptions},
+  MiniHostForm in 'MiniHostForm.pas' {FormMiniHost},
+  OptionsForm in 'OptionsForm.pas' {FormOptions},
   PlayerForm in 'PlayerForm.pas' {Player},
   AboutForm in 'AboutForm.pas' {FmAbout};
 
@@ -19,6 +19,6 @@ uses
 begin
  Application.Initialize;
  Application.Title := 'Tobybear MiniHost';
- Application.CreateForm(TFmMiniHost, FmMiniHost);
- Application.Run;
+ Application.CreateForm(TFormMiniHost, FormMiniHost);
+  Application.Run;
 end.

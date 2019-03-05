@@ -1,4 +1,4 @@
-object FmVSTAnalyser: TFmVSTAnalyser
+object FormVSTAnalyser: TFormVSTAnalyser
   Left = 281
   Top = 224
   BorderIcons = [biSystemMenu, biMinimize]
@@ -20,7 +20,7 @@ object FmVSTAnalyser: TFmVSTAnalyser
   OnDeactivate = FormDeactivate
   PixelsPerInch = 96
   TextHeight = 16
-  object VSTPanel: TPanel
+  object PanelVstPlugin: TPanel
     Left = 0
     Top = 0
     Width = 245
@@ -35,7 +35,7 @@ object FmVSTAnalyser: TFmVSTAnalyser
     Font.Style = []
     ParentFont = False
     TabOrder = 0
-    OnClick = VSTPanelClick
+    OnClick = PanelVstPluginClick
   end
   object VstHost: TVstHost
     CanDos = [hcdSendVstEvents, hcdSendVstMidiEvent, hcdSendVstTimeInfo, hcdReceiveVstEvents, hcdReceiveVstMidiEvent, hcdReceiveVstTimeInfo, hcdReportConnectionChanges, hcdAcceptIOChanges, hcdSizeWindow, hcdAsyncProcessing, hcdOffline, hcdSupplyIdle, hcdStartStopProcess]
@@ -65,7 +65,7 @@ object FmVSTAnalyser: TFmVSTAnalyser
   object MainMenu: TMainMenu
     Left = 60
     Top = 3
-    object MIFile: TMenuItem
+    object MenuItemFile: TMenuItem
       Caption = '&VST Plugin'
       object MIOpen: TMenuItem
         Caption = '&Open'
@@ -79,7 +79,7 @@ object FmVSTAnalyser: TFmVSTAnalyser
         OnClick = MIQuitClick
       end
     end
-    object MIPrograms: TMenuItem
+    object MenuItemPrograms: TMenuItem
       Caption = 'Programs'
       object MILoad: TMenuItem
         Caption = '&Load...'
@@ -93,7 +93,7 @@ object FmVSTAnalyser: TFmVSTAnalyser
         Caption = '-'
       end
     end
-    object MIIR: TMenuItem
+    object MenuItemIR: TMenuItem
       Caption = 'Impulse Response'
       object MIPlotIR: TMenuItem
         Caption = 'Plot Impulse Response...'
@@ -105,7 +105,7 @@ object FmVSTAnalyser: TFmVSTAnalyser
       end
     end
   end
-  object OD: TOpenDialog
+  object OpenDialogVst: TOpenDialog
     DefaultExt = 'DLL'
     Filter = 'VST Plugin (*.dll)|*.dll'
     Title = 'Load VST Plugin'

@@ -1,4 +1,4 @@
-object FmPlotIR: TFmPlotIR
+object FormPlotIR: TFormPlotIR
   Left = 554
   Top = 554
   Caption = 'Impulse Resonse Plot'
@@ -23,9 +23,9 @@ object FmPlotIR: TFmPlotIR
     MedianColor = clLime
     MedianLineWidth = 3
     NormalizationType = ntOverallChannels
-    PopupMenu = PUDisplay
+    PopupMenu = PopupMenuDisplay
   end
-  object PUDisplay: TPopupMenu
+  object PopupMenuDisplay: TPopupMenu
     Left = 192
     Top = 24
     object MIWaveform: TMenuItem

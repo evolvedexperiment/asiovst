@@ -1,4 +1,4 @@
-object FmJNDEQT: TFmJNDEQT
+object FormJNDEQT: TFormJNDEQT
   Left = 329
   Top = 72
   Caption = 'Just Noticable EQ Difference Test'
@@ -24,7 +24,7 @@ object FmJNDEQT: TFmJNDEQT
     312)
   PixelsPerInch = 96
   TextHeight = 13
-  object LbAudioFile: TGuiLabel
+  object LabelAudioFile: TGuiLabel
     Left = 34
     Top = 8
     Width = 73
@@ -44,7 +44,7 @@ object FmJNDEQT: TFmJNDEQT
     Shadow.Visible = True
     Transparent = True
   end
-  object LbAudioFileValue: TGuiLabel
+  object LabelAudioFileValue: TGuiLabel
     Left = 113
     Top = 8
     Width = 207
@@ -60,14 +60,14 @@ object FmJNDEQT: TFmJNDEQT
     Font.Style = [fsItalic]
     FontOversampling = fo4x
     ParentFont = False
-    PopupMenu = PuAudioFile
+    PopupMenu = PopupMenuAudioFile
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = 10333885
     Shadow.Visible = True
     Transparent = True
-    OnDblClick = LbAudioFileValueDblClick
+    OnDblClick = LabelAudioFileValueDblClick
   end
-  object LbVolume: TGuiLabel
+  object LabelVolume: TGuiLabel
     Left = 8
     Top = 295
     Width = 42
@@ -87,7 +87,7 @@ object FmJNDEQT: TFmJNDEQT
     Shadow.Visible = True
     Transparent = True
   end
-  object LbVolumeValue: TGuiLabel
+  object LabelVolumeValue: TGuiLabel
     Left = 146
     Top = 295
     Width = 56
@@ -122,7 +122,7 @@ object FmJNDEQT: TFmJNDEQT
     Transparent = False
     OnClick = ClipLEDClick
   end
-  object LbClipIndicator: TGuiLabel
+  object LabelClipIndicator: TGuiLabel
     Left = 229
     Top = 295
     Width = 70
@@ -142,7 +142,7 @@ object FmJNDEQT: TFmJNDEQT
     Shadow.Visible = True
     Transparent = True
   end
-  object LbInformation: TGuiLabel
+  object LabelInformation: TGuiLabel
     Left = 8
     Top = 191
     Width = 312
@@ -184,7 +184,7 @@ object FmJNDEQT: TFmJNDEQT
     Transparent = True
     OnChange = SliderVolumeChange
   end
-  object BtMedia: TGuiMediaButton
+  object ButtonMedia: TGuiMediaButton
     Left = 8
     Top = 4
     Width = 20
@@ -196,10 +196,10 @@ object FmJNDEQT: TFmJNDEQT
     OutlineWidth = 1.000000000000000000
     Color = clBtnFace
     Enabled = False
-    OnClick = BtMediaClick
+    OnClick = ButtonMediaClick
     ParentColor = False
   end
-  object GbEQFilter: TGuiGroup
+  object GroupBoxEQFilter: TGuiGroup
     Left = 8
     Top = 209
     Width = 312
@@ -224,7 +224,7 @@ object FmJNDEQT: TFmJNDEQT
     DesignSize = (
       312
       82)
-    object LbBandwidth: TGuiLabel
+    object LabelBandwidth: TGuiLabel
       Left = 7
       Top = 60
       Width = 55
@@ -244,7 +244,7 @@ object FmJNDEQT: TFmJNDEQT
       Shadow.Visible = True
       Transparent = True
     end
-    object LbBandwidthValue: TGuiLabel
+    object LabelBandwidthValue: TGuiLabel
       Left = 253
       Top = 60
       Width = 56
@@ -266,7 +266,7 @@ object FmJNDEQT: TFmJNDEQT
       Shadow.Visible = True
       Transparent = True
     end
-    object LbFrequency: TGuiLabel
+    object LabelFrequency: TGuiLabel
       Left = 7
       Top = 44
       Width = 55
@@ -286,7 +286,7 @@ object FmJNDEQT: TFmJNDEQT
       Shadow.Visible = True
       Transparent = True
     end
-    object LbFrequencyValue: TGuiLabel
+    object LabelFrequencyValue: TGuiLabel
       Left = 253
       Top = 44
       Width = 56
@@ -308,7 +308,7 @@ object FmJNDEQT: TFmJNDEQT
       Shadow.Visible = True
       Transparent = True
     end
-    object LbGain: TGuiLabel
+    object LabelGain: TGuiLabel
       Left = 7
       Top = 28
       Width = 26
@@ -328,7 +328,7 @@ object FmJNDEQT: TFmJNDEQT
       Shadow.Visible = True
       Transparent = True
     end
-    object LbGainValue: TGuiLabel
+    object LabelGainValue: TGuiLabel
       Left = 253
       Top = 28
       Width = 56
@@ -350,7 +350,7 @@ object FmJNDEQT: TFmJNDEQT
       Shadow.Visible = True
       Transparent = True
     end
-    object LbAutoVolumeAdj: TGuiLabel
+    object LabelAutoVolumeAdj: TGuiLabel
       Left = 115
       Top = 6
       Width = 149
@@ -371,7 +371,7 @@ object FmJNDEQT: TFmJNDEQT
       Transparent = True
       OnClick = LbAutoVolumeAdjustmentClick
     end
-    object LbAutoVolumeAdjValue: TGuiLabel
+    object LabelAutoVolumeAdjValue: TGuiLabel
       Left = 270
       Top = 6
       Width = 18
@@ -455,7 +455,7 @@ object FmJNDEQT: TFmJNDEQT
       OnChange = SliderGainChange
     end
   end
-  object PnSelectorA: TGuiPanel
+  object PanelSelectorA: TGuiPanel
     Tag = 1
     Left = 8
     Top = 31
@@ -470,7 +470,7 @@ object FmJNDEQT: TFmJNDEQT
     UseDockManager = True
     OnMouseDown = LbSelectionMouseDown
     OnMouseUp = LbSelectionMouseUp
-    object LbSelectionA: TGuiLabel
+    object LabelSelectionA: TGuiLabel
       Tag = 1
       Left = 25
       Top = 3
@@ -493,7 +493,7 @@ object FmJNDEQT: TFmJNDEQT
       OnMouseUp = LbSelectionMouseUp
     end
   end
-  object PnSelectorB: TGuiPanel
+  object PanelSelectorB: TGuiPanel
     Tag = 2
     Left = 220
     Top = 31
@@ -508,7 +508,7 @@ object FmJNDEQT: TFmJNDEQT
     UseDockManager = True
     OnMouseDown = LbSelectionMouseDown
     OnMouseUp = LbSelectionMouseUp
-    object LbSelectionB: TGuiLabel
+    object LabelSelectionB: TGuiLabel
       Tag = 2
       Left = 27
       Top = 3
@@ -531,7 +531,7 @@ object FmJNDEQT: TFmJNDEQT
       OnMouseUp = LbSelectionMouseUp
     end
   end
-  object PnSelectorX: TGuiPanel
+  object PanelSelectorX: TGuiPanel
     Left = 114
     Top = 31
     Width = 100
@@ -544,7 +544,7 @@ object FmJNDEQT: TFmJNDEQT
     TabOrder = 5
     UseDockManager = True
     OnMouseDown = LbSelectionMouseDown
-    object LbSelectionX: TGuiLabel
+    object LabelSelectionX: TGuiLabel
       Left = 25
       Top = 3
       Width = 46
@@ -565,7 +565,7 @@ object FmJNDEQT: TFmJNDEQT
       OnMouseDown = LbSelectionMouseDown
     end
   end
-  object PnSelectorXisA: TGuiPanel
+  object PanelSelectorXisA: TGuiPanel
     Left = 8
     Top = 137
     Width = 100
@@ -577,11 +577,11 @@ object FmJNDEQT: TFmJNDEQT
     ParentColor = True
     TabOrder = 6
     UseDockManager = True
-    OnClick = LbXisAClick
+    OnClick = LabelXisAClick
     DesignSize = (
       100
       48)
-    object LbXisA: TGuiLabel
+    object LabelXisA: TGuiLabel
       Left = 7
       Top = 5
       Width = 85
@@ -600,10 +600,10 @@ object FmJNDEQT: TFmJNDEQT
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = 5663873
       Shadow.Visible = True
-      OnClick = LbXisAClick
+      OnClick = LabelXisAClick
     end
   end
-  object PnSelectorXisB: TGuiPanel
+  object PanelSelectorXisB: TGuiPanel
     Left = 220
     Top = 137
     Width = 100
@@ -615,11 +615,11 @@ object FmJNDEQT: TFmJNDEQT
     ParentColor = True
     TabOrder = 7
     UseDockManager = True
-    OnClick = LbXisBClick
+    OnClick = LabelXisBClick
     DesignSize = (
       100
       48)
-    object LbXisB: TGuiLabel
+    object LabelXisB: TGuiLabel
       Left = 8
       Top = 5
       Width = 85
@@ -638,10 +638,10 @@ object FmJNDEQT: TFmJNDEQT
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = 5663873
       Shadow.Visible = True
-      OnClick = LbXisBClick
+      OnClick = LabelXisBClick
     end
   end
-  object PnSkip: TGuiPanel
+  object PanelSkip: TGuiPanel
     Left = 114
     Top = 137
     Width = 100
@@ -653,11 +653,11 @@ object FmJNDEQT: TFmJNDEQT
     ParentColor = True
     TabOrder = 8
     UseDockManager = True
-    OnClick = LbXisAClick
+    OnClick = LabelXisAClick
     DesignSize = (
       100
       48)
-    object LbSkip: TGuiLabel
+    object LabelSkip: TGuiLabel
       Left = 7
       Top = 5
       Width = 85
@@ -676,68 +676,68 @@ object FmJNDEQT: TFmJNDEQT
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = 5663873
       Shadow.Visible = True
-      OnClick = LbSkipClick
+      OnClick = LabelSkipClick
     end
   end
   object MainMenu: TMainMenu
     Left = 224
     Top = 4
-    object MiTest: TMenuItem
+    object MenuItemTest: TMenuItem
       Caption = '&Test'
-      object MiTestStart: TMenuItem
+      object MenuItemTestStart: TMenuItem
         Caption = 'Start'
-        OnClick = MiTestFullGainReferenceClick
+        OnClick = MenuItemTestFullGainReferenceClick
       end
       object N3: TMenuItem
         Caption = '-'
       end
-      object MiTestTraining: TMenuItem
+      object MenuItemTestTraining: TMenuItem
         Caption = '&Training'
         RadioItem = True
-        object MiTestTrainingGain: TMenuItem
+        object MenuItemTestTrainingGain: TMenuItem
           Caption = '&Gain'
-          OnClick = MiTestTrainingGainClick
+          OnClick = MenuItemTestTrainingGainClick
         end
-        object MiTestTrainingFrequency: TMenuItem
+        object MenuItemTestTrainingFrequency: TMenuItem
           Caption = '&Frequency'
           Enabled = False
-          OnClick = MiTestTrainingFrequencyClick
+          OnClick = MenuItemTestTrainingFrequencyClick
         end
-        object MiTestTrainingBandwidth: TMenuItem
+        object MenuItemTestTrainingBandwidth: TMenuItem
           Caption = '&Bandwidth'
           Enabled = False
-          OnClick = MiTestTrainingBandwidthClick
+          OnClick = MenuItemTestTrainingBandwidthClick
         end
       end
-      object MiTestFull: TMenuItem
+      object MenuItemTestFull: TMenuItem
         Caption = '&Full'
         RadioItem = True
-        object MiTestFullGain: TMenuItem
+        object MenuItemTestFullGain: TMenuItem
           Caption = '&Gain'
-          object MiTestFullGainReference: TMenuItem
+          object MenuItemTestFullGainReference: TMenuItem
             Caption = '&Reference (1 kHz, 1 Oct.)'
-            OnClick = MiTestFullGainReferenceClick
+            OnClick = MenuItemTestFullGainReferenceClick
           end
-          object MiTestFullGainNarrow: TMenuItem
+          object MenuItemTestFullGainNarrow: TMenuItem
             Caption = '&Narrow (1 kHz, 1/3 Oct.)'
-            OnClick = MiTestFullGainNarrowClick
+            OnClick = MenuItemTestFullGainNarrowClick
           end
-          object MiTestFullGainWide: TMenuItem
+          object MenuItemTestFullGainWide: TMenuItem
             Caption = 'Wide (1 kHz, 3 Oct.)'
-            OnClick = MiTestFullGainWideClick
+            OnClick = MenuItemTestFullGainWideClick
           end
         end
-        object MiTestFullFrequency: TMenuItem
+        object MenuItemTestFullFrequency: TMenuItem
           Caption = '&Frequency'
           Enabled = False
-          object MiTestFullFrequencyReference: TMenuItem
+          object MenuItemTestFullFrequencyReference: TMenuItem
             Caption = 'Reference'
           end
         end
-        object MiTestFullBandwidth: TMenuItem
+        object MenuItemTestFullBandwidth: TMenuItem
           Caption = '&Bandwidth'
           Enabled = False
-          object MiTestFullBandwidthReference: TMenuItem
+          object MenuItemTestFullBandwidthReference: TMenuItem
             Caption = 'Reference'
           end
         end
@@ -745,34 +745,34 @@ object FmJNDEQT: TFmJNDEQT
       object N2: TMenuItem
         Caption = '-'
       end
-      object MiDecryptJNDfile: TMenuItem
+      object MenuItemDecryptJNDfile: TMenuItem
         Caption = 'Decrypt JND file...'
-        OnClick = MiDecryptJNDfileClick
+        OnClick = MenuItemDecryptJNDfileClick
       end
       object N1: TMenuItem
         Caption = '-'
       end
-      object MiExit: TMenuItem
+      object MenuItemExit: TMenuItem
         Caption = 'E&xit'
-        OnClick = MiExitClick
+        OnClick = MenuItemExitClick
       end
     end
-    object MiSettings: TMenuItem
+    object MenuItemSettings: TMenuItem
       Caption = '&Settings'
-      object MiAudioSettings: TMenuItem
+      object MenuItemAudioSettings: TMenuItem
         Caption = '&Audio'
-        OnClick = MiAudioSettingsClick
+        OnClick = MenuItemAudioSettingsClick
       end
       object N4: TMenuItem
         Caption = '-'
       end
-      object MiLatchButtons: TMenuItem
+      object MenuItemLatchButtons: TMenuItem
         Caption = 'Latch Buttons'
-        OnClick = MiLatchButtonsClick
+        OnClick = MenuItemLatchButtonsClick
       end
     end
   end
-  object OD: TOpenDialog
+  object OpenDialogMp3: TOpenDialog
     DefaultExt = '.mp3'
     Filter = 'MP3-File (*.mp3)|*.mp3'
     Title = 'Select an MP3 file'
@@ -792,18 +792,18 @@ object FmJNDEQT: TFmJNDEQT
     Left = 288
     Top = 4
   end
-  object PeakCheck: TTimer
+  object TimerPeakCheck: TTimer
     Interval = 50
-    OnTimer = PeakCheckTimer
+    OnTimer = TimerPeakCheckTimer
     Left = 272
     Top = 152
   end
-  object PuAudioFile: TPopupMenu
+  object PopupMenuAudioFile: TPopupMenu
     Left = 192
     Top = 4
-    object MiPinkNoise: TMenuItem
+    object MenuItemPinkNoise: TMenuItem
       Caption = '&Pink Noise'
-      OnClick = MiPinkNoiseClick
+      OnClick = MenuItemPinkNoiseClick
     end
   end
   object OpenDialog: TOpenDialog
@@ -812,10 +812,10 @@ object FmJNDEQT: TFmJNDEQT
     Left = 24
     Top = 160
   end
-  object ResultButtonEnabler: TTimer
+  object TimerResultButtonEnabler: TTimer
     Enabled = False
     Interval = 500
-    OnTimer = ResultButtonEnablerTimer
+    OnTimer = TimerResultButtonEnablerTimer
     Left = 240
     Top = 152
   end
