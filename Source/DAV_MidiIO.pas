@@ -26,7 +26,7 @@
 {                                                                              }
 {  It has been adapted for this project by Christian-W. Budde                  }
 {                                                                              }
-{  Portions created by Christian-W. Budde are Copyright (C) 2003-2013          }
+{  Portions created by Christian-W. Budde are Copyright (C) 2003-2019          }
 {  by Christian-W. Budde. All Rights Reserved.                                 }
 {                                                                              }
 {******************************************************************************}

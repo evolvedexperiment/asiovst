@@ -23,7 +23,7 @@
 {                                                                              }
 {  The initial developer of this code is Christian-W. Budde                    }
 {                                                                              }
-{  Portions created by Christian-W. Budde are Copyright (C) 2003-2013          }
+{  Portions created by Christian-W. Budde are Copyright (C) 2003-2019          }
 {  by Christian-W. Budde. All Rights Reserved.                                 }
 {                                                                              }
 {******************************************************************************}
@@ -39,10 +39,7 @@ unit DAV_DspNoiseShapingFilterDesigner;
 interface
 
 uses
-  Classes, DAV_Types, DAV_Complex,
-{$IFDEF Use_IPPS}DAV_DspFftReal2ComplexIPPS, {$ENDIF}
-{$IFDEF Use_CUDA}DAV_DspFftReal2ComplexCUDA, {$ENDIF}
-  DAV_DspFftReal2Complex;
+  Classes, DAV_Types, DAV_Complex, DAV_DspFftReal2Complex;
 
 type
   TCoefficientUpdate = procedure(Sender: TObject;
@@ -55,13 +52,7 @@ type
     FLoopCountReciprocal: Single;
     FSampleFrames: Integer;
     FOnCoefficientUpdate: TCoefficientUpdate;
-{$IFDEF Use_IPPS}
-    FFFT: TFftReal2ComplexIPPSFloat32;
-{$ELSE} {$IFDEF Use_CUDA}
-    FFFT: TFftReal2ComplexCUDA32;
-{$ELSE}
     FFFT: TFftReal2ComplexNativeFloat32;
-{$ENDIF}{$ENDIF}
     function GetFFTSize: Integer;
     function GetFFTSizeHalf: Integer;
     procedure SetSampleRate(const Value: Single);
@@ -109,14 +100,8 @@ resourcestring
 
 constructor TCustomNoiseShapingFilterDesigner.Create;
 begin
-{$IFDEF Use_IPPS}
-  FFFT := TFftReal2ComplexIPPSFloat32.Create(6);
-{$ELSE} {$IFDEF Use_CUDA}
-  FFFT := TFftReal2ComplexCUDA32.Create(6);
-{$ELSE}
   FFFT := TFftReal2ComplexNativeFloat32.Create(6);
   FFFT.DataOrder := doPackedComplex;
-{$ENDIF}{$ENDIF}
   FLoopCount := 10000;
   FSampleFrames := 20;
   LoopCountChanged;

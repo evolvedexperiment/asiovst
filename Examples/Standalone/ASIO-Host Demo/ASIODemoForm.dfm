@@ -36,7 +36,7 @@ object FormASIO: TFormASIO
     Top = 202
     Width = 259
     Height = 13
-    Caption = '(C)opyright in 2004-2013 by Delphi ASIO && VST Project'
+    Caption = '(C)opyright in 2004-2019 by Delphi ASIO && VST Project'
   end
   object LabelFreq: TLabel
     Left = 8

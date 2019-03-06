@@ -23,7 +23,7 @@
 {                                                                              }
 {  The initial developer of this code is Christian-W. Budde                    }
 {                                                                              }
-{  Portions created by Christian-W. Budde are Copyright (C) 2003-2013          }
+{  Portions created by Christian-W. Budde are Copyright (C) 2003-2019          }
 {  by Christian-W. Budde. All Rights Reserved.                                 }
 {                                                                              }
 {******************************************************************************}
@@ -295,6 +295,9 @@ var
   GDspProcessors64: array of TDspPersistentClass;
 
 implementation
+
+uses
+  Types;
 
 resourcestring
   RCStrInvalidSamplerate = 'Invalid Samplerate!';
