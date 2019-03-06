@@ -23,7 +23,7 @@
 {                                                                              }
 {  The initial developer of this code is Christian-W. Budde                    }
 {                                                                              }
-{  Portions created by Christian-W. Budde are Copyright (C) 2003-2013          }
+{  Portions created by Christian-W. Budde are Copyright (C) 2003-2019          }
 {  by Christian-W. Budde. All Rights Reserved.                                 }
 {                                                                              }
 {******************************************************************************}
@@ -43,12 +43,12 @@ type
 
   TDavMidiFile = class(TDavCustomFileFormatFile)
   private
-    FHeader : TDavMidiFileHeaderChunk;
+    FHeader: TDavMidiFileHeaderChunk;
     function GetTrack(Index: UInt32): TDavCustomMidiFileTrackChunk;
     function GetTrackCount: UInt32;
     function GetMaxDeltaTimeAsUInt32: Cardinal;
   protected
-    FTracks : TDavChunkList;
+    FTracks: TDavChunkList;
     function GetFileSize: Cardinal; virtual;
     procedure AssignTo(Dest: TPersistent); override;
     class function DefaultExtension: TFileName; override;

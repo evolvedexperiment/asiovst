@@ -39,7 +39,7 @@ object FormASIONoiseGenerator: TFormASIONoiseGenerator
     Width = 262
     Height = 13
     Anchors = [akLeft, akBottom]
-    Caption = '(C)opyright in 2003-2013 by  Delphi ASIO && VST Project'
+    Caption = '(C)opyright in 2003-2019 by  Delphi ASIO && VST Project'
   end
   object LabelVolume: TLabel
     Left = 8

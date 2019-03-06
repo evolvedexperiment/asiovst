@@ -26,7 +26,7 @@ unit DAV_AsioHost;
 //  The initial developer of this code is Tobias Fleischer and                //
 //  Christian-W. Budde, based on a code snipped by Frederic Vanmol            //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2003-2011        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2003-2019        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 //  Contributor(s):                                                           //

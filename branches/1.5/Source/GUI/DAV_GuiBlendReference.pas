@@ -30,7 +30,7 @@ unit DAV_GuiBlendReference;
 //  Please check the file GR32_Blend.pas at http://graphics32.org for         //
 //  further copyright information!                                            //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2010-2012        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2010-2019        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////

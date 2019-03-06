@@ -37,7 +37,7 @@ object FormAnalyserGoertzel: TFormAnalyserGoertzel
     Width = 310
     Height = 13
     Caption = 
-      '(C)opyright in 2004-2008 by  Christian Budde and Tobias Fleische' +
+      '(C)opyright in 2004-2019 by  Christian Budde and Tobias Fleische' +
       'r'
   end
   object LabelFrequency: TLabel

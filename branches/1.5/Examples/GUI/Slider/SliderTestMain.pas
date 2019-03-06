@@ -25,7 +25,7 @@ unit SliderTestMain;
 //                                                                            //
 //  The initial developer of this code is Christian-W. Budde                  //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2008-2012        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2008-2019        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
