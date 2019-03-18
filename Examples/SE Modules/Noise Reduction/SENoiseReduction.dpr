@@ -18,7 +18,7 @@ begin
   0: TSENoiseReductionStaticModule.GetModuleProperties(Properties);
   1: TSENoiseReductionControllableModule.GetModuleProperties(Properties);
   else Result := False;
- end;;
+ end;
 end;
 
 function makeModule(Index: Integer; ProcessType: Integer; SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer): Pointer; cdecl; export;

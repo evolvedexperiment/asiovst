@@ -11,38 +11,32 @@ uses
 {$E sem}
 {$R *.res}
 
-function getModuleProperties(Index: Integer; Properties: PSEModuleProperties): Boolean; cdecl; export;
+const
+  CModuleClasses : array [0..1] of TSEModuleBaseClass = (
+    TSESimpleAudioFileOscillatorModule,
+    TSEAudioFileOscillatorModule
+  );
+
+function GetModuleProperties(Index: Integer;
+  Properties: PSEModuleProperties): Boolean; cdecl; export;
 begin
- Result := True;
- case Index of // !!TODO!! list your in / out plugs
-  0: TSESimpleAudioFileOscillatorModule.GetModuleProperties(Properties);
-  1: TSEAudioFileOscillatorModule.GetModuleProperties(Properties);
-  else Result := False; // host will ask for module 0,1,2,3 etc. return false to signal when done
- end;;
+  Result := False;
+  if (Index >= 0) and (Index < Length(CModuleClasses)) then
+  begin
+    CModuleClasses[Index].GetModuleProperties(Properties);
+    Result := True;
+  end;
 end;
 
-function makeModule(Index: Integer; ProcessType: Integer; SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer): Pointer; cdecl; export;
-var
-  SEModuleBase: TSEModuleBase;
+function MakeModule(Index, ProcessType: Integer;
+  SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer): Pointer; cdecl; export;
 begin
- Result := nil;
- case Index of
-  0: if (ProcessType = 1) then
-      begin
-       SEModuleBase := TSESimpleAudioFileOscillatorModule.Create(SEAudioMaster, Reserved);
-       if Assigned(SEModuleBase)
-        then Result := SEModuleBase.Effect;
-      end;
-  1: if (ProcessType = 1) then
-      begin
-       SEModuleBase := TSEAudioFileOscillatorModule.Create(SEAudioMaster, Reserved);
-       if Assigned(SEModuleBase)
-        then Result := SEModuleBase.Effect;
-      end;
- end;
+  Result := nil;
+  if (Index >= 0) and (Index < Length(CModuleClasses)) and (ProcessType = 1) then
+    Result := CModuleClasses[Index].Create(SEAudioMaster, Reserved).Effect;
 end;
 
-exports 
+exports
   makeModule name 'makeModule',
   getModuleProperties name 'getModuleProperties';
 

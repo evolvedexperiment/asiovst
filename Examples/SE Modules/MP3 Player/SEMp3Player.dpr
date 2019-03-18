@@ -23,7 +23,7 @@ begin
   1: TSEMp3PlayerModule.GetModuleProperties(Properties);
   2: TSEBufferedMp3PlayerModule.GetModuleProperties(Properties);
   else Result := False;
- end;;
+ end;
 end;
 
 function MakeModule(Index: Integer; ProcessType: Integer; SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer): Pointer; cdecl; export;

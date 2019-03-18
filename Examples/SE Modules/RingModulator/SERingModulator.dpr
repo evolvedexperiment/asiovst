@@ -24,7 +24,7 @@ begin
   4: TSELightweightAnalogRingModulatorStaticModule.GetModuleProperties(Properties);
   5: TSELightweightAnalogRingModulatorControllableModule.GetModuleProperties(Properties);
   else Result := False;
- end;;
+ end;
 end;
 
 function makeModule(Index: Integer; ProcessType: Integer; SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer): Pointer; cdecl; export;

@@ -10,33 +10,26 @@ uses
 {$E sem}
 {$R *.res}
 
-function getModuleProperties(Index: Integer; Properties: PSEModuleProperties): Boolean; cdecl; export;
+function GetModuleProperties(Index: Integer;
+  Properties: PSEModuleProperties): Boolean; cdecl; export;
 begin
- Result := True;
- case Index of // !!TODO!! list your in / out plugs
-  0: TSEGainModule.GetModuleProperties(Properties);
-  else Result := False; // host will ask for module 0,1,2,3 etc. return false to signal when done
- end;;
+  Result := False;
+  if (Index = 0) then
+  begin
+    TSEGainModule.GetModuleProperties(Properties);
+    Result := True;
+  end;
 end;
 
-function makeModule(Index: Integer; ProcessType: Integer; SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer): Pointer; cdecl; export;
-var
-  SEModuleBase: TSEModuleBase;
+function MakeModule(Index, ProcessType: Integer;
+  SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer): Pointer; cdecl; export;
 begin
- Result := nil;
- case Index of // !!TODO!! list your in / out plugs
-  0: begin
-      if (ProcessType = 1) then// Audio Processing Object
-       begin
-        SEModuleBase := TSEGainModule.Create(SEAudioMaster, Reserved);
-        if Assigned(SEModuleBase)
-         then Result := SEModuleBase.Effect;
-       end;
-     end;
- end;
+  Result := nil;
+  if (Index = 0) and (ProcessType = 1) then
+    Result := TSEGainModule.Create(SEAudioMaster, Reserved).Effect;
 end;
 
-exports 
+exports
   makeModule name 'makeModule',
   getModuleProperties name 'getModuleProperties';
 

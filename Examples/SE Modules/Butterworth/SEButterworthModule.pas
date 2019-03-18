@@ -64,8 +64,7 @@ type
 
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     procedure SubProcess(const BufferOffset, SampleFrames: Integer); virtual;
   end;
 
@@ -74,8 +73,7 @@ type
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
     class function GetFilterClass: TCustomButterworthFilterClass; override;
   public
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
   end;
@@ -85,8 +83,7 @@ type
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
     class function GetFilterClass: TCustomButterworthFilterClass; override;
   public
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
   end;
@@ -95,16 +92,14 @@ type
   public
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
   end;
 
   TSEControlableButterworthHPModule = class(TSEStaticButterworthHPModule)
   public
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
   end;
 
   TSEAutomatableButterworthLPModule = class(TSEStaticButterworthLPModule)
@@ -113,8 +108,7 @@ type
   public
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
   end;
 
@@ -124,8 +118,7 @@ type
   public
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
   end;
 
@@ -136,8 +129,7 @@ type
   public
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
   end;
 
@@ -148,8 +140,7 @@ type
   public
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
   end;
 
@@ -276,13 +267,12 @@ begin
   else
     Result := False;
     // host will ask for plugs 0,1,2,3 etc. return false to signal when done
-  end;;
+  end;
 end;
 
 { TSEButterworthModule }
 
-class function TSEStaticButterworthLPModule.GetFilterClass
-  : TCustomButterworthFilterClass;
+class function TSEStaticButterworthLPModule.GetFilterClass: TCustomButterworthFilterClass;
 begin
   Result := TButterworthLowpassFilter;
 end;
@@ -338,8 +328,7 @@ end;
 // this routine is called whenever an input changes status.
 // e.g when the user changes a module's parameters,
 // or when audio stops/starts streaming into a pin
-procedure TSEStaticButterworthLPModule.PlugStateChange(const CurrentPin
-  : TSEPin);
+procedure TSEStaticButterworthLPModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
   // has user altered a filter parameter?
   case TSEButterworthPins(CurrentPin.PinID) of
@@ -358,8 +347,7 @@ end;
 
 { TSEStaticButterworthHPModule }
 
-class function TSEStaticButterworthHPModule.GetFilterClass
-  : TCustomButterworthFilterClass;
+class function TSEStaticButterworthHPModule.GetFilterClass: TCustomButterworthFilterClass;
 begin
   Result := TButterworthHighpassFilter;
 end;
@@ -384,8 +372,7 @@ end;
 // this routine is called whenever an input changes status.
 // e.g when the user changes a module's parameters,
 // or when audio stops/starts streaming into a pin
-procedure TSEStaticButterworthHPModule.PlugStateChange(const CurrentPin
-  : TSEPin);
+procedure TSEStaticButterworthHPModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
   // has user altered a filter parameter?
   case TSEButterworthPins(CurrentPin.PinID) of
@@ -622,8 +609,7 @@ end;
 
 { TSEAutomatableXButterworthLPModule }
 
-class function TSEAutomatableXButterworthLPModule.GetFilterClass
-  : TCustomButterworthFilterClass;
+class function TSEAutomatableXButterworthLPModule.GetFilterClass: TCustomButterworthFilterClass;
 begin
   Result := TButterworthLowPassFilterAutomatable;
 end;
@@ -695,8 +681,7 @@ end;
 
 { TSEAutomatableXButterworthHPModule }
 
-class function TSEAutomatableXButterworthHPModule.GetFilterClass
-  : TCustomButterworthFilterClass;
+class function TSEAutomatableXButterworthHPModule.GetFilterClass: TCustomButterworthFilterClass;
 begin
   Result := TButterworthHighPassFilterAutomatable;
 end;

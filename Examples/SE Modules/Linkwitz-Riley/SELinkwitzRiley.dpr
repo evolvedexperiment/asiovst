@@ -18,7 +18,7 @@ begin
   1: TSELinkwitzRileyControlableModule.GetModuleProperties(Properties);
   2: TSELinkwitzRileyAutomatableModule.GetModuleProperties(Properties);
   else Result := False;
- end;;
+ end;
 end;
 
 function makeModule(Index: Integer; ProcessType: Integer; SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer): Pointer; cdecl; export;

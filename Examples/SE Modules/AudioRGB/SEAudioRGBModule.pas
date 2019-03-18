@@ -50,48 +50,48 @@ type
     procedure ChooseProcess;
     procedure SubProcessStatic(const BufferOffset, SampleFrames: Integer);
   protected
-    FStaticCount : Integer;
+    FStaticCount: Integer;
     procedure Open; override;
     procedure SubProcess(const BufferOffset, SampleFrames: Integer); virtual; abstract;
   public
-    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
   end;
 
   TSEAudioRGBModule = class(TCustomSEAudioRGBModule)
   private
-    FInputBuffer  : PDAVSingleFixedArray; // pointer to circular buffer of samples
-    FOutputBuffer : array [0..2] of PDAVSingleFixedArray;
-    FCoefficients : Integer;
-    FTransition   : Single;
+    FInputBuffer: PDAVSingleFixedArray; // pointer to circular buffer of samples
+    FOutputBuffer: array [0..2] of PDAVSingleFixedArray;
+    FCoefficients: Integer;
+    FTransition: Single;
   protected
-    FSplitter     : Array [0..1] of TPolyphaseDownsampler32;
+    FSplitter: array [0..1] of TPolyphaseDownsampler32;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
     constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
     destructor Destroy; override;
 
-    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
     procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
   end;
 
   TCustomSEColorConverterModule = class(TCustomSEAudioRGBModule)
   protected
-    FInputBuffer  : array [0..2] of PDAVSingleFixedArray;
-    FOutputBuffer : array [0..2] of PDAVSingleFixedArray;
+    FInputBuffer: array [0..2] of PDAVSingleFixedArray;
+    FOutputBuffer: array [0..2] of PDAVSingleFixedArray;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   end;
 
   TSERGBToHSLModule = class(TCustomSEColorConverterModule)
   public
-    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
     procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
   end;
 
   TSEHSLToRGBModule = class(TCustomSEColorConverterModule)
   public
-    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
     procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
   end;
@@ -106,39 +106,39 @@ uses
 class procedure TCustomSEAudioRGBModule.GetModuleProperties(
   Properties: PSEModuleProperties);
 begin
- with Properties^ do
+  with Properties^ do
   begin
-   // Info, may include Author, Web page whatever
-   About := 'by Christian-W. Budde';
-   SDKVersion := CSeSdkVersion;
+    // Info, may include Author, Web page whatever
+    About := 'by Christian-W. Budde';
+    SDKVersion := CSeSdkVersion;
   end;
 end;
 
 procedure TCustomSEAudioRGBModule.Open;
 begin
- inherited Open;
+  inherited Open;
 
- // choose which function is used to process audio
- OnProcess := SubProcess;
+  // choose which function is used to process audio
+  OnProcess := SubProcess;
 end;
 
 procedure TCustomSEAudioRGBModule.SubProcessStatic(const BufferOffset, SampleFrames: Integer);
 begin
- SubProcess(BufferOffset, SampleFrames);
- FStaticCount := FStaticCount - SampleFrames;
- if FStaticCount <= 0
-  then CallHost(SEAudioMasterSleepMode);
+  SubProcess(BufferOffset, SampleFrames);
+  FStaticCount := FStaticCount - SampleFrames;
+  if FStaticCount <= 0 then
+    CallHost(SEAudioMasterSleepMode);
 end;
 
 procedure TCustomSEAudioRGBModule.ChooseProcess;
 begin
- if Pin[0].Status = stRun
-  then OnProcess := SubProcess
+  if Pin[0].Status = stRun then
+    OnProcess := SubProcess
   else
-   begin
+  begin
     FStaticCount := BlockSize;
     OnProcess := SubProcessStatic;
-   end;
+  end;
 end;
 
 
@@ -146,25 +146,25 @@ end;
 
 constructor TSEAudioRGBModule.Create(SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer);
 begin
- inherited Create(SEAudioMaster, Reserved);
- FSplitter[0] := TPolyphaseDownsampler32.Create;
- FSplitter[1] := TPolyphaseDownsampler32.Create;
+  inherited Create(SEAudioMaster, Reserved);
+  FSplitter[0] := TPolyphaseDownsampler32.Create;
+  FSplitter[1] := TPolyphaseDownsampler32.Create;
 end;
 
 destructor TSEAudioRGBModule.Destroy;
 begin
- FreeAndNil(FSplitter[0]);
- FreeAndNil(FSplitter[1]);
- inherited;
+  FreeAndNil(FSplitter[0]);
+  FreeAndNil(FSplitter[1]);
+  inherited;
 end;
 
 // The most important part, processing the audio
 procedure TSEAudioRGBModule.SubProcess(const BufferOffset, SampleFrames: Integer);
 var
-  Inp     : PDAVSingleFixedArray;
-  R, G, B : PDAVSingleFixedArray;
-  Data    : TDAV2SingleArray;
-  Sample  : Integer;
+  Inp: PDAVSingleFixedArray;
+  R, G, B: PDAVSingleFixedArray;
+  Data: TDAV2SingleArray;
+  Sample: Integer;
 begin
  // assign some pointers to your in/output buffers. usually blocks (array) of 96 samples
  Inp := PDAVSingleFixedArray(@FInputBuffer[BufferOffset]);
@@ -183,7 +183,7 @@ begin
 end;
 
 // describe your module
-class procedure TSEAudioRGBModule.getModuleProperties(Properties : PSEModuleProperties);
+class procedure TSEAudioRGBModule.getModuleProperties(Properties: PSEModuleProperties);
 begin
  inherited;
  with Properties^ do
@@ -257,18 +257,18 @@ begin
      Datatype        := dtSingle;
     end;
   else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
- end;;
+ end;
 end;
 
 // An input plug has changed value
 procedure TSEAudioRGBModule.PlugStateChange(const CurrentPin: TSEPin);
 var
-  OutState : TSEStateType;
+  OutState: TSEStateType;
 begin
  inherited;
 
  case TSEAudioRGBPins(CurrentPin.PinID) of
-         pinInput : begin
+         pinInput: begin
                      if (Pin[0].Status < stRun) and (Pin[0].Value = 0)
                       then OutState := stStatic
                       else OutState := stRun;
@@ -277,11 +277,11 @@ begin
                      Pin[Integer(pinOutputB)].TransmitStatusChange(SampleClock, OutState);
                      ChooseProcess;
                     end;
-  pinCoefficients : begin
+  pinCoefficients: begin
                      FSplitter[0].NumberOfCoefficients := FCoefficients;
                      FSplitter[1].NumberOfCoefficients := FCoefficients;
                     end;
-    pinTransition : begin
+    pinTransition: begin
                      FSplitter[0].Transition := Limit(FTransition, 0.01, 0.499);
                      FSplitter[1].Transition := Limit(FTransition, 0.01, 0.499);
                     end;
@@ -294,7 +294,7 @@ end;
 // An input plug has changed value
 procedure TCustomSEColorConverterModule.PlugStateChange(const CurrentPin: TSEPin);
 var
-  OutState : TSEStateType;
+  OutState: TSEStateType;
 begin
  OutState := stRun;
  if (Pin[0].Status < stRun) and (Pin[0].Value = 0) then OutState := stStatic;
@@ -374,7 +374,7 @@ end;
 { TSERGBToHSLModule }
 
 // describe your module
-class procedure TSERGBToHSLModule.getModuleProperties(Properties : PSEModuleProperties);
+class procedure TSERGBToHSLModule.getModuleProperties(Properties: PSEModuleProperties);
 begin
  inherited;
  with Properties^ do
@@ -445,15 +445,15 @@ begin
      Datatype        := dtFSample;
     end;
   else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
- end;;
+ end;
 end;
 
 // The most important part, processing the audio
 procedure TSERGBToHSLModule.SubProcess(const BufferOffset, SampleFrames: Integer);
 var
-  Rin, Gin, Bin    : PDAVSingleFixedArray;
-  Hout, Sout, Lout : PDAVSingleFixedArray;
-  Sample           : Integer;
+  Rin, Gin, Bin: PDAVSingleFixedArray;
+  Hout, Sout, Lout: PDAVSingleFixedArray;
+  Sample: Integer;
 begin
  // assign some pointers to your in/output buffers. usually blocks (array) of 96 samples
  Rin  := PDAVSingleFixedArray(@FInputBuffer[0][BufferOffset]);
@@ -471,7 +471,7 @@ end;
 { TSEHSLToRGBModule }
 
 // describe your module
-class procedure TSEHSLToRGBModule.getModuleProperties(Properties : PSEModuleProperties);
+class procedure TSEHSLToRGBModule.getModuleProperties(Properties: PSEModuleProperties);
 begin
  inherited;
  with Properties^ do
@@ -542,15 +542,15 @@ begin
      Datatype        := dtFSample;
     end;
   else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
- end;;
+ end;
 end;
 
 // The most important part, processing the audio
 procedure TSEHSLToRGBModule.SubProcess(const BufferOffset, SampleFrames: Integer);
 var
-  Rout, Gout, Bout : PDAVSingleFixedArray;
-  HIn, SIn, LIn    : PDAVSingleFixedArray;
-  Sample           : Integer;
+  Rout, Gout, Bout: PDAVSingleFixedArray;
+  HIn, SIn, LIn: PDAVSingleFixedArray;
+  Sample: Integer;
 begin
  // assign some pointers to your in/output buffers. usually blocks (array) of 96 samples
  HIn  := PDAVSingleFixedArray(@FInputBuffer[0][BufferOffset]);

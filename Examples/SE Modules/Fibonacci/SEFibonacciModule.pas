@@ -218,7 +218,7 @@ begin
   else
     Result := False;
     // host will ask for plugs 0,1,2,3 etc. return false to signal when done
-  end;;
+  end;
 end;
 
 end.
