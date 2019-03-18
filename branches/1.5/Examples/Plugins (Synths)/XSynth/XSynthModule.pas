@@ -36,7 +36,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTEffect,
-  DAV_VSTModule, XSynthVoice, VoiceList;
+  DAV_VSTModule, DAV_SynthUtils, XSynthVoice, XSynthVoiceList;
 
 type
   TVSTSSModule = class(TVSTModule)
@@ -68,10 +68,10 @@ type
     FRes: array [0..1] of Single;
     FOld: array [0..1] of Single;
     FOscs: array [0..1] of TOsc;
-    FVoices: TVoiceList;
+    FVoices: TXSynthVoiceList;
     function GetOscilators(index: integer): TOsc;
   public
-    property Voices: TVoiceList read FVoices;
+    property Voices: TXSynthVoiceList read FVoices;
     property Oscilators[Index: Integer]: TOsc read GetOscilators;
   end;
 
@@ -88,7 +88,7 @@ uses
 
 procedure TVSTSSModule.VSTModuleOpen(Sender: TObject);
 begin
-  FVoices := TVoiceList.Create(True);
+  FVoices := TXSynthVoiceList.Create(True);
   FLevel := 1; FDrive := 1;
   ParameterProperties[0].Max := Integer(otNoise);
   ParameterProperties[1].Max := Integer(otNoise);

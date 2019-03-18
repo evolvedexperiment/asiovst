@@ -24,7 +24,7 @@ type
     procedure SetFrequency(const Value: Single); virtual;
     procedure NoteOn(Frequency, Amplitude: Single);
     procedure NoteOff;
-    function Process: Single; virtual;
+    function Process: Single; override;
 
     property Frequency: Single read FFrequency write SetFrequency;
   end;

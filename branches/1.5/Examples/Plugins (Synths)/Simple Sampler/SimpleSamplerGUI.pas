@@ -29,7 +29,7 @@ implementation
 {$R *.DFM}
 
 uses
-  DAV_SynthUtils, SimpleSamplerModule, SimpleSamplerVoice, VoiceList;
+  DAV_SynthUtils, SimpleSamplerModule, SimpleSamplerVoice;
 
 
 { TVSTGUI }

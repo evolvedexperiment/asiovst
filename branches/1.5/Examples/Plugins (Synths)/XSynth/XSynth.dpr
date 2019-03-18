@@ -2,20 +2,20 @@
 library XSynth;
 
 uses
-  FastMM4, // either download the library or comment if there is an error here
-  {$IFDEF UseFastMove}
-  FastMove, // either download the library or comment if there is an error here
-  {$ENDIF}
-  {$IFDEF UseMadExcept}
-  madExcept, // either download madExcept or remove mad* if there is an error here
+  FastMM4,
   madLinkDisAsm,
-  {$ENDIF}
+  {$IFDEF UseFastMove}
+  FastMove,
+  {$ENDIF }
+  {$IFDEF UseMadExcept}
+  madExcept,
+  {$ENDIF }
   DAV_VSTEffect,
   DAV_VSTBasicModule,
   XSynthModule in 'XSynthModule.pas' {VSTSSModule: TVSTModule},
   XSynthGUI in 'XSynthGUI.pas' {VSTGUI},
   XSynthVoice in 'XSynthVoice.pas',
-  VoiceList in 'VoiceList.pas';
+  XSynthVoiceList in 'XSynthVoiceList.pas';
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin

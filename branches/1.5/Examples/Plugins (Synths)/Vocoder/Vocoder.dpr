@@ -2,20 +2,19 @@
 library Vocoder;
 
 uses
-  FastMM4, // either download the library or comment if there is an error here
-  {$IFDEF UseFastMove}
-  FastMove, // either download the library or comment if there is an error here
-  {$ENDIF}
-  {$IFDEF UseMadExcept}
-  madExcept, // either download madExcept or remove mad* if there is an error here
+  FastMM4,
   madLinkDisAsm,
-  {$ENDIF}
+  {$IFDEF UseFastMove}
+  FastMove,
+  {$ENDIF }
+  {$IFDEF UseMadExcept}
+  madExcept,
+  {$ENDIF }
   DAV_VSTEffect,
   DAV_VSTBasicModule,
   VocoderModule in 'VocoderModule.pas' {VSTSSModule: TVSTModule},
   VocoderGUI in 'VocoderGUI.pas' {VSTGUI},
-  VocoderVoice in 'VocoderVoice.pas',
-  VoiceList in 'VoiceList.pas';
+  VocoderVoice in 'VocoderVoice.pas';
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin

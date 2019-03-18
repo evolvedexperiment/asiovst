@@ -2,20 +2,19 @@
 library SineSynth;
 
 uses
-  FastMM4, // either download the library or comment if there is an error here
-  {$IFDEF UseFastMove}
-  FastMove, // either download the library or comment if there is an error here
-  {$ENDIF}
-  {$IFDEF UseMadExcept}
-  madExcept, // either download madExcept or remove mad* if there is an error here
+  FastMM4,
   madLinkDisAsm,
-  {$ENDIF}
+  {$IFDEF UseFastMove}
+  FastMove,
+  {$ENDIF }
+  {$IFDEF UseMadExcept}
+  madExcept,
+  {$ENDIF }
   DAV_VSTEffect,
   DAV_VSTBasicModule,
   SineSynthModule in 'SineSynthModule.pas' {VSTSSModule: TVSTModule},
   SineSynthGUI in 'SineSynthGUI.pas' {VSTGUI},
-  SineSynthVoice in 'SineSynthVoice.pas',
-  VoiceList in 'VoiceList.pas';
+  SineSynthVoice in 'SineSynthVoice.pas';
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin

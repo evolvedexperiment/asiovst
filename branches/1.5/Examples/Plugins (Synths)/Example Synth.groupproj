@@ -1,0 +1,72 @@
+﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+		<PropertyGroup>
+			<ProjectGuid>{EAB0056D-EF7A-4C00-8149-0502F64C3942}</ProjectGuid>
+		</PropertyGroup>
+		<ItemGroup>
+			<Projects Include="Simple Sampler\SimpleSampler.dproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="Sine Synth\SineSynth.dproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="Vocoder\Vocoder.dproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="XSynth\XSynth.dproj">
+				<Dependencies/>
+			</Projects>
+		</ItemGroup>
+		<ProjectExtensions>
+			<Borland.Personality>Default.Personality.12</Borland.Personality>
+			<Borland.ProjectType/>
+			<BorlandProject>
+				<Default.Personality/>
+			</BorlandProject>
+		</ProjectExtensions>
+		<Target Name="SimpleSampler">
+			<MSBuild Projects="Simple Sampler\SimpleSampler.dproj"/>
+		</Target>
+		<Target Name="SimpleSampler:Clean">
+			<MSBuild Targets="Clean" Projects="Simple Sampler\SimpleSampler.dproj"/>
+		</Target>
+		<Target Name="SimpleSampler:Make">
+			<MSBuild Targets="Make" Projects="Simple Sampler\SimpleSampler.dproj"/>
+		</Target>
+		<Target Name="SineSynth">
+			<MSBuild Projects="Sine Synth\SineSynth.dproj"/>
+		</Target>
+		<Target Name="SineSynth:Clean">
+			<MSBuild Targets="Clean" Projects="Sine Synth\SineSynth.dproj"/>
+		</Target>
+		<Target Name="SineSynth:Make">
+			<MSBuild Targets="Make" Projects="Sine Synth\SineSynth.dproj"/>
+		</Target>
+		<Target Name="Vocoder">
+			<MSBuild Projects="Vocoder\Vocoder.dproj"/>
+		</Target>
+		<Target Name="Vocoder:Clean">
+			<MSBuild Targets="Clean" Projects="Vocoder\Vocoder.dproj"/>
+		</Target>
+		<Target Name="Vocoder:Make">
+			<MSBuild Targets="Make" Projects="Vocoder\Vocoder.dproj"/>
+		</Target>
+		<Target Name="XSynth">
+			<MSBuild Projects="XSynth\XSynth.dproj"/>
+		</Target>
+		<Target Name="XSynth:Clean">
+			<MSBuild Targets="Clean" Projects="XSynth\XSynth.dproj"/>
+		</Target>
+		<Target Name="XSynth:Make">
+			<MSBuild Targets="Make" Projects="XSynth\XSynth.dproj"/>
+		</Target>
+		<Target Name="Build">
+			<CallTarget Targets="SimpleSampler;SineSynth;Vocoder;XSynth"/>
+		</Target>
+		<Target Name="Clean">
+			<CallTarget Targets="SimpleSampler:Clean;SineSynth:Clean;Vocoder:Clean;XSynth:Clean"/>
+		</Target>
+		<Target Name="Make">
+			<CallTarget Targets="SimpleSampler:Make;SineSynth:Make;Vocoder:Make;XSynth:Make"/>
+		</Target>
+		<Import Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')" Project="$(BDS)\Bin\CodeGear.Group.Targets"/>
+	</Project>

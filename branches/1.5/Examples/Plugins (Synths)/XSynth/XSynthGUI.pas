@@ -61,7 +61,7 @@ implementation
 {$R *.DFM}
 
 uses
-  DAV_Common, DAV_SynthUtils, XSynthModule, XSynthVoice, VoiceList;
+  DAV_Common, DAV_SynthUtils, XSynthModule, XSynthVoice;
 
 procedure TVSTGUI.MidiKeysNoteOn(Sender: TObject; KeyNo: Byte;
   Velocity: Single);

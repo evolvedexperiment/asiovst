@@ -142,7 +142,7 @@ type
     procedure SetFrequency(Frequency: Single); virtual;
     procedure NoteOn(Frequency, Amplitude: Single);
     procedure NoteOff;
-    function Process: Single; virtual;
+    function Process: Single; override;
 
     property Frequency: Single read FFrequency write SetFrequency;
     property Released: Boolean read FReleased;
