@@ -75,8 +75,7 @@ type
 
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     procedure SubProcess(const BufferOffset, SampleFrames: Integer); virtual;
     procedure SubProcessBypass(const BufferOffset, SampleFrames: Integer);
 
@@ -95,8 +94,7 @@ resourcestring
     'This module is not allowed to be embedded into a VST Plugin';
   RCNotRegistered = 'You are not a registered customer!';
 
-function EnumNamesFunc(hModule: THandle; lpType, lpName: PChar; lParam: DWORD)
-  : Boolean; stdcall;
+function EnumNamesFunc(hModule: THandle; lpType, lpName: PChar; lParam: DWORD): Boolean; stdcall;
 begin
   Result := True;
   TStringList(lParam).Add(lpName);

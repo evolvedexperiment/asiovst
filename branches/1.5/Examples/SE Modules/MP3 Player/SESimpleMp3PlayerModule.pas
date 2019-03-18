@@ -73,8 +73,7 @@ type
       Reserved: Pointer); override;
     destructor Destroy; override;
 
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
     procedure SubProcess(const BufferOffset, SampleFrames: Integer);
@@ -85,16 +84,14 @@ implementation
 
 {$IFDEF UseEmbedding}
 
-function EnumNamesFunc(hModule: THandle; lpType, lpName: PChar; lParam: DWORD)
-  : Boolean; stdcall;
+function EnumNamesFunc(hModule: THandle; lpType, lpName: PChar; lParam: DWORD): Boolean; stdcall;
 begin
   Result := True;
   TStringList(lParam).Add(lpName);
 end;
 {$ENDIF}
 
-constructor TSESimpleMp3PlayerModule.Create(AudioMaster
-  : TSE2AudioMasterCallback; Reserved: Pointer);
+constructor TSESimpleMp3PlayerModule.Create(AudioMaster: TSE2AudioMasterCallback; Reserved: Pointer);
 begin
   inherited;
   FCriticalSection := TCriticalSection.Create;

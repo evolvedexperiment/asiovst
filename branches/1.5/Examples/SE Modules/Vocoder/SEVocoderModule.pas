@@ -64,8 +64,7 @@ type
       Reserved: Pointer); override;
     destructor Destroy; override;
 
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
     procedure SubProcess(const BufferOffset, SampleFrames: Integer); virtual;
@@ -78,16 +77,14 @@ type
   protected
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
   end;
 
   TSEVocoderControllableModule = class(TSEVocoderStaticModule)
   public
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
   end;
@@ -99,8 +96,7 @@ type
     procedure SubProcessAutomated(const BufferOffset, SampleFrames: Integer);
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
   end;
@@ -112,8 +108,8 @@ uses
 
 { TCustomSEVocoderModule }
 
-constructor TCustomSEVocoderModule.Create(SEAudioMaster
-  : TSE2audioMasterCallback; Reserved: Pointer);
+constructor TCustomSEVocoderModule.Create(
+  SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
 begin
   inherited Create(SEAudioMaster, Reserved);
   FVocoder := TVocoder.Create;

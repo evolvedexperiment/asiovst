@@ -61,8 +61,7 @@ type
       Reserved: Pointer); override;
     destructor Destroy; override;
 
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
     procedure SubProcess(const BufferOffset, SampleFrames: Integer);
@@ -86,8 +85,7 @@ type
       Reserved: Pointer); override;
     destructor Destroy; override;
 
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
     procedure SubProcess(const BufferOffset, SampleFrames: Integer);

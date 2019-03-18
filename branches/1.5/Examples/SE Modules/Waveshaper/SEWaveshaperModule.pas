@@ -67,8 +67,7 @@ type
     procedure Open; override;
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): boolean; override;
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
 
     procedure SubProcess(const BufferOffset, SampleFrames: Integer);
     procedure SubProcessStatic(const BufferOffset, SampleFrames: Integer);
@@ -297,33 +296,7 @@ var
   delta_y: Single;
   delta_x: Single;
   slope, c: Single;
-  // gain, t     : Single;
 begin
-  // GuiModule.UpdateNodes(nodes, SeSdkString(FShapePtr));
-
-  (* Old slower code
-    segments := 11;
-    from     := 0; // first x co=ord
-    for i := 1 to segments - 1 do
-    begin
-    fto := nodes[i].x * CTableSize *0.01; // convert to table Index (0-512)
-
-    if fto >= CTableSize
-    then fto := CTableSize - 1;
-
-    t := from;
-    while t < fto do
-    begin
-    Gain := nodes[i - 1].y + ((t - from) / (fto - from)) * (nodes[i].y - nodes[i-1].y);
-    Gain = (50 - gain) * 0.01;
-    FLookupTable[Round(t)] := Gain;
-    t := t + 1;
-    end;
-
-    from := Round(to);
-    end;
-  *)
-
   // new, faster code
   segments := 11;
   from := 0; // first x co=ord

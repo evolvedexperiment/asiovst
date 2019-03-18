@@ -69,8 +69,7 @@ type
 
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     procedure SubProcess(const BufferOffset, SampleFrames: Integer); virtual;
   end;
 
@@ -83,8 +82,8 @@ resourcestring
   RCStrSynthEditOnly =
     'This module is not allowed to be embedded into a VST Plugin';
 
-constructor TSERealverbStereoModule.Create(SEAudioMaster
-  : TSE2audioMasterCallback; Reserved: Pointer);
+constructor TSERealverbStereoModule.Create(
+  SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
 begin
   inherited Create(SEAudioMaster, Reserved);
   FSemaphore := 0;

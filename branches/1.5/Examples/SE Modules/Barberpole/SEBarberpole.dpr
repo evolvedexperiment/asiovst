@@ -16,7 +16,7 @@ uses
 {$R *.res}
 
 const
-  CModuleClasses : array [0..0] of TSEModuleBaseClass = (
+  CModuleClasses: array [0..0] of TSEModuleBaseClass = (
     TSEBarberpoleModule
   );
 

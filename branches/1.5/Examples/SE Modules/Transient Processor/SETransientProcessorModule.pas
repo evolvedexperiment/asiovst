@@ -61,8 +61,7 @@ type
       Reserved: Pointer); override;
     destructor Destroy; override;
 
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
     procedure SubProcess(const BufferOffset, SampleFrames: Integer);
@@ -80,8 +79,7 @@ type
   protected
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
     procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
@@ -90,8 +88,7 @@ type
   TSETransientProcessorControllableModule = class
     (TSETransientProcessorStaticModule)
   public
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
   end;
@@ -103,8 +100,8 @@ uses
 
 { TCustomSETransientProcessorModule }
 
-constructor TCustomSETransientProcessorModule.Create(SEAudioMaster
-  : TSE2audioMasterCallback; Reserved: Pointer);
+constructor TCustomSETransientProcessorModule.Create(
+  SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
 begin
   inherited Create(SEAudioMaster, Reserved);
   FTransientProcessor := TMonoTransientProcessor.Create

@@ -13,35 +13,36 @@ uses
 {$E sem}
 {$R *.res}
 
-function getModuleProperties(Index: Integer; Properties: PSEModuleProperties): Boolean; cdecl; export;
-begin
- Result := True;
- case Index of
-  0: TSERingModulatorStaticModule.GetModuleProperties(Properties);
-  1: TSERingModulatorControllableModule.GetModuleProperties(Properties);
-  2: TSEAnalogRingModulatorStaticModule.GetModuleProperties(Properties);
-  3: TSEAnalogRingModulatorControllableModule.GetModuleProperties(Properties);
-  4: TSELightweightAnalogRingModulatorStaticModule.GetModuleProperties(Properties);
-  5: TSELightweightAnalogRingModulatorControllableModule.GetModuleProperties(Properties);
-  else Result := False;
- end;
-end;
+const
+  CModuleClasses: array [0..5] of TSEModuleBaseClass = (
+   TSERingModulatorStaticModule,
+   TSERingModulatorControllableModule,
+   TSEAnalogRingModulatorStaticModule,
+   TSEAnalogRingModulatorControllableModule,
+   TSELightweightAnalogRingModulatorStaticModule,
+   TSELightweightAnalogRingModulatorControllableModule
+  );
 
-function makeModule(Index: Integer; ProcessType: Integer; SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer): Pointer; cdecl; export;
+function GetModuleProperties(Index: Integer;
+  Properties: PSEModuleProperties): Boolean; cdecl; export;
 begin
- Result := nil;
- if (ProcessType = 1) then
-  case Index of
-   0: Result := TSERingModulatorStaticModule.Create(SEAudioMaster, Reserved).Effect;
-   1: Result := TSERingModulatorControllableModule.Create(SEAudioMaster, Reserved).Effect;
-   2: Result := TSEAnalogRingModulatorStaticModule.Create(SEAudioMaster, Reserved).Effect;
-   3: Result := TSEAnalogRingModulatorControllableModule.Create(SEAudioMaster, Reserved).Effect;
-   4: Result := TSELightweightAnalogRingModulatorStaticModule.Create(SEAudioMaster, Reserved).Effect;
-   5: Result := TSELightweightAnalogRingModulatorControllableModule.Create(SEAudioMaster, Reserved).Effect;
+  Result := False;
+  if (Index >= 0) and (Index < Length(CModuleClasses)) then
+  begin
+    CModuleClasses[Index].GetModuleProperties(Properties);
+    Result := True;
   end;
 end;
 
-exports 
+function MakeModule(Index, ProcessType: Integer;
+  SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer): Pointer; cdecl; export;
+begin
+  Result := nil;
+  if (Index >= 0) and (Index < Length(CModuleClasses)) and (ProcessType = 1) then
+    Result := CModuleClasses[Index].Create(SEAudioMaster, Reserved).Effect;
+end;
+
+exports
   makeModule name 'makeModule',
   getModuleProperties name 'getModuleProperties';
 

@@ -62,8 +62,7 @@ type
       Reserved: Pointer); override;
     destructor Destroy; override;
 
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
     procedure SubProcess(const BufferOffset, SampleFrames: Integer); virtual;
@@ -83,16 +82,14 @@ type
   protected
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
   end;
 
   TSEAdvancedTunerControllableModule = class(TSEAdvancedTunerStaticModule)
   public
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
   end;
@@ -104,8 +101,8 @@ uses
 
 { TCustomSEAdvancedTunerModule }
 
-constructor TCustomSEAdvancedTunerModule.Create(SEAudioMaster
-  : TSE2audioMasterCallback; Reserved: Pointer);
+constructor TCustomSEAdvancedTunerModule.Create(
+  SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
 begin
   inherited Create(SEAudioMaster, Reserved);
   FTuner := TAdvancedTuner.Create;
@@ -217,8 +214,8 @@ begin
 end;
 
 // An input plug has changed value
-procedure TCustomSEAdvancedTunerModule.PlugStateChange(const CurrentPin
-  : TSEPin);
+procedure TCustomSEAdvancedTunerModule.PlugStateChange(
+  const CurrentPin: TSEPin);
 begin
   inherited;
   case TSETunerPins(CurrentPin.PinID) of
@@ -372,8 +369,8 @@ begin
 end;
 
 // An input plug has changed value
-procedure TSEAdvancedTunerStaticModule.PlugStateChange(const CurrentPin
-  : TSEPin);
+procedure TSEAdvancedTunerStaticModule.PlugStateChange(
+  const CurrentPin: TSEPin);
 begin
   inherited;
   case TSETunerPins(CurrentPin.PinID) of

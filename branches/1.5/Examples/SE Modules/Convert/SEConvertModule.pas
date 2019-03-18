@@ -51,8 +51,7 @@ type
     FInteger: Integer;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
   end;
@@ -63,8 +62,7 @@ type
     FInteger: Integer;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
   end;
@@ -75,8 +73,7 @@ type
     FInteger: Integer;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
   end;
@@ -87,8 +84,7 @@ type
     FInteger: Integer;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
   end;
@@ -99,8 +95,7 @@ type
     FText: PAnsiChar;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
   end;
@@ -111,8 +106,7 @@ type
     FText: PAnsiChar;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
   end;
@@ -123,8 +117,7 @@ type
     FText: PAnsiChar;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
   end;
@@ -136,8 +129,7 @@ type
     FGuiText: PAnsiChar;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
   end;
@@ -148,8 +140,7 @@ type
     FGuiInt: PAnsiChar;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
   end;
@@ -160,8 +151,7 @@ type
     FGuiFloat: PAnsiChar;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
   end;
@@ -172,8 +162,7 @@ type
     FGuiDouble: PAnsiChar;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
   end;
@@ -184,8 +173,7 @@ type
     FGuiBoolean: PAnsiChar;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
   end;
@@ -201,8 +189,7 @@ type
     procedure CalculateOutput; virtual;
     procedure Open; override;
   public
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
     procedure SubProcess(const BufferOffset, SampleFrames: Integer);
@@ -219,8 +206,7 @@ type
     procedure CalculateOutput; virtual;
     procedure Open; override;
   public
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
     procedure SubProcess(const BufferOffset, SampleFrames: Integer);
@@ -972,8 +958,7 @@ begin
   end;
 end;
 
-procedure TSEBooleanToGuiBooleanModule.PlugStateChange(const CurrentPin
-  : TSEPin);
+procedure TSEBooleanToGuiBooleanModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
   if CurrentPin.PinID = 0 then
     FGuiBoolean := FBoolean;

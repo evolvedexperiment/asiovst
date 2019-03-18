@@ -54,8 +54,7 @@ type
 
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     procedure SubProcessOpt3asm(const BufferOffset, SampleFrames: Integer);
     procedure SubProcessOpt4asm(const BufferOffset, SampleFrames: Integer);
     procedure SubProcessOpt5asm(const BufferOffset, SampleFrames: Integer);
@@ -77,8 +76,7 @@ type
 
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     procedure SubProcess2a(const BufferOffset, SampleFrames: Integer);
     procedure SubProcess2b(const BufferOffset, SampleFrames: Integer);
     procedure SubProcess2c(const BufferOffset, SampleFrames: Integer);
@@ -94,8 +92,7 @@ type
   public
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     procedure SubProcess(const BufferOffset, SampleFrames: Integer);
   end;
 
@@ -104,8 +101,8 @@ implementation
 uses
   Math, SysUtils, DAV_Approximations;
 
-constructor TSETanhAproximationsModule.Create(AudioMaster
-  : TSE2AudioMasterCallback; Reserved: Pointer);
+constructor TSETanhAproximationsModule.Create(
+  AudioMaster: TSE2AudioMasterCallback; Reserved: Pointer);
 begin
   inherited;
   FTerms := 3;

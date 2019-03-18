@@ -60,7 +60,7 @@ uses
 {$R *.res}
 
 const
-  CModuleClasses : array [0..199] of TSEModuleBaseClass = (
+  CModuleClasses: array [0..199] of TSEModuleBaseClass = (
     TSEBassEnhancerModule,
     TSEResurrectionBassModule,
     TSEHarmonicBassModule,

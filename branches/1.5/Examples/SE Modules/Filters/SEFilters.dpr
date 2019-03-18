@@ -15,7 +15,7 @@ uses
 
 const
   CX = {$IFDEF FilterReference}1{$ELSE}0{$ENDIF};
-  CModuleClasses : array [0..25 + CX] of TSEModuleBaseClass = (
+  CModuleClasses: array [0..25 + CX] of TSEModuleBaseClass = (
     TSEBasicLowpassModule, TSEBasicHighpassModule, TSEBasicBandpassModule,
     TSEBasicNotchModule, TSEBasicLowshelfModule, TSEBasicLowshelfAModule,
     TSEBasicLowshelfBModule, TSEBasicHighshelfModule, TSEBasicHighshelfAModule,

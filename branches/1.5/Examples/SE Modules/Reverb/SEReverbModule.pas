@@ -65,8 +65,7 @@ type
       Reserved: Pointer); override;
     destructor Destroy; override;
 
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
     procedure SubProcess(const BufferOffset, SampleFrames: Integer);
@@ -81,8 +80,7 @@ type
   protected
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
     procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
@@ -90,8 +88,7 @@ type
 
   TSEFreeverbControllableModule = class(TSEFreeverbStaticModule)
   public
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
   end;
@@ -113,8 +110,7 @@ type
       Reserved: Pointer); override;
     destructor Destroy; override;
 
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
     procedure SubProcess(const BufferOffset, SampleFrames: Integer);
@@ -128,8 +124,7 @@ type
   protected
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
     procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
@@ -137,8 +132,7 @@ type
 
   TSEStkNReverbControllableModule = class(TSEStkNReverbStaticModule)
   public
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
   end;
@@ -160,8 +154,7 @@ type
       Reserved: Pointer); override;
     destructor Destroy; override;
 
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
     procedure SubProcess(const BufferOffset, SampleFrames: Integer);
@@ -175,8 +168,7 @@ type
   protected
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
     procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
@@ -184,8 +176,7 @@ type
 
   TSEStkJCReverbControllableModule = class(TSEStkJCReverbStaticModule)
   public
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
   end;
@@ -208,8 +199,7 @@ type
       Reserved: Pointer); override;
     destructor Destroy; override;
 
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
     procedure SubProcess(const BufferOffset, SampleFrames: Integer);
@@ -223,8 +213,7 @@ type
   protected
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
     procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
@@ -232,8 +221,7 @@ type
 
   TSEStkNReverb2ControllableModule = class(TSEStkNReverb2StaticModule)
   public
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
   end;
@@ -256,8 +244,7 @@ type
       Reserved: Pointer); override;
     destructor Destroy; override;
 
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
     procedure SubProcess(const BufferOffset, SampleFrames: Integer);
@@ -271,8 +258,7 @@ type
   protected
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
     procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
@@ -280,8 +266,7 @@ type
 
   TSEStkJCReverb2ControllableModule = class(TSEStkJCReverb2StaticModule)
   public
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
   end;
@@ -293,8 +278,8 @@ uses
 
 { TCustomSEFreeverbModule }
 
-constructor TCustomSEFreeverbModule.Create(SEAudioMaster
-  : TSE2audioMasterCallback; Reserved: Pointer);
+constructor TCustomSEFreeverbModule.Create(
+  SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
 begin
   inherited Create(SEAudioMaster, Reserved);
   FFreeverb := TFreeverb.Create
@@ -527,8 +512,8 @@ end;
 
 { TCustomSEStkNReverbModule }
 
-constructor TCustomSEStkNReverbModule.Create(SEAudioMaster
-  : TSE2audioMasterCallback; Reserved: Pointer);
+constructor TCustomSEStkNReverbModule.Create(
+  SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
 begin
   inherited Create(SEAudioMaster, Reserved);
   FNReverb := TStkNReverb.Create
@@ -736,8 +721,8 @@ end;
 
 { TCustomSEStkJCReverbModule }
 
-constructor TCustomSEStkJCReverbModule.Create(SEAudioMaster
-  : TSE2audioMasterCallback; Reserved: Pointer);
+constructor TCustomSEStkJCReverbModule.Create(
+  SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
 begin
   inherited Create(SEAudioMaster, Reserved);
   FJCReverb := TStkJCReverb.Create
@@ -945,8 +930,8 @@ end;
 
 { TCustomSEStkNReverb2Module }
 
-constructor TCustomSEStkNReverb2Module.Create(SEAudioMaster
-  : TSE2audioMasterCallback; Reserved: Pointer);
+constructor TCustomSEStkNReverb2Module.Create(
+  SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
 begin
   inherited Create(SEAudioMaster, Reserved);
   FNReverb := TStkNReverb.Create
@@ -1175,8 +1160,8 @@ end;
 
 { TCustomSEStkJCReverb2Module }
 
-constructor TCustomSEStkJCReverb2Module.Create(SEAudioMaster
-  : TSE2audioMasterCallback; Reserved: Pointer);
+constructor TCustomSEStkJCReverb2Module.Create(
+  SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
 begin
   inherited Create(SEAudioMaster, Reserved);
   FJCReverb := TStkJCReverb.Create

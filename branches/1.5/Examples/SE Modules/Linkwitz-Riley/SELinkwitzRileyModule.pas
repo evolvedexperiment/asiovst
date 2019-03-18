@@ -68,8 +68,7 @@ type
       Reserved: Pointer); override;
     destructor Destroy; override;
 
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
   end;
 
   TSELinkwitzRileyStaticModule = class(TSELinkwitzRileyModule)
@@ -81,8 +80,7 @@ type
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
     procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     constructor Create(SEAudioMaster: TSE2audioMasterCallback;
       Reserved: Pointer); override;
   end;
@@ -92,8 +90,7 @@ type
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
   public
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
   end;
 
   TSELinkwitzRileyAutomatableModule = class(TSELinkwitzRileyModule)
@@ -104,8 +101,7 @@ type
       Properties: PSEPinProperties): Boolean; override;
   public
     procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
   end;
 
 implementation
@@ -113,8 +109,8 @@ implementation
 uses
   SysUtils, DAV_Common;
 
-constructor TSELinkwitzRileyModule.Create(SEAudioMaster
-  : TSE2audioMasterCallback; Reserved: Pointer);
+constructor TSELinkwitzRileyModule.Create(
+  SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
 begin
   inherited Create(SEAudioMaster, Reserved);
 
@@ -256,8 +252,8 @@ end;
 
 { TSELinkwitzRileyStaticModule }
 
-constructor TSELinkwitzRileyStaticModule.Create(SEAudioMaster
-  : TSE2audioMasterCallback; Reserved: Pointer);
+constructor TSELinkwitzRileyStaticModule.Create(
+  SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
 begin
   inherited;
   FFrequency := 1000;
@@ -317,8 +313,7 @@ begin
   OnProcess := SubProcess;
 end;
 
-procedure TSELinkwitzRileyStaticModule.PlugStateChange(const CurrentPin
-  : TSEPin);
+procedure TSELinkwitzRileyStaticModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
   // has user altered LinkwitzRiley time parameter?
   case TSELinkwitzRileyPins(CurrentPin.PinID) of

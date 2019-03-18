@@ -27,8 +27,8 @@ end;
 
 function makeModule(Index: Integer; ProcessType: Integer; SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer): Pointer; cdecl; export;
 var
-  SEModuleBase : TSEModuleBase;
-  GUI          : TSEGUIBase;
+  SEModuleBase: TSEModuleBase;
+  GUI: TSEGUIBase;
 begin
   Result := nil;
   case Index of

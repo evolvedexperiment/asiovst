@@ -63,8 +63,7 @@ type
       Reserved: Pointer); override;
     destructor Destroy; override;
 
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
     procedure SubProcess(const BufferOffset, SampleFrames: Integer);
@@ -83,8 +82,7 @@ type
   protected
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
     procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
@@ -92,8 +90,7 @@ type
 
   TSEPlateReverbControllableModule = class(TSEPlateReverbStaticModule)
   public
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
   end;
@@ -105,8 +102,8 @@ uses
 
 { TCustomSEPlateReverbModule }
 
-constructor TCustomSEPlateReverbModule.Create(SEAudioMaster
-  : TSE2audioMasterCallback; Reserved: Pointer);
+constructor TCustomSEPlateReverbModule.Create(
+  SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
 begin
   inherited Create(SEAudioMaster, Reserved);
   FPlateReverb := TPlateReverb.Create
@@ -138,7 +135,7 @@ procedure TCustomSEPlateReverbModule.SubProcessStatic(const BufferOffset,
 begin
   SubProcess(BufferOffset, SampleFrames);
   FStaticCount := FStaticCount - SampleFrames;
-  if (FStaticCount <= 0) and (FPeak < 1.E-5) then
+  if (FStaticCount <= 0) and (FPeak < 1E-5) then
   begin
     Pin[1].TransmitStatusChange(SampleClock, Pin[0].Status);
     Pin[2].TransmitStatusChange(SampleClock, Pin[0].Status);

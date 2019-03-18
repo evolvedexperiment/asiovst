@@ -18,7 +18,7 @@ uses
 {$R *.res}
 
 const
-  CModuleClasses : array [0..5] of TSEModuleBaseClass = (
+  CModuleClasses: array [0..5] of TSEModuleBaseClass = (
     TSEDitherNoiseshaperStaticModule,
     TSEDitherNoiseshaperControllableModule,
     TSEDitherHighshelfNoiseshaperStaticModule,

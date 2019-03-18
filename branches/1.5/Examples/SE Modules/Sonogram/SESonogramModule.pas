@@ -63,8 +63,7 @@ type
   public
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
 
     procedure SubProcessSleep(const BufferOffset, SampleFrames: Integer);
     procedure SubProcess(const BufferOffset, SampleFrames: Integer);

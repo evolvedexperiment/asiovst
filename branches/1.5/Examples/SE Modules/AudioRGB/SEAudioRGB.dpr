@@ -11,7 +11,7 @@ uses
 {$R *.res}
 
 const
-  CModuleClasses : array [0..2] of TSEModuleBaseClass = (
+  CModuleClasses: array [0..2] of TSEModuleBaseClass = (
     TSEAudioRGBModule,
     TSERGBToHSLModule,
     TSEHSLToRGBModule

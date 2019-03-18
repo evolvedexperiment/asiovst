@@ -11,7 +11,7 @@ uses
 {$R *.res}
 
 const
-  ModuleClasses : array [0..41] of TCustomDynamicsSEModuleClass =
+  CModuleClasses: array [0..41] of TCustomDynamicsSEModuleClass =
     (TSimpleDirectGateStaticSEModule, TSimpleDirectGateParamStaticSEModule,
      TSimpleDirectGateAutomatableSEModule, TSoftDirectGateStaticSEModule,
      TSoftDirectGateParamStaticSEModule, TSoftDirectGateAutomatableSEModule,

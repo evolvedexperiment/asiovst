@@ -16,7 +16,7 @@ uses
 {$R *.res}
 
 const
-  CModuleClasses : array [0..49] of TSETrigoMathModuleClass = (
+  CModuleClasses: array [0..49] of TSETrigoMathModuleClass = (
     TSEArcCosFloatModule, TSEArcCosDoubleModule, TSEArcSinFloatModule,
     TSEArcSinDoubleModule, TSESinFloatModule, TSESinDoubleModule,
     TSECosFloatModule, TSECosDoubleModule, TSETanFloatModule,
@@ -37,19 +37,19 @@ const
 
 function getModuleProperties(Index: Integer; Properties: PSEModuleProperties): Boolean; cdecl; export;
 begin
- if (Index >= 0) and (Index < Length(CModuleClasses)) then
+  Result := False;
+  if (Index >= 0) and (Index < Length(CModuleClasses)) then
   begin
-   CModuleClasses[Index].GetModuleProperties(Properties);
-   Result := True;
-  end
- else Result := False;
+    CModuleClasses[Index].GetModuleProperties(Properties);
+    Result := True;
+  end;
 end;
 
 function makeModule(Index: Integer; ProcessType: Integer; SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer): Pointer; cdecl; export;
 begin
- if (Index >= 0) and (Index < Length(CModuleClasses)) and (ProcessType = 1)
-  then Result := CModuleClasses[Index].Create(SEAudioMaster, Reserved).Effect
-  else Result := nil;
+  Result := nil;
+  if (Index >= 0) and (Index < Length(CModuleClasses)) and (ProcessType = 1) then
+    Result := CModuleClasses[Index].Create(SEAudioMaster, Reserved).Effect;
 end;
 
 exports 

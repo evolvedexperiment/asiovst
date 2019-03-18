@@ -76,8 +76,7 @@ type
       Reserved: Pointer); override;
     destructor Destroy; override;
 
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     // function GetPinProperties(Index: Integer; Properties: PSEPinProperties): Boolean; override;
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
@@ -333,44 +332,6 @@ procedure TSEScopeModule.GuiNotify(AUserMsgID: Integer; ASize: Integer;
   AData: Pointer);
 begin
   inherited;
-  {
-    TODO:
-    if AUserMsgID = IdToInt('a','c','k',0)
-    then FGuiBusy := False;
-  }
 end;
-
-(*
-  // An input plug has changed value
-  procedure TSEScopeModule.PlugStateChange(Pin: TSEPin);
-  var
-  InState  : array [0..1] of TSEStateType;
-  OutState : TSEStateType;
-  begin
-  // query the 'state of the input plugs...
-  //   stRun    = Normal Streaming Audio        (e.g. from an oscillator)
-  //   stStatic = Fixed, unchanging input value (e.g. a slider at rest)
-  InState[0] := getPin(Integer(pinInput1)).getStatus;
-  InState[1] := getPin(Integer(pinInput2)).getStatus;
-
-  // we need to pass on the state of this module's output signal
-  // it depends on the inputs...
-  OutState := InState[0];
-  if InState[1] > OutState
-  then OutState := InState[1];
-
-  // if either input zero, tell downstream modules audio has stopped
-  if (InState[0] < stRun) and (getPin(Integer(pinInput1)).getValue = 0)
-  then OutState := stStatic;
-
-  if (InState[1] < stRun) and (getPin(Integer(pinInput2)).getValue = 0)
-  then OutState := stStatic;
-
-  // 'transmit' new output status to next module 'downstream'
-  getPin(Integer(pinOutput)).TransmitStatusChange(SampleClock, OutState);
-
-  inherited;
-  end;
-*)
 
 end.

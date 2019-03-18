@@ -19,7 +19,7 @@ begin
     0:
       TSELabelModuleGUI.GetModuleProperties(Properties);
     else
-      Result := False; // host will ask for module 0,1,2,3 etc. return false to signal when done
+      Result := False;
  end;
 end;
 
@@ -29,7 +29,7 @@ var
   GUI: TSEGUIBase;
 begin
   Result := nil;
-  case Index of // !!TODO!! list your in / out plugs
+  case Index of
     0:
       if (ProcessType = 1) then// Audio Processing Object
       begin
@@ -39,7 +39,7 @@ begin
       end else
       if (ProcessType = 2) then // GUI Object
       begin
-        GUI := TSELabelGui.Create(TSEGuiCallback(SEAudioMaster), Reserved); //nasty!
+        GUI := TSELabelGui.Create(TSEGuiCallback(SEAudioMaster), Reserved);
         if Assigned(GUI) then
           Result := GUI.SEGUIStructBase;
       end;

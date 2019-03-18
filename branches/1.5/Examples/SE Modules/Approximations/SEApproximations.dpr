@@ -11,7 +11,7 @@ uses
 {$R *.res}
 
 const
-  CModuleClasses : array [0..15] of TSEApproximationsModuleClass = (
+  CModuleClasses: array [0..15] of TSEApproximationsModuleClass = (
     TSEFastSineApproximationsSingleModule,
     TSEFastSineApproximationsDoubleModule,
     TSEFastCosineApproximationsSingleModule,

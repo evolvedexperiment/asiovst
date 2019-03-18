@@ -47,8 +47,7 @@ type
     class function PrecisionText: AnsiString; virtual; abstract;
   public
     procedure SubProcessStatic(const BufferOffset, SampleFrames: Integer);
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
   end;
 
   TCustomSETrigoMathTwoArgumentsFloatModule = class(TCustomSETrigoMathModule)
@@ -455,8 +454,7 @@ begin
   end;
 end;
 
-class function TCustomSETrigoMathTwoArgumentsFloatModule.PrecisionText
-  : AnsiString;
+class function TCustomSETrigoMathTwoArgumentsFloatModule.PrecisionText: AnsiString;
 begin
   Result := 'Float';
 end;
@@ -494,8 +492,7 @@ begin
   end;
 end;
 
-class function TCustomSETrigoMathTwoArgumentsDoubleModule.PrecisionText
-  : AnsiString;
+class function TCustomSETrigoMathTwoArgumentsDoubleModule.PrecisionText: AnsiString;
 begin
   Result := 'Double';
 end;

@@ -67,8 +67,7 @@ type
 
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     procedure SubProcess(const BufferOffset, SampleFrames: Integer); virtual;
   end;
 
@@ -87,96 +86,84 @@ type
   public
     constructor Create(SEAudioMaster: TSE2audioMasterCallback;
       Reserved: Pointer); override;
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
   end;
 
   TSEBasicHighpassModule = class(TCustomSEGainFrequencyModule)
   public
     constructor Create(SEAudioMaster: TSE2audioMasterCallback;
       Reserved: Pointer); override;
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
   end;
 
   TSEBasicBandpassModule = class(TCustomSEGainFrequencyModule)
   public
     constructor Create(SEAudioMaster: TSE2audioMasterCallback;
       Reserved: Pointer); override;
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
   end;
 
   TSEBasicNotchModule = class(TCustomSEGainFrequencyModule)
   public
     constructor Create(SEAudioMaster: TSE2audioMasterCallback;
       Reserved: Pointer); override;
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
   end;
 
   TSEBasicLowshelfModule = class(TCustomSEGainFrequencyModule)
   public
     constructor Create(SEAudioMaster: TSE2audioMasterCallback;
       Reserved: Pointer); override;
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
   end;
 
   TSEBasicLowshelfAModule = class(TCustomSEGainFrequencyModule)
   public
     constructor Create(SEAudioMaster: TSE2audioMasterCallback;
       Reserved: Pointer); override;
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
   end;
 
   TSEBasicLowshelfBModule = class(TCustomSEGainFrequencyModule)
   public
     constructor Create(SEAudioMaster: TSE2audioMasterCallback;
       Reserved: Pointer); override;
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
   end;
 
   TSEBasicHighshelfModule = class(TCustomSEGainFrequencyModule)
   public
     constructor Create(SEAudioMaster: TSE2audioMasterCallback;
       Reserved: Pointer); override;
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
   end;
 
   TSEBasicHighshelfAModule = class(TCustomSEGainFrequencyModule)
   public
     constructor Create(SEAudioMaster: TSE2audioMasterCallback;
       Reserved: Pointer); override;
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
   end;
 
   TSEBasicHighshelfBModule = class(TCustomSEGainFrequencyModule)
   public
     constructor Create(SEAudioMaster: TSE2audioMasterCallback;
       Reserved: Pointer); override;
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
   end;
 
   TSEBasicPeakModule = class(TCustomSEGainFrequencyModule)
   public
     constructor Create(SEAudioMaster: TSE2audioMasterCallback;
       Reserved: Pointer); override;
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
   end;
 
   TSEBasicAllpassModule = class(TCustomSEGainFrequencyModule)
   public
     constructor Create(SEAudioMaster: TSE2audioMasterCallback;
       Reserved: Pointer); override;
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
   end;
 
   TSEBasicShapeModule = class(TCustomSEGainFrequencyModule)
@@ -188,8 +175,7 @@ type
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
     procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
   end;
 
 {$IFDEF FilterReference}
@@ -214,8 +200,7 @@ type
 
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     procedure SubProcess(const BufferOffset, SampleFrames: Integer); virtual;
   end;
 {$ENDIF}
@@ -225,8 +210,8 @@ implementation
 uses
   Math, SysUtils, DAV_Common;
 
-constructor TCustomSEFiltersModule.Create(SEAudioMaster
-  : TSE2audioMasterCallback; Reserved: Pointer);
+constructor TCustomSEFiltersModule.Create(
+  SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
 begin
   inherited;
 {$IFDEF FilterReference}
@@ -473,8 +458,8 @@ end;
 
 { TSEBasicHighpassModule }
 
-constructor TSEBasicHighpassModule.Create(SEAudioMaster
-  : TSE2audioMasterCallback; Reserved: Pointer);
+constructor TSEBasicHighpassModule.Create(
+  SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
 begin
   FFilter := TBasicHighpassFilter.Create;
   FFilter.Frequency := 1000;
@@ -502,8 +487,8 @@ end;
 
 { TSEBasicBandpassModule }
 
-constructor TSEBasicBandpassModule.Create(SEAudioMaster
-  : TSE2audioMasterCallback; Reserved: Pointer);
+constructor TSEBasicBandpassModule.Create(
+  SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
 begin
   FFilter := TBasicBandpassFilter.Create;
   FFilter.Frequency := 1000;
@@ -560,8 +545,8 @@ end;
 
 { TSEBasicLowshelfModule }
 
-constructor TSEBasicLowshelfModule.Create(SEAudioMaster
-  : TSE2audioMasterCallback; Reserved: Pointer);
+constructor TSEBasicLowshelfModule.Create(
+  SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
 begin
   FFilter := TBasicLowShelfFilter.Create;
   FFilter.Frequency := 1000;
@@ -589,8 +574,8 @@ end;
 
 { TSEBasicLowshelfAModule }
 
-constructor TSEBasicLowshelfAModule.Create(SEAudioMaster
-  : TSE2audioMasterCallback; Reserved: Pointer);
+constructor TSEBasicLowshelfAModule.Create(
+  SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
 begin
   FFilter := TBasicLowShelfAFilter.Create;
   FFilter.Frequency := 1000;
@@ -618,8 +603,8 @@ end;
 
 { TSEBasicLowshelfBModule }
 
-constructor TSEBasicLowshelfBModule.Create(SEAudioMaster
-  : TSE2audioMasterCallback; Reserved: Pointer);
+constructor TSEBasicLowshelfBModule.Create(
+  SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
 begin
   FFilter := TBasicLowShelfBFilter.Create;
   FFilter.Frequency := 1000;
@@ -647,8 +632,8 @@ end;
 
 { TSEBasicHighshelfModule }
 
-constructor TSEBasicHighshelfModule.Create(SEAudioMaster
-  : TSE2audioMasterCallback; Reserved: Pointer);
+constructor TSEBasicHighshelfModule.Create(
+  SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
 begin
   FFilter := TBasicHighshelfFilter.Create;
   FFilter.Frequency := 1000;
@@ -676,8 +661,8 @@ end;
 
 { TSEBasicHighshelfAModule }
 
-constructor TSEBasicHighshelfAModule.Create(SEAudioMaster
-  : TSE2audioMasterCallback; Reserved: Pointer);
+constructor TSEBasicHighshelfAModule.Create(
+  SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
 begin
   FFilter := TBasicHighshelfAFilter.Create;
   FFilter.Frequency := 1000;
@@ -705,8 +690,8 @@ end;
 
 { TSEBasicHighshelfBModule }
 
-constructor TSEBasicHighshelfBModule.Create(SEAudioMaster
-  : TSE2audioMasterCallback; Reserved: Pointer);
+constructor TSEBasicHighshelfBModule.Create(
+  SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
 begin
   FFilter := TBasicHighshelfBFilter.Create;
   FFilter.Frequency := 1000;

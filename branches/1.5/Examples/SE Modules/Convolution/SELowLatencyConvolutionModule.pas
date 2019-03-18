@@ -75,8 +75,7 @@ type
 
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     procedure SubProcess(const BufferOffset, SampleFrames: Integer); virtual;
     procedure SubProcessBypass(const BufferOffset, SampleFrames: Integer);
 
@@ -94,15 +93,14 @@ resourcestring
   RCStrSynthEditOnly =
     'This module is not allowed to be embedded into a VST Plugin';
 
-function EnumNamesFunc(hModule: THandle; lpType, lpName: PChar; lParam: DWORD)
-  : Boolean; stdcall;
+function EnumNamesFunc(hModule: THandle; lpType, lpName: PChar; lParam: DWORD): Boolean; stdcall;
 begin
   Result := True;
   TStringList(lParam).Add(lpName);
 end;
 
-constructor TSELowLatencyConvolutionModule.Create(SEAudioMaster
-  : TSE2audioMasterCallback; Reserved: Pointer);
+constructor TSELowLatencyConvolutionModule.Create(
+  SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
 begin
   inherited Create(SEAudioMaster, Reserved);
   FFileName := '';

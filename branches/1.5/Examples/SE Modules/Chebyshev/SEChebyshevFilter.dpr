@@ -12,7 +12,7 @@ uses
 {$R *.res}
 
 const
-  CModuleClasses : array [0..15] of TSEModuleBaseClass = (
+  CModuleClasses: array [0..15] of TSEModuleBaseClass = (
     TSEStaticChebyshev1FilterLPModule, TSEStaticChebyshev1FilterHPModule,
     TSEControlableChebyshev1FilterLPModule,
     TSEControlableChebyshev1FilterHPModule,

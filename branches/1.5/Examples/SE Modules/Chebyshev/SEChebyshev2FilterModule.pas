@@ -62,8 +62,7 @@ type
   public
     destructor Destroy; override;
 
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     procedure SubProcess(const BufferOffset, SampleFrames: Integer);
       virtual; abstract;
   end;
@@ -298,8 +297,8 @@ end;
 
 { TSEStaticChebyshev2FilterModule }
 
-constructor TSEStaticChebyshev2FilterModule.Create(SEAudioMaster
-  : TSE2audioMasterCallback; Reserved: Pointer);
+constructor TSEStaticChebyshev2FilterModule.Create(
+  SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
 begin
   inherited;
   FFrequency := 1;
@@ -394,8 +393,8 @@ end;
 
 { TSEStaticChebyshev2FilterLPModule }
 
-constructor TSEStaticChebyshev2FilterLPModule.Create(SEAudioMaster
-  : TSE2audioMasterCallback; Reserved: Pointer);
+constructor TSEStaticChebyshev2FilterLPModule.Create(
+  SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
 begin
   inherited;
   FFilter := TChebyshev2LowpassFilter.Create;
@@ -410,8 +409,8 @@ end;
 
 { TSEStaticChebyshev2FilterHPModule }
 
-constructor TSEStaticChebyshev2FilterHPModule.Create(SEAudioMaster
-  : TSE2audioMasterCallback; Reserved: Pointer);
+constructor TSEStaticChebyshev2FilterHPModule.Create(
+  SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
 begin
   inherited;
   FFilter := TChebyshev2HighpassFilter.Create;
@@ -462,8 +461,8 @@ end;
 
 { TSEAutomatebleChebyshev2FilterModule }
 
-constructor TSEAutomatebleChebyshev2FilterModule.Create(SEAudioMaster
-  : TSE2audioMasterCallback; Reserved: Pointer);
+constructor TSEAutomatebleChebyshev2FilterModule.Create(
+  SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
 begin
   inherited;
   FOrder := 4;

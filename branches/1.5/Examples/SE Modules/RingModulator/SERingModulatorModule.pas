@@ -58,8 +58,7 @@ type
       Reserved: Pointer); override;
     destructor Destroy; override;
 
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
     procedure SubProcess(const BufferOffset, SampleFrames: Integer);
@@ -72,8 +71,7 @@ type
   protected
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
     procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
@@ -81,8 +79,7 @@ type
 
   TSERingModulatorControllableModule = class(TSERingModulatorStaticModule)
   public
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
   end;
@@ -94,8 +91,8 @@ uses
 
 { TCustomSERingModulatorModule }
 
-constructor TCustomSERingModulatorModule.Create(SEAudioMaster
-  : TSE2audioMasterCallback; Reserved: Pointer);
+constructor TCustomSERingModulatorModule.Create(
+  SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
 begin
   inherited Create(SEAudioMaster, Reserved);
   FRingModulator := TAutoRingModulator32.Create
@@ -185,8 +182,7 @@ begin
 end;
 
 // An input plug has changed value
-procedure TCustomSERingModulatorModule.PlugStateChange(const CurrentPin
-  : TSEPin);
+procedure TCustomSERingModulatorModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
   inherited;
   case TSERingModulatorPins(CurrentPin.PinID) of
@@ -253,8 +249,7 @@ begin
 end;
 
 // An input plug has changed value
-procedure TSERingModulatorStaticModule.PlugStateChange(const CurrentPin
-  : TSEPin);
+procedure TSERingModulatorStaticModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
   inherited;
   case TSERingModulatorPins(CurrentPin.PinID) of

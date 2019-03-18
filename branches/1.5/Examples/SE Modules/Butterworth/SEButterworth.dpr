@@ -12,7 +12,7 @@ uses
 {$R *.res}
 
 const
-  CModuleClasses : array [0..10] of TSEModuleBaseClass = (
+  CModuleClasses: array [0..10] of TSEModuleBaseClass = (
     TSEAutomatableButterworthSplitterModule, TSEAutomatableButterworthLPModule,
     TSEAutomatableButterworthHPModule, TSEAutomatableXButterworthLPModule,
     TSEAutomatableXButterworthHPModule, TSEStaticButterworthSplitterModule,
