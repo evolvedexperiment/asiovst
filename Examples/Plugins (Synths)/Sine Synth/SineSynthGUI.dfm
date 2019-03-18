@@ -24,13 +24,13 @@ object VSTGUI: TVSTGUI
     Width = 503
     Height = 73
     Align = alClient
-    KeyDownMode = kdmFlat
-    Height3d = 0.200000002980232200
     BlackKeyHeight = 0.629999995231628400
-    NumOctaves = 4
+    Height3d = 0.200000002980232200
+    KeyDownMode = kdmFlat
     KeyZones = <>
+    NumOctaves = 4
     ShowKeyZones = False
-    OnNoteOn = MidiKeysNoteOn
     OnNoteOff = MidiKeysNoteOff
+    OnNoteOn = MidiKeysNoteOn
   end
 end

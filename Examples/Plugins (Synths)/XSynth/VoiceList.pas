@@ -40,10 +40,10 @@ uses
 type
   TVoiceList = class(TObject)
   private
-    FList        : PPointerList;
-    FCount       : Integer;
-    FCapacity    : Integer;
-    FOwnsObjects : Boolean;
+    FList: PPointerList;
+    FCount: Integer;
+    FCapacity: Integer;
+    FOwnsObjects: Boolean;
   protected
     function Get(Index: Integer): TXSynthVoice;
     procedure Grow; virtual;
@@ -85,29 +85,31 @@ implementation
 
 constructor TVoiceList.Create;
 begin
- inherited Create;
- FOwnsObjects := True;
+  inherited Create;
+  FOwnsObjects := True;
 end;
 
 constructor TVoiceList.Create(AOwnsObjects: Boolean);
 begin
- inherited Create;
- FOwnsObjects := AOwnsObjects;
+  inherited Create;
+  FOwnsObjects := AOwnsObjects;
 end;
 
 destructor TVoiceList.Destroy;
 begin
- inherited Destroy;
- Clear;
+  inherited Destroy;
+  Clear;
 end;
 
 function TVoiceList.Add(XSynthVoice: TXSynthVoice): Integer;
 begin
- Result := FCount;
- if Result = FCapacity then Grow;
- FList^[Result] := XSynthVoice;
- Inc(FCount);
- if XSynthVoice <> nil then Notify(XSynthVoice, lnAdded);
+  Result := FCount;
+  if Result = FCapacity then
+    Grow;
+  FList^[Result] := XSynthVoice;
+  Inc(FCount);
+  if XSynthVoice <> nil then
+    Notify(XSynthVoice, lnAdded);
 end;
 
 procedure TVoiceList.Clear;
@@ -204,16 +206,16 @@ end;
 
 procedure TVoiceList.Insert(Index: Integer; XSynthVoice: TXSynthVoice);
 begin
- if (Index < 0) or (Index > FCount)
-  then Error(@SListIndexError, Index);
- if FCount = FCapacity
-  then Grow;
- if Index < FCount
-  then System.Move(FList^[Index], FList^[Index + 1], (FCount - Index) * SizeOf(Pointer));
- FList^[Index] := XSynthVoice;
- Inc(FCount);
- if XSynthVoice <> nil
-  then Notify(XSynthVoice, lnAdded);
+  if (Index < 0) or (Index > FCount) then
+    Error(@SListIndexError, Index);
+  if FCount = FCapacity then
+    Grow;
+  if Index < FCount then
+    System.Move(FList^[Index], FList^[Index + 1], (FCount - Index) * SizeOf(Pointer));
+  FList^[Index] := XSynthVoice;
+  Inc(FCount);
+  if XSynthVoice <> nil then
+    Notify(XSynthVoice, lnAdded);
 end;
 
 function TVoiceList.Last: TXSynthVoice;
@@ -241,21 +243,25 @@ procedure TVoiceList.Put(Index: Integer; XSynthVoice: TXSynthVoice);
 var
   Temp: Pointer;
 begin
- if (Index < 0) or (Index >= FCount)
-  then Error(@SListIndexError, Index);
- if XSynthVoice <> FList^[Index] then
+  if (Index < 0) or (Index >= FCount) then
+    Error(@SListIndexError, Index);
+
+  if XSynthVoice <> FList^[Index] then
   begin
-   Temp := FList^[Index];
-   FList^[Index] := XSynthVoice;
-   if Temp <> nil then Notify(Temp, lnDeleted);
-   if XSynthVoice <> nil then Notify(XSynthVoice, lnAdded);
+    Temp := FList^[Index];
+    FList^[Index] := XSynthVoice;
+    if Temp <> nil then
+      Notify(Temp, lnDeleted);
+    if XSynthVoice <> nil then
+      Notify(XSynthVoice, lnAdded);
   end;
 end;
 
 function TVoiceList.Remove(XSynthVoice: TXSynthVoice): Integer;
 begin
- Result := IndexOf(XSynthVoice);
- if Result >= 0 then Delete(Result);
+  Result := IndexOf(XSynthVoice);
+  if Result >= 0 then
+    Delete(Result);
 end;
 
 procedure TVoiceList.Pack;
@@ -282,13 +288,16 @@ procedure TVoiceList.SetCount(NewCount: Integer);
 var
   I: Integer;
 begin
- if (NewCount < 0) or (NewCount > MaxListSize)
-  then Error(@SListCountError, NewCount);
- if NewCount > FCapacity then SetCapacity(NewCount);
- if NewCount > FCount
-  then FillChar(FList^[FCount], (NewCount - FCount) * SizeOf(Pointer), 0)
-  else for I := FCount - 1 downto NewCount do Delete(I);
- FCount := NewCount;
+  if (NewCount < 0) or (NewCount > MaxListSize) then
+    Error(@SListCountError, NewCount);
+  if NewCount > FCapacity then
+    SetCapacity(NewCount);
+  if NewCount > FCount then
+    FillChar(FList^[FCount], (NewCount - FCount) * SizeOf(Pointer), 0)
+  else
+    for I := FCount - 1 downto NewCount do
+      Delete(I);
+  FCount := NewCount;
 end;
 
 procedure QuickSort(SortVoiceList: PPointerList; L, R: Integer;
@@ -297,49 +306,55 @@ var
   I, J: Integer;
   P, T: Pointer;
 begin
- repeat
-  I := L;
-  J := R;
-  P := SortVoiceList^[(L + R) shr 1];
   repeat
-   while SCompare(SortVoiceList^[I], P) < 0 do Inc(I);
-   while SCompare(SortVoiceList^[J], P) > 0 do Dec(J);
-   if I <= J then
-    begin
-     T := SortVoiceList^[I];
-     SortVoiceList^[I] := SortVoiceList^[J];
-     SortVoiceList^[J] := T;
-     Inc(I);
-     Dec(J);
-    end;
-  until I > J;
-  if L < J then QuickSort(SortVoiceList, L, J, SCompare);
-  L := I;
- until I >= R;
+    I := L;
+    J := R;
+    P := SortVoiceList^[(L + R) shr 1];
+    repeat
+      while SCompare(SortVoiceList^[I], P) < 0 do
+        Inc(I);
+      while SCompare(SortVoiceList^[J], P) > 0 do
+        Dec(J);
+      if I <= J then
+      begin
+        T := SortVoiceList^[I];
+        SortVoiceList^[I] := SortVoiceList^[J];
+        SortVoiceList^[J] := T;
+        Inc(I);
+        Dec(J);
+      end;
+    until I > J;
+    if L < J then
+      QuickSort(SortVoiceList, L, J, SCompare);
+    L := I;
+  until I >= R;
 end;
 
 procedure TVoiceList.Sort(Compare: TListSortCompare);
 begin
- if (FList <> nil) and (Count > 0) then QuickSort(FList, 0, Count - 1, Compare);
+  if (FList <> nil) and (Count > 0) then
+    QuickSort(FList, 0, Count - 1, Compare);
 end;
 
 function TVoiceList.Extract(XSynthVoice: TXSynthVoice): TXSynthVoice;
-var I: Integer;
+var
+  I: Integer;
 begin
- Result := nil;
- I := IndexOf(XSynthVoice);
- if I >= 0 then
+  Result := nil;
+  I := IndexOf(XSynthVoice);
+  if I >= 0 then
   begin
-   Result := XSynthVoice;
-   FList^[I] := nil;
-   Delete(I);
-   Notify(Result, lnExtracted);
+    Result := XSynthVoice;
+    FList^[I] := nil;
+    Delete(I);
+    Notify(Result, lnExtracted);
   end;
 end;
 
 procedure TVoiceList.Notify(XSynthVoice: TXSynthVoice; Action: TListNotification);
 begin
- if OwnsObjects then if Action = lnDeleted then XSynthVoice.Free;
+  if OwnsObjects and (Action = lnDeleted) then
+    XSynthVoice.Free;
 end;
 
 procedure TVoiceList.Assign(ListA: TVoiceList; AOperator: TListAssignOp; ListB: TVoiceList);
@@ -347,18 +362,19 @@ var
   I: Integer;
   LTemp, LSource: TVoiceList;
 begin
- // ListB given?
- if ListB <> nil then
+  // ListB given?
+  if ListB <> nil then
   begin
-   LSource := ListB;
-   Assign(ListA);
+    LSource := ListB;
+    Assign(ListA);
   end
- else LSource := ListA;
+  else
+    LSource := ListA;
 
- // on with the show
- case AOperator of
+  // on with the show
+  case AOperator of
 
-    // 12345, 346 = 346 : only those in the new list
+    // 12345, 346 = 346: only those in the new list
     laCopy:
       begin
         Clear;
@@ -367,19 +383,19 @@ begin
           Add(LSource[I]);
       end;
 
-    // 12345, 346 = 34 : intersection of the two lists
+    // 12345, 346 = 34: intersection of the two lists
     laAnd:
       for I := Count - 1 downto 0 do
         if LSource.IndexOf(Items[I]) = -1 then
           Delete(I);
 
-    // 12345, 346 = 123456 : union of the two lists
+    // 12345, 346 = 123456: union of the two lists
     laOr:
       for I := 0 to LSource.Count - 1 do
         if IndexOf(LSource[I]) = -1 then
           Add(LSource[I]);
 
-    // 12345, 346 = 1256 : only those not in both lists
+    // 12345, 346 = 1256: only those not in both lists
     laXor:
       begin
         LTemp := TVoiceList.Create(False); // Temp holder of 4 byte values
@@ -401,13 +417,13 @@ begin
         end;
       end;
 
-    // 12345, 346 = 125 : only those unique to source
+    // 12345, 346 = 125: only those unique to source
     laSrcUnique:
       for I := Count - 1 downto 0 do
         if LSource.IndexOf(Items[I]) <> -1 then
           Delete(I);
 
-    // 12345, 346 = 6 : only those unique to dest
+    // 12345, 346 = 6: only those unique to dest
     laDestUnique:
       begin
         LTemp := TVoiceList.Create(False);

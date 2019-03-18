@@ -29,133 +29,107 @@ implementation
 {$R *.DFM}
 
 uses
-  SimpleSamplerModule, SimpleSamplerVoice, VoiceList;
+  DAV_SynthUtils, SimpleSamplerModule, SimpleSamplerVoice, VoiceList;
+
+
+{ TVSTGUI }
 
 procedure TVSTGUI.MidiKeysNoteOn(Sender: TObject; KeyNr: Byte;
   Velocity: Single);
 var
-  newNote : TSimpleSamplerVoice;
+  newNote: TSimpleSamplerVoice;
 begin
- with TVSTSSModule(Owner) do
+  with TVSTSSModule(Owner) do
   begin
-   MidiNoteOn(0, KeyNr, round(Velocity * 128));
-   newNote := TSimpleSamplerVoice.Create(TVSTSSModule(Owner));
-   newNote.MidiKeyNr := KeyNr;
-   newNote.Velocity := round(Velocity * 127);
-   newNote.NoteOn(Midi2Pitch[KeyNr], Velocity);
-   Voices.Add(newNote);
+    MidiNoteOn(0, KeyNr, Round(Velocity * 128));
+    newNote := TSimpleSamplerVoice.Create(TVSTSSModule(Owner));
+    newNote.MidiKey := KeyNr;
+    newNote.Velocity := Round(Velocity * 127);
+    newNote.NoteOn(Midi2Pitch[KeyNr], Velocity);
+    Voices.Add(newNote);
   end;
 end;
 
 procedure TVSTGUI.MidiKeysNoteOff(Sender: TObject; KeyNr: Byte);
 var
-  i : Integer;
+  i: Integer;
 begin
- with TVSTSSModule(Owner) do
+  with TVSTSSModule(Owner) do
   begin
-   MidiNoteOff(0, KeyNr, 0);
-   for i := Voices.Count - 1 downto 0 do
-    if (Voices[i].MidiKeyNr = KeyNr) then
-     begin
-      Voices.Delete(i);
-      Break;
-     end;
+    MidiNoteOff(0, KeyNr, 0);
+    for i := Voices.Count - 1 downto 0 do
+      if (Voices[i].MidiKey = KeyNr) then
+      begin
+        Voices.Delete(i);
+        Break;
+      end;
   end;
 end;
 
 procedure TVSTGUI.BtSampleSelectClick(Sender: TObject);
 begin
- if OpenDialog.Execute
-  then EditSample.Text := OpenDialog.FileName;
+  if OpenDialog.Execute then
+    EditSample.Text := OpenDialog.FileName;
 end;
 
 procedure TVSTGUI.EditSampleChange(Sender: TObject);
 begin
- if FileExists(EditSample.Text) then
+  if FileExists(EditSample.Text) then
   begin
-   TVSTSSModule(Owner).LoadFromFile(EditSample.Text);
-   with TVSTSSModule(Owner)
-    do Waveform.SetWaveForm(Sample, SampleLength, True);
+    TVSTSSModule(Owner).LoadFromFile(EditSample.Text);
+    with TVSTSSModule(Owner) do
+      Waveform.SetWaveForm(Sample, SampleLength, True);
   end;
 end;
 
 procedure TVSTGUI.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 var
-  i       : Integer;
-  newNote : TSimpleSamplerVoice;
-  Note    : Byte;
+  i: Integer;
+  newNote: TSimpleSamplerVoice;
+  Note: Byte;
 const
-  VeloDiv : Single = 1/128;
+  VeloDiv: Single = 1/128;
 begin
- case Key of
-  89  : Note := 60;
-  83  : Note := 61;
-  88  : Note := 62;
-  68  : Note := 63;
-  67  : Note := 64;
-  86  : Note := 65;
-  71  : Note := 66;
-  66  : Note := 67;
-  72  : Note := 68;
-  78  : Note := 69;
-  74  : Note := 70;
-  77  : Note := 71;
-  188 : Note := 72;
-  81  : Note := 72;
-  87  : Note := 74;
-  69  : Note := 76;
-  82  : Note := 77;
-  else Exit;
- end;
- with (Owner as TVSTSSModule) do
+  Note := KeyToNote(Key);
+  if Note = -1 then
+    Exit;
+
+  with (Owner as TVSTSSModule) do
   begin
-   for i := 0 to Voices.Count - 1 do
-    if (Voices[i].MidiKeyNr = Note) then Exit;
-   MidiNoteOn(0, Note, 100);
+    for i := 0 to Voices.Count - 1 do
+      if (Voices[i].MidiKey = Note) then
+        Exit;
+    MidiNoteOn(0, Note, 100);
   end;
- with newNote do
+
+  with newNote do
   begin
-   newNote := TSimpleSamplerVoice.Create((Owner as TVSTSSModule));
-   MidiKeyNr := Note;
-   Velocity := 100;
-   NoteOn(Midi2Pitch[Note], Velocity * VeloDiv);
-   (Owner as TVSTSSModule).Voices.Add(newNote);
+    newNote := TSimpleSamplerVoice.Create((Owner as TVSTSSModule));
+    MidiKey := Note;
+    Velocity := 100;
+    NoteOn(Midi2Pitch[Note], Velocity * VeloDiv);
+    (Owner as TVSTSSModule).Voices.Add(newNote);
   end;
 end;
 
 procedure TVSTGUI.FormKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
-var i    : Integer;
-    Note : Byte;
+var
+  i: Integer;
+  Note: Byte;
 begin
- case Key of
-  89  : Note := 60;
-  83  : Note := 61;
-  88  : Note := 62;
-  68  : Note := 63;
-  67  : Note := 64;
-  86  : Note := 65;
-  71  : Note := 66;
-  66  : Note := 67;
-  72  : Note := 68;
-  78  : Note := 69;
-  74  : Note := 70;
-  77  : Note := 71;
-  188 : Note := 72;
-  81  : Note := 72;
-  87  : Note := 74;
-  69  : Note := 76;
-  82  : Note := 77;
-  else Exit;
- end;
- with (Owner as TVSTSSModule) do
+  Note := KeyToNote(Key);
+  if Note = -1 then
+    Exit;
+
+  with (Owner as TVSTSSModule) do
   begin
-   MidiNoteOff(0, Note, 100);
-   for i := 0 to Voices.Count - 1 do
-    if (Voices[i].MidiKeyNr = Note) then
-     begin
-      Voices.Delete(i);
-      Break;
-     end;
+    MidiNoteOff(0, Note, 100);
+    for i := 0 to Voices.Count - 1 do
+      if (Voices[i].MidiKey = Note) then
+      begin
+        Voices.Delete(i);
+        Break;
+      end;
   end;
 end;
 
