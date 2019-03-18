@@ -4,28 +4,35 @@ library VSTPascalScript;
 {$I DAV_Compiler.inc}
 
 uses
-  FastMM4,  // either download the library or comment if there is an error here
+  FastMM4, // either download the library or comment if there is an error here
+  {$IFDEF UseMadExcept}
+  madExcept, // either download madExcept or remove mad* if there is an error here
+  madLinkDisAsm,
+  {$ENDIF}
   {$IFDEF UseFastMove}
-  FastMove, // either download the library or comment if there is an error here
+  FastMove, // either download the library or disable the feature
   {$ENDIF}
   Forms,
+  DAV_WinAmp,
   DAV_VSTEffect,
-  DAV_VSTModule,
+  DAV_VSTBasicModule,
   PSDM in 'PSDM.pas' {PascalScriptDataModule: TVSTModule},
   PSGUI in 'PSGUI.pas' {FmPascalScript};
 
-function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
+function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
- try
-  with TPascalScriptDataModule.Create(Application) do
-   begin
-    AudioMaster := AudioMasterCallback;
-    Result := Effect;
-   end;
- except
-  Result := nil;
- end;
+  Result := VstModuleMain(AudioMasterCallback, TPascalScriptDataModule);
 end;
+
+function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
+begin
+  Result := WinampDSPModuleHeader(TPascalScriptDataModule);
+end;
+
+exports
+  VstPluginMain name 'main',
+  VstPluginMain name 'VSTPluginMain',
+  WinampDSPGetHeader name 'winampDSPGetHeader2';
 
 exports
   Main name 'main',

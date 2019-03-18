@@ -35,10 +35,10 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
-  Forms, Controls, ExtCtrls, StdCtrls, ActnList, ComCtrls, ToolWin, Dialogs, 
-  DAV_Types, DAV_VSTModule, SynEdit, SynEditHighlighter, SynHighlighterPas, 
-  uPSCompiler, uPSUtils;
+{$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
+  Forms, Controls, ExtCtrls, StdCtrls, ActnList, ComCtrls, ToolWin, Dialogs,
+  DAV_Types, DAV_VSTModule, SynEdit, SynEditHighlighter, SynHighlighterPas,
+  uPSCompiler, uPSUtils, System.Actions, SynEditCodeFolding;
 
 type
   TFmPascalScript = class(TForm)
@@ -60,11 +60,12 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure ACCompileExecute(Sender: TObject);
-    procedure SynEditKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure SynEditKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
     procedure BtLoadScriptClick(Sender: TObject);
     procedure BtSaveScriptClick(Sender: TObject);
   private
-    FCompiler : TPSPascalCompiler;
+    FCompiler: TPSPascalCompiler;
   end;
 
 implementation
@@ -81,71 +82,76 @@ uses
 resourcestring
   STR_SUCCESSFULLY_COMPILED = 'Succesfully compiled';
 
-function ScriptOnExportCheck(Sender: TPSPascalCompiler; Proc: TPSInternalProcedure; const ProcDecl: AnsiString): Boolean;
+function ScriptOnExportCheck(Sender: TPSPascalCompiler;
+  Proc: TPSInternalProcedure; const ProcDecl: AnsiString): Boolean;
 begin
- if Proc.Name = 'VSTPROCESSSAMPLE' then
+  if Proc.Name = 'VSTPROCESSSAMPLE' then
   begin
-   if not ExportCheck(Sender, Proc, [btReturnAddress, btS32, btDouble], [pmIn, pmInOut]) then // Check if the proc has the correct params.
+    if not ExportCheck(Sender, Proc, [btReturnAddress, btS32, btDouble],
+      [pmIn, pmInOut]) then // Check if the proc has the correct params.
     begin
-     Sender.MakeError('', ecTypeMismatch, '');
-     Result := False;
-     Exit;
+      Sender.MakeError('', ecTypeMismatch, '');
+      Result := False;
+      Exit;
     end;
-   Result := True;
+    Result := True;
   end
- else Result := True;
+  else
+    Result := True;
 end;
 
 procedure TFmPascalScript.ACCompileExecute(Sender: TObject);
 var
-  str : AnsiString;
-  i   : Integer;
+  str: AnsiString;
+  i: Integer;
 begin
- DebugBox.Items.Clear;
- if not FCompiler.Compile(SynEdit.Lines.Text) then
-  for i := 0 to FCompiler.MsgCount - 1
-   do DebugBox.Items.Add(FCompiler.Msg[i].MessageToString)
- else
+  DebugBox.Items.Clear;
+  if not FCompiler.Compile(SynEdit.Lines.Text) then
+    for i := 0 to FCompiler.MsgCount - 1 do
+      DebugBox.Items.Add(FCompiler.Msg[i].MessageToString)
+  else
   begin
-   FCompiler.GetOutput(str);
-   TPascalScriptDataModule(Owner).ByteCode := str;
-   TPascalScriptDataModule(Owner).ScriptCode := AnsiString(SynEdit.Lines.Text);
-   DebugBox.Items.Add(STR_SUCCESSFULLY_COMPILED);
+    FCompiler.GetOutput(str);
+    TPascalScriptDataModule(Owner).ByteCode := str;
+    TPascalScriptDataModule(Owner).ScriptCode := AnsiString(SynEdit.Lines.Text);
+    DebugBox.Items.Add(STR_SUCCESSFULLY_COMPILED);
   end;
 end;
 
 procedure TFmPascalScript.BtLoadScriptClick(Sender: TObject);
 begin
- if OpenDialog.Execute
-  then SynEdit.Lines.LoadFromFile(OpenDialog.FileName);
+  if OpenDialog.Execute then
+    SynEdit.Lines.LoadFromFile(OpenDialog.FileName);
 end;
 
 procedure TFmPascalScript.BtSaveScriptClick(Sender: TObject);
 begin
- if SaveDialog.Execute
-  then SynEdit.Lines.SaveToFile(SaveDialog.FileName);
+  if SaveDialog.Execute then
+    SynEdit.Lines.SaveToFile(SaveDialog.FileName);
 end;
 
 procedure TFmPascalScript.FormCreate(Sender: TObject);
 begin
- FCompiler := TPSPascalCompiler.Create; // create an instance of the compiler.
- with FCompiler do
+  FCompiler := TPSPascalCompiler.Create; // create an instance of the compiler.
+  with FCompiler do
   begin
-   OnExportCheck := ScriptOnExportCheck; // Assign the onExportCheck event.
-   AllowNoBegin := True;
-   AllowNoEnd := True; // AllowNoBegin and AllowNoEnd allows it that begin and end are not required in a script.
+    OnExportCheck := ScriptOnExportCheck; // Assign the onExportCheck event.
+    AllowNoBegin := True;
+    AllowNoEnd := True;
+    // AllowNoBegin and AllowNoEnd allows it that begin and end are not required in a script.
   end;
 end;
 
 procedure TFmPascalScript.FormDestroy(Sender: TObject);
 begin
- FreeAndNil(FCompiler);
+  FreeAndNil(FCompiler);
 end;
 
 procedure TFmPascalScript.SynEditKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
- if Key = 120 then ACCompileExecute(Sender);
+  if Key = 120 then
+    ACCompileExecute(Sender);
 end;
 
 end.

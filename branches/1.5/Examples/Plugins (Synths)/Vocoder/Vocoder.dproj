@@ -1,4 +1,4 @@
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <ProjectGuid>{F874466A-2D0C-448B-9482-7F0BDA91128B}</ProjectGuid>
         <MainSource>Vocoder.dpr</MainSource>

@@ -29,7 +29,6 @@ unit VariableDelayGUI;
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
-
 interface
 
 {$I DAV_Compiler.inc}
@@ -40,17 +39,16 @@ uses
 
 type
   TVSTGUI = class(TForm)
-    SampleBar: TScrollBar;
-    LbSamples: TLabel;
     LbDryMixValue: TLabel;
-    SBDryMix: TScrollBar;
+    LbSamples: TLabel;
     LbWetMixValue: TLabel;
+    SampleBar: TScrollBar;
+    SBDryMix: TScrollBar;
     SBWetMix: TScrollBar;
     procedure FormShow(Sender: TObject);
     procedure SampleBarChange(Sender: TObject);
     procedure SBDryMixChange(Sender: TObject);
     procedure SBWetMixChange(Sender: TObject);
-  private
   public
     procedure UpdateDelayLength;
     procedure UpdateDryMix;
@@ -70,63 +68,65 @@ uses
 
 procedure TVSTGUI.FormShow(Sender: TObject);
 begin
- UpdateDelayLength;
+  UpdateDelayLength;
 end;
 
 procedure TVSTGUI.SampleBarChange(Sender: TObject);
 begin
- with TVariableDelayVST(Owner) do
+  with TVariableDelayVST(Owner) do
   begin
-   if Parameter[0] <> 0.01 * SampleBar.Position
-    then Parameter[0] := 0.01 * SampleBar.Position;
+    if Parameter[0] <> 0.01 * SampleBar.Position then
+      Parameter[0] := 0.01 * SampleBar.Position;
   end;
 end;
 
 procedure TVSTGUI.SBDryMixChange(Sender: TObject);
 begin
- with TVariableDelayVST(Owner) do
+  with TVariableDelayVST(Owner) do
   begin
-   if Parameter[1] <> 0.1 * SBDryMix.Position
-    then Parameter[1] := 0.1 * SBDryMix.Position;
+    if Parameter[1] <> 0.1 * SBDryMix.Position then
+      Parameter[1] := 0.1 * SBDryMix.Position;
   end;
 end;
 
 procedure TVSTGUI.SBWetMixChange(Sender: TObject);
 begin
- with TVariableDelayVST(Owner) do
+  with TVariableDelayVST(Owner) do
   begin
-   if Parameter[2] <> 0.1 * SBWetMix.Position
-    then Parameter[2] := 0.1 * SBWetMix.Position;
+    if Parameter[2] <> 0.1 * SBWetMix.Position then
+      Parameter[2] := 0.1 * SBWetMix.Position;
   end;
 end;
 
 procedure TVSTGUI.UpdateDelayLength;
 begin
- with TVariableDelayVST(Owner) do
+  with TVariableDelayVST(Owner) do
   begin
-   if Round(100 * Parameter[0]) <> SampleBar.Position
-    then SampleBar.Position := Round(100 * Parameter[0]);
-   LbSamples.Caption := 'Delay: ' + IntToStr(Round(Parameter[0])) + ' ms';
+    if Round(100 * Parameter[0]) <> SampleBar.Position then
+      SampleBar.Position := Round(100 * Parameter[0]);
+    LbSamples.Caption := 'Delay: ' + IntToStr(Round(Parameter[0])) + ' ms';
   end;
 end;
 
 procedure TVSTGUI.UpdateDryMix;
 begin
- with TVariableDelayVST(Owner) do
+  with TVariableDelayVST(Owner) do
   begin
-   if Round(10 * Parameter[1]) <> SBDryMix.Position
-    then SBDryMix.Position := Round(10 * Parameter[1]);
-   LbDryMixValue.Caption := 'Dry Mix: ' + FloatToStrF(Parameter[1], ffGeneral, 3, 3) + ' %';
+    if Round(10 * Parameter[1]) <> SBDryMix.Position then
+      SBDryMix.Position := Round(10 * Parameter[1]);
+    LbDryMixValue.Caption := 'Dry Mix: ' + FloatToStrF(Parameter[1], ffGeneral,
+      3, 3) + ' %';
   end;
 end;
 
 procedure TVSTGUI.UpdateWetMix;
 begin
- with TVariableDelayVST(Owner) do
+  with TVariableDelayVST(Owner) do
   begin
-   if Round(10 * Parameter[2]) <> SBWetMix.Position
-    then SBWetMix.Position := Round(10 * Parameter[2]);
-   LbWetMixValue.Caption := 'Wet Mix: ' + FloatToStrF(Parameter[2], ffGeneral, 3, 3) + ' %';
+    if Round(10 * Parameter[2]) <> SBWetMix.Position then
+      SBWetMix.Position := Round(10 * Parameter[2]);
+    LbWetMixValue.Caption := 'Wet Mix: ' + FloatToStrF(Parameter[2], ffGeneral,
+      3, 3) + ' %';
   end;
 end;
 

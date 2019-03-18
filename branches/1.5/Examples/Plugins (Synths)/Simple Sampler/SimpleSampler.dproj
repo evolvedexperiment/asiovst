@@ -1,4 +1,4 @@
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <ProjectGuid>{49CA3F89-B85E-4703-B00E-437C98602510}</ProjectGuid>
         <MainSource>SimpleSampler.dpr</MainSource>

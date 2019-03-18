@@ -35,7 +35,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} Classes,
+{$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} Classes,
   SysUtils, Forms, Controls, Graphics, ExtCtrls, StdCtrls, DAV_GuiLabel,
   DAV_GuiPanel, DAV_GuiPixelMap, DAV_GuiStitchedPngList, DAV_GuiStitchedDial,
   DAV_GuiImageControl, DAV_GuiStitchedControls, DAV_GuiCustomControl,
@@ -67,8 +67,8 @@ type
     procedure DialHighDistChange(Sender: TObject);
     procedure DialOrderChange(Sender: TObject);
   private
-    FBackground : TGuiCustomPixelMap;
-    FEdValue    : TEdit;
+    FBackground: TGuiCustomPixelMap;
+    FEdValue: TEdit;
   public
     procedure UpdateFrequency;
     procedure UpdateOrder;
@@ -89,152 +89,156 @@ uses
 
 procedure TFmTwoBandDistortion.FormCreate(Sender: TObject);
 begin
- FBackground := TGuiPixelMapMemory.Create;
+  FBackground := TGuiPixelMapMemory.Create;
 end;
 
 procedure TFmTwoBandDistortion.FormDestroy(Sender: TObject);
 begin
- if Assigned(FEdValue)
-  then FreeAndNil(FEdValue);
+  if Assigned(FEdValue) then
+    FreeAndNil(FEdValue);
 end;
 
 procedure TFmTwoBandDistortion.FormPaint(Sender: TObject);
 begin
- if Assigned(FBackground)
-  then FBackground.PaintTo(Canvas);
+  if Assigned(FBackground) then
+    FBackground.PaintTo(Canvas);
 end;
 
 procedure TFmTwoBandDistortion.FormResize(Sender: TObject);
 var
-  x, y   : Integer;
-  s      : array [0..1] of Single;
-  b      : ShortInt;
-  ScnLn  : PPixel32Array;
+  x, y: Integer;
+  s: array [0 .. 1] of Single;
+  b: ShortInt;
+  ScnLn: PPixel32Array;
 begin
- if Assigned(FBackground) then
-  with FBackground do
-   begin
-    SetSize(ClientWidth, ClientHeight);
-    s[0] := 0;
-    s[1] := 0;
-    for y := 0 to Height - 1 do
-     begin
-      ScnLn := Scanline[y];
-      for x := 0 to Width - 1 do
-       begin
-        s[1] := 0.97 * s[0] + 0.03 * (2 * Random - 1);
-        b := Round($3F + $1A * s[1]);
-        s[0] := s[1];
-        ScnLn[x].B := b;
-        ScnLn[x].G := b;
-        ScnLn[x].R := b;
-       end;
-     end;
-   end;
+  if Assigned(FBackground) then
+    with FBackground do
+    begin
+      SetSize(ClientWidth, ClientHeight);
+      s[0] := 0;
+      s[1] := 0;
+      for y := 0 to Height - 1 do
+      begin
+        ScnLn := Scanline[y];
+        for x := 0 to Width - 1 do
+        begin
+          s[1] := 0.97 * s[0] + 0.03 * (2 * Random - 1);
+          b := Round($3F + $1A * s[1]);
+          s[0] := s[1];
+          ScnLn[x].b := b;
+          ScnLn[x].G := b;
+          ScnLn[x].R := b;
+        end;
+      end;
+    end;
 end;
 
 procedure TFmTwoBandDistortion.DialFreqChange(Sender: TObject);
 begin
- with Owner as TTwoBandDistortionDataModule do
+  with Owner as TTwoBandDistortionDataModule do
   begin
-   ParameterByName['Frequency'] := DialFreq.Value;
+    ParameterByName['Frequency'] := DialFreq.Value;
   end;
 end;
 
 procedure TFmTwoBandDistortion.DialHighDistChange(Sender: TObject);
 begin
- with Owner as TTwoBandDistortionDataModule do
+  with Owner as TTwoBandDistortionDataModule do
   begin
-   ParameterByName['High Distortion'] := DialHighDist.Value;
-  end; 
+    ParameterByName['High Distortion'] := DialHighDist.Value;
+  end;
 end;
 
 procedure TFmTwoBandDistortion.DialLowDistChange(Sender: TObject);
 begin
- with Owner as TTwoBandDistortionDataModule do
+  with Owner as TTwoBandDistortionDataModule do
   begin
-   ParameterByName['Low Distortion'] := DialLowDist.Value;
+    ParameterByName['Low Distortion'] := DialLowDist.Value;
   end;
 end;
 
 procedure TFmTwoBandDistortion.DialOrderChange(Sender: TObject);
 var
-  CurrentOrder : Single;
-  DesiredOrder : Integer;
+  CurrentOrder: Single;
+  DesiredOrder: Integer;
 begin
- with Owner as TTwoBandDistortionDataModule do
+  with Owner as TTwoBandDistortionDataModule do
   begin
-   DesiredOrder := Round(DialOrder.Value);
-   CurrentOrder := ParameterByName['Order'];
-   if Round(CurrentOrder) = DesiredOrder then
-    if DialOrder.Value < CurrentOrder
-     then ParameterByName['Order'] := DesiredOrder - 1 else
-    if DialOrder.Value > CurrentOrder
-     then ParameterByName['Order'] := DesiredOrder + 1 else
+    DesiredOrder := Round(DialOrder.Value);
+    CurrentOrder := ParameterByName['Order'];
+    if Round(CurrentOrder) = DesiredOrder then
+      if DialOrder.Value < CurrentOrder then
+        ParameterByName['Order'] := DesiredOrder - 1
+      else if DialOrder.Value > CurrentOrder then
+        ParameterByName['Order'] := DesiredOrder + 1
+      else
   end;
 end;
 
 procedure TFmTwoBandDistortion.FormShow(Sender: TObject);
 begin
- UpdateFrequency;
- UpdateOrder;
- UpdateLowDistortion;
- UpdateHighDistortion;
+  UpdateFrequency;
+  UpdateOrder;
+  UpdateLowDistortion;
+  UpdateHighDistortion;
 end;
 
 procedure TFmTwoBandDistortion.UpdateFrequency;
 var
-  Freq : Single;
+  Freq: Single;
 const
-  CThousand : Single = 1000;
+  CThousand: Single = 1000;
 begin
- with Owner as TTwoBandDistortionDataModule do
+  with Owner as TTwoBandDistortionDataModule do
   begin
-   Freq := ParameterByName['Frequency'];
-   if Freq < CThousand
-    then LbFreqValue.Caption := FloatToStrF(Freq, ffGeneral, 3, 4) + ' Hz'
-    else LbFreqValue.Caption := FloatToStrF(1E-3 * Freq, ffGeneral, 3, 3) + ' kHz';
-   if DialFreq.Value <> Freq
-    then DialFreq.Value := Freq;
+    Freq := ParameterByName['Frequency'];
+    if Freq < CThousand then
+      LbFreqValue.Caption := FloatToStrF(Freq, ffGeneral, 3, 4) + ' Hz'
+    else
+      LbFreqValue.Caption := FloatToStrF(1E-3 * Freq, ffGeneral, 3, 3) + ' kHz';
+    if DialFreq.Value <> Freq then
+      DialFreq.Value := Freq;
   end;
 end;
 
 procedure TFmTwoBandDistortion.UpdateHighDistortion;
 var
-  HighDist : Single;
+  HighDist: Single;
 begin
- with Owner as TTwoBandDistortionDataModule do
+  with Owner as TTwoBandDistortionDataModule do
   begin
-   HighDist := ParameterByName['High Distortion'];
-   LbHighDistValue.Caption := FloatToStrF(RoundTo(HighDist, -2), ffGeneral, 3, 1) + '%';
-   if DialHighDist.Value <> HighDist
-    then DialHighDist.Value := HighDist;
+    HighDist := ParameterByName['High Distortion'];
+    LbHighDistValue.Caption := FloatToStrF(RoundTo(HighDist, -2), ffGeneral,
+      3, 1) + '%';
+    if DialHighDist.Value <> HighDist then
+      DialHighDist.Value := HighDist;
   end;
 end;
 
 procedure TFmTwoBandDistortion.UpdateLowDistortion;
 var
-  LowDist : Single;
+  LowDist: Single;
 begin
- with Owner as TTwoBandDistortionDataModule do
+  with Owner as TTwoBandDistortionDataModule do
   begin
-   LowDist := ParameterByName['Low Distortion'];
-   LbLowDistValue.Caption := FloatToStrF(RoundTo(LowDist, -2), ffGeneral, 3, 1) + '%';
-   if DialLowDist.Value <> LowDist
-    then DialLowDist.Value := LowDist;
+    LowDist := ParameterByName['Low Distortion'];
+    LbLowDistValue.Caption := FloatToStrF(RoundTo(LowDist, -2), ffGeneral,
+      3, 1) + '%';
+    if DialLowDist.Value <> LowDist then
+      DialLowDist.Value := LowDist;
   end;
 end;
 
 procedure TFmTwoBandDistortion.UpdateOrder;
 var
-  Order : Integer;
+  Order: Integer;
 begin
- with Owner as TTwoBandDistortionDataModule do
+  with Owner as TTwoBandDistortionDataModule do
   begin
-   Order := Round(ParameterByName['Order']);
-   LbOrderValue.Caption := IntToStr(Order);
-   if DialOrder.Value <> Order
-    then DialOrder.Value := Order;
+    Order := Round(ParameterByName['Order']);
+    LbOrderValue.Caption := IntToStr(Order);
+    if DialOrder.Value <> Order then
+      DialOrder.Value := Order;
   end;
 end;
 

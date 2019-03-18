@@ -35,7 +35,8 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+{$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
+  Graphics, Controls, Forms, Dialogs,
   ExtCtrls, DAV_GuiBaseControl, DAV_GuiDial, DAV_GuiLabel, DAV_GuiSelectBox,
   DAV_GuiPanel, DAV_GuiGraphicControl, DAV_GuiPixelMap, DAV_GuiCustomControl;
 
@@ -73,7 +74,7 @@ type
     procedure DialFilterOrderChange(Sender: TObject);
     procedure FormResize(Sender: TObject);
   private
-    FBackground : TGuiCustomPixelMap;
+    FBackground: TGuiCustomPixelMap;
   public
     procedure UpdateType;
     procedure UpdateLevel;
@@ -99,60 +100,60 @@ uses
 
 procedure TFmSubBoost.FormCreate(Sender: TObject);
 var
-  RS     : TResourceStream;
-  PngBmp : TPngImage;
+  RS: TResourceStream;
+  PngBmp: TPngImage;
 begin
- // Create Background Image
- FBackground := TGuiPixelMapMemory.Create;
+  // Create Background Image
+  FBackground := TGuiPixelMapMemory.Create;
 
- PngBmp := TPngImage.Create;
- try
-  RS := TResourceStream.Create(hInstance, 'SubBoostKnob', 'PNG');
+  PngBmp := TPngImage.Create;
   try
-   PngBmp.LoadFromStream(RS);
-   DialLevel.DialBitmap.Assign(PngBmp);
-   DialTune.DialBitmap.Assign(PngBmp);
-   DialDryMix.DialBitmap.Assign(PngBmp);
-   DialThreshold.DialBitmap.Assign(PngBmp);
-   DialRelease.DialBitmap.Assign(PngBmp);
+    RS := TResourceStream.Create(hInstance, 'SubBoostKnob', 'PNG');
+    try
+      PngBmp.LoadFromStream(RS);
+      DialLevel.DialBitmap.Assign(PngBmp);
+      DialTune.DialBitmap.Assign(PngBmp);
+      DialDryMix.DialBitmap.Assign(PngBmp);
+      DialThreshold.DialBitmap.Assign(PngBmp);
+      DialRelease.DialBitmap.Assign(PngBmp);
+    finally
+      FreeAndNil(RS);
+    end;
   finally
-   FreeAndNil(RS);
+    FreeAndNil(PngBmp);
   end;
- finally
-  FreeAndNil(PngBmp);
- end;
 end;
 
 procedure TFmSubBoost.FormPaint(Sender: TObject);
 begin
- if Assigned(FBackground)
-  then FBackground.PaintTo(Canvas);
+  if Assigned(FBackground) then
+    FBackground.PaintTo(Canvas);
 end;
 
 procedure TFmSubBoost.FormResize(Sender: TObject);
 var
-  x, y   : Integer;
-  Filter : array [0..1] of Single;
-  b      : ShortInt;
-  ScnLn  : PPixel32Array;
+  x, y: Integer;
+  Filter: array [0 .. 1] of Single;
+  b: ShortInt;
+  ScnLn: PPixel32Array;
 begin
- with FBackground do
+  with FBackground do
   begin
-   SetSize(ClientWidth, ClientHeight);
-   Filter[0] := 0;
-   Filter[1] := 0;
-   for y := 0 to Height - 1 do
+    SetSize(ClientWidth, ClientHeight);
+    Filter[0] := 0;
+    Filter[1] := 0;
+    for y := 0 to Height - 1 do
     begin
-     ScnLn := Scanline[y];
-     for x := 0 to Width - 1 do
+      ScnLn := Scanline[y];
+      for x := 0 to Width - 1 do
       begin
-       Filter[1] := 0.9 * Filter[0] + 0.1 * Random;
-       b := Round($3F * Filter[1]);
-       Filter[0] := Filter[1];
-       ScnLn[x].B := b;
-       ScnLn[x].G := b;
-       ScnLn[x].R := b;
-       ScnLn[x].A := 0;
+        Filter[1] := 0.9 * Filter[0] + 0.1 * Random;
+        b := Round($3F * Filter[1]);
+        Filter[0] := Filter[1];
+        ScnLn[x].b := b;
+        ScnLn[x].G := b;
+        ScnLn[x].R := b;
+        ScnLn[x].A := 0;
       end;
     end;
   end;
@@ -160,133 +161,133 @@ end;
 
 procedure TFmSubBoost.FormShow(Sender: TObject);
 begin
- UpdateType;
- UpdateLevel;
- UpdateTune;
- UpdateDryMix;
- UpdateThreshold;
- UpdateRelease;
- LbTitleShadow.Transparent := True;
- LbTitle.Transparent := True;
- LbType.Transparent := True;
+  UpdateType;
+  UpdateLevel;
+  UpdateTune;
+  UpdateDryMix;
+  UpdateThreshold;
+  UpdateRelease;
+  LbTitleShadow.Transparent := True;
+  LbTitle.Transparent := True;
+  LbType.Transparent := True;
 end;
 
 procedure TFmSubBoost.SBTypeChange(Sender: TObject);
 begin
- with TSubBoostDataModule(Owner) do
+  with TSubBoostDataModule(Owner) do
   begin
-   if Parameter[0] <> SBType.ItemIndex
-    then Parameter[0] := SBType.ItemIndex;
+    if Parameter[0] <> SBType.ItemIndex then
+      Parameter[0] := SBType.ItemIndex;
   end;
 end;
 
 procedure TFmSubBoost.DialFilterOrderChange(Sender: TObject);
 begin
- with TSubBoostDataModule(Owner) do
+  with TSubBoostDataModule(Owner) do
   begin
-   if Parameter[6] <> DialFilterOrder.Position
-    then Parameter[6] := DialFilterOrder.Position;
-   LbFilterOrder.Caption := IntToStr(Round(DialFilterOrder.Position));
+    if Parameter[6] <> DialFilterOrder.Position then
+      Parameter[6] := DialFilterOrder.Position;
+    LbFilterOrder.Caption := IntToStr(Round(DialFilterOrder.Position));
   end;
 end;
 
 procedure TFmSubBoost.DialLevelChange(Sender: TObject);
 begin
- with TSubBoostDataModule(Owner) do
+  with TSubBoostDataModule(Owner) do
   begin
-   if Parameter[1] <> DialLevel.Position
-    then Parameter[1] := DialLevel.Position;
+    if Parameter[1] <> DialLevel.Position then
+      Parameter[1] := DialLevel.Position;
   end;
 end;
 
 procedure TFmSubBoost.DialTuneChange(Sender: TObject);
 begin
- with TSubBoostDataModule(Owner) do
+  with TSubBoostDataModule(Owner) do
   begin
-   if Parameter[2] <> DialTune.Position
-    then Parameter[2] := DialTune.Position;
-   LbTune.Caption := FloatToStrF(Parameter[2], ffGeneral, 3, 3);
+    if Parameter[2] <> DialTune.Position then
+      Parameter[2] := DialTune.Position;
+    LbTune.Caption := FloatToStrF(Parameter[2], ffGeneral, 3, 3);
   end;
 end;
 
 procedure TFmSubBoost.DialDryMixChange(Sender: TObject);
 begin
- with TSubBoostDataModule(Owner) do
+  with TSubBoostDataModule(Owner) do
   begin
-   if Parameter[3] <> DialDryMix.Position
-    then Parameter[3] := DialDryMix.Position;
+    if Parameter[3] <> DialDryMix.Position then
+      Parameter[3] := DialDryMix.Position;
   end;
 end;
 
 procedure TFmSubBoost.DialThresholdChange(Sender: TObject);
 begin
- with TSubBoostDataModule(Owner) do
+  with TSubBoostDataModule(Owner) do
   begin
-   if Parameter[4] <> DialThreshold.Position
-    then Parameter[4] := DialThreshold.Position;
+    if Parameter[4] <> DialThreshold.Position then
+      Parameter[4] := DialThreshold.Position;
   end;
 end;
 
 procedure TFmSubBoost.DialReleaseChange(Sender: TObject);
 begin
- with TSubBoostDataModule(Owner) do
+  with TSubBoostDataModule(Owner) do
   begin
-   if Parameter[5] <> DialRelease.Position
-    then Parameter[5] := DialRelease.Position;
+    if Parameter[5] <> DialRelease.Position then
+      Parameter[5] := DialRelease.Position;
   end;
 end;
 
 procedure TFmSubBoost.UpdateType;
 begin
- with TSubBoostDataModule(Owner) do
+  with TSubBoostDataModule(Owner) do
   begin
-   if Parameter[0] <> Round(SBType.ItemIndex)
-    then SBType.ItemIndex := Round(Parameter[0]);
+    if Parameter[0] <> Round(SBType.ItemIndex) then
+      SBType.ItemIndex := Round(Parameter[0]);
   end;
 end;
 
 procedure TFmSubBoost.UpdateLevel;
 begin
- with TSubBoostDataModule(Owner) do
+  with TSubBoostDataModule(Owner) do
   begin
-   if DialLevel.Position <> Parameter[1] 
-    then DialLevel.Position := Parameter[1];
+    if DialLevel.Position <> Parameter[1] then
+      DialLevel.Position := Parameter[1];
   end;
 end;
 
 procedure TFmSubBoost.UpdateTune;
 begin
- with TSubBoostDataModule(Owner) do
+  with TSubBoostDataModule(Owner) do
   begin
-   if DialTune.Position <> Parameter[2]
-    then DialTune.Position := Parameter[2];
+    if DialTune.Position <> Parameter[2] then
+      DialTune.Position := Parameter[2];
   end;
 end;
 
 procedure TFmSubBoost.UpdateDryMix;
 begin
- with TSubBoostDataModule(Owner) do
+  with TSubBoostDataModule(Owner) do
   begin
-   if DialDryMix.Position <> Parameter[3] 
-    then DialDryMix.Position := Parameter[3];
+    if DialDryMix.Position <> Parameter[3] then
+      DialDryMix.Position := Parameter[3];
   end;
 end;
 
 procedure TFmSubBoost.UpdateRelease;
 begin
- with TSubBoostDataModule(Owner) do
+  with TSubBoostDataModule(Owner) do
   begin
-   if DialRelease.Position <> Parameter[4]
-    then DialRelease.Position := Parameter[4];
+    if DialRelease.Position <> Parameter[4] then
+      DialRelease.Position := Parameter[4];
   end;
 end;
 
 procedure TFmSubBoost.UpdateThreshold;
 begin
- with TSubBoostDataModule(Owner) do
+  with TSubBoostDataModule(Owner) do
   begin
-   if DialThreshold.Position <> Parameter[5] 
-    then DialThreshold.Position := Parameter[5];
+    if DialThreshold.Position <> Parameter[5] then
+      DialThreshold.Position := Parameter[5];
   end;
 end;
 

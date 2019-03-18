@@ -15,8 +15,8 @@ uses
   DAV_WinAmp,
   DAV_VSTEffect,
   DAV_VSTBasicModule,
-  AmpSimDM in 'AmpSimDM.pas' {ComboDataModule: TVSTModule},
-  AmpSimGUI in 'AmpSimGUI.pas' {FmCombo};
+  AmpSimDM in 'AmpSimDM.pas' {AmpSimDM: TVSTModule},
+  AmpSimGUI in 'AmpSimGUI.pas' {FmAmpSim};
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin

@@ -4,13 +4,15 @@ library TrackPlug;
 {$I DAV_Compiler.inc}
 
 uses
-  FastMM4,
-  madExcept,
+  FastMM4, // either download the library or comment if there is an error here
+  {$IFDEF UseMadExcept}
+  madExcept, // either download madExcept or remove mad* if there is an error here
   madLinkDisAsm,
+  madListModules,
   madListProcesses,
-  madListModules, // either download the library or comment if there is an error here
+  {$ENDIF}
   {$IFDEF UseFastMove}
-  FastMove,
+  FastMove, // either download the library or disable the feature
   {$ENDIF}
   DAV_WinAmp,
   DAV_VSTEffect,

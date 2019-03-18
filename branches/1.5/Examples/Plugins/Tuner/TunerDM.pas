@@ -34,21 +34,22 @@ interface
 
 {$I DAV_Compiler.inc}
 
-uses 
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
+uses
+{$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
   Forms, DAV_Types, DAV_VSTModule, DAV_DspTuner;
 
 type
   TTunerDataModule = class(TVSTModule)
-    procedure ParameterNoteDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
+
     procedure ParameterGuitarStringChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterNoteDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
   private
-    FTuner : TAdvancedTuner;
+    FTuner: TAdvancedTuner;
   public
-    property Tuner : TAdvancedTuner read FTuner;
+    property Tuner: TAdvancedTuner read FTuner;
   end;
 
 implementation
@@ -64,62 +65,75 @@ uses
 
 procedure TTunerDataModule.VSTModuleOpen(Sender: TObject);
 begin
- FTuner := TAdvancedTuner.Create;
- FTuner.OneCrossingOnly := True;
- FTuner.SampleRate := SampleRate;
- FTuner.Threshold := 0.1;
- FTuner.Attack := 0.1;
- FTuner.Release := 1;
- FTuner.SmoothFactor := 0.99;
+  FTuner := TAdvancedTuner.Create;
+  FTuner.OneCrossingOnly := True;
+  FTuner.SampleRate := SampleRate;
+  FTuner.Threshold := 0.1;
+  FTuner.Attack := 0.1;
+  FTuner.Release := 1;
+  FTuner.SmoothFactor := 0.99;
 
- // initialize parameters
- Parameter[0] := 2;
+  // initialize parameters
+  Parameter[0] := 2;
 
- // set editor form class
- EditorFormClass := TFmTuner;
+  // set editor form class
+  EditorFormClass := TFmTuner;
 end;
 
 procedure TTunerDataModule.VSTModuleClose(Sender: TObject);
 begin
- FreeAndNil(FTuner);
+  FreeAndNil(FTuner);
 end;
 
-procedure TTunerDataModule.ParameterGuitarStringChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TTunerDataModule.ParameterGuitarStringChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 var
-  CenterFrequency : Single;
+  CenterFrequency: Single;
 begin
- case Round(Parameter[Index]) of
-  1 : CenterFrequency := 329.62755691286992973584176104656;
-  2 : CenterFrequency := 440;
-  3 : CenterFrequency := 587.32953583481512052556602772116;
-  4 : CenterFrequency := 783.99087196349858817139906091965;
-  5 : CenterFrequency := 987.76660251224822366150908371768;
-  6 : CenterFrequency := 1318.5102276514797189433670441862;
-  else raise Exception.Create('Current Frequency doesn''t exist');
- end;
+  case Round(Parameter[Index]) of
+    1:
+      CenterFrequency := 329.62755691286992973584176104656;
+    2:
+      CenterFrequency := 440;
+    3:
+      CenterFrequency := 587.32953583481512052556602772116;
+    4:
+      CenterFrequency := 783.99087196349858817139906091965;
+    5:
+      CenterFrequency := 987.76660251224822366150908371768;
+    6:
+      CenterFrequency := 1318.5102276514797189433670441862;
+  else
+    raise Exception.Create('Current Frequency doesn''t exist');
+  end;
 
- FTuner.MinimumFrequency := 0.5 * CenterFrequency;
- FTuner.MinimumFrequency := 2 * CenterFrequency;
+  FTuner.MinimumFrequency := 0.5 * CenterFrequency;
+  FTuner.MinimumFrequency := 2 * CenterFrequency;
 end;
 
-procedure TTunerDataModule.ParameterNoteDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+procedure TTunerDataModule.ParameterNoteDisplay(Sender: TObject;
+  const Index: Integer; var PreDefined: AnsiString);
 begin
- case Round(Parameter[Index]) of
-  1 : PreDefined := 'E';
-  2 : PreDefined := 'A';
-  3 : PreDefined := 'D';
-  4 : PreDefined := 'G';
-  5 : PreDefined := 'H';
-  6 : PreDefined := 'E''';
- end;
+  case Round(Parameter[Index]) of
+    1:
+      PreDefined := 'E';
+    2:
+      PreDefined := 'A';
+    3:
+      PreDefined := 'D';
+    4:
+      PreDefined := 'G';
+    5:
+      PreDefined := 'H';
+    6:
+      PreDefined := 'E''';
+  end;
 end;
 
 procedure TTunerDataModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 begin
- FTuner.SampleRate := SampleRate;
+  FTuner.SampleRate := SampleRate;
 end;
 
 end.

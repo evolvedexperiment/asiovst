@@ -38,6 +38,14 @@ object FmPascalScript: TFmPascalScript
     Font.Style = []
     TabOrder = 0
     OnKeyDown = SynEditKeyDown
+    CodeFolding.GutterShapeSize = 11
+    CodeFolding.CollapsedLineColor = clGrayText
+    CodeFolding.FolderBarLinesColor = clGrayText
+    CodeFolding.IndentGuidesColor = clGray
+    CodeFolding.IndentGuides = True
+    CodeFolding.ShowCollapsedLine = False
+    CodeFolding.ShowHintMark = True
+    UseCodeFolding = False
     Gutter.Font.Charset = DEFAULT_CHARSET
     Gutter.Font.Color = clWindowText
     Gutter.Font.Height = -11
@@ -56,6 +64,7 @@ object FmPascalScript: TFmPascalScript
       ' Data := 0.1 * Data + 0.9 * Temp[Channel];'
       ' Temp[Channel] := Data;'
       'end;')
+    FontSmoothing = fsmNone
   end
   object DebugBox: TListBox
     Left = 0
@@ -127,6 +136,9 @@ object FmPascalScript: TFmPascalScript
     end
   end
   object SynPasSyn: TSynPasSyn
+    Options.AutoDetectEnabled = False
+    Options.AutoDetectLineLimit = 0
+    Options.Visible = False
     CommentAttri.Foreground = clGreen
     KeyAttri.Foreground = clHighlight
     FloatAttri.Foreground = clOlive
