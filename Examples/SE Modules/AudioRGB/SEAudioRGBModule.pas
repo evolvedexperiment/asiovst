@@ -265,27 +265,31 @@ procedure TSEAudioRGBModule.PlugStateChange(const CurrentPin: TSEPin);
 var
   OutState: TSEStateType;
 begin
- inherited;
+  inherited;
 
- case TSEAudioRGBPins(CurrentPin.PinID) of
-         pinInput: begin
-                     if (Pin[0].Status < stRun) and (Pin[0].Value = 0)
-                      then OutState := stStatic
-                      else OutState := stRun;
-                     Pin[Integer(pinOutputR)].TransmitStatusChange(SampleClock, OutState);
-                     Pin[Integer(pinOutputG)].TransmitStatusChange(SampleClock, OutState);
-                     Pin[Integer(pinOutputB)].TransmitStatusChange(SampleClock, OutState);
-                     ChooseProcess;
-                    end;
-  pinCoefficients: begin
-                     FSplitter[0].NumberOfCoefficients := FCoefficients;
-                     FSplitter[1].NumberOfCoefficients := FCoefficients;
-                    end;
-    pinTransition: begin
-                     FSplitter[0].Transition := Limit(FTransition, 0.01, 0.499);
-                     FSplitter[1].Transition := Limit(FTransition, 0.01, 0.499);
-                    end;
- end;
+  case TSEAudioRGBPins(CurrentPin.PinID) of
+    pinInput:
+      begin
+        if (Pin[0].Status < stRun) and (Pin[0].Value = 0) then
+          OutState := stStatic
+        else
+          OutState := stRun;
+        Pin[Integer(pinOutputR)].TransmitStatusChange(SampleClock, OutState);
+        Pin[Integer(pinOutputG)].TransmitStatusChange(SampleClock, OutState);
+        Pin[Integer(pinOutputB)].TransmitStatusChange(SampleClock, OutState);
+        ChooseProcess;
+      end;
+    pinCoefficients:
+      begin
+        FSplitter[0].NumberOfCoefficients := FCoefficients;
+        FSplitter[1].NumberOfCoefficients := FCoefficients;
+      end;
+    pinTransition:
+      begin
+        FSplitter[0].Transition := Limit(FTransition, 0.01, 0.499);
+        FSplitter[1].Transition := Limit(FTransition, 0.01, 0.499);
+      end;
+  end;
 end;
 
 
@@ -296,15 +300,18 @@ procedure TCustomSEColorConverterModule.PlugStateChange(const CurrentPin: TSEPin
 var
   OutState: TSEStateType;
 begin
- OutState := stRun;
- if (Pin[0].Status < stRun) and (Pin[0].Value = 0) then OutState := stStatic;
- if (Pin[1].Status < stRun) and (Pin[1].Value = 0) then OutState := stStatic;
- if (Pin[2].Status < stRun) and (Pin[2].Value = 0) then OutState := stStatic;
+  OutState := stRun;
+  if (Pin[0].Status < stRun) and (Pin[0].Value = 0) then
+    OutState := stStatic;
+  if (Pin[1].Status < stRun) and (Pin[1].Value = 0) then
+    OutState := stStatic;
+  if (Pin[2].Status < stRun) and (Pin[2].Value = 0) then
+    OutState := stStatic;
 
- Pin[3].TransmitStatusChange(SampleClock, OutState);
- Pin[4].TransmitStatusChange(SampleClock, OutState);
- Pin[5].TransmitStatusChange(SampleClock, OutState);
- inherited;
+  Pin[3].TransmitStatusChange(SampleClock, OutState);
+  Pin[4].TransmitStatusChange(SampleClock, OutState);
+  Pin[5].TransmitStatusChange(SampleClock, OutState);
+  inherited;
 end;
 
 
@@ -317,20 +324,28 @@ const
   function HueToColorValue(Hue: Single): Single;
   begin
     Hue := Hue - Round(Hue - 0.5);
-    if 6 * Hue < 1 then Result := M1 + (M2 - M1) * Hue * 6
-    else if 2 * Hue < 1 then Result := M2
-    else if 3 * Hue < 2 then Result := M1 + (M2 - M1) * (2 * OneThird - Hue) * 6
+    if 6 * Hue < 1 then
+      Result := M1 + (M2 - M1) * Hue * 6
+    else if 2 * Hue < 1 then
+      Result := M2
+    else if 3 * Hue < 2 then
+      Result := M1 + (M2 - M1) * (2 * OneThird - Hue) * 6
     else Result := M1;
   end;
 
 begin
- if S = 0
-  then begin R := L; G := L; B := L; end
+  if S = 0 then
+  begin
+    R := L;
+    G := L;
+    B := L;
+  end
   else
-   begin
-    if L <= 0.5
-     then M2 := L * (1 + S)
-     else M2 := L + S - L * S;
+  begin
+    if L <= 0.5 then
+      M2 := L * (1 + S)
+    else
+      M2 := L + S - L * S;
     M1 := 2 * L - M2;
     R := HueToColorValue(H - OneThird);
     G := HueToColorValue(H           );
@@ -345,29 +360,40 @@ const
   OneSixth: Single = 1 / 6;
 begin
   if G > B then
-   if R > G then Cmax := R else Cmax := G else
-   if R > B then Cmax := R else Cmax := B;
+    if R > G then Cmax := R else Cmax := G else
+    if R > B then Cmax := R else Cmax := B;
 
   if G < B then
-   if R < G then Cmin := R else Cmin := G else
-   if R < B then Cmin := R else Cmin := B;
+    if R < G then Cmin := R else Cmin := G else
+    if R < B then Cmin := R else Cmin := B;
 
-  L    := (Cmax + Cmin) * 0.5;
+  L := (Cmax + Cmin) * 0.5;
 
-  if Cmax = Cmin then begin H := 0; S := 0 end
+  if Cmax = Cmin then
+  begin
+    H := 0;
+    S := 0
+  end
   else
-   begin
+  begin
     D := Cmax - Cmin;
-    if L < 0.5
-     then S := D / (Cmax + Cmin)
-     else S := D / (2 - Cmax - Cmin);
-    if R = Cmax then H := (G - B) / D else
-    if G = Cmax
-     then H := 2 + (B - R) / D
-     else H := 4 + (R - G) / D;
+    if L < 0.5 then
+      S := D / (Cmax + Cmin)
+    else
+      S := D / (2 - Cmax - Cmin);
+
+    if R = Cmax then
+      H := (G - B) / D
+    else
+    if G = Cmax then
+      H := 2 + (B - R) / D
+    else
+      H := 4 + (R - G) / D;
+
     H := H * OneSixth;
-    if H < 0 then H := H + 1;
-   end;
+    if H < 0 then
+      H := H + 1;
+  end;
 end;
 
 
@@ -376,17 +402,17 @@ end;
 // describe your module
 class procedure TSERGBToHSLModule.getModuleProperties(Properties: PSEModuleProperties);
 begin
- inherited;
- with Properties^ do
+  inherited;
+  with Properties^ do
   begin
-   // describe the plugin, this is the name the end-user will see.
-   Name := 'RGB To HSL';
+    // describe the plugin, this is the name the end-user will see.
+    Name := 'RGB To HSL';
 
-   // return a unique string 32 characters max
-   // if posible include manufacturer and plugin identity
-   // this is used internally by SE to identify the plug.
-   // No two plugs may have the same id.
-   ID := 'DAV RGB To HSL';
+    // return a unique string 32 characters max
+    // if posible include manufacturer and plugin identity
+    // this is used internally by SE to identify the plug.
+    // No two plugs may have the same id.
+    ID := 'DAV RGB To HSL';
   end;
 end;
 

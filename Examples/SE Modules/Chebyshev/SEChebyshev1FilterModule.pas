@@ -446,8 +446,8 @@ end;
 
 { TSEAutomatebleChebyshev1FilterModule }
 
-constructor TSEAutomatebleChebyshev1FilterModule.Create(SEAudioMaster
-  : TSE2audioMasterCallback; Reserved: Pointer);
+constructor TSEAutomatebleChebyshev1FilterModule.Create(
+  SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
 begin
   inherited;
   FOrder := 4;

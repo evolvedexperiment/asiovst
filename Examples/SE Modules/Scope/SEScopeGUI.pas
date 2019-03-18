@@ -96,50 +96,6 @@ begin
   inherited;
 end;
 
-(*
-  procedure TSEScopeGui.Initialise(LoadedFromFile: Boolean);
-  begin
-  inherited Initialise(LoadedFromFile);
-  CallHost(seGuiHostSetIdle, 1);
-  end;
-
-  function TSEScopeGui.GuiIdle: Boolean;
-  var
-  test : Integer;
-  begin
-  test := 9;
-  Result := True;
-  end;
-*)
-
-(*
-  procedure TSEScopeGui.OnWindowOpen(wi: PSEWndInfo);
-  begin
-  // get the full path of an imbedded file when you only know it's short name
-  const int MAX_STRING_LENGTH = 300;
-
-  // Both destination is UNICODE (two-byte) character string
-  unsigned short dest[MAX_STRING_LENGTH];
-
-  CallHost( seGuiHostPlugGetExtraData, PN_ENUM_OUT, MAX_STRING_LENGTH, &dest);
-
-  // to convert to ascii
-  char ascii_text[MAX_STRING_LENGTH];
-  WideCharToMultiByte(CP_ACP, 0, dest, -1, ascii_text, MAX_STRING_LENGTH, NULL, NULL);
-
-
-  // example of accessing the Window handle ( windowtype=1 only)
-  HWND hWnd = (HWND) CallHost(seGuiHostGetWindowHandle, wi.context_handle );
-
-  RECT r;
-  GetClientRect( hWnd, &r );
-  HWND hTextArea = CreateWindow( "edit",
-  NULL, WS_CHILD | ES_LEFT | WS_SIZEBOX | ES_MULTILINE | WS_VSCROLL,
-  r.left, r.top, r.right - r.left, r.bottom - r.top,
-  hWnd, NULL,(HINSTANCE)Handle(), NULL );
-  ShowWindow( hTextArea, SW_SHOW );
-  end; *)
-
 procedure TSEScopeGui.GuiPaint(hDC: hDC; wi: PSEWndInfo);
 var
   FontHandle: HFONT;
@@ -157,19 +113,6 @@ var
   txt: string;
   ChunkName: TChunkName;
 begin
-  (* testing
-    long parent_context = wi.context_handle;
-    HWND h = 0;
-    while( h == 0 )
-    begin
-    parent_context = CallHost(seGuiHostGetParentContext, parent_context );
-    h = (HWND) CallHost( seGuiHostGetWindowHandle, parent_context );
-    end;
-
-    sepoint offset(0,0);
-    CallHost(seGuiHostMapWindowPoints, wi.context_handle, parent_context, @offset, 0 );
-  *)
-
   ChunkName := 'tty';
   FontHandle := HFONT(CallHost(seGuiHostGetFontInfo, wi.ContextHandle,
     Integer(ChunkName), @FFontInfo));

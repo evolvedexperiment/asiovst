@@ -16,7 +16,7 @@ uses
 {$R *.res}
 
 const
-  CModuleClasses : array [0..1] of TSEModuleBaseClass = (
+  CModuleClasses: array [0..1] of TSEModuleBaseClass = (
     TSEExciterModule,
     TSEExciterAutomatedModule
   );

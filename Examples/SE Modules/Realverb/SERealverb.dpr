@@ -15,32 +15,32 @@ uses
 {$E sem}
 {$R *.res}
 
-function getModuleProperties(Index: Integer; Properties: PSEModuleProperties): Boolean; cdecl; export;
-begin
- Result := True;
- case Index of
-  0: TSERealverbModule.GetModuleProperties(Properties);
-  1: TSERealverbStereoModule.GetModuleProperties(Properties);
-  else Result := False;
- end;
-end;
+const
+  CModuleClasses: array [0..1] of TSEModuleBaseClass = (
+    TSERealverbModule,
+    TSERealverbStereoModule
+  );
 
-function makeModule(Index: Integer; ProcessType: Integer; SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer): Pointer; cdecl; export;
-var
-  SEModuleBase: TSEModuleBase;
+function GetModuleProperties(Index: Integer;
+  Properties: PSEModuleProperties): Boolean; cdecl; export;
 begin
- SEModuleBase := nil;
- if (ProcessType = 1) then
-  case Index of
-   0: SEModuleBase := TSERealverbModule.Create(SEAudioMaster, Reserved);
-   1: SEModuleBase := TSERealverbStereoModule.Create(SEAudioMaster, Reserved);
+  Result := False;
+  if (Index >= 0) and (Index < Length(CModuleClasses)) then
+  begin
+    CModuleClasses[Index].GetModuleProperties(Properties);
+    Result := True;
   end;
- if Assigned(SEModuleBase)
-  then Result := SEModuleBase.Effect
-  else Result := nil;
 end;
 
-exports 
+function MakeModule(Index, ProcessType: Integer;
+  SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer): Pointer; cdecl; export;
+begin
+  Result := nil;
+  if (Index >= 0) and (Index < Length(CModuleClasses)) and (ProcessType = 1) then
+    Result := CModuleClasses[Index].Create(SEAudioMaster, Reserved).Effect;
+end;
+
+exports
   makeModule name 'makeModule',
   getModuleProperties name 'getModuleProperties';
 

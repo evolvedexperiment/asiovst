@@ -62,8 +62,7 @@ type
 
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     procedure SubProcess(const BufferOffset, SampleFrames: Integer);
       virtual; abstract;
   end;
@@ -77,8 +76,7 @@ type
 
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   end;
@@ -88,8 +86,7 @@ type
   public
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
   end;
 
   TSEAutomatableChebyshevWaveshaperModule = class
@@ -100,8 +97,7 @@ type
   public
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
   end;
 
@@ -110,8 +106,8 @@ implementation
 uses
   SysUtils;
 
-constructor TSECustomChebyshevWaveshaperModule.Create(SEAudioMaster
-  : TSE2audioMasterCallback; Reserved: Pointer);
+constructor TSECustomChebyshevWaveshaperModule.Create(
+  SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
 begin
   inherited Create(SEAudioMaster, Reserved);
   FWaveShaper := TChebyshevWaveshaper.Create;
@@ -215,8 +211,8 @@ end;
 
 { TSEStaticChebyshevWaveshaperModule }
 
-constructor TSEStaticChebyshevWaveshaperModule.Create(SEAudioMaster
-  : TSE2audioMasterCallback; Reserved: Pointer);
+constructor TSEStaticChebyshevWaveshaperModule.Create(
+  SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
 var
   i: Integer;
 begin

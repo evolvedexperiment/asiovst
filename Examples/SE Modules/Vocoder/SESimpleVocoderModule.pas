@@ -63,8 +63,7 @@ type
       Reserved: Pointer); override;
     destructor Destroy; override;
 
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
     procedure SubProcess(const BufferOffset, SampleFrames: Integer); virtual;
@@ -77,16 +76,14 @@ type
   protected
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
   end;
 
   TSESimpleVocoderControllableModule = class(TSESimpleVocoderStaticModule)
   public
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
   end;
@@ -98,8 +95,7 @@ type
     procedure SubProcessAutomated(const BufferOffset, SampleFrames: Integer);
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
   end;
@@ -111,8 +107,8 @@ uses
 
 { TCustomSESimpleVocoderModule }
 
-constructor TCustomSESimpleVocoderModule.Create(SEAudioMaster
-  : TSE2audioMasterCallback; Reserved: Pointer);
+constructor TCustomSESimpleVocoderModule.Create(
+  SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
 begin
   inherited Create(SEAudioMaster, Reserved);
   FVocoder := TSimpleThirdOctaveVocoder.Create;
@@ -248,8 +244,7 @@ begin
 end;
 
 // An input plug has changed value
-procedure TCustomSESimpleVocoderModule.PlugStateChange(const CurrentPin
-  : TSEPin);
+procedure TCustomSESimpleVocoderModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
   inherited;
   case TSESimpleVocoderPins(CurrentPin.PinID) of
@@ -310,8 +305,7 @@ begin
 end;
 
 // An input plug has changed value
-procedure TSESimpleVocoderStaticModule.PlugStateChange(const CurrentPin
-  : TSEPin);
+procedure TSESimpleVocoderStaticModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
   inherited;
   case TSESimpleVocoderPins(CurrentPin.PinID) of

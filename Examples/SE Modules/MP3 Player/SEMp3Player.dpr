@@ -15,45 +15,33 @@ uses
 {$E sem}
 {$R *.res}
 
-function GetModuleProperties(Index: Integer; Properties: PSEModuleProperties): Boolean; cdecl; export;
+const
+  CModuleClasses: array [0..2] of TSEModuleBaseClass = (
+    TSESimpleMp3PlayerModule,
+    TSEMp3PlayerModule,
+    TSEBufferedMp3PlayerModule
+  );
+
+function GetModuleProperties(Index: Integer;
+  Properties: PSEModuleProperties): Boolean; cdecl; export;
 begin
- Result := True;
- case Index of
-  0: TSESimpleMp3PlayerModule.GetModuleProperties(Properties);
-  1: TSEMp3PlayerModule.GetModuleProperties(Properties);
-  2: TSEBufferedMp3PlayerModule.GetModuleProperties(Properties);
-  else Result := False;
- end;
+  Result := False;
+  if (Index >= 0) and (Index < Length(CModuleClasses)) then
+  begin
+    CModuleClasses[Index].GetModuleProperties(Properties);
+    Result := True;
+  end;
 end;
 
-function MakeModule(Index: Integer; ProcessType: Integer; SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer): Pointer; cdecl; export;
-var
-  SEModuleBase: TSEModuleBase;
+function MakeModule(Index, ProcessType: Integer;
+  SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer): Pointer; cdecl; export;
 begin
- Result := nil;
- case Index of
-  0: if (ProcessType = 1) then
-      begin
-       SEModuleBase := TSESimpleMp3PlayerModule.Create(SEAudioMaster, Reserved);
-       if Assigned(SEModuleBase)
-        then Result := SEModuleBase.Effect;
-      end;
-  1: if (ProcessType = 1) then
-      begin
-       SEModuleBase := TSEMp3PlayerModule.Create(SEAudioMaster, Reserved);
-       if Assigned(SEModuleBase)
-        then Result := SEModuleBase.Effect;
-      end;
-  2: if (ProcessType = 1) then
-      begin
-       SEModuleBase := TSEBufferedMp3PlayerModule.Create(SEAudioMaster, Reserved);
-       if Assigned(SEModuleBase)
-        then Result := SEModuleBase.Effect;
-      end;
- end;
+  Result := nil;
+  if (Index >= 0) and (Index < Length(CModuleClasses)) and (ProcessType = 1) then
+    Result := CModuleClasses[Index].Create(SEAudioMaster, Reserved).Effect;
 end;
 
-exports 
+exports
   makeModule name 'makeModule',
   getModuleProperties name 'getModuleProperties';
 

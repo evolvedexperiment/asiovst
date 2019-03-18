@@ -130,11 +130,6 @@ begin
     inc(p3);
     s := Copy(s, p3, Length(s) - p3); // .Right( s.length - p3 - 1);
   end;
-
-  if (i = 0) then // if string empty, set defaults
-  begin
-    // UpdateNodes(FNodes, CDefaultValue);
-  end;
 end;
 
 procedure TSEWaveshaperGui.Initialise(const LoadedFromFile: Boolean);
@@ -420,29 +415,7 @@ end;
 
 procedure TSEWaveshaperGui.GuiModuleMsg(AUserMsgID, ALength: Integer;
   AData: Pointer);
-(*
-  var
-  Msg    : TChunkName;
-  Size   : Integer;
-  Handle : THandle;
-*)
 begin
-  (*
-    assert(ALength = SizeOf(values));
-    Move(Values, AData, ALength);
-
-    // aknowledge
-    h    := Handle;
-    msg  := 'ack';
-    size := 3;
-
-    ////////////// EXPERIMENTAL ////////////
-    SendStringToAudio(4, @Handle);
-    SendStringToAudio(4, @Size);
-    SendStringToAudio(Size, Msg);
-    ///////////////////////////////////////
-  *)
-
   InvalidateControl;
 end;
 
@@ -482,7 +455,6 @@ var
   VertScale: Single;
   HorzScale: Single;
   left, right: Single;
-  // x, y        : Single;
   pt: TPoint;
   v: TSeSdkString;
 begin

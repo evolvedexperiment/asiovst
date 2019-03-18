@@ -15,22 +15,23 @@ uses
 {$E sem}
 {$R *.res}
 
-function getModuleProperties(Index: Integer; Properties: PSEModuleProperties): Boolean; cdecl; export;
+function GetModuleProperties(Index: Integer;
+  Properties: PSEModuleProperties): Boolean; cdecl; export;
 begin
- Result := True;
- case Index of
-  0: TSEStkPitchshifterModule.GetModuleProperties(Properties);
-  else Result := False;
- end;
+  Result := False;
+  if (Index = 0) then
+  begin
+    TSEStkPitchshifterModule.GetModuleProperties(Properties);
+    Result := True;
+  end;
 end;
 
-function makeModule(Index: Integer; ProcessType: Integer; SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer): Pointer; cdecl; export;
+function MakeModule(Index, ProcessType: Integer;
+  SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer): Pointer; cdecl; export;
 begin
- Result := nil;
- if (ProcessType = 1) then
-  case Index of
-   0: Result := TSEStkPitchshifterModule.Create(SEAudioMaster, Reserved).Effect;
-  end;
+  Result := nil;
+  if (Index = 0) and (ProcessType = 1) then
+    Result := TSEStkPitchshifterModule.Create(SEAudioMaster, Reserved).Effect;
 end;
 
 exports 

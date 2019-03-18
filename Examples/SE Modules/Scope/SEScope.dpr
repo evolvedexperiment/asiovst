@@ -34,14 +34,14 @@ begin
       if (ProcessType = 1) then// Audio Processing Object
       begin
         SEModuleBase := TSEScopeModule.Create(SEAudioMaster, Reserved);
-        if Assigned(SEModuleBase)
-         then Result := SEModuleBase.Effect;
+        if Assigned(SEModuleBase) then
+          Result := SEModuleBase.Effect;
       end else
       if (ProcessType = 2) then // GUI Object
       begin
         GUI := TSEScopeGui.Create(TSEGuiCallback(SEAudioMaster), Reserved); //nasty!
-        if Assigned(GUI)
-         then Result := GUI.SEGUIStructBase;
+        if Assigned(GUI) then
+          Result := GUI.SEGUIStructBase;
       end;
   end;
 end;

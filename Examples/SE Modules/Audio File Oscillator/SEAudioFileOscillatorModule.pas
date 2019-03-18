@@ -78,8 +78,7 @@ type
       Reserved: Pointer); override;
     destructor Destroy; override;
 
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
     procedure SubProcessBypass(const BufferOffset, SampleFrames: Integer);
@@ -110,16 +109,14 @@ uses
 
 {$IFDEF UseEmbedding}
 
-function EnumNamesFunc(hModule: THandle; lpType, lpName: PChar; lParam: DWORD)
-  : Boolean; stdcall;
+function EnumNamesFunc(hModule: THandle; lpType, lpName: PChar; lParam: DWORD): Boolean; stdcall;
 begin
   Result := True;
   TStringList(lParam).Add(lpName);
 end;
 {$ENDIF}
 
-constructor TSEAudioFileOscillatorModule.Create(AudioMaster
-  : TSE2AudioMasterCallback; Reserved: Pointer);
+constructor TSEAudioFileOscillatorModule.Create(AudioMaster: TSE2AudioMasterCallback; Reserved: Pointer);
 begin
   inherited;
   FAudioData := TAudioDataCollection32.Create(nil);
@@ -159,8 +156,7 @@ begin
   Pin[Integer(pinOutput)].TransmitStatusChange(SampleClock, stRun);
 end;
 
-procedure TSEAudioFileOscillatorModule.PlugStateChange(const CurrentPin
-  : TSEPin);
+procedure TSEAudioFileOscillatorModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
   inherited;
   case TSEAudioFileOscillatorPins(CurrentPin.PinID) of
@@ -258,11 +254,6 @@ procedure TSEAudioFileOscillatorModule.SubProcessStatic(const BufferOffset,
   SampleFrames: Integer);
 begin
   FLastProcessMethod(BufferOffset, SampleFrames);
-  (*
-    FStaticCount := FStaticCount - SampleFrames;
-    if FStaticCount <= 0
-    then CallHost(SEAudioMasterSleepMode);
-  *)
 end;
 
 procedure TSEAudioFileOscillatorModule.CheckTrigger(Trigger: Boolean);
@@ -1023,15 +1014,6 @@ begin
         Direction := drOut;
         DataType := dtFSample;
       end;
-    (*
-      pinAudiodata : with Properties^ do
-      begin
-      Name            := 'Audiodata';
-      VariableAddress := @FOutputBuffer;
-      Direction       := drOut;
-      Datatype        := dtExperimental;
-      end;
-    *)
   else
     begin
       Result := False;

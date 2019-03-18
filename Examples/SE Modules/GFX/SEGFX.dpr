@@ -13,7 +13,7 @@ uses
 {$R *.res}
 
 const
-  SEGFXBaseModuleClasses : array [0..23] of TSEGFXBaseModuleClass = (
+  SEGFXBaseModuleClasses: array [0..23] of TSEGFXBaseModuleClass = (
     TSEGFXAddColorNoiseModule, TSEGFXAddMonoNoiseModule,
     TSEGFXContrastModule, TSEGFXEmbossModule, TSEGFXGrayScaleModule,
     TSEGFXHueModule, TSEGFXInvertModule, TSEGFXFishEyeModule,
@@ -24,7 +24,7 @@ const
     TSEGFXSolarizeModule, TSEGFXPosterizeModule, TSEGFXBrushedMetalModule,
     TSEGFXBrushedMetal2Module);
 
-  SEGFXBaseGuiClasses : array [0..23] of TSEGFXBaseGuiClass = (
+  SEGFXBaseGuiClasses: array [0..23] of TSEGFXBaseGuiClass = (
     TSEGFXAddColorNoiseGui, TSEGFXAddMonoNoiseGui, TSEGFXContrastGui,
     TSEGFXEmbossGui, TSEGFXGrayScaleGui, TSEGFXHueGui, TSEGFXInvertGui,
     TSEGFXFishEyeGui, TSEGFXLightnessGui, TSEGFXDarknessGui,

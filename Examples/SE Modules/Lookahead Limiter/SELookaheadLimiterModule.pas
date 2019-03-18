@@ -61,8 +61,7 @@ type
     constructor Create(AudioMaster: TSE2AudioMasterCallback;
       Reserved: Pointer); override;
     destructor Destroy; override;
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     procedure SubProcess(const BufferOffset, SampleFrames: Integer);
       virtual; abstract;
   end;
@@ -78,8 +77,7 @@ type
   public
     constructor Create(SEAudioMaster: TSE2AudioMasterCallback;
       Reserved: Pointer); override;
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
   end;
 
@@ -88,8 +86,7 @@ type
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
   public
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
   end;
 
   TLookaheadLimiterAutomatableSEModule = class(TCustomLookaheadLimiterSEModule)
@@ -103,8 +100,7 @@ type
       Properties: PSEPinProperties): Boolean; override;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
   end;
 
 implementation
@@ -231,8 +227,8 @@ end;
 
 { TLookaheadLimiterStaticSEModule }
 
-constructor TLookaheadLimiterStaticSEModule.Create(SEAudioMaster
-  : TSE2AudioMasterCallback; Reserved: Pointer);
+constructor TLookaheadLimiterStaticSEModule.Create(
+  SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer);
 begin
   inherited;
   FInputGain := 1.00;

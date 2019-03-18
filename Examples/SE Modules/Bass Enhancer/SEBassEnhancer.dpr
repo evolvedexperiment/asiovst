@@ -18,7 +18,7 @@ uses
 {$R *.res}
 
 const
-  CModuleClasses : array [0..2] of TSEModuleBaseClass = (
+  CModuleClasses: array [0..2] of TSEModuleBaseClass = (
     TSEHarmonicBassModule, TSEBassEnhancerModule, TSEResurrectionBassModule);
 
 function GetModuleProperties(Index: Integer;

@@ -60,8 +60,7 @@ type
     procedure SubProcessStatic(const BufferOffset, SampleFrames: Integer);
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     procedure SubProcess(const BufferOffset, SampleFrames: Integer);
       virtual; abstract;
   end;
@@ -93,8 +92,7 @@ type
   public
     constructor Create(SEAudioMaster: TSE2AudioMasterCallback;
       Reserved: Pointer); override;
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
   end;
 
@@ -103,8 +101,7 @@ type
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
   public
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
   end;
 
   TLightweightGateAutomatableSEModule = class(TCustomLightweightGateSEModule)
@@ -119,8 +116,7 @@ type
     procedure SubProcessAutomated(const BufferOffset, SampleFrames: Integer);
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
   end;
 
   // Base class for all time constant limiters.
@@ -150,8 +146,7 @@ type
   public
     constructor Create(SEAudioMaster: TSE2AudioMasterCallback;
       Reserved: Pointer); override;
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
   end;
 
@@ -161,8 +156,7 @@ type
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
   public
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
   end;
 
   TLightweightLimiterAutomatableSEModule = class
@@ -178,8 +172,7 @@ type
       Properties: PSEPinProperties): Boolean; override;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
   end;
 
   // Base class for all time constant compressors.
@@ -217,8 +210,7 @@ type
   public
     constructor Create(SEAudioMaster: TSE2AudioMasterCallback;
       Reserved: Pointer); override;
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
   end;
 
@@ -228,8 +220,7 @@ type
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
   public
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
   end;
 
   TLightweightCompressorAutomatableSEModule = class
@@ -246,8 +237,7 @@ type
       Properties: PSEPinProperties): Boolean; override;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
   end;
 
   // Base class for the lightweight soft knee feedback compressor.
@@ -283,8 +273,7 @@ type
   public
     constructor Create(SEAudioMaster: TSE2AudioMasterCallback;
       Reserved: Pointer); override;
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
   end;
 
@@ -294,8 +283,7 @@ type
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
   public
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
   end;
 
   TLightweightFeedbackCompressorAutomatableSEModule = class
@@ -312,8 +300,7 @@ type
       Properties: PSEPinProperties): Boolean; override;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
   end;
 
 implementation
@@ -486,8 +473,8 @@ end;
 
 { TLightweightGateStaticSEModule }
 
-constructor TLightweightGateStaticSEModule.Create(SEAudioMaster
-  : TSE2AudioMasterCallback; Reserved: Pointer);
+constructor TLightweightGateStaticSEModule.Create(
+  SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer);
 begin
   inherited;
   FThreshold := -10;
@@ -819,8 +806,8 @@ end;
 
 { TLightweightLimiterStaticSEModule }
 
-constructor TLightweightLimiterStaticSEModule.Create(SEAudioMaster
-  : TSE2AudioMasterCallback; Reserved: Pointer);
+constructor TLightweightLimiterStaticSEModule.Create(
+  SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer);
 begin
   inherited;
   FThreshold := -10;
@@ -1099,8 +1086,8 @@ end;
 
 { TCustomLightweightCompressorSEModule }
 
-constructor TCustomLightweightCompressorSEModule.Create(SEAudioMaster
-  : TSE2AudioMasterCallback; Reserved: Pointer);
+constructor TCustomLightweightCompressorSEModule.Create(
+  SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer);
 begin
   inherited;
   FDynamicProcesor := TLightweightSoftKneeCompressor.Create;
@@ -1181,8 +1168,8 @@ end;
 
 { TLightweightCompressorStaticSEModule }
 
-constructor TLightweightCompressorStaticSEModule.Create(SEAudioMaster
-  : TSE2AudioMasterCallback; Reserved: Pointer);
+constructor TLightweightCompressorStaticSEModule.Create(
+  SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer);
 begin
   inherited;
   FThreshold := -10;

@@ -64,8 +64,7 @@ type
       Reserved: Pointer); override;
     destructor Destroy; override;
 
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
     procedure SubProcess(const BufferOffset, SampleFrames: Integer);
@@ -280,11 +279,6 @@ begin
         end;
       end;
   end;
-
-  (*
-    if (Pin[1].Status <> stRun) or (Pin[2].Status <> stRun)
-    then SEAudioMasterSleepMode
-  *)
 
   inherited;
 end;
