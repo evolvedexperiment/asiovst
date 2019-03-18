@@ -1,4 +1,4 @@
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <ProjectGuid>{4B7A2193-3718-41E0-931F-018A2A0FB00F}</ProjectGuid>
         <MainSource>SineSynth.dpr</MainSource>
