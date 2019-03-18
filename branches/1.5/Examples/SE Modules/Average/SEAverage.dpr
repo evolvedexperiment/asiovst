@@ -10,30 +10,28 @@ uses
 {$E sem}
 {$R *.res}
 
-function getModuleProperties(Index: Integer; Properties: PSEModuleProperties): Boolean; cdecl; export;
+const
+  CModuleClasses : array [0..0] of TSEModuleBaseClass = (
+    TSEAverageModule
+  );
+
+function GetModuleProperties(Index: Integer;
+  Properties: PSEModuleProperties): Boolean; cdecl; export;
 begin
- Result := True;
- case Index of // !!TODO!! list your in / out plugs
-  0: TSEAverageModule.GetModuleProperties(Properties);
-  else Result := False; // host will ask for module 0,1,2,3 etc. return false to signal when done
- end;;
+  Result := False;
+  if (Index >= 0) and (Index < Length(CModuleClasses)) then
+  begin
+    CModuleClasses[Index].GetModuleProperties(Properties);
+    Result := True;
+  end;
 end;
 
-function makeModule(Index: Integer; ProcessType: Integer; SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer): Pointer; cdecl; export;
-var
-  Effect: TSEModuleBase;
+function MakeModule(Index, ProcessType: Integer;
+  SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer): Pointer; cdecl; export;
 begin
- Result := nil;
- case Index of // !!TODO!! list your in / out plugs
-  0: begin
-      if (ProcessType = 1) then// Audio Processing Object
-       begin
-        Effect := TSEAverageModule.Create(SEAudioMaster, Reserved);
-        if Assigned(Effect)
-         then Result := Effect.Effect;
-       end;
-     end;
- end;
+  Result := nil;
+  if (Index >= 0) and (Index < Length(CModuleClasses)) and (ProcessType = 1) then
+    Result := CModuleClasses[Index].Create(SEAudioMaster, Reserved).Effect;
 end;
 
 exports

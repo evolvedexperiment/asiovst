@@ -31,19 +31,19 @@ const
 
 function getModuleProperties(Index: Integer; Properties: PSEModuleProperties): Boolean; cdecl; export;
 begin
- if Index in [0..Length(CModuleClasses) - 1] then
+  Result := False;
+  if Index in [0..Length(CModuleClasses) - 1] then
   begin
-   CModuleClasses[Index].GetModuleProperties(Properties);
-   Result := True;
-  end
- else Result := False;
+    CModuleClasses[Index].GetModuleProperties(Properties);
+    Result := True;
+  end;
 end;
 
 function makeModule(Index: Integer; ProcessType: Integer; SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer): Pointer; cdecl; export;
 begin
- if Index in [0..Length(CModuleClasses) - 1]
-  then Result := CModuleClasses[Index].Create(SEAudioMaster, Reserved).Effect
-  else Result := nil;
+  Result := nil;
+  if Index in [0..Length(CModuleClasses) - 1] then
+    Result := CModuleClasses[Index].Create(SEAudioMaster, Reserved).Effect;
 end;
 
 exports 

@@ -16,7 +16,7 @@ begin
  case Index of 
   0: TSEPinkNoiseModule.GetModuleProperties(Properties);
   else Result := False;
- end;;
+ end;
 end;
 
 function makeModule(Index: Integer; ProcessType: Integer; SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer): Pointer; cdecl; export;

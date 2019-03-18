@@ -36,34 +36,35 @@ const
 
 function getModuleProperties(Index: Integer; Properties: PSEModuleProperties): Boolean; cdecl; export;
 begin
- Result := True;
- if (Index >= 0) and (Index < Length(SEGFXBaseModuleClasses))
-  then SEGFXBaseModuleClasses[Index].GetModuleProperties(Properties)
-  else Result := False;
+  Result := True;
+  if (Index >= 0) and (Index < Length(SEGFXBaseModuleClasses)) then
+    SEGFXBaseModuleClasses[Index].GetModuleProperties(Properties)
+  else
+    Result := False;
 end;
 
 function makeModule(Index: Integer; ProcessType: Integer; SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer): Pointer; cdecl; export;
 var
-  SEModuleBase : TSEModuleBase;
-  GUI          : TSEGUIBase;
+  SEModuleBase: TSEModuleBase;
+  GUI: TSEGUIBase;
 begin
- Result := nil;
- if (Index >= 0) and (Index < Length(SEGFXBaseModuleClasses)) then
+  Result := nil;
+  if (Index >= 0) and (Index < Length(SEGFXBaseModuleClasses)) then
   begin
    if (ProcessType = 1) then
     begin
-     SEModuleBase := SEGFXBaseModuleClasses[Index].Create(SEAudioMaster, Reserved);
-     if Assigned(SEModuleBase)
-      then Result := SEModuleBase.Effect;
+      SEModuleBase := SEGFXBaseModuleClasses[Index].Create(SEAudioMaster, Reserved);
+      if Assigned(SEModuleBase) then
+        Result := SEModuleBase.Effect;
     end;
   end;
- if (Index >= 0) and (Index < Length(SEGFXBaseModuleClasses)) then
+  if (Index >= 0) and (Index < Length(SEGFXBaseModuleClasses)) then
   begin
-   if (ProcessType = 2) then
+    if (ProcessType = 2) then
     begin
-     GUI := SEGFXBaseGuiClasses[Index].Create(TSEGuiCallback(SEAudioMaster), Reserved);    // nasty!
-     if Assigned(GUI)
-      then Result := GUI.SEGUIStructBase;
+      GUI := SEGFXBaseGuiClasses[Index].Create(TSEGuiCallback(SEAudioMaster), Reserved);    // nasty!
+      if Assigned(GUI) then
+        Result := GUI.SEGUIStructBase;
     end;
   end;
 end;

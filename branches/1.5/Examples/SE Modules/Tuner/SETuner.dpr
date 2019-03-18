@@ -25,7 +25,7 @@ begin
   2: TSEAdvancedTunerStaticModule.GetModuleProperties(Properties);
   3: TSEAdvancedTunerControllableModule.GetModuleProperties(Properties);
   else Result := False; // host will ask for module 0,1,2,3 etc. return false to signal when done
- end;;
+ end;
 end;
 
 function makeModule(Index: Integer; ProcessType: Integer; SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer): Pointer; cdecl; export;

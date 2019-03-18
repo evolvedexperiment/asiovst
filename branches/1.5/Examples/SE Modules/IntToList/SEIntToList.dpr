@@ -18,7 +18,7 @@ begin
  case Index of // !!TODO!! list your in / out plugs
   0: TSEIntToListModule.GetModuleProperties(Properties)
   else Result := False; // host will ask for module 0,1,2,3 etc. return false to signal when done
- end;;
+ end;
 end;
 
 function makeModule(Index: Integer; ProcessType: Integer; SEAudioMaster: Pointer; Reserved: Pointer): Pointer; cdecl; export;

@@ -65,8 +65,7 @@ type
       Reserved: Pointer); override;
     destructor Destroy; override;
 
-    class procedure GetModuleProperties(Properties
-      : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     function GetPinProperties(const Index: Integer;
       Properties: PSEPinProperties): Boolean; override;
     procedure SubProcess(const BufferOffset, SampleFrames: Integer);
@@ -227,7 +226,7 @@ begin
   else
     Result := False;
     // host will ask for plugs 0,1,2,3 etc. return false to signal when done
-  end;;
+  end;
 end;
 
 // An input plug has changed value

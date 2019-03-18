@@ -423,7 +423,7 @@ begin
         DatatypeExtra := 'range 0,64';
         Result := True;
       end;
-  end;;
+  end;
 end;
 
 procedure TSELinkwitzRileyAutomatableModule.Open;
