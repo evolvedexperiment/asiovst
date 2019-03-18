@@ -47,23 +47,6 @@ object VSTGUI: TVSTGUI
       Height = 13
       Caption = 'Type:'
     end
-    object Osc1ADSR: TGuiADSRGraph
-      Left = 50
-      Top = 43
-      Width = 89
-      Height = 29
-      LineWidth = 2
-      ADSRSettings.Attack = 0.500000000000000000
-      ADSRSettings.Decay = 0.500000000000000000
-      ADSRSettings.Sustain = 0.500000000000000000
-      ADSRSettings.Release = 0.500000000000000000
-      OnAttackChange = Osc1ADSRAttackChange
-      OnDecayChange = Osc1ADSRDecayChange
-      OnSustainChange = Osc1ADSRSustainChange
-      OnReleaseChange = Osc1ADSRReleaseChange
-      EnvVPadding = 3
-      EnvHPadding = 10
-    end
     object LbOsc1ADSR: TLabel
       Left = 9
       Top = 53
@@ -78,12 +61,26 @@ object VSTGUI: TVSTGUI
       Height = 13
       Caption = 'Level:'
     end
+    object Osc1ADSR: TGuiADSRGraph
+      Left = 50
+      Top = 43
+      Width = 89
+      Height = 29
+      ADSRSettings.Attack = 0.500000000000000000
+      ADSRSettings.Decay = 0.500000000000000000
+      ADSRSettings.Sustain = 0.500000000000000000
+      ADSRSettings.Release = 0.500000000000000000
+      OnAttackChange = Osc1ADSRAttackChange
+      OnDecayChange = Osc1ADSRDecayChange
+      OnSustainChange = Osc1ADSRSustainChange
+      OnReleaseChange = Osc1ADSRReleaseChange
+      LineWidth = 2
+    end
     object CBOsc1Type: TComboBox
       Left = 50
       Top = 16
       Width = 89
       Height = 21
-      ItemHeight = 13
       TabOrder = 0
       Text = 'sine'
       OnChange = CBOsc1TypeChange
@@ -119,21 +116,6 @@ object VSTGUI: TVSTGUI
       Height = 13
       Caption = 'Type:'
     end
-    object Osc2ADSR: TGuiADSRGraph
-      Left = 53
-      Top = 43
-      Width = 86
-      Height = 29
-      LineWidth = 2
-      ADSRSettings.Attack = 0.500000000000000000
-      ADSRSettings.Decay = 0.500000000000000000
-      ADSRSettings.Sustain = 0.500000000000000000
-      ADSRSettings.Release = 0.500000000000000000
-      OnAttackChange = Osc2ADSRAttackChange
-      OnDecayChange = Osc2ADSRDecayChange
-      OnSustainChange = Osc2ADSRSustainChange
-      OnReleaseChange = Osc2ADSRReleaseChange
-    end
     object LbOsc2ADSR: TLabel
       Left = 9
       Top = 53
@@ -148,12 +130,26 @@ object VSTGUI: TVSTGUI
       Height = 13
       Caption = 'Level:'
     end
+    object Osc2ADSR: TGuiADSRGraph
+      Left = 53
+      Top = 43
+      Width = 86
+      Height = 29
+      ADSRSettings.Attack = 0.500000000000000000
+      ADSRSettings.Decay = 0.500000000000000000
+      ADSRSettings.Sustain = 0.500000000000000000
+      ADSRSettings.Release = 0.500000000000000000
+      OnAttackChange = Osc2ADSRAttackChange
+      OnDecayChange = Osc2ADSRDecayChange
+      OnSustainChange = Osc2ADSRSustainChange
+      OnReleaseChange = Osc2ADSRReleaseChange
+      LineWidth = 2
+    end
     object CBOsc2Type: TComboBox
       Left = 50
       Top = 16
       Width = 89
       Height = 21
-      ItemHeight = 13
       TabOrder = 0
       Text = 'none'
       OnChange = CBOsc2TypeChange
