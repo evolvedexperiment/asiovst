@@ -1,4 +1,4 @@
-﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 		<PropertyGroup>
 			<ProjectGuid>{AF8E4FD9-1B9A-4253-9C84-C4BF27A83757}</ProjectGuid>
 			<MainSource>AnalogueMojo.dpr</MainSource>
@@ -87,7 +87,7 @@
 			<Debugger_RunParams>AnalogueMojo.dll</Debugger_RunParams>
 			<DCC_Namespace>System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>
 			<VerInfo_Locale>1033</VerInfo_Locale>
-			<Debugger_HostApplication>..\..\..\..\Bin\Win32\VST Plugin Analyser.exe</Debugger_HostApplication>
+			<Debugger_HostApplication>..\..\..\..\Bin\$(Platform)\VST Plugin Analyser.exe</Debugger_HostApplication>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_1)'!=''">
 			<DCC_AssertionsAtRuntime>false</DCC_AssertionsAtRuntime>
@@ -203,7 +203,8 @@ $(PostBuildEvent)]]></PostBuildEvent>
 			<PreBuildEventIgnoreExitCode>False</PreBuildEventIgnoreExitCode>
 			<PreLinkEvent/>
 			<PreLinkEventIgnoreExitCode>False</PreLinkEventIgnoreExitCode>
-			<PostBuildEvent>&quot;$(PROJECTDIR)\$(PROJECTNAME).bat&quot;</PostBuildEvent>
+			<PostBuildEvent>&quot;$(PROJECTDIR)\$(PROJECTNAME).bat&quot;
+</PostBuildEvent>
 			<PostBuildEventIgnoreExitCode>False</PostBuildEventIgnoreExitCode>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Config)'=='Publish' And '$(Platform)'=='OSX32'">
@@ -211,7 +212,8 @@ $(PostBuildEvent)]]></PostBuildEvent>
 			<PreBuildEventIgnoreExitCode>False</PreBuildEventIgnoreExitCode>
 			<PreLinkEvent/>
 			<PreLinkEventIgnoreExitCode>False</PreLinkEventIgnoreExitCode>
-			<PostBuildEvent>&quot;$(PROJECTDIR)\$(PROJECTNAME).bat&quot;</PostBuildEvent>
+			<PostBuildEvent>&quot;$(PROJECTDIR)\$(PROJECTNAME).bat&quot;
+</PostBuildEvent>
 			<PostBuildEventIgnoreExitCode>False</PostBuildEventIgnoreExitCode>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Config)'=='Publish' And '$(Platform)'=='Win32'">
@@ -219,7 +221,8 @@ $(PostBuildEvent)]]></PostBuildEvent>
 			<PreBuildEventIgnoreExitCode>False</PreBuildEventIgnoreExitCode>
 			<PreLinkEvent/>
 			<PreLinkEventIgnoreExitCode>False</PreLinkEventIgnoreExitCode>
-			<PostBuildEvent>&quot;$(PROJECTDIR)\$(PROJECTNAME).bat&quot;</PostBuildEvent>
+			<PostBuildEvent>&quot;$(PROJECTDIR)\$(PROJECTNAME).bat&quot;
+</PostBuildEvent>
 			<PostBuildEventIgnoreExitCode>False</PostBuildEventIgnoreExitCode>
 		</PropertyGroup>
 	</Project>

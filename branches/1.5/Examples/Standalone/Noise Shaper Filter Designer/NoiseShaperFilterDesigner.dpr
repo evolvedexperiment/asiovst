@@ -3,16 +3,16 @@ program NoiseShaperFilterDesigner;
 {$I DAV_Compiler.inc}
 
 uses
-  FastMM4,
+  FastMM4, // either download the library or comment if there is an error here
   {$IFDEF UseMadExcept}
-  madExcept,
+  madExcept, // either download madExcept or remove mad* if there is an error here
   madLinkDisAsm,
-  madListProcesses,
   madListModules,
-  {$ENDIF }
+  madListProcesses,
+  {$ENDIF}
   {$IFDEF UseFastMove}
-  FastMove,
-  {$ENDIF }
+  FastMove, // either download the library or disable the feature
+  {$ENDIF}
   Forms,
   NSFDmain in 'NSFDmain.pas' {FormNoiseshapingFilterDesigner};
 

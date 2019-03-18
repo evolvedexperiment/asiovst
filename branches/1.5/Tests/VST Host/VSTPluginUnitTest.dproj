@@ -1,4 +1,4 @@
-﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 		<PropertyGroup>
 			<ProjectGuid>{B8B65950-75D0-4B4B-AF5F-48607D65AE3C}</ProjectGuid>
 			<MainSource>VSTPluginUnitTest.dpr</MainSource>
@@ -96,7 +96,7 @@
 			<DCC_E>false</DCC_E>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Base_Win64)'!=''">
-			<Debugger_RunParams>C:\Users\Public\Code\VSTPack\Bin\Win64\VST\ChebyshevExciter.dll</Debugger_RunParams>
+			<Debugger_RunParams>C:\Users\Public\Code\VSTPack\Bin\$(Platform)\VST\ChebyshevExciter.dll</Debugger_RunParams>
 			<DCC_Namespace>Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;$(DCC_Namespace)</DCC_Namespace>
 			<VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
 			<VerInfo_Locale>1033</VerInfo_Locale>
