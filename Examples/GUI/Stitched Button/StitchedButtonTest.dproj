@@ -7,7 +7,7 @@
         <DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
         <FrameworkType>VCL</FrameworkType>
         <Base>True</Base>
-        <Platform Condition="'$(Platform)'==''">Win32</Platform>
+        <Platform Condition="'$(Platform)'==''">Win64</Platform>
         <TargetedPlatforms>3</TargetedPlatforms>
         <AppType>Application</AppType>
     </PropertyGroup>
@@ -109,6 +109,7 @@
     <PropertyGroup Condition="'$(Cfg_2_Win64)'!=''">
         <DCC_RemoteDebug>true</DCC_RemoteDebug>
         <BT_BuildType>Debug</BT_BuildType>
+        <DCC_Define>madExcept;$(DCC_Define)</DCC_Define>
     </PropertyGroup>
     <ItemGroup>
         <DelphiCompile Include="$(MainSource)">

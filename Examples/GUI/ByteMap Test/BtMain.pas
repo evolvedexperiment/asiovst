@@ -78,7 +78,7 @@ uses
 {$IFDEF FPC}
 {$R *.lfm}
 {$ELSE}
-{$R *.rfm}
+{$R *.dfm}
 {$ENDIF}
 
 procedure TFmBytemapTest.FormCreate(Sender: TObject);
