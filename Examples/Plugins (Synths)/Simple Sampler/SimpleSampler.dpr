@@ -5,12 +5,12 @@ library SimpleSampler;
 
 uses
   FastMM4,
-  madLinkDisAsm,
   {$IFDEF UseFastMove}
   FastMove,
   {$ENDIF }
   {$IFDEF UseMadExcept}
   madExcept,
+  madLinkDisAsm,
   {$ENDIF }
   Forms,
   DAV_VSTEffect,

@@ -4,16 +4,16 @@ program PortAudioDemo;
 
 uses
   FastMM4,
-  madLinkDisAsm,
   madListHardware,
   madListProcesses,
-  madListModules,
+  madListModules, // either download the library or comment if there is an error here
   {$IFDEF UseMadExcept}
-  madExcept,
-  {$ENDIF }
+  madExcept, // either download madExcept or remove mad* if there is an error here
+  madLinkDisAsm,
+  {$ENDIF}
   {$IFDEF UseFastMove}
-  FastMove,
-  {$ENDIF }
+  FastMove, // either download the library or disable the feature
+  {$ENDIF}
   Forms,
   PortAudioDemoForm in 'PortAudioDemoForm.pas' {FormPortAudio};
 

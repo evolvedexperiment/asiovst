@@ -85,7 +85,7 @@
 			<Debugger_RunParams>WeightingFilters.dll</Debugger_RunParams>
 			<DCC_Namespace>System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>
 			<VerInfo_Locale>1033</VerInfo_Locale>
-			<Debugger_HostApplication>..\..\..\..\Bin\Win32\VST Plugin Analyser.exe</Debugger_HostApplication>
+			<Debugger_HostApplication>..\..\..\..\Bin\$(Platform)\VST Plugin Analyser.exe</Debugger_HostApplication>
 			<VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_1)'!=''">
@@ -151,7 +151,7 @@ $(PostBuildEvent)]]></PostBuildEvent>
 					</Source>
 					<Parameters>
 						<Parameters Name="RunParams">WeightingFilters.dll</Parameters>
-						<Parameters Name="HostApplication">..\..\..\..\Bin\Win32\VST Plugin Analyser.exe</Parameters>
+						<Parameters Name="HostApplication">..\..\..\..\Bin\$(Platform)\VST Plugin Analyser.exe</Parameters>
 						<Parameters Name="UseLauncher">False</Parameters>
 						<Parameters Name="LoadAllSymbols">True</Parameters>
 						<Parameters Name="LoadUnspecifiedSymbols">False</Parameters>

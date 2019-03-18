@@ -36,8 +36,9 @@ program LoudnessR128;
 
 uses
   FastMM4, // either download the library or comment if there is an error here
-  {$IFNDEF UseFastMove}
-  FastMove,
+  {$IFDEF UseMadExcept}
+  madExcept, // either download madExcept or remove mad* if there is an error here
+  madLinkDisAsm,
   {$ENDIF}
   {$IFDEF UseFastMove}
   FastMove, // either download the library or disable the feature

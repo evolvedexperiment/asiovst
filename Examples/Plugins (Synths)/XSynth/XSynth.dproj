@@ -57,7 +57,7 @@
         <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Winapi;Vcl;$(DCC_Namespace)</DCC_Namespace>
         <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
         <SanitizedProjectName>XSynth</SanitizedProjectName>
-        <DCC_ExeOutput>..\..\..\Bin\$(Platform)</DCC_ExeOutput>
+        <DCC_ExeOutput>..\..\..\Bin\VST\$(Platform)</DCC_ExeOutput>
         <DCC_DcuOutput>..\..\..\UnitCache\$(Platform)\$(Config)</DCC_DcuOutput>
         <DCC_UnitSearchPath>..\..\..\source;..\..\..\source\ASIO;..\..\..\source\DSP;..\..\..\source\FileFormats;..\..\..\source\GUI;..\..\..\source\Math;..\..\..\source\VST;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
     </PropertyGroup>
