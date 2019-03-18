@@ -279,6 +279,7 @@ object EditorForm: TEditorForm
       Top = 32
       Width = 64
       Height = 64
+      DefaultValue = 0.698970019817352300
       Max = 3.698970079421997000
       Min = 0.698970019817352300
       ScrollRange = 400.000000000000000000
@@ -287,7 +288,6 @@ object EditorForm: TEditorForm
       Value = 0.698970019817352300
       WheelStep = 1.000000000000000000
       OnChange = DialDecayChange
-      DefaultValue = 0.000000000000000000
     end
     object CBDuck: TGuiControlsCheckBox
       Left = 147
@@ -450,6 +450,7 @@ object EditorForm: TEditorForm
       Top = 23
       Width = 48
       Height = 48
+      DefaultValue = 1.301030039787292000
       Max = 3.602060079574585000
       Min = 1.301030039787292000
       ScrollRange = 400.000000000000000000
@@ -458,13 +459,13 @@ object EditorForm: TEditorForm
       Value = 1.301030039787292000
       WheelStep = 1.000000000000000000
       OnChange = DialLoCutChange
-      DefaultValue = 0.000000000000000000
     end
     object DialHiCut: TGuiStitchedDial
       Left = 70
       Top = 23
       Width = 48
       Height = 48
+      DefaultValue = 2.301029920578003000
       Max = 4.301030158996582000
       Min = 2.301029920578003000
       ScrollRange = 400.000000000000000000
@@ -473,7 +474,6 @@ object EditorForm: TEditorForm
       Value = 2.301029920578003000
       WheelStep = 1.000000000000000000
       OnChange = DialHiCutChange
-      DefaultValue = 0.000000000000000000
     end
   end
   object GBDynamics: TGuiGroup
@@ -601,6 +601,7 @@ object EditorForm: TEditorForm
       Top = 22
       Width = 48
       Height = 48
+      DefaultValue = 1.000000000000000000
       Max = 10.000000000000000000
       Min = 1.000000000000000000
       ScrollRange = 400.000000000000000000
@@ -609,13 +610,13 @@ object EditorForm: TEditorForm
       Value = 1.000000000000000000
       WheelStep = 1.000000000000000000
       OnChange = DialRatioChange
-      DefaultValue = 0.000000000000000000
     end
     object DialKnee: TGuiStitchedDial
       Left = 65
       Top = 22
       Width = 48
       Height = 48
+      DefaultValue = 1.000000000000000000
       Max = 6.000000000000000000
       Min = 1.000000000000000000
       ScrollRange = 400.000000000000000000
@@ -624,7 +625,6 @@ object EditorForm: TEditorForm
       Value = 1.000000000000000000
       WheelStep = 1.000000000000000000
       OnChange = DialKneeChange
-      DefaultValue = 0.000000000000000000
     end
     object DialRange: TGuiStitchedDial
       Left = 119

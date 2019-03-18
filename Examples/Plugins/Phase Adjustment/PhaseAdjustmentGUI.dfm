@@ -8715,7 +8715,6 @@ object FmPhaseAdjustment: TFmPhaseAdjustment
           F01F4B3C25DB6BD512FFFF1F05A48F9D429B80D80000000049454E44AE426082}
         DisplayName = 'Phase Dial'
         GlyphCount = 90
-        StitchKind = skHorizontal
         Height = 192
         Width = 17280
       end>

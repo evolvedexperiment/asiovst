@@ -36,7 +36,7 @@ interface
 
 uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} Classes, Forms,
-  Controls, StdCtrls, Spin, DAV_GuiDial;
+  Controls, StdCtrls, Spin, DAV_GuiDial, DAV_GuiBaseControl;
 
 type
   TFmDitherNoiseshaper = class(TForm)
@@ -77,100 +77,100 @@ uses
 
 procedure TFmDitherNoiseshaper.FormShow(Sender: TObject);
 begin
- UpdateBitDepth;
- UpdateLimit;
- UpdateDitherType;
- UpdateDitherAmplitude;
- UpdateNoiseShaper;
+  UpdateBitDepth;
+  UpdateLimit;
+  UpdateDitherType;
+  UpdateDitherAmplitude;
+  UpdateNoiseShaper;
 end;
 
 procedure TFmDitherNoiseshaper.SeBitDepthChange(Sender: TObject);
 begin
- with TDitherNoiseshaperModule(Owner) do
+  with TDitherNoiseshaperModule(Owner) do
   begin
-   if Parameter[0] <> SeBitDepth.Value
-    then Parameter[0] := SeBitDepth.Value;
+    if Parameter[0] <> SeBitDepth.Value then
+      Parameter[0] := SeBitDepth.Value;
   end;
 end;
 
 procedure TFmDitherNoiseshaper.CbLimitClick(Sender: TObject);
 begin
- with TDitherNoiseshaperModule(Owner) do
+  with TDitherNoiseshaperModule(Owner) do
   begin
-   if Parameter[1] <> Integer(CbLimit.Checked)
-    then Parameter[1] := Integer(CbLimit.Checked);
+    if Parameter[1] <> Integer(CbLimit.Checked) then
+      Parameter[1] := Integer(CbLimit.Checked);
   end;
 end;
 
 procedure TFmDitherNoiseshaper.CbDitherTypeChange(Sender: TObject);
 begin
- with TDitherNoiseshaperModule(Owner) do
+  with TDitherNoiseshaperModule(Owner) do
   begin
-   if Parameter[2] <> CbDitherType.ItemIndex
-    then Parameter[2] := CbDitherType.ItemIndex;
+    if Parameter[2] <> CbDitherType.ItemIndex then
+      Parameter[2] := CbDitherType.ItemIndex;
   end;
 end;
 
 procedure TFmDitherNoiseshaper.DialAmplitudeChange(Sender: TObject);
 begin
- with TDitherNoiseshaperModule(Owner) do
+  with TDitherNoiseshaperModule(Owner) do
   begin
-   if Parameter[3] <> DialAmplitude.Position
-    then Parameter[3] := DialAmplitude.Position;
+    if Parameter[3] <> DialAmplitude.Position then
+      Parameter[3] := DialAmplitude.Position;
   end;
 end;
 
 procedure TFmDitherNoiseshaper.CbNoiseshaperTypeChange(Sender: TObject);
 begin
- with TDitherNoiseshaperModule(Owner) do
+  with TDitherNoiseshaperModule(Owner) do
   begin
-   if Parameter[4] <> CbNoiseshaperType.ItemIndex
-    then Parameter[4] := CbNoiseshaperType.ItemIndex;
+    if Parameter[4] <> CbNoiseshaperType.ItemIndex then
+      Parameter[4] := CbNoiseshaperType.ItemIndex;
   end;
 end;
 
 procedure TFmDitherNoiseshaper.UpdateBitDepth;
 begin
- with TDitherNoiseshaperModule(Owner) do
+  with TDitherNoiseshaperModule(Owner) do
   begin
-   if SeBitDepth.Value <> Round(Parameter[0])
-    then SeBitDepth.Value := Round(Parameter[0])
+    if SeBitDepth.Value <> Round(Parameter[0]) then
+      SeBitDepth.Value := Round(Parameter[0])
   end;
 end;
 
 procedure TFmDitherNoiseshaper.UpdateLimit;
 begin
- with TDitherNoiseshaperModule(Owner) do
+  with TDitherNoiseshaperModule(Owner) do
   begin
-   if CbLimit.Checked <> Boolean(Round(Parameter[1]))
-    then CbLimit.Checked := Boolean(Round(Parameter[1]))
+    if CbLimit.Checked <> Boolean(Round(Parameter[1])) then
+      CbLimit.Checked := Boolean(Round(Parameter[1]))
   end;
 end;
 
 procedure TFmDitherNoiseshaper.UpdateDitherType;
 begin
- with TDitherNoiseshaperModule(Owner) do
+  with TDitherNoiseshaperModule(Owner) do
   begin
-   if CbDitherType.ItemIndex <> Round(Parameter[2])
-    then CbDitherType.ItemIndex := Round(Parameter[2])
+    if CbDitherType.ItemIndex <> Round(Parameter[2]) then
+      CbDitherType.ItemIndex := Round(Parameter[2])
   end;
 end;
 
 procedure TFmDitherNoiseshaper.UpdateDitherAmplitude;
 begin
- with TDitherNoiseshaperModule(Owner) do
+  with TDitherNoiseshaperModule(Owner) do
   begin
-   if DialAmplitude.Position <> Parameter[3]
-    then DialAmplitude.Position := Parameter[3]
+    if DialAmplitude.Position <> Parameter[3] then
+      DialAmplitude.Position := Parameter[3]
   end;
 end;
 
 procedure TFmDitherNoiseshaper.UpdateNoiseShaper;
 begin
- with TDitherNoiseshaperModule(Owner) do
+  with TDitherNoiseshaperModule(Owner) do
   begin
-   if CbNoiseshaperType.ItemIndex <> Round(Parameter[4])
-    then CbNoiseshaperType.ItemIndex := Round(Parameter[4])
+    if CbNoiseshaperType.ItemIndex <> Round(Parameter[4]) then
+      CbNoiseshaperType.ItemIndex := Round(Parameter[4])
   end;
 end;
 

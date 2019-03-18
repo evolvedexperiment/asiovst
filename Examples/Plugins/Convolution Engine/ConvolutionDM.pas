@@ -35,7 +35,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
   Forms, SyncObjs, DAV_Types, DAV_VSTModule, DAV_DspConvolution,
   DAV_AudioFileWAV, DAV_AudioFileAIFF, DAV_AudioFileAU, DAV_AudioData;
 
@@ -49,9 +49,9 @@ type
     procedure ParameterLatencyChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleDestroy(Sender: TObject);
   private
-    FConvolutionClassic    : TConvolution32;
-    FConvolutionLowLatency : TLowLatencyConvolution32;
-    FCriticalSection       : TCriticalSection;
+    FConvolutionClassic: TConvolution32;
+    FConvolutionLowLatency: TLowLatencyConvolution32;
+    FCriticalSection: TCriticalSection;
   public
     procedure LoadIR(FileName: TFileName);
   end;
@@ -79,82 +79,84 @@ end;
 
 procedure TConvolutionDataModule.VSTModuleOpen(Sender: TObject);
 begin
- FConvolutionClassic := TConvolution32.Create;
- FConvolutionLowLatency := TLowLatencyConvolution32.Create;
- FConvolutionClassic.FFTOrder := max(7, CeilLog2(InitialDelay)) + 1;
- FConvolutionLowLatency.MinimumIRBlockOrder := max(7, CeilLog2(InitialDelay));
- FConvolutionLowLatency.MaximumIRBlockOrder := 17;
+  FConvolutionClassic := TConvolution32.Create;
+  FConvolutionLowLatency := TLowLatencyConvolution32.Create;
+  FConvolutionClassic.FFTOrder := max(7, CeilLog2(InitialDelay)) + 1;
+  FConvolutionLowLatency.MinimumIRBlockOrder := max(7, CeilLog2(InitialDelay));
+  FConvolutionLowLatency.MaximumIRBlockOrder := 17;
 
- EditorFormClass := TFmConvolution;
+  EditorFormClass := TFmConvolution;
 end;
 
 procedure TConvolutionDataModule.VSTModuleClose(Sender: TObject);
 begin
- FreeAndNil(FConvolutionLowLatency);
- FreeAndNil(FConvolutionClassic);
+  FreeAndNil(FConvolutionLowLatency);
+  FreeAndNil(FConvolutionClassic);
 end;
 
-procedure TConvolutionDataModule.ParameterMaximumIROrderChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TConvolutionDataModule.ParameterMaximumIROrderChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
- FCriticalSection.Enter;
- try
-  if Value >= FConvolutionLowLatency.MinimumIRBlockOrder
-   then FConvolutionLowLatency.MaximumIRBlockOrder := Round(Limit(Value, 7, 20))
-   else Value := FConvolutionLowLatency.MinimumIRBlockOrder;
- finally
-  FCriticalSection.Leave;
- end;
+  FCriticalSection.Enter;
+  try
+    if Value >= FConvolutionLowLatency.MinimumIRBlockOrder then
+      FConvolutionLowLatency.MaximumIRBlockOrder := Round(Limit(Value, 7, 20))
+    else
+      Value := FConvolutionLowLatency.MinimumIRBlockOrder;
+  finally
+    FCriticalSection.Leave;
+  end;
 end;
 
-procedure TConvolutionDataModule.ParameterLatencyChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TConvolutionDataModule.ParameterLatencyChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
- FCriticalSection.Enter;
- try
-  if Value > FConvolutionLowLatency.MaximumIRBlockOrder
-   then Value := FConvolutionLowLatency.MaximumIRBlockOrder;
-  FConvolutionLowLatency.MinimumIRBlockOrder := Round(Value);
-  FConvolutionClassic.FFTOrder := Round(Value) + 1;
- finally
-  FCriticalSection.Leave;
- end;
+  FCriticalSection.Enter;
+  try
+    if Value > FConvolutionLowLatency.MaximumIRBlockOrder then
+      Value := FConvolutionLowLatency.MaximumIRBlockOrder;
+    FConvolutionLowLatency.MinimumIRBlockOrder := Round(Value);
+    FConvolutionClassic.FFTOrder := Round(Value) + 1;
+  finally
+    FCriticalSection.Leave;
+  end;
 end;
 
 procedure TConvolutionDataModule.LoadIR(FileName: TFileName);
 var
-  ADC : TAudioDataCollection32;
+  ADC: TAudioDataCollection32;
 begin
- FCriticalSection.Enter;
- try
-  ADC := TAudioDataCollection32.Create(Self);
-  with ADC do
-   try
-    LoadFromFile(FileName);
+  FCriticalSection.Enter;
+  try
+    ADC := TAudioDataCollection32.Create(Self);
+    with ADC do
+      try
+        LoadFromFile(FileName);
 
-    FConvolutionLowLatency.LoadImpulseResponse(ADC[0].ChannelDataPointer, ADC.SampleFrames);
-    if ADC.ChannelCount > 1
-     then FConvolutionClassic.LoadImpulseResponse(ADC[1].ChannelDataPointer, ADC.SampleFrames)
-     else FConvolutionClassic.LoadImpulseResponse(ADC[0].ChannelDataPointer, ADC.SampleFrames);
-   finally
-    FreeAndNil(ADC);
-   end;
- finally
-  FCriticalSection.Leave;
- end;
+        FConvolutionLowLatency.LoadImpulseResponse(ADC[0].ChannelDataPointer, ADC.SampleFrames);
+        if ADC.ChannelCount > 1 then
+          FConvolutionClassic.LoadImpulseResponse(ADC[1].ChannelDataPointer, ADC.SampleFrames)
+        else
+          FConvolutionClassic.LoadImpulseResponse(ADC[0].ChannelDataPointer, ADC.SampleFrames);
+      finally
+        FreeAndNil(ADC);
+      end;
+  finally
+    FCriticalSection.Leave;
+  end;
 end;
 
 procedure TConvolutionDataModule.VSTModuleProcess(const Inputs,
   Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 begin
- // lock processing
- FCriticalSection.Enter;
- try
-  FConvolutionClassic.ProcessBlock(@Inputs[0, 0], @Outputs[0, 0], SampleFrames);
-  FConvolutionLowLatency.ProcessBlock(@Inputs[1, 0], @Outputs[1, 0], SampleFrames);
- finally
-  FCriticalSection.Leave;
- end;
+  // lock processing
+  FCriticalSection.Enter;
+  try
+    FConvolutionClassic.ProcessBlock(@Inputs[0, 0], @Outputs[0, 0], SampleFrames);
+    FConvolutionLowLatency.ProcessBlock(@Inputs[1, 0], @Outputs[1, 0], SampleFrames);
+  finally
+    FCriticalSection.Leave;
+  end;
 end;
 
 end.

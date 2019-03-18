@@ -349,123 +349,12 @@ procedure TCustomWindowFunction.CalculateWindowInfo;
 var
   i: Integer;
   TempTab: PDAVDoubleFixedArray;
-  (*
-    {$IFNDEF PUREPASCAL}
-    DFT64Res     : TDFT64Results;
-    Freq         : Double;
-    FrqInc       : Double;
-    DCReference  : Double;
-    Reference    : Double;
-    CurrentValue : Double;
-    DirUp        : Boolean;
-    SidelobeFreq : Double;
-    {$ENDIF}
-  *)
 begin
   GetMem(TempTab, FLength * SizeOf(Double));
   try
     for i := 0 to FLength - 1 do
       TempTab[i] := 1;
     ProcessBlock64(@TempTab[0], FLength);
-
-    (*
-      {$IFNDEF PUREPASCAL}
-      FillChar(DFT64Res, SizeOf(TDFT64Results), 0);
-      DCReference := Sqr(SumOfF64(@TempTab[0], FLength));
-
-      Reference   := 1 / DCReference;
-
-      // nummerical search of bandwidth
-      DirUp        := True;
-      Freq         := 0.5 / FLength;
-      FrqInc       := Freq;
-
-      F64DFT(Freq, @DFT64Res, @TempTab[0], 0, FLength);
-      CurrentValue := (sqr(DFT64Res.Re) + sqr(DFT64Res.Im)) * Reference;
-
-      for i := 0 to 100 do
-      begin
-      if DirUp then
-      if (CurrentValue < 0.5) then
-      begin
-      DirUp  := False;
-      FrqInc := -0.5 * FrqInc;
-      end else else
-      if (CurrentValue > 0.5) then
-      begin
-      DirUp  := True;
-      FrqInc := -0.5 * FrqInc;
-      end;
-      Freq := Freq + FrqInc;
-      if Freq > 1 then Freq := Freq - 1;
-      F64DFT(Freq, @DFT64Res, @TempTab[0], 0, FLength);
-      CurrentValue := (sqr(DFT64Res.Re) + sqr(DFT64Res.Im)) * Reference;
-      end;
-      FBandwidth := 2 * Freq * FLength;
-
-      // nummerical search of first minimum
-      Freq          := 1 / FLength;                   // second Bin as normed frequency
-      FrqInc        := 1 / 32 * Freq;                 // initial scan width
-      FFirstMinimum := Freq;                          // absolute first minimum bin
-
-      F64DFT(Freq, @DFT64Res, @TempTab[0], 0, FLength);
-      CurrentValue := sqr(DFT64Res.Re) + sqr(DFT64Res.Im);
-      Reference     := 1 / Reference;                 // Reference equals CurrentValue
-      for i := 0 to 10000 do
-      begin
-      if CurrentValue < Reference
-      then
-      begin
-      Reference := CurrentValue;
-      FFirstMinimum := 2 * Freq * FLength;
-      end
-      else
-      if FrqInc < 1E-6
-      then FrqInc := -0.1 * FrqInc
-      else
-      begin
-      Freq   := Freq - FrqInc;
-      FrqInc := 0.2 * FrqInc;
-      end;
-      Freq := Freq + FrqInc;
-
-      F64DFT(Freq, @DFT64Res, @TempTab[0], 0, FLength);
-      CurrentValue := sqr(DFT64Res.Re) + sqr(DFT64Res.Im);
-
-      if FrqInc > 1E-6 then FrqInc := 0.8 * FrqInc;
-      end;
-
-      // nummerical search of highest sidelobe
-      Freq             := FFirstMinimum * 0.5 / FLength;
-      SidelobeFreq     := Freq;
-      FrqInc           := 1 / (FLength * 32);
-      Reference        := CurrentValue;
-      while Freq < 0.5 do
-      begin
-      F64DFT(Freq, @DFT64Res, @TempTab[0], 0, FLength);
-      CurrentValue := (sqr(DFT64Res.Re) + sqr(DFT64Res.Im));
-      Freq           := Freq + FrqInc;
-      if CurrentValue > Reference then
-      begin
-      Reference    := CurrentValue;
-      SidelobeFreq := Freq;
-      end;
-      end;
-
-      Freq   := SidelobeFreq - FrqInc;
-      FrqInc := FrqInc / 16;
-      for i := 0 to 32 do
-      begin
-      F64DFT(Freq, @DFT64Res, @TempTab[0], 0, FLength);
-      CurrentValue := (sqr(DFT64Res.Re) + sqr(DFT64Res.Im));
-      Freq         := Freq + FrqInc;
-      if CurrentValue > Reference
-      then Reference := CurrentValue;
-      end;
-
-      FSidelobe := 0.5 * Amp_to_dB(Reference / DCReference);
-      {$ENDIF}
-    *)
   finally
     Dispose(TempTab);
   end;

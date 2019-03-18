@@ -457,7 +457,8 @@ end;
 
 function FrequencyToBark(Frequency: Single): Single;
 begin
-  if (Frequency < 0) then Frequency := 0;
+  if (Frequency < 0) then
+    Frequency := 0;
   Frequency := Frequency * 0.001;
   Result := 13.0 * ArcTan(0.76 * Frequency) +
     3.5 * ArcTan(Sqr(Frequency * 0.1333333333333333));
@@ -465,7 +466,8 @@ end;
 
 function FrequencyToBark(Frequency: Double): Double;
 begin
-  if (Frequency < 0) then Frequency := 0;
+  if (Frequency < 0) then
+    Frequency := 0;
   Frequency := Frequency * 0.001;
   Result := 13.0 * ArcTan(0.76 * Frequency) +
     3.5 * ArcTan(Sqr(Frequency / 7.5));

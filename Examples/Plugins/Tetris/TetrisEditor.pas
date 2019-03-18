@@ -50,10 +50,10 @@ type
     procedure FormMouseWheel(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
     procedure TetrisOnTimer(Sender: TObject);
   private
-    fBitmap: TBitmap;
-    fTetris: TTetris;
+    FBitmap: TBitmap;
+    FTetris: TTetris;
   public
-    property Tetris : TTetris read fTetris;
+    property Tetris: TTetris read FTetris;
   end;
 
 implementation
@@ -66,55 +66,63 @@ implementation
 
 procedure TFmTetris.FormCreate(Sender: TObject);
 begin
- fTetris := TTetris.Create;
- fBitmap := TBitmap.Create;
+  FTetris := TTetris.Create;
+  FBitmap := TBitmap.Create;
 end;
 
 procedure TFmTetris.FormDestroy(Sender: TObject);
 begin
- FreeAndNil(fTetris);
- FreeAndNil(fBitmap);
+  FreeAndNil(FTetris);
+  FreeAndNil(FBitmap);
 end;
 
 procedure TFmTetris.FormKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
- if key = VK_SPACE then fTetris.StepGame;
- if key  = VK_LEFT then fTetris.Left;
-  if key  = VK_right then fTetris.right;
-   if key  = VK_up then fTetris.Rotate;
-    if key  = VK_DOWN then fTetris.StepGame;
- FormPaint(nil);
+  if Key = VK_SPACE then
+    FTetris.StepGame;
+  if Key = VK_LEFT then
+    FTetris.Left;
+  if Key = VK_right then
+    FTetris.right;
+  if Key = VK_up then
+    FTetris.Rotate;
+  if Key = VK_DOWN then
+    FTetris.StepGame;
+  FormPaint(nil);
 end;
 
 procedure TFmTetris.FormMouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
-  if ssleft in shift then fTetris.Left;
-  if ssright in shift then fTetris.right;
-  if ssMiddle in shift then fTetris.Rotate;
+  if ssleft in Shift then
+    FTetris.Left;
+  if ssright in Shift then
+    FTetris.right;
+  if ssMiddle in Shift then
+    FTetris.Rotate;
   FormPaint(nil);
 end;
 
 procedure TFmTetris.FormMouseWheel(Sender: TObject; Shift: TShiftState;
   WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
 begin
- fTetris.Rotate;
- FormPaint(nil);
+  FTetris.Rotate;
+  FormPaint(nil);
 end;
 
 procedure TFmTetris.FormPaint(Sender: TObject);
 begin
- fTetris.DefaultBitmap(fBitmap);
- Canvas.StretchDraw(clientrect, fBitmap);
- Caption := 'lines ' + inttostr(fTetris.Lines);
+  FTetris.DefaultBitmap(FBitmap);
+  Canvas.StretchDraw(clientrect, FBitmap);
+  Caption := 'lines ' + inttostr(FTetris.Lines);
 end;
 
 procedure TFmTetris.TetrisOnTimer(Sender: TObject);
 begin
-  fTetris.StepGame;
+  FTetris.StepGame;
   FormPaint(nil);
-  TetrisTimer.Interval:=TrimInt(1000 - fTetris.lines*10,100,1000);
+  TetrisTimer.Interval := TrimInt(1000 - FTetris.Lines * 10, 100, 1000);
 end;
 
 end.

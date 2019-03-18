@@ -7,7 +7,6 @@ object VocInputDataModule: TVocInputDataModule
   VendorName = 'Delphi ASIO & VST Project / mda'
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Vocoder Carrier Signal'
   IORatio = 1.000000000000000000
   UniqueID = 'mda3'
@@ -19,7 +18,6 @@ object VocInputDataModule: TVocInputDataModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Tracking'
       LargeStepFloat = 1.000000000000000000
@@ -34,7 +32,6 @@ object VocInputDataModule: TVocInputDataModule
       OnCustomParameterDisplay = ParameterTrackingDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Pitch'
       LargeStepFloat = 2.000000000000000000
@@ -47,7 +44,6 @@ object VocInputDataModule: TVocInputDataModule
       OnCustomParameterDisplay = ParameterPitchDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Breath'
       LargeStepFloat = 10.000000000000000000
@@ -60,7 +56,6 @@ object VocInputDataModule: TVocInputDataModule
       OnParameterChange = ParameterBreathChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'S Thresh'
       LargeStepFloat = 10.000000000000000000
@@ -73,7 +68,6 @@ object VocInputDataModule: TVocInputDataModule
       OnParameterChange = ParameterVoicedUnvoicedDetectorChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Max Freq'
       Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
@@ -98,8 +92,6 @@ object VocInputDataModule: TVocInputDataModule
   OnProcess32Replacing = VSTModuleProcess
   OnSampleRateChange = VSTModuleSampleRateChange
   OnSuspend = VSTModuleSuspend
-  Left = 726
-  Top = 89
   Height = 150
   Width = 215
 end

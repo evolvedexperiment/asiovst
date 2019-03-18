@@ -14,12 +14,10 @@ object PerformanceTestModule: TPerformanceTestModule
   ShellPlugins = <>
   Programs = <>
   ParameterProperties = <>
-  OnEditOpen = VSTModuleEditOpen
+  ParameterCategories = <>
   OnProcess = VSTModuleProcess
-  OnProcess64Replacing = VSTModuleProcessDoubleReplacing
   OnProcess32Replacing = VSTModuleProcess
-  Left = 309
-  Top = 202
+  OnProcess64Replacing = VSTModuleProcessDoubleReplacing
   Height = 150
   Width = 215
 end

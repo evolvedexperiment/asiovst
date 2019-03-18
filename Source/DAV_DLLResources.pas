@@ -479,25 +479,26 @@ end;
 ////////////////////////////////////////////////////////////////////////////////
 function ResourceNameToInt(const s: AnsiString): Integer;
 var
-  isNumeric : Boolean;
-  i         : Integer;
+  isNumeric: Boolean;
+  i: Integer;
 begin
- isNumeric := Length(s) > 0;
- for i := 1 to Length(s) do
-  if not (s[i] in ['0'..'9']) then
-   begin
-    isNumeric := False;
-    Break;
-   end;
+  isNumeric := Length(s) > 0;
+  for i := 1 to Length(s) do
+    if not(s[i] in ['0' .. '9']) then
+    begin
+      isNumeric := False;
+      Break;
+    end;
 
- if isNumeric
-  then Result := StrToInt(string(s))
-  else Result := -1
+  if isNumeric then
+    Result := StrToInt(string(s))
+  else
+    Result := -1
 end;
 
 function WideResourceNameToInt(const s: WideString): Integer;
 begin
- Result := ResourceNameToInt(AnsiString(s));
+  Result := ResourceNameToInt(AnsiString(s));
 end;
 
 
@@ -527,28 +528,32 @@ begin
   i2 := ResourceNameToInt(AnsiString(d2.ResourceType));
 
   if i1 >= 0 then
-   if i2 >= 0
-    then Result := i1 - i2 // Compare two integer ids
-    else Result := 1       // id1 is int, so it's greater than non-int id2
+    if i2 >= 0 then
+      Result := i1 - i2 // Compare two integer ids
+    else
+      Result := 1       // id1 is int, so it's greater than non-int id2
   else
-   if i2 >= 0
-    then Result := -1      // id2 is int, so it's less than non-int id1
-    else Result := CompareText(d1.ResourceType, d2.ResourceType); // Compare two string resource ids
+    if i2 >= 0 then
+      Result := -1      // id2 is int, so it's less than non-int id1
+    else
+      Result := CompareText(d1.ResourceType, d2.ResourceType); // Compare two string resource ids
 
   if Result = 0 then        // If they match, do the same with the names
-   begin
+  begin
     i1 := ResourceNameToInt(AnsiString(d1.ResourceName));
     i2 := ResourceNameToInt(AnsiString(d2.ResourceName));
 
     if i1 >= 0 then
-     if i2 >= 0
-      then Result := i1 - i2
-      else Result := 1
+      if i2 >= 0 then
+        Result := i1 - i2
+      else
+        Result := 1
     else
-     if i2 >= 0
-      then Result := -1
-      else Result := CompareText(d1.ResourceName, d2.ResourceName)
-   end
+      if i2 >= 0 then
+        Result := -1
+      else
+        Result := CompareText(d1.ResourceName, d2.ResourceName)
+  end
 end;
 
 
@@ -623,9 +628,10 @@ begin
   FResourceName := AName;
   FResourceType := AType;
   FData := TMemoryStream.Create;
-  if AData <> nil
-   then FData.Write(AData^, ASize)
-   else InitNew;
+  if AData <> nil then
+    FData.Write(AData^, ASize)
+  else
+    InitNew;
 end;
 
 
@@ -645,8 +651,8 @@ begin
   FCodePage := LCIDToCodePage(FResourceLanguage);
   FResourceName := AName;
   FResourceType := GetBaseType;
-  if Assigned(AParent)
-   then AParent.AddResource(Self);
+  if Assigned(AParent) then
+    AParent.AddResource(Self);
   FData := TMemoryStream.Create;
   InitNew
 end;
@@ -663,7 +669,7 @@ class function TResourceDetails.CreateResourceDetails(
   ALanguage: Integer; const AName, AType: WideString; ASize: Integer;
   AData: pointer): TResourceDetails;
 begin
- Result := TResourceDetails.Create(AParent, ALanguage, AName, AType, ASize, AData)
+  Result := TResourceDetails.Create(AParent, ALanguage, AName, AType, ASize, AData)
 end;
 
 
@@ -675,8 +681,8 @@ end;
 
 destructor TResourceDetails.Destroy;
 begin
- FreeAndNil(FData);
- inherited;
+  FreeAndNil(FData);
+  inherited;
 end;
 
 
@@ -720,19 +726,19 @@ end;
 procedure TResourceDetails.SetResourceName(const Value: WideString);
 begin
   if FResourceName <> Value then
-   begin
+  begin
     FResourceName := Value;
     FDirty := True
-   end
+  end
 end;
 
 procedure TResourceDetails.SetResourceType(const Value: WideString);
 begin
   if FResourceType <> Value then
-   begin
+  begin
     FResourceType := Value;
     FDirty := True
-   end
+  end
 end;
 
 
@@ -782,9 +788,9 @@ procedure TResourceModule.ClearDirty;
 var
   Index : Integer;
 begin
- FDirty := False;
- for Index := 0 to ResourceCount - 1
-  do ResourceDetails[Index].Dirty := False
+  FDirty := False;
+  for Index := 0 to ResourceCount - 1 do
+    ResourceDetails[Index].Dirty := False
 end;
 
 
@@ -824,8 +830,8 @@ begin
       (ResourceDetails[i].FResourceName = Name) and
       (Integer(ResourceDetails[i].FResourceLanguage) = ALanguage) then
      begin
-      Result := ResourceDetails[i];
-      break
+       Result := ResourceDetails[i];
+       break
      end;
 
   if not Assigned(Result) then
@@ -834,8 +840,8 @@ begin
         (ResourceDetails[i].FResourceName = Name) and
         (ResourceDetails[i].FResourceLanguage = 0) then
        begin
-        Result := ResourceDetails[i];
-        break
+         Result := ResourceDetails[i];
+         break
        end
 end;
 
@@ -861,8 +867,8 @@ begin
     for i := 0 to ResourceCount - 1 do
       if ResourceDetails[i].Dirty then
        begin
-        Result := True;
-        break
+         Result := True;
+         break
        end
 end;
 
@@ -886,14 +892,15 @@ begin
   n := 0;
 
   for i := 0 to ResourceCount - 1 do
-   begin
+  begin
     Details := ResourceDetails[i];
     if Details.ResourceType = ResType then
-     begin
-      n1 := ResourceNametoInt(AnsiString(Details.ResourceName));
-      if n1 > n then n := n1
-     end
-   end;
+    begin
+      n1 := ResourceNameToInt(AnsiString(Details.ResourceName));
+      if n1 > n then
+        n := n1
+    end
+  end;
 
   Result := IntToStr(n + 1);
 end;
@@ -912,17 +919,17 @@ procedure TResourceModule.LoadFromFile(const FileName: TFileName);
 var
   s: TFileStream;
 begin
- s := TFileStream.Create(FileName, fmOpenRead or fmShareDenyNone);
- try
-  LoadFromStream(s);
- finally
-  s.Free
- end;
+  s := TFileStream.Create(FileName, fmOpenRead or fmShareDenyNone);
+  try
+    LoadFromStream(s);
+  finally
+    s.Free
+  end;
 end;
 
-procedure TResourceModule.LoadFromStream(stream: TStream);
+procedure TResourceModule.LoadFromStream(Stream: TStream);
 begin
- raise Exception.Create(RCStrNoStreaming);
+  raise Exception.Create(RCStrNoStreaming);
 end;
 
 
@@ -940,31 +947,32 @@ var
   s          : TFileStream;
   BackupName : TFileName;
 begin
- // eventually do a backup
- if FBackup then
+  // eventually do a backup
+  if FBackup then
   begin
-   ChangeFileExt(BackupName, '~' + ExtractFileExt(FileName));
-   if FileExists(BackupName) then DeleteFile(BackupName);
-   RenameFile(FileName, BackupName);
+    ChangeFileExt(BackupName, '~' + ExtractFileExt(FileName));
+    if FileExists(BackupName) then
+      DeleteFile(BackupName);
+    RenameFile(FileName, BackupName);
   end;
 
- try
-  s := TFileStream.Create(FileName, fmCreate);
-   try
-    SaveToStream(s);
-    ClearDirty;
-   finally
-    FreeAndNil(s)
-   end
- except
-  // Failed
-  DeleteFile(FileName);
+  try
+    s := TFileStream.Create(FileName, fmCreate);
+    try
+      SaveToStream(s);
+      ClearDirty;
+    finally
+      FreeAndNil(s)
+    end
+  except
+    // Failed
+    DeleteFile(FileName);
 
-  // eventually rename old file back.
-  if FBackup
-   then RenameFile(BackupName, FileName);
-  raise
- end
+    // eventually rename old file back.
+    if FBackup then
+      RenameFile(BackupName, FileName);
+    raise
+  end
 end;
 
 procedure TResourceModule.SaveToStream(Stream: TStream);
@@ -995,7 +1003,7 @@ end;
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
-//  procedure TPEModule.Decode                                                // 
+//  procedure TPEModule.Decode                                                //
 //                                                                            //
 //  Decode the PE file.  Load the DOS header, the COFF header and the         //
 //  'optional' header, then load each Section into FSectionList               //
@@ -1006,79 +1014,84 @@ procedure TPEModule.Decode(Memory: pointer; exeSize: Integer);
 var
   Offset: LongInt;
   i: Integer;
-  sectionHeader: PImageSectionHeader;
+  SectionHeader: PImageSectionHeader;
   commentOffset: Integer;
 begin
   FSectionList.Clear;
-                                // Check it's really a PE file.
-  if PWORD(Memory)^ <> IMAGE_DOS_SIGNATURE then
+  // Check it's really a PE file.
+  if PWORD(memory)^ <> IMAGE_DOS_SIGNATURE then
     raise EPEException.Create(RCStrInvalidDOSSignature);
 
-                                // Load the DOS header
-  FDOSHeader := PImageDosHeader(Memory)^;
+  // Load the DOS header
+  FDOSHeader := PImageDosHeader(memory)^;
 
   Offset := FDOSHeader._lfanew;
-  FDOSStub.Write((PAnsiChar(Memory) + SizeOf(FDOSHeader))^,
+  FDOSStub.Write((PAnsiChar(memory) + SizeOf(FDOSHeader))^,
     FDOSHeader._lfanew - SizeOf(FDOSHeader));
 
-                                // Check the COFF signature
-  if PDWORD(PAnsiChar(Memory) + Offset)^ <> IMAGE_NT_SIGNATURE then
+  // Check the COFF signature
+  if PDWORD(PAnsiChar(memory) + Offset)^ <> IMAGE_NT_SIGNATURE then
     raise EPEException.Create(RCStrInvalidCOFFSignature);
 
-                                // Load the COFF header
+  // Load the COFF header
   Inc(Offset, SizeOf(DWORD));
-  FCOFFHeader := PImageFileHEader(PAnsiChar(Memory) + Offset)^;
+  FCOFFHeader := PImageFileHEader(PAnsiChar(memory) + Offset)^;
 
   Inc(Offset, SizeOf(FCOFFHeader));
 
-                                // Check the Optional Header signature.  nb
-                                // the optional header is compulsory for
-                                // 32 bit windows modules!
-  if PWORD(PAnsiChar(Memory) + Offset)^ <> IMAGE_NT_OPTIONAL_HDR_MAGIC then
+  // Check the Optional Header signature.  nb
+  // the optional header is compulsory for
+  // 32 bit windows modules!
+  if PWORD(PAnsiChar(memory) + Offset)^ <> IMAGE_NT_OPTIONAL_HDR_MAGIC
+  then
     raise EPEException.Create(RCStrInvalidOptionalHeader);
 
-                                // Save the 'optional' header
+  // Save the 'optional' header
   ReallocMem(FOptionalHeader, FCOFFHeader.SizeOfOptionalHeader);
-  Move((PAnsiChar(Memory) + Offset)^, FOptionalHeader^,
+  Move((PAnsiChar(memory) + Offset)^, FOptionalHeader^,
     FCOFFHeader.SizeOfOptionalHeader);
 
   Inc(Offset, FCOFFHeader.SizeOfOptionalHeader);
 
-  sectionHeader := PImageSectionHeader(PAnsiChar(memory) + Offset);
+  SectionHeader := PImageSectionHeader(PAnsiChar(memory) + Offset);
   commentOffset := Offset + FCOFFHeader.NumberOfSections *
     SizeOf(TImageSectionHeader);
 
-// Save padding between the end of the Section headers, and the start of the
-// 1st Section.  TDump reports this as 'comment', and it seems to be important
-// to MS clock.exe...
+  // Save padding between the end of the Section headers, and the start of the
+  // 1st Section.  TDump reports this as 'comment', and it seems to be important
+  // to MS clock.exe...
 
-  FCommentSize := Integer(sectionHeader^.PointerToRawData) - commentOffset;
+  FCommentSize := Integer(SectionHeader^.PointerToRawData) -
+    commentOffset;
 
   if FCommentSize > 0 then
-   begin
+  begin
     GetMem(FCommentBlock, FCommentSize);
-    Move((PAnsiChar(memory) + commentOffset)^, FCommentBlock^, FCommentSize)
-   end;
-                                // Now save each image Section in the FSectionList
+    Move((PAnsiChar(memory) + commentOffset)^, FCommentBlock^,
+      FCommentSize)
+  end;
+  // Now save each image Section in the FSectionList
   for i := 0 to FCOFFHeader.NumberOfSections - 1 do
-   begin
-    sectionHeader := PImageSectionHeader(PAnsiChar(memory) + Offset);
-    FSectionList.Add(TImageSection.Create(self, sectionHeader^,
-      PAnsiChar(memory) + sectionHeader^.PointertoRawData));
+  begin
+    SectionHeader := PImageSectionHeader
+      (PAnsiChar(memory) + Offset);
+    FSectionList.Add(TImageSection.Create(Self, SectionHeader^,
+      PAnsiChar(memory) + SectionHeader^.PointerToRawData));
     Inc(Offset, SizeOf(TImageSectionHeader));
-   end;
+  end;
 
-  i := sectionHeader^.PointerToRawData + sectionHeader^.SizeOfRawData;
+  i := SectionHeader^.PointerToRawData +
+    SectionHeader^.SizeOfRawData;
 
-// Save the padding between the last Section and the end of the file.
-// This appears to hold debug info and things ??
+  // Save the padding between the last Section and the end of the file.
+  // This appears to hold debug info and things ??
 
   FEndCommentSize := exeSize - i;
   if FEndCommentSize > 0 then
-   begin
+  begin
     GetMem(FEndComment, FEndCommentSize);
     Move((PAnsiChar(memory) + i)^, FEndComment^, FEndCommentSize)
-   end
+  end
 end;
 
 
@@ -1248,7 +1261,7 @@ end;
 //                                                                            //
 //  Return the index of the specified Section.  The 'entryNo' to find         //
 //  should be a 'IMAGE_DIRECTORY_ENTRY_xxxx' constant defined in              //
-//  Windows.pas.                                                              // 
+//  Windows.pas.                                                              //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -1277,9 +1290,9 @@ end;
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
-//  function TPEModule.GetCOFFHeader                                          // 
+//  function TPEModule.GetCOFFHeader                                          //
 //                                                                            //
-//  Return COFF header                                                        // 
+//  Return COFF header                                                        //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -1329,7 +1342,7 @@ end;
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
-//  function TPEModule.GetDosHeader                                           // 
+//  function TPEModule.GetDosHeader                                           //
 //                                                                            //
 //  Return DOS header                                                         //
 //                                                                            //
@@ -1343,7 +1356,7 @@ end;
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
-//  function TPEModule.GetImageSection () : TImageSection                     // 
+//  function TPEModule.GetImageSection () : TImageSection                     //
 //                                                                            //
 //  Get the specified image Section                                           //
 //                                                                            //
@@ -1828,9 +1841,9 @@ end;
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
-//  destructor TPEResourceModule.Destroy                                      // 
+//  destructor TPEResourceModule.Destroy                                      //
 //                                                                            //
-//  Destructor for TPEResourceModule                                          // 
+//  Destructor for TPEResourceModule                                          //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 

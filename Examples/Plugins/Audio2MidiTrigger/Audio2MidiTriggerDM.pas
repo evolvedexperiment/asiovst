@@ -34,7 +34,7 @@ interface
 
 {$I DAV_Compiler.inc}
 
-uses 
+uses
   {$IFDEF FPC}LCLIntf, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, Forms,
   DAV_Types, DAV_VSTModule, DAV_DspAudioToMidiTrigger;
 
@@ -50,9 +50,9 @@ type
     procedure ParameterIntervalChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterVelocityShiftChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
-    FAudio2MidiTrigger : TAudio2MidiTrigger;
-    FMidiNote          : Byte;
-    FVelocityShift     : Byte;
+    FAudio2MidiTrigger: TAudio2MidiTrigger;
+    FMidiNote: Byte;
+    FVelocityShift: Byte;
     procedure MidiTrigger(Sender: TObject; const Level: Single);
   end;
 
@@ -73,22 +73,19 @@ begin
   with FAudio2MidiTrigger do
   begin
     SampleRate := Self.SampleRate;
-    Threshold  := -30;
-    Interval   := 0.02;
-    Flags      := [amFilterOutput];
-    OnTrigger  := MidiTrigger;
+    Threshold := -30;
+    Interval := 0.02;
+    Flags := [amFilterOutput];
+    OnTrigger := MidiTrigger;
   end;
   FMidiNote := 64;
 
   // initialize parameters
   Parameter[0] := -30;
-  Parameter[1] :=   0;
-  Parameter[2] :=  20;
-  Parameter[3] :=  64;
-  Parameter[4] :=   0;
-
-  // set editor GUI
-  // EditorFormClass := TFmAudio2MidiTrigger;
+  Parameter[1] := 0;
+  Parameter[2] := 20;
+  Parameter[3] := 64;
+  Parameter[4] := 0;
 end;
 
 procedure TAudio2MidiTriggerModule.VSTModuleClose(Sender: TObject);
@@ -96,15 +93,15 @@ begin
   FreeAndNil(FAudio2MidiTrigger);
 end;
 
-procedure TAudio2MidiTriggerModule.ParameterIntervalChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TAudio2MidiTriggerModule.ParameterIntervalChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
   if Assigned(FAudio2MidiTrigger) then
     FAudio2MidiTrigger.Interval := 0.001 * Value;
 end;
 
-procedure TAudio2MidiTriggerModule.ParameterThresholdChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TAudio2MidiTriggerModule.ParameterThresholdChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
   if Assigned(FAudio2MidiTrigger) then
     FAudio2MidiTrigger.Threshold := Value;
@@ -113,47 +110,48 @@ end;
 procedure TAudio2MidiTriggerModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 begin
- if Abs(SampleRate) > 0 then
-  if Assigned(FAudio2MidiTrigger)
-   then FAudio2MidiTrigger.SampleRate := Abs(SampleRate);
+  if Abs(SampleRate) > 0 then
+    if Assigned(FAudio2MidiTrigger) then
+      FAudio2MidiTrigger.SampleRate := Abs(SampleRate);
 end;
 
-procedure TAudio2MidiTriggerModule.ParameterMidiNoteChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TAudio2MidiTriggerModule.ParameterMidiNoteChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
- FMidiNote := Round(Value);
+  FMidiNote := Round(Value);
 end;
 
-procedure TAudio2MidiTriggerModule.ParameterMidiNoteDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+procedure TAudio2MidiTriggerModule.ParameterMidiNoteDisplay(Sender: TObject;
+  const Index: Integer; var PreDefined: AnsiString);
 begin
- PreDefined := AnsiString(IntToStr(FMidiNote));
+  PreDefined := AnsiString(IntToStr(FMidiNote));
 end;
 
-procedure TAudio2MidiTriggerModule.ParameterVelocityShiftChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TAudio2MidiTriggerModule.ParameterVelocityShiftChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
- FVelocityShift := Round(Value);
+  FVelocityShift := Round(Value);
 end;
 
-procedure TAudio2MidiTriggerModule.MidiTrigger(
-  Sender: TObject; const Level: Single);
+procedure TAudio2MidiTriggerModule.MidiTrigger(Sender: TObject;
+  const Level: Single);
 var
-  Velocity : Byte;
+  Velocity: Byte;
 begin
- if FAudio2MidiTrigger.Threshold = 0
-  then Velocity := 100
+  if FAudio2MidiTrigger.Threshold = 0 then
+    Velocity := 100
   else
-   with FAudio2MidiTrigger
-    do Velocity := Round(Limit((Level - Threshold) / abs(Threshold), 0, 1) * 127);
- Velocity := Limit(Velocity + FVelocityShift, 0, 127);
- MidiNoteOn(0, FMidiNote, Velocity);
+    with FAudio2MidiTrigger do
+      Velocity := Round(Limit((Level - Threshold) / Abs(Threshold), 0,
+        1) * 127);
+  Velocity := Limit(Velocity + FVelocityShift, 0, 127);
+  MidiNoteOn(0, FMidiNote, Velocity);
 end;
 
 procedure TAudio2MidiTriggerModule.VSTModuleProcess(const Inputs,
   Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
-  Sample : Integer;
+  Sample: Integer;
 begin
   for Sample := 0 to SampleFrames - 1 do
     Outputs[0, Sample] := FAudio2MidiTrigger.ProcessSample32(Inputs[0, Sample]);

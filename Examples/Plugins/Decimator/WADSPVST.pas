@@ -101,22 +101,23 @@ implementation
 
 uses Math, SyncObjs, DAV_Types, DAV_VSTEffect;
 
-var WADSPHeader  : TWinAmpDSPheader =
-                   (Version : $20;
-                    Description : 'Decimator for WinAmp';
-                    GetModule : GetModule);
+var
+  WADSPHeader  : TWinAmpDSPheader =
+                 (Version : $20;
+                  Description : 'Decimator for WinAmp';
+                  GetModule : GetModule);
 
-    WADSPModule : TWinAmpDSPModule =
-                   (Description : 'Decimator for WinAmp';
-                    HwndParent : 0;
-                    hDLLinstance : 0;
-                    Config : Config;
-                    Init : Init;
-                    ModifySamples : ModifySamples;
-                    Quit : Quit;
-                    UserData : nil);
-    FmWinAmpVST : TFmWinAmpVST  = nil;
-    CriticalSection : TCriticalSection;
+  WADSPModule : TWinAmpDSPModule =
+                 (Description : 'Decimator for WinAmp';
+                  HwndParent : 0;
+                  hDLLinstance : 0;
+                  Config : Config;
+                  Init : Init;
+                  ModifySamples : ModifySamples;
+                  Quit : Quit;
+                  UserData : nil);
+  FmWinAmpVST : TFmWinAmpVST  = nil;
+  CriticalSection : TCriticalSection;
 
 {$IFDEF FPC}
 {$R *.lfm}
@@ -126,54 +127,56 @@ var WADSPHeader  : TWinAmpDSPheader =
 
 exports winampDSPGetHeader2;
 
-function winampDSPGetHeader2 : PWinAmpDSPHeader; cdecl;
+function winampDSPGetHeader2: PWinAmpDSPHeader; cdecl;
 begin
- try
-  Result := @WADSPHeader;
- except
-  Result := nil;
- end;
-end;
-
-function GetModule(Which : Integer) : PWinAmpDSPModule;
-begin
- case Which of
-   0 : Result := @WADSPModule;
- else
-  Result := nil;
- end;
-end;
-
-function Init(This_Mod : PWinAmpDSPModule) : Integer;
-begin
- CriticalSection := TCriticalSection.Create;
- CriticalSection.Enter;
- if not Assigned(FmWinAmpVST) then
-  begin
-   FmWinAmpVST := TFmWinAmpVST.Create(Application);
-   This_Mod^.UserData := @FmWinAmpVST;
-  end
- else
-  begin
-   Application.ProcessMessages; sleep(10);
-   WADSPModule.UserData^.Visible := True;
+  try
+    Result := @WADSPHeader;
+  except
+    Result := nil;
   end;
- CriticalSection.Leave;
- Result := 0;
 end;
 
-procedure Config(This_Mod : PWinAmpDSPModule);
+function GetModule(Which: Integer): PWinampDSPModule;
 begin
- if Assigned(This_Mod^.UserData^)
-  then This_Mod^.UserData^.Show;
+  case Which of
+    0:
+      Result := @WADSPModule;
+  else
+    Result := nil;
+  end;
 end;
 
-function ModifySamples(This_Mod : PWinAmpDSPModule; Samples : Pointer;
-                       NumSamples, BitPerSample, nCh, sRate : Integer) : Integer;
+function Init(This_Mod: PWinampDSPModule): Integer;
+begin
+  CriticalSection := TCriticalSection.Create;
+  CriticalSection.Enter;
+  if not Assigned(FmWinAmpVST) then
+  begin
+    FmWinAmpVST := TFmWinAmpVST.Create(Application);
+    This_Mod^.UserData := @FmWinAmpVST;
+  end
+  else
+  begin
+    Application.ProcessMessages;
+    sleep(10);
+    WADSPModule.UserData^.Visible := True;
+  end;
+  CriticalSection.Leave;
+  Result := 0;
+end;
+
+procedure Config(This_Mod: PWinampDSPModule);
+begin
+  if Assigned(This_Mod^.UserData^) then
+    This_Mod^.UserData^.Show;
+end;
+
+function ModifySamples(This_Mod: PWinampDSPModule; Samples: Pointer;
+  NumSamples, BitPerSample, nCh, sRate: Integer): Integer;
 var
-  TmpData  : TDAVArrayOfSingleDynArray;
-  i, j, ch : Integer;
-  Temp     : Integer;
+  TmpData: TDAVArrayOfSingleDynArray;
+  i, j, ch: Integer;
+  Temp: Integer;
 const
   DivFak8  : Single = 1/$80;     MulFak8:Single  = $7F;
   DivFak16 : Single = 1/$8000;   MulFak16:Single = $7FFF;
@@ -248,112 +251,131 @@ begin
               P3ByteArray(Samples)^[j*nCh+i][0] := (Temp       ) and $FF;
              end;
           end;
-   end;
-  Result := NumSamples;
- finally
-  CriticalSection.Leave;
- end;
+      end;
+    Result := NumSamples;
+  finally
+    CriticalSection.Leave;
+  end;
 end;
 
-procedure Quit(This_Mod : PWinAmpDSPModule);
+procedure Quit(This_Mod: PWinampDSPModule);
 begin
- CriticalSection.Enter;
- try This_Mod^.UserData^.ClosePlugin; finally
-  try FreeAndNil(This_Mod^.UserData^); finally FmWinAmpVST := nil; end; end;
- CriticalSection.Leave; FreeAndNil(CriticalSection);
+  CriticalSection.Enter;
+  try
+    This_Mod^.UserData^.ClosePlugin;
+  finally
+    try
+      FreeAndNil(This_Mod^.UserData^);
+    finally
+      FmWinAmpVST := nil;
+    end;
+  end;
+  CriticalSection.Leave;
+  FreeAndNil(CriticalSection);
 end;
 
 { TFmWinAmpVST }
 
 procedure TFmWinAmpVST.FormCreate(Sender: TObject);
 begin
- with TRegistry.Create do
-  try
-   LoadVST;
-   RootKey := HKEY_CURRENT_USER;
-   if OpenKeyReadOnly('SOFTWARE\ASIOVST\WinAmp') then
-    begin
-     if ValueExists('Visible') then if ReadBool('Visible') then Show;
-     if ValueExists('Left') then Left := ReadInteger('Left');
-     if ValueExists('Visible') then Visible := ReadBool('Visible');
+  with TRegistry.Create do
+    try
+      LoadVST;
+      RootKey := HKEY_CURRENT_USER;
+      if OpenKeyReadOnly('SOFTWARE\ASIOVST\WinAmp') then
+      begin
+        if ValueExists('Visible') then
+          if ReadBool('Visible') then
+            Show;
+        if ValueExists('Left') then
+          Left := ReadInteger('Left');
+        if ValueExists('Visible') then
+          Visible := ReadBool('Visible');
+      end;
+    finally
+      CloseKey;
+      Free;
     end;
-  finally
-   CloseKey;
-   Free;
-  end;
 end;
 
 procedure TFmWinAmpVST.ClosePlugin;
 begin
- with TRegistry.Create do
-  try
-   if OpenKey('Software\ASIOVST\WinAmp',True) then
-    begin
-     WriteBool('Visible',Visible);
-     WriteInteger('Left',Left);
-     WriteInteger('Top',Top);
+  with TRegistry.Create do
+    try
+      if OpenKey('Software\ASIOVST\WinAmp', True) then
+      begin
+        WriteBool('Visible', Visible);
+        WriteInteger('Left', Left);
+        WriteInteger('Top', Top);
+      end;
+    finally
+      CloseKey;
+      Free;
     end;
-  finally
-   CloseKey;
-   Free;
-  end;
- Visible := False; 
- with VstHost[0] do
-  try
-   SavePreset(ExtractFilePath(Application.ExeName)+'Decimator.fxp');
-   CloseEdit;
-   Active := False;
-   Unload;
-  finally
-   FreeAndNil(FmWinAmpVST);
-  end;
+  Visible := False;
+  with VstHost[0] do
+    try
+      SavePreset(ExtractFilePath(Application.ExeName) + 'Decimator.fxp');
+      CloseEdit;
+      Active := False;
+      Unload;
+    finally
+      FreeAndNil(FmWinAmpVST);
+    end;
 end;
 
 procedure TFmWinAmpVST.CreateParams(var Params: TCreateParams);
 begin
- inherited CreateParams(Params);
- Params.WndParent := WADSPModule.HwndParent;
+  inherited CreateParams(Params);
+  Params.WndParent := WADSPModule.HwndParent;
 end;
 
 procedure TFmWinAmpVST.TimerTimer(Sender: TObject);
 begin
- VstHost[0].EditIdle;
-// if not fColDetected then SetScheme;
+  VstHost[0].EditIdle;
+  // if not fColDetected then SetScheme;
 end;
 
 procedure TFmWinAmpVST.LoadVST;
-var rct  : ERect;
+var
+  rct: ERect;
 begin
- with VstHost[0] do
-  try
-   CriticalSection.Enter;
-   try CloseEdit; except end;
-   Active := False;
-   sleep(10);
-   try Unload; except end;
-   sleep(10);
+  with VstHost[0] do
+    try
+      CriticalSection.Enter;
+      try
+        CloseEdit;
+      except
+      end;
+      Active := False;
+      sleep(10);
+      try
+        Unload;
+      except
+      end;
+      sleep(10);
 
-   DecimatorModule := TVSTDecimator.Create(Application);
-   DecimatorModule.Effect^.user := DecimatorModule;
-   DecimatorModule.AudioMaster := audioMaster;
-   LoadFromVSTEffect(DecimatorModule.Effect);
+      DecimatorModule := TVSTDecimator.Create(Application);
+      DecimatorModule.Effect^.user := DecimatorModule;
+      DecimatorModule.AudioMaster := AudioMaster;
+      LoadFromVSTEffect(DecimatorModule.Effect);
 
-   Active := True;
-   try
-    ShowEdit(TForm(PnGUI));
-    Idle;
-    EditIdle;
-   except
-     raise
-   end;
-   Caption := 'ASIO-VST - Decimator';
-  finally
-   CriticalSection.Leave;
-  end;
+      Active := True;
+      try
+        ShowEdit(TForm(PnGUI));
+        Idle;
+        EditIdle;
+      except
+        raise
+      end;
+      Caption := 'ASIO-VST - Decimator';
+    finally
+      CriticalSection.Leave;
+    end;
 
- rct := VSTHost[0].EditGetRect;
- ClientWidth := rct.right - rct.left;
- ClientHeight := rct.bottom - rct.Top;
+  rct := VstHost[0].EditGetRect;
+  ClientWidth := rct.right - rct.Left;
+  ClientHeight := rct.bottom - rct.Top;
 end;
 
 end.

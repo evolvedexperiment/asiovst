@@ -328,23 +328,6 @@ begin
     Result := Power(Abs(Value), 1 / FCurveMappingExp);
 end;
 
-(*
-  function TCustomGuiStitchedDial.CircularMouseToPosition(X, Y: Integer): Single;
-  var
-  Range: Single;
-  Angle: Single;
-  begin
-  Range := Max - (Min - 1);
-  Angle := SafeAngle(RelativeAngle(Width div 2, Height div 2, X, Y) - PointerAngles.Start);
-  Result := Angle * Range / PointerAngles.Range;
-  while Result > Max do Result := Result - Range;
-  while Result < Min do Result := Result + Range;
-
-  if Result > Max then Result := FValue;
-  if Result < Min then Result := FValue;
-  end;
-*)
-
 function TCustomGuiStitchedDial.DoMouseWheel(Shift: TShiftState;
   WheelDelta: Integer; MousePos: TPoint): Boolean;
 begin

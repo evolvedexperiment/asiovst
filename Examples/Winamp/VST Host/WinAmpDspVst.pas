@@ -911,12 +911,6 @@ begin
     FCriticalSection.Acquire;
     try
 {$ENDIF}
-      (*
-        if Length(fPDCBuffer) < nCh then SetLength(fPDCBuffer, nCh);
-        for i := 0 to nCh - 1 do
-        if Length(fPDCBuffer[i]) <> VstHost[0].InitialDelay
-        then SetLength(fPDCBuffer[i],VstHost[0].InitialDelay);
-      *)
 
       // test if maximum blocksize changed
       if FEnhanceFactor * SampleFrames > FSampleFrames then

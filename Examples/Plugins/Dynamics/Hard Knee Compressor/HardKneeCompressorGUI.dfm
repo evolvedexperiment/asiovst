@@ -172,11 +172,14 @@ object FmHardKneeCompressor: TFmHardKneeCompressor
     Height = 64
     Max = 100.000000000000000000
     Min = -96.000000000000000000
-    OnChange = DialThresholdChange
+    ScrollRange = 400.000000000000000000
     ImageList = GSPL
     ImageIndex = 0
     Transparent = True
     WheelStep = 1.000000000000000000
+    OnChange = DialThresholdChange
+    DefaultValue = 0.000000000000000000
+    Value = 0.000000000000000000
   end
   object DialRelease: TGuiStitchedDial
     Left = 200
@@ -185,12 +188,14 @@ object FmHardKneeCompressor: TFmHardKneeCompressor
     Height = 64
     Max = 3699.000000000000000000
     Min = 699.000000000000000000
-    OnChange = DialReleaseChange
+    ScrollRange = 400.000000000000000000
     ImageList = GSPL
     ImageIndex = 0
     Transparent = True
     Value = 699.000000000000000000
     WheelStep = 1.000000000000000000
+    OnChange = DialReleaseChange
+    DefaultValue = 0.000000000000000000
   end
   object DialAttack: TGuiStitchedDial
     Left = 136
@@ -199,11 +204,14 @@ object FmHardKneeCompressor: TFmHardKneeCompressor
     Height = 64
     Max = 300.000000000000000000
     Min = -200.000000000000000000
-    OnChange = DialAttackChange
+    ScrollRange = 400.000000000000000000
     ImageList = GSPL
     ImageIndex = 0
     Transparent = True
     WheelStep = 1.000000000000000000
+    OnChange = DialAttackChange
+    DefaultValue = 0.000000000000000000
+    Value = 0.000000000000000000
   end
   object DialRatio: TGuiStitchedDial
     Left = 72
@@ -211,11 +219,14 @@ object FmHardKneeCompressor: TFmHardKneeCompressor
     Width = 64
     Height = 64
     Max = 200.000000000000000000
-    OnChange = DialRatioChange
+    ScrollRange = 400.000000000000000000
     ImageList = GSPL
     ImageIndex = 0
     Transparent = True
     WheelStep = 1.000000000000000000
+    OnChange = DialRatioChange
+    DefaultValue = 0.000000000000000000
+    Value = 0.000000000000000000
   end
   object GSPL: TGuiStitchedPNGList
     StitchedPNGs = <

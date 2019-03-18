@@ -9,7 +9,6 @@ object SoundTouchPitchShifterModule: TSoundTouchPitchShifterModule
   VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Default'
   IORatio = 1.000000000000000000
   UniqueID = 'DDPS'
@@ -21,7 +20,6 @@ object SoundTouchPitchShifterModule: TSoundTouchPitchShifterModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Semi Tones'
       LargeStepFloat = 2.000000000000000000
@@ -42,8 +40,6 @@ object SoundTouchPitchShifterModule: TSoundTouchPitchShifterModule
   OnProcess = VSTModuleProcess
   OnProcess32Replacing = VSTModuleProcess
   OnSampleRateChange = VSTModuleSampleRateChange
-  Left = 286
-  Top = 77
   Height = 150
   Width = 215
 end

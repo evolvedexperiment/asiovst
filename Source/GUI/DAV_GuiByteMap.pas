@@ -710,30 +710,6 @@ begin
       FDataPointer, FBitmapInfo^, DIB_RGB_COLORS) = 0 then
       raise Exception.Create('Error');
   end;
-
-  (*
-    var
-    CompDC     : HDC;
-    CompBitmap : HBITMAP;
-
-    CompDC := CreateCompatibleDC(Canvas.Handle);
-    try
-    CompBitmap := CreateCompatibleBitmap(CompDC, Width, Height);
-    SelectObject(CompDC, CompBitmap);
-    if CompBitmap <> 0 then
-    try
-    BitBlt(CompDC, 0, 0, Width, Height, Canvas.Handle, 0, 0, SRCCOPY);
-
-    if GetDIBits(Canvas.Handle, CompBitmap, 0, Height, FDataPointer, FBitmapInfo,
-    DIB_RGB_COLORS) = 0
-    then raise Exception.Create('Error');
-    finally
-    DeleteObject(CompBitmap);
-    end;
-    finally
-    DeleteDC(CompDC);
-    end;
-  *)
 end;
 
 procedure TGuiByteMapMemory.PaintTo(Canvas: TCanvas; X, Y: Integer);

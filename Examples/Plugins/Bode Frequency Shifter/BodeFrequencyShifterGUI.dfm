@@ -48,10 +48,10 @@ object FmBodeFrequencyShifter: TFmBodeFrequencyShifter
       Height = 17
       Anchors = [akLeft, akTop, akRight]
       BorderColor = clBtnShadow
+      BorderRadius = 5.000000000000000000
       BorderWidth = 1.000000000000000000
       PanelColor = 3226174
       ParentColor = True
-      BorderRadius = 5.000000000000000000
       TabOrder = 0
       UseDockManager = True
       DesignSize = (
@@ -82,6 +82,7 @@ object FmBodeFrequencyShifter: TFmBodeFrequencyShifter
       Width = 48
       Height = 48
       CurveMapping = -2.069999933242798000
+      DefaultValue = 0.009999999776482582
       Max = 1000.000000000000000000
       Min = 0.009999999776482582
       ScrollRange = 400.000000000000000000
@@ -90,7 +91,6 @@ object FmBodeFrequencyShifter: TFmBodeFrequencyShifter
       Value = 20.000000000000000000
       WheelStep = 1.000000000000000000
       OnChange = DialFrequencyChange
-      DefaultValue = 0.000000000000000000
     end
   end
   object GpMix: TGuiGroupTop
@@ -122,10 +122,10 @@ object FmBodeFrequencyShifter: TFmBodeFrequencyShifter
       Height = 17
       Anchors = [akLeft, akTop, akRight]
       BorderColor = clBtnShadow
+      BorderRadius = 5.000000000000000000
       BorderWidth = 1.000000000000000000
       PanelColor = 3226174
       ParentColor = True
-      BorderRadius = 5.000000000000000000
       TabOrder = 0
       UseDockManager = True
       DesignSize = (

@@ -1068,82 +1068,12 @@ begin
         raise Exception.Create('Error');
     end;
   end;
-  (*
-    var
-    CompDC     : HDC;
-    CompBitmap : HBITMAP;
-    begin
-    CompDC := CreateCompatibleDC(Bitmap.Canvas.Handle);
-    try
-    CompBitmap := CreateCompatibleBitmap(CompDC, Width, Height);
-    SelectObject(CompDC, CompBitmap);
-    if CompBitmap <> 0 then
-    try
-    BitBlt(CompDC, 0, 0, Width, Height, Bitmap.Canvas.Handle, 0, 0, SRCCOPY);
-
-    if GetDIBits(Bitmap.Canvas.Handle, CompBitmap, 0, Height, FDataPointer,
-    FBitmapInfo, DIB_RGB_COLORS) = 0
-    then raise Exception.Create('Error');
-    finally
-    DeleteObject(CompBitmap);
-    end;
-    finally
-    DeleteDC(CompDC);
-    end;
-  *)
 end;
 
 {$IFDEF DARWIN}
 
 procedure TGuiPixelMapMemory.PaintTo(Canvas: TCanvas; X, Y: Integer);
-(*
-  var
-  pm                : PixMapHandle;
-  port              : CGrafPtr;
-  src_rect          : Carbon.Rect;
-  dest_rect         : Carbon.Rect;
-  image_description : ImageDescriptionHandle;
-*)
 begin
-  (*
-    HIViewDrawCGImage(
-    TCarbonDeviceContext(Canvas.Handle).CGContext,
-    GetCGRect(0, 0, FWidth, FHeight),
-    CGBitmapContextCreateImage(FContext));
-  *)
-
-  (*
-    procedure pixel_map.draw(window : WindowRef; device_rect : RectPtr = NIL; bmp_rect : RectPtr = NIL );
-    begin
-    if (m_pmap = NIL ) or (m_buf = NIL )
-    then exit;
-
-    pm := GetGWorldPixMap(GrafPtr(m_pmap));
-    port := GetWindowPort(window);
-
-    // Again, I used the Quicktime version.
-    // Good old 'CopyBits' does better interpolation when scaling
-    // but does not support all pixel depths.
-    SetRect(dest_rect, 0, 0, _width, _height);
-
-    MakeImageDescriptionForPixMap(ImageCompression.PixMapHandle(pm),
-    image_description);
-
-    if image_description <> NIL then
-    begin
-    SetRect(src_rect, 0, 0, image_description^.width, image_description^.height);
-
-    DecompressImage(
-    GetPixBaseAddr(pm),
-    image_description,
-    ImageCompression.PixMapHandle(GetPortPixMap(port)),
-    ImageCompression.Rect(src_rect),
-    ImageCompression.Rect(dest_rect),
-    ditherCopy, NIL);
-    DisposeHandle(Handle(image_description ) );
-    end;
-    end;
-  *)
 end;
 {$ENDIF}
 {$IFDEF MSWINDOWS}

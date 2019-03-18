@@ -35,9 +35,10 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
   Forms, Controls, DAV_GuiLabel, DAV_GuiPng, DAV_GuiStitchedPngList,
-  DAV_GuiStitchedDial;
+  DAV_GuiStitchedDial, DAV_GuiImageControl, DAV_GuiStitchedControls,
+  DAV_GuiCustomControl, DAV_GuiGraphicControl;
 
 type
   TFmSimpleFlanger = class(TForm)
@@ -74,74 +75,74 @@ uses
 
 procedure TFmSimpleFlanger.FormShow(Sender: TObject);
 begin
- UpdateDepth;
- UpdateMix;
- UpdateSpeed;
+  UpdateDepth;
+  UpdateMix;
+  UpdateSpeed;
 end;
 
 procedure TFmSimpleFlanger.DialDepthChange(Sender: TObject);
 begin
- with TSimpleFlangerModule(Owner) do
+  with TSimpleFlangerModule(Owner) do
   begin
-   if Parameter[0] <> DialDepth.Value
-    then Parameter[0] := DialDepth.Value;
+    if Parameter[0] <> DialDepth.Value then
+      Parameter[0] := DialDepth.Value;
   end;
 end;
 
 procedure TFmSimpleFlanger.DialSpeedChange(Sender: TObject);
 begin
- with TSimpleFlangerModule(Owner) do
+  with TSimpleFlangerModule(Owner) do
   begin
-   if Parameter[1] <> DialSpeed.Value
-    then Parameter[1] := DialSpeed.Value;
+    if Parameter[1] <> DialSpeed.Value then
+      Parameter[1] := DialSpeed.Value;
   end;
 end;
 
 procedure TFmSimpleFlanger.DialMixChange(Sender: TObject);
 begin
- with TSimpleFlangerModule(Owner) do
+  with TSimpleFlangerModule(Owner) do
   begin
-   if Parameter[2] <> DialMix.Value
-    then Parameter[2] := DialMix.Value;
+    if Parameter[2] <> DialMix.Value then
+      Parameter[2] := DialMix.Value;
   end;
 end;
 
 procedure TFmSimpleFlanger.UpdateDepth;
 var
-  Depth : Single;
+  Depth: Single;
 begin
- with TSimpleFlangerModule(Owner) do
+  with TSimpleFlangerModule(Owner) do
   begin
-   Depth := Parameter[0];
-   if DialDepth.Value <> Depth
-    then DialDepth.Value := Depth;
-   LbDepthValue.Caption := FloatToStrF(RoundTo(Depth, -1), ffGeneral, 3, 3) + ' %';
+    Depth := Parameter[0];
+    if DialDepth.Value <> Depth then
+      DialDepth.Value := Depth;
+    LbDepthValue.Caption := FloatToStrF(RoundTo(Depth, -1), ffGeneral, 3, 3) + ' %';
   end;
 end;
 
 procedure TFmSimpleFlanger.UpdateSpeed;
 var
-  Speed : Single;
+  Speed: Single;
 begin
- with TSimpleFlangerModule(Owner) do
+  with TSimpleFlangerModule(Owner) do
   begin
-   Speed := Parameter[1];
-   if DialSpeed.Value <> Speed
-    then DialSpeed.Value := Speed;
-   LbSpeedValue.Caption := FloatToStrF(RoundTo(Speed, -2), ffGeneral, 2, 2) + ' Hz';
+    Speed := Parameter[1];
+    if DialSpeed.Value <> Speed then
+      DialSpeed.Value := Speed;
+    LbSpeedValue.Caption := FloatToStrF(RoundTo(Speed, -2), ffGeneral, 2, 2) + ' Hz';
   end;
 end;
 
 procedure TFmSimpleFlanger.UpdateMix;
 var
-  Mix : Single;
+  Mix: Single;
 begin
- with TSimpleFlangerModule(Owner) do
+  with TSimpleFlangerModule(Owner) do
   begin
-   Mix := Parameter[2];
-   if DialMix.Value <> Mix
-    then DialMix.Value := Mix;
-   LbMixValue.Caption := FloatToStrF(RoundTo(Mix, -1), ffGeneral, 3, 3) + ' %';
+    Mix := Parameter[2];
+    if DialMix.Value <> Mix then
+      DialMix.Value := Mix;
+    LbMixValue.Caption := FloatToStrF(RoundTo(Mix, -1), ffGeneral, 3, 3) + ' %';
   end;
 end;
 

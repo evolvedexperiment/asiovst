@@ -11,10 +11,10 @@ object FmBarberpoleTuner: TFmBarberpoleTuner
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
-  OldCreateOrder = True
+  OldCreateOrder = False
+  Scaled = False
   OnCreate = FormCreate
   OnPaint = FormPaint
-  OnResize = FormResize
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
@@ -32,5 +32,130 @@ object FmBarberpoleTuner: TFmBarberpoleTuner
     Font.Style = [fsBold, fsUnderline]
     FontOversampling = fo4x
     ParentFont = False
+    Transparent = True
+  end
+  object Barberpole: TPaintBox
+    Left = 8
+    Top = 31
+    Width = 258
+    Height = 26
+    OnPaint = BarberpolePaint
+  end
+  object LbGuitarTuning: TGuiLabel
+    Left = 8
+    Top = 63
+    Width = 105
+    Height = 23
+    Caption = 'Guitar Tuning:'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -16
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    FontOversampling = fo3x
+    ParentFont = False
+    Transparent = True
+  end
+  object LbLowE: TGuiLabel
+    Left = 127
+    Top = 60
+    Width = 18
+    Height = 25
+    Caption = 'E'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 5197647
+    Font.Height = -21
+    Font.Name = 'Tahoma'
+    Font.Style = [fsBold]
+    FontOversampling = fo4x
+    ParentFont = False
+    Transparent = True
+    OnClick = LbNoteClick
+  end
+  object LbA: TGuiLabel
+    Left = 151
+    Top = 60
+    Width = 18
+    Height = 25
+    Caption = 'A'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clBlack
+    Font.Height = -21
+    Font.Name = 'Tahoma'
+    Font.Style = [fsBold]
+    FontOversampling = fo4x
+    ParentFont = False
+    Transparent = True
+    OnClick = LbNoteClick
+  end
+  object LbD: TGuiLabel
+    Left = 175
+    Top = 60
+    Width = 18
+    Height = 25
+    Caption = 'D'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 5197647
+    Font.Height = -21
+    Font.Name = 'Tahoma'
+    Font.Style = [fsBold]
+    FontOversampling = fo4x
+    ParentFont = False
+    Transparent = True
+    OnClick = LbNoteClick
+  end
+  object LbG: TGuiLabel
+    Left = 199
+    Top = 60
+    Width = 18
+    Height = 25
+    Caption = 'G'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 5197647
+    Font.Height = -21
+    Font.Name = 'Tahoma'
+    Font.Style = [fsBold]
+    FontOversampling = fo4x
+    ParentFont = False
+    Transparent = True
+    OnClick = LbNoteClick
+  end
+  object LbH: TGuiLabel
+    Left = 223
+    Top = 60
+    Width = 18
+    Height = 25
+    Caption = 'H'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 5197647
+    Font.Height = -21
+    Font.Name = 'Tahoma'
+    Font.Style = [fsBold]
+    FontOversampling = fo4x
+    ParentFont = False
+    Transparent = True
+    OnClick = LbNoteClick
+  end
+  object LbE: TGuiLabel
+    Left = 247
+    Top = 60
+    Width = 18
+    Height = 25
+    Caption = 'E'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 5197647
+    Font.Height = -21
+    Font.Name = 'Tahoma'
+    Font.Style = [fsBold]
+    FontOversampling = fo4x
+    ParentFont = False
+    Transparent = True
+    OnClick = LbNoteClick
+  end
+  object Timer: TTimer
+    Interval = 33
+    OnTimer = TimerTimer
+    Left = 160
+    Top = 8
   end
 end

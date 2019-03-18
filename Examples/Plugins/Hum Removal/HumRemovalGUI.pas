@@ -95,158 +95,161 @@ uses
 
 procedure TFmHumRemoval.FormShow(Sender: TObject);
 begin
- UpdateHighpassActive;
- UpdateHighpassType;
- UpdateHighpassFrequency;
- UpdateHighpassOrder;
- UpdateBandwidth;
- UpdateFundamentalFrequency;
+  UpdateHighpassActive;
+  UpdateHighpassType;
+  UpdateHighpassFrequency;
+  UpdateHighpassOrder;
+  UpdateBandwidth;
+  UpdateFundamentalFrequency;
 end;
 
 function TFmHumRemoval.GuiEQGraphGetFilterGain(Sender: TObject;
   const Frequency: Single): Single;
 begin
- with THumRemovalModule(Owner) do
+  with THumRemovalModule(Owner) do
   begin
-   Result := Magnitude_dB(Frequency);
+    Result := Magnitude_dB(Frequency);
   end;
 end;
 
 procedure TFmHumRemoval.LedHighpassActiveClick(Sender: TObject);
 begin
- with THumRemovalModule(Owner) do
+  with THumRemovalModule(Owner) do
   begin
-   Parameter[0] := 1 - Parameter[0];
+    Parameter[0] := 1 - Parameter[0];
   end;
 end;
 
 procedure TFmHumRemoval.LedHumProfileClick(Sender: TObject);
 begin
- with THumRemovalModule(Owner) do
+  with THumRemovalModule(Owner) do
   begin
-   Parameter[7] := 1 - Parameter[7];
+    Parameter[7] := 1 - Parameter[7];
   end;
 end;
 
 procedure TFmHumRemoval.SbHighpassTypeChange(Sender: TObject);
 begin
- with THumRemovalModule(Owner) do
+  with THumRemovalModule(Owner) do
   begin
-   if Parameter[1] <> SbHighpassType.ItemIndex
-    then Parameter[1] := SbHighpassType.ItemIndex;
+    if Parameter[1] <> SbHighpassType.ItemIndex then
+      Parameter[1] := SbHighpassType.ItemIndex;
   end;
 end;
 
 procedure TFmHumRemoval.DialHighpassFrequencyChange(Sender: TObject);
 begin
- with THumRemovalModule(Owner) do
+  with THumRemovalModule(Owner) do
   begin
-   if Parameter[2] <> DialHighpassFrequency.Value
-    then Parameter[2] := DialHighpassFrequency.Value;
+    if Parameter[2] <> DialHighpassFrequency.Value then
+      Parameter[2] := DialHighpassFrequency.Value;
   end;
 end;
 
 procedure TFmHumRemoval.DialHighpassOrderChange(Sender: TObject);
 begin
- with THumRemovalModule(Owner) do
+  with THumRemovalModule(Owner) do
   begin
-   if Parameter[3] <> DialHighpassOrder.Value
-    then Parameter[3] := DialHighpassOrder.Value;
+    if Parameter[3] <> DialHighpassOrder.Value then
+      Parameter[3] := DialHighpassOrder.Value;
   end;
 end;
 
 procedure TFmHumRemoval.DialFundamentalFrequencyChange(Sender: TObject);
 begin
- with THumRemovalModule(Owner) do
+  with THumRemovalModule(Owner) do
   begin
-   if Parameter[4] <> DialFundamentalFrequency.Value
-    then Parameter[4] := DialFundamentalFrequency.Value;
+    if Parameter[4] <> DialFundamentalFrequency.Value then
+      Parameter[4] := DialFundamentalFrequency.Value;
   end;
 end;
 
 procedure TFmHumRemoval.DialNotchBandwidthChange(Sender: TObject);
 begin
- with THumRemovalModule(Owner) do
+  with THumRemovalModule(Owner) do
   begin
-   if Parameter[5] <> DialNotchBandwidth.Value
-    then Parameter[5] := DialNotchBandwidth.Value;
+    if Parameter[5] <> DialNotchBandwidth.Value then
+      Parameter[5] := DialNotchBandwidth.Value;
   end;
 end;
 
 procedure TFmHumRemoval.UpdateHighpassType;
 begin
- with THumRemovalModule(Owner) do
+  with THumRemovalModule(Owner) do
   begin
-   if SbHighpassType.ItemIndex <> Round(Parameter[1])
-    then SbHighpassType.ItemIndex := Round(Parameter[1]);
-   GuiEQGraph.FilterSeries[0].DataChanged;
-   GuiEQGraph.UpdateGraph;
+    if SbHighpassType.ItemIndex <> Round(Parameter[1]) then
+      SbHighpassType.ItemIndex := Round(Parameter[1]);
+    GuiEQGraph.FilterSeries[0].DataChanged;
+    GuiEQGraph.UpdateGraph;
   end;
 end;
 
 procedure TFmHumRemoval.UpdateHighpassActive;
 begin
- with THumRemovalModule(Owner) do
+  with THumRemovalModule(Owner) do
   begin
-   LedHighpassActive.Brightness_Percent := Limit(10 + 80 * Parameter[0], 10, 90);
-   GuiEQGraph.FilterSeries[0].DataChanged;
-   GuiEQGraph.UpdateGraph;
+    LedHighpassActive.Brightness_Percent :=
+      Limit(10 + 80 * Parameter[0], 10, 90);
+    GuiEQGraph.FilterSeries[0].DataChanged;
+    GuiEQGraph.UpdateGraph;
   end;
 end;
 
 procedure TFmHumRemoval.UpdateHighpassFrequency;
 begin
- with THumRemovalModule(Owner) do
+  with THumRemovalModule(Owner) do
   begin
-   if DialHighpassFrequency.Value <> Parameter[2]
-    then DialHighpassFrequency.Value := Parameter[2];
-   LbHighpassFrequencyValue.Caption := string(ParameterDisplay[2] + ' ' + ParameterLabel[2]);
-   GuiEQGraph.FilterSeries[0].DataChanged;
-   GuiEQGraph.UpdateGraph;
+    if DialHighpassFrequency.Value <> Parameter[2] then
+      DialHighpassFrequency.Value := Parameter[2];
+    LbHighpassFrequencyValue.Caption :=
+      string(ParameterDisplay[2] + ' ' + ParameterLabel[2]);
+    GuiEQGraph.FilterSeries[0].DataChanged;
+    GuiEQGraph.UpdateGraph;
   end;
 end;
 
 procedure TFmHumRemoval.UpdateHighpassOrder;
 begin
- with THumRemovalModule(Owner) do
+  with THumRemovalModule(Owner) do
   begin
-   if DialHighpassOrder.Value <> Parameter[3]
-    then DialHighpassOrder.Value := Parameter[3];
-   LbHighpassOrderValue.Caption := string(ParameterDisplay[3]);
-   GuiEQGraph.FilterSeries[0].DataChanged;
-   GuiEQGraph.UpdateGraph;
+    if DialHighpassOrder.Value <> Parameter[3] then
+      DialHighpassOrder.Value := Parameter[3];
+    LbHighpassOrderValue.Caption := string(ParameterDisplay[3]);
+    GuiEQGraph.FilterSeries[0].DataChanged;
+    GuiEQGraph.UpdateGraph;
   end;
 end;
 
 procedure TFmHumRemoval.UpdateFundamentalFrequency;
 begin
- with THumRemovalModule(Owner) do
+  with THumRemovalModule(Owner) do
   begin
-   if DialFundamentalFrequency.Value <> Parameter[4]
-    then DialFundamentalFrequency.Value := Parameter[4];
-   LbFundamentalFrequencyValue.Caption := string(ParameterDisplay[4] + ' ' + ParameterLabel[4]);
-   GuiEQGraph.FilterSeries[0].DataChanged;
-   GuiEQGraph.UpdateGraph;
+    if DialFundamentalFrequency.Value <> Parameter[4] then
+      DialFundamentalFrequency.Value := Parameter[4];
+    LbFundamentalFrequencyValue.Caption := string(ParameterDisplay[4] + ' ' + ParameterLabel[4]);
+    GuiEQGraph.FilterSeries[0].DataChanged;
+    GuiEQGraph.UpdateGraph;
   end;
 end;
 
 procedure TFmHumRemoval.UpdateBandwidth;
 begin
- with THumRemovalModule(Owner) do
+  with THumRemovalModule(Owner) do
   begin
-   if DialNotchBandwidth.Value <> Parameter[5]
-    then DialNotchBandwidth.Value := Parameter[5];
-   LbNotchBandwidthValue.Caption := string(ParameterDisplay[5] + ' ' + ParameterLabel[5]);
-   GuiEQGraph.FilterSeries[0].DataChanged;
-   GuiEQGraph.UpdateGraph;
+    if DialNotchBandwidth.Value <> Parameter[5] then
+      DialNotchBandwidth.Value := Parameter[5];
+    LbNotchBandwidthValue.Caption :=
+      string(ParameterDisplay[5] + ' ' + ParameterLabel[5]);
+    GuiEQGraph.FilterSeries[0].DataChanged;
+    GuiEQGraph.UpdateGraph;
   end;
 end;
 
 procedure TFmHumRemoval.UpdateCaptureHumProfile;
 begin
- with THumRemovalModule(Owner) do
+  with THumRemovalModule(Owner) do
   begin
-   LedHumProfile.Brightness_Percent := Limit(10 + 80 * Parameter[7], 10, 90);
+    LedHumProfile.Brightness_Percent := Limit(10 + 80 * Parameter[7], 10, 90);
   end;
 end;
 

@@ -54,7 +54,7 @@ type
     procedure ParameterTrackingDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterVoicedUnvoicedDetectorChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
-    FVoiceInput : TVoiceInput;
+    FVoiceInput: TVoiceInput;
   end;
 
 implementation
@@ -70,103 +70,108 @@ uses
 
 procedure TVocInputDataModule.VSTModuleClose(Sender: TObject);
 begin
- FreeAndNil(FVoiceInput);
+  FreeAndNil(FVoiceInput);
 end;
 
 procedure TVocInputDataModule.VSTModuleOpen(Sender: TObject);
 begin
- FVoiceInput := TVoiceInput.Create;
- FVoiceInput.SampleRate := SampleRate;
+  FVoiceInput := TVoiceInput.Create;
+  FVoiceInput.SampleRate := SampleRate;
 
- // Initial Parameters
- Parameter[0] := 0.5; // Tracking Off / On / Quant
- Parameter[1] := 0.5; // Pitch
- Parameter[2] := 20;  // Breath FNoise
- Parameter[3] := 50;  // Voiced / Unvoiced Thresh
- Parameter[4] := 69;  // Max Freq
+  // Initial Parameters
+  Parameter[0] := 0.5; // Tracking Off / On / Quant
+  Parameter[1] := 0.5; // Pitch
+  Parameter[2] := 20; // Breath FNoise
+  Parameter[3] := 50; // Voiced / Unvoiced Thresh
+  Parameter[4] := 69; // Max Freq
 end;
 
-procedure TVocInputDataModule.ParameterTrackingChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TVocInputDataModule.ParameterTrackingChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
- if Assigned(FVoiceInput)
-  then FVoiceInput.Tracking := TTrackingType(Round(Value))
+  if Assigned(FVoiceInput) then
+    FVoiceInput.Tracking := TTrackingType(Round(Value))
 end;
 
-procedure TVocInputDataModule.ParameterTrackingDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+procedure TVocInputDataModule.ParameterTrackingDisplay(Sender: TObject;
+  const Index: Integer; var PreDefined: string);
 begin
- case Round(Parameter[Index]) of
-  0: PreDefined := 'OFF';
-  1: PreDefined := 'FREE';
-  2: PreDefined := 'QUANT';
- end;
+  case Round(Parameter[Index]) of
+    0:
+      PreDefined := 'OFF';
+    1:
+      PreDefined := 'FREE';
+    2:
+      PreDefined := 'QUANT';
+  end;
 end;
 
-procedure TVocInputDataModule.ParameterPitchChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TVocInputDataModule.ParameterPitchChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
- if Assigned(FVoiceInput)
-  then FVoiceInput.Pitch := Value;
+  if Assigned(FVoiceInput) then
+    FVoiceInput.Pitch := Value;
 end;
 
-procedure TVocInputDataModule.ParameterPitchDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+procedure TVocInputDataModule.ParameterPitchDisplay(Sender: TObject;
+  const Index: Integer; var PreDefined: string);
 begin
- if Assigned(FVoiceInput) then
-  if FVoiceInput.Tracking = ttOff
-   then PreDefined := Midi2String(Round(48.0 * Parameter[Index] + 21.0))
-   else PreDefined := IntToStr(Round(48.0 * Parameter[Index] - 24.0));
+  if Assigned(FVoiceInput) then
+    if FVoiceInput.Tracking = ttOff then
+      PreDefined := Midi2String(Round(48.0 * Parameter[Index] + 21.0))
+    else
+      PreDefined := IntToStr(Round(48.0 * Parameter[Index] - 24.0));
 end;
 
-procedure TVocInputDataModule.ParameterBreathChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TVocInputDataModule.ParameterBreathChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
- if Assigned(FVoiceInput)
-  then FVoiceInput.Breath := Value;
+  if Assigned(FVoiceInput) then
+    FVoiceInput.Breath := Value;
 end;
 
-procedure TVocInputDataModule.ParameterVoicedUnvoicedDetectorChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TVocInputDataModule.ParameterVoicedUnvoicedDetectorChange
+  (Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if Assigned(FVoiceInput)
-  then FVoiceInput.VoicedUnvoicedRatio := Value;
+  if Assigned(FVoiceInput) then
+    FVoiceInput.VoicedUnvoicedRatio := Value;
 end;
 
-procedure TVocInputDataModule.ParameterMaxFrequencyChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TVocInputDataModule.ParameterMaxFrequencyChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
- if Assigned(FVoiceInput)
-  then FVoiceInput.MaximumFrequency := Value;
+  if Assigned(FVoiceInput) then
+    FVoiceInput.MaximumFrequency := Value;
 end;
 
-procedure TVocInputDataModule.ParameterMaxFrequencyDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+procedure TVocInputDataModule.ParameterMaxFrequencyDisplay(Sender: TObject;
+  const Index: Integer; var PreDefined: string);
 begin
- PreDefined := Midi2String(Parameter[4]);
+  PreDefined := Midi2String(Parameter[4]);
 end;
 
 procedure TVocInputDataModule.VSTModuleSuspend(Sender: TObject);
 begin
- if Assigned(FVoiceInput)
-  then FVoiceInput.ResetStates;
+  if Assigned(FVoiceInput) then
+    FVoiceInput.ResetStates;
 end;
 
 procedure TVocInputDataModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 begin
- if Assigned(FVoiceInput)
-  then FVoiceInput.SampleRate := SampleRate;
+  if Assigned(FVoiceInput) then
+    FVoiceInput.SampleRate := SampleRate;
 end;
 
 procedure TVocInputDataModule.VSTModuleProcess(const Inputs,
   Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
-  Sample : Integer;
+  Sample: Integer;
 begin
- for Sample := 0 to SampleFrames - 1 do
+  for Sample := 0 to SampleFrames - 1 do
   begin
-   Outputs[0, Sample] := FVoiceInput.ProcessSample(Inputs[0, Sample]);
-   Outputs[1, Sample] := Inputs[0, Sample];
+    Outputs[0, Sample] := FVoiceInput.ProcessSample(Inputs[0, Sample]);
+    Outputs[1, Sample] := Inputs[0, Sample];
   end;
 end;
 

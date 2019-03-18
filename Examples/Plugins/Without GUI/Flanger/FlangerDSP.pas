@@ -35,7 +35,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
   Forms, SyncObjs, DAV_Types, DAV_VSTModule, DAV_DspVibrato;
 
 type
@@ -51,9 +51,9 @@ type
     procedure ParamMixChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamSpeedChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
-    FVibrato         : array [0..1] of TDspVibrato32;
-    FMix, FMixInv    : Single;
-    FCriticalSection : TCriticalSection;
+    FVibrato: array [0 .. 1] of TDspVibrato32;
+    FMix, FMixInv: Single;
+    FCriticalSection: TCriticalSection;
     function GetFlanger(Index: Integer): TDspVibrato32;
   public
     property Flanger[Index: Integer]: TDspVibrato32 read GetFlanger;
@@ -75,129 +75,137 @@ resourcestring
 
 procedure TFlangerModule.VSTModuleCreate(Sender: TObject);
 begin
- FCriticalSection := TCriticalSection.Create;
+  FCriticalSection := TCriticalSection.Create;
 end;
 
 procedure TFlangerModule.VSTModuleDestroy(Sender: TObject);
 begin
- FreeAndNil(FCriticalSection);
+  FreeAndNil(FCriticalSection);
 end;
 
 procedure TFlangerModule.VSTModuleOpen(Sender: TObject);
 var
-  Channel : Integer;
+  Channel: Integer;
 begin
- for Channel := 0 to Length(FVibrato) - 1 do
+  for Channel := 0 to Length(FVibrato) - 1 do
   begin
-   FVibrato[Channel] := TDspVibrato32.Create;
-   FVibrato[Channel].SampleRate := SampleRate;
+    FVibrato[Channel] := TDspVibrato32.Create;
+    FVibrato[Channel].SampleRate := SampleRate;
   end;
 
- // initialize parameters
- Parameter[0] :=  5;
- Parameter[1] :=  0.2;
- Parameter[2] := 50;
- with Programs[0] do
+  // initialize parameters
+  Parameter[0] := 5;
+  Parameter[1] := 0.2;
+  Parameter[2] := 50;
+  with Programs[0] do
   begin
-   Parameter[0] :=  5;
-   Parameter[1] :=  0.2;
-   Parameter[2] := 50;
+    Parameter[0] := 5;
+    Parameter[1] := 0.2;
+    Parameter[2] := 50;
   end;
- with Programs[1] do
+  with Programs[1] do
   begin
-   Parameter[0] :=  2;
-   Parameter[1] :=  0.02;
-   Parameter[2] := 50;
+    Parameter[0] := 2;
+    Parameter[1] := 0.02;
+    Parameter[2] := 50;
   end;
- with Programs[2] do
+  with Programs[2] do
   begin
-   Parameter[0] :=  4;
-   Parameter[1] :=  0.04;
-   Parameter[2] := 50;
+    Parameter[0] := 4;
+    Parameter[1] := 0.04;
+    Parameter[2] := 50;
   end;
- with Programs[3] do
+  with Programs[3] do
   begin
-   Parameter[0] :=  4.5;
-   Parameter[1] :=  0.62;
-   Parameter[2] := 50;
+    Parameter[0] := 4.5;
+    Parameter[1] := 0.62;
+    Parameter[2] := 50;
   end;
 end;
 
 procedure TFlangerModule.VSTModuleClose(Sender: TObject);
 var
-  Channel : Integer;
+  Channel: Integer;
 begin
- for Channel := 0 to Length(FVibrato) - 1
-  do FreeAndNil(FVibrato[Channel]);
+  for Channel := 0 to Length(FVibrato) - 1 do
+    FreeAndNil(FVibrato[Channel]);
 end;
 
 function TFlangerModule.GetFlanger(Index: Integer): TDspVibrato32;
 begin
- if Index in [0..1]
-  then Result := FVibrato[Index]
-  else raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
+  if Index in [0 .. 1] then
+    Result := FVibrato[Index]
+  else
+    raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
 end;
 
-procedure TFlangerModule.ParamSpeedChange(Sender: TObject; const Index: Integer; var Value: Single);
+procedure TFlangerModule.ParamSpeedChange(Sender: TObject; const Index: Integer;
+  var Value: Single);
 begin
- FCriticalSection.Enter;
- try
-  if Assigned(FVibrato[0]) then FVibrato[0].Speed := Value;
-  if Assigned(FVibrato[1]) then FVibrato[1].Speed := Value;
- finally
-  FCriticalSection.Leave;
- end;
+  FCriticalSection.Enter;
+  try
+    if Assigned(FVibrato[0]) then
+      FVibrato[0].Speed := Value;
+    if Assigned(FVibrato[1]) then
+      FVibrato[1].Speed := Value;
+  finally
+    FCriticalSection.Leave;
+  end;
 end;
 
-procedure TFlangerModule.ParamMixChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TFlangerModule.ParamMixChange(Sender: TObject; const Index: Integer;
+  var Value: Single);
 begin
- FCriticalSection.Enter;
- try
-  FMix := 0.01 * Value;
-  FMixInv := 2 - FMix;
- finally
-  FCriticalSection.Leave;
- end;
+  FCriticalSection.Enter;
+  try
+    FMix := 0.01 * Value;
+    FMixInv := 2 - FMix;
+  finally
+    FCriticalSection.Leave;
+  end;
 end;
 
-procedure TFlangerModule.ParamDepthChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TFlangerModule.ParamDepthChange(Sender: TObject; const Index: Integer;
+  var Value: Single);
 begin
- FCriticalSection.Enter;
- try
-  if Assigned(FVibrato[0]) then FVibrato[0].Depth := 0.01 * Value;
-  if Assigned(FVibrato[1]) then FVibrato[1].Depth := 0.01 * Value;
- finally
-  FCriticalSection.Leave;
- end;
+  FCriticalSection.Enter;
+  try
+    if Assigned(FVibrato[0]) then
+      FVibrato[0].Depth := 0.01 * Value;
+    if Assigned(FVibrato[1]) then
+      FVibrato[1].Depth := 0.01 * Value;
+  finally
+    FCriticalSection.Leave;
+  end;
 end;
 
 procedure TFlangerModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 begin
- FCriticalSection.Enter;
- try
-  if Assigned(FVibrato[0]) then FVibrato[0].SampleRate := SampleRate;
-  if Assigned(FVibrato[1]) then FVibrato[1].SampleRate := SampleRate;
- finally
-  FCriticalSection.Leave;
- end;
+  FCriticalSection.Enter;
+  try
+    if Assigned(FVibrato[0]) then
+      FVibrato[0].SampleRate := SampleRate;
+    if Assigned(FVibrato[1]) then
+      FVibrato[1].SampleRate := SampleRate;
+  finally
+    FCriticalSection.Leave;
+  end;
 end;
 
 procedure TFlangerModule.VSTModuleProcess(const Inputs,
   Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
-  Channel, Sample : Integer;
+  Channel, Sample: Integer;
 begin
- FCriticalSection.Enter;
- try
-  for Channel := 0 to 1 do
-   for Sample := 0 to SampleFrames - 1
-    do Outputs[Channel, Sample] := FastTanhContinousError4(FMix * Inputs[Channel, Sample] + FMixInv * FVibrato[Channel].ProcessSample32(Inputs[Channel, Sample]))
- finally
-  FCriticalSection.Leave;
- end;
+  FCriticalSection.Enter;
+  try
+    for Channel := 0 to 1 do
+      for Sample := 0 to SampleFrames - 1 do
+        Outputs[Channel, Sample] := FastTanhContinousError4(FMix * Inputs[Channel, Sample] + FMixInv * FVibrato[Channel].ProcessSample32(Inputs[Channel, Sample]))
+  finally
+    FCriticalSection.Leave;
+  end;
 end;
 
 procedure TFlangerModule.VSTModuleProcessDoubleReplacing(const Inputs,
@@ -205,14 +213,14 @@ procedure TFlangerModule.VSTModuleProcessDoubleReplacing(const Inputs,
 var
   Channel, Sample : Integer;
 begin
- FCriticalSection.Enter;
- try
-  for Channel := 0 to 1 do
-   for Sample := 0 to SampleFrames - 1
-    do Outputs[Channel, Sample] := FastTanhContinousError4(FMix * Inputs[Channel, Sample] + FMixInv * FVibrato[Channel].ProcessSample32(Inputs[Channel, Sample]))
- finally
-  FCriticalSection.Leave;
- end;
+  FCriticalSection.Enter;
+  try
+    for Channel := 0 to 1 do
+     for Sample := 0 to SampleFrames - 1 do
+       Outputs[Channel, Sample] := FastTanhContinousError4(FMix * Inputs[Channel, Sample] + FMixInv * FVibrato[Channel].ProcessSample32(Inputs[Channel, Sample]))
+  finally
+    FCriticalSection.Leave;
+  end;
 end;
 
 end.

@@ -35,7 +35,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
   Forms, DAV_Types, DAV_VSTModule, DAV_SoundTouchDLL, DAV_ChannelDataCoder; //DAV_SoundTouch;
 
 type
@@ -48,10 +48,9 @@ type
     procedure VSTModuleBlockSizeChange(Sender: TObject;
       const BlockSize: Integer);
   private
-    FSoundTouch      : TSoundTouch;
-    FDataCoder       : TChannel32DataCoderFloat32;
-    FInterleavedData : PDAVSingleFixedArray;
-  public
+    FSoundTouch: TSoundTouch;
+    FDataCoder: TChannel32DataCoderFloat32;
+    FInterleavedData: PDAVSingleFixedArray;
   end;
 
 implementation
@@ -67,64 +66,64 @@ uses
 
 procedure TSoundTouchPitchShifterModule.VSTModuleOpen(Sender: TObject);
 begin
- FSoundTouch := TSoundTouch.Create;
- with FSoundTouch do
+  FSoundTouch := TSoundTouch.Create;
+  with FSoundTouch do
   begin
-   SampleRate := Self.SampleRate;
-   Channels := 2;
+    SampleRate := Self.SampleRate;
+    Channels := 2;
   end;
- FDataCoder := TChannel32DataCoderFloat32.Create;
+  FDataCoder := TChannel32DataCoderFloat32.Create;
 
- // initialize parameter
- Parameter[0] := 1;
+  // initialize parameter
+  Parameter[0] := 1;
 
- // set editor form class
- EditorFormClass := TFmSoundTouchPitchShifter;
+  // set editor form class
+  EditorFormClass := TFmSoundTouchPitchShifter;
 end;
 
-procedure TSoundTouchPitchShifterModule.VSTModuleBlockSizeChange(
-  Sender: TObject; const BlockSize: Integer);
+procedure TSoundTouchPitchShifterModule.VSTModuleBlockSizeChange
+  (Sender: TObject; const BlockSize: Integer);
 begin
- ReallocMem(FInterleavedData, 2 * BlockSize * SizeOf(Single));
- FDataCoder.BlockSize := 2 * BlockSize * SizeOf(Single);
+  ReallocMem(FInterleavedData, 2 * BlockSize * SizeOf(Single));
+  FDataCoder.BlockSize := 2 * BlockSize * SizeOf(Single);
 end;
 
 procedure TSoundTouchPitchShifterModule.VSTModuleClose(Sender: TObject);
 begin
- FreeAndNil(FSoundTouch);
- FreeAndNil(FDataCoder);
+  FreeAndNil(FSoundTouch);
+  FreeAndNil(FDataCoder);
 end;
 
-procedure TSoundTouchPitchShifterModule.ParameterPitchFactorChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TSoundTouchPitchShifterModule.ParameterPitchFactorChange
+  (Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if Assigned(FSoundTouch)
-  then FSoundTouch.Pitch := Power(2, Value / 12);
+  if Assigned(FSoundTouch) then
+    FSoundTouch.Pitch := Power(2, Value / 12);
 
- // update GUI
- if EditorForm is TFmSoundTouchPitchShifter
-  then TFmSoundTouchPitchShifter(EditorForm).UpdateSemitones;
+  // update GUI
+  if EditorForm is TFmSoundTouchPitchShifter then
+    TFmSoundTouchPitchShifter(EditorForm).UpdateSemitones;
 end;
 
-procedure TSoundTouchPitchShifterModule.VSTModuleSampleRateChange(Sender: TObject;
-  const SampleRate: Single);
+procedure TSoundTouchPitchShifterModule.VSTModuleSampleRateChange
+  (Sender: TObject; const SampleRate: Single);
 begin
- if Assigned(FSoundTouch)
-  then FSoundTouch.SampleRate := SampleRate;
+  if Assigned(FSoundTouch) then
+    FSoundTouch.SampleRate := SampleRate;
 end;
 
 procedure TSoundTouchPitchShifterModule.VSTModuleProcess(const Inputs,
   Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 begin
- FDataCoder.BlockSize := 2 * SampleFrames * SizeOf(Single);
- Move(Inputs[0, 0], FDataCoder.ChannelPointer[0]^, SampleFrames * SizeOf(Single));
- Move(Inputs[1, 0], FDataCoder.ChannelPointer[1]^, SampleFrames * SizeOf(Single));
- FDataCoder.SaveToPointer(FInterleavedData);
- FSoundTouch.PutSamples(@FInterleavedData^[0], SampleFrames);
- FSoundTouch.ReceiveSamples(@FInterleavedData^[0], SampleFrames);
- FDataCoder.LoadFromPointer(FInterleavedData);
- Move(FDataCoder.ChannelPointer[0]^, Outputs[0, 0], SampleFrames * SizeOf(Single));
- Move(FDataCoder.ChannelPointer[1]^, Outputs[1, 0], SampleFrames * SizeOf(Single));
+  FDataCoder.BlockSize := 2 * SampleFrames * SizeOf(Single);
+  Move(Inputs[0, 0], FDataCoder.ChannelPointer[0]^, SampleFrames * SizeOf(Single));
+  Move(Inputs[1, 0], FDataCoder.ChannelPointer[1]^, SampleFrames * SizeOf(Single));
+  FDataCoder.SaveToPointer(FInterleavedData);
+  FSoundTouch.PutSamples(@FInterleavedData^[0], SampleFrames);
+  FSoundTouch.ReceiveSamples(@FInterleavedData^[0], SampleFrames);
+  FDataCoder.LoadFromPointer(FInterleavedData);
+  Move(FDataCoder.ChannelPointer[0]^, Outputs[0, 0], SampleFrames * SizeOf(Single));
+  Move(FDataCoder.ChannelPointer[1]^, Outputs[1, 0], SampleFrames * SizeOf(Single));
 end;
 
 end.

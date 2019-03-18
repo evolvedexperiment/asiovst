@@ -44,14 +44,14 @@ object FmRingModulator: TFmRingModulator
       Width = 114
       Height = 17
       BorderColor = 3226174
+      BorderRadius = 5.000000000000000000
       BorderVisible = False
       BorderWidth = 1.000000000000000000
       PanelColor = 3226174
       ParentColor = True
-      BorderRadius = 5.000000000000000000
       TabOrder = 0
-      UseDockManager = True
       Transparent = True
+      UseDockManager = True
       object LbDisplay: TGuiLabel
         Left = 5
         Top = 2
@@ -76,6 +76,7 @@ object FmRingModulator: TFmRingModulator
       Width = 48
       Height = 48
       CurveMapping = -2.069999933242798000
+      DefaultValue = 0.009999999776482582
       Max = 1000.000000000000000000
       Min = 0.009999999776482582
       ScrollRange = 400.000000000000000000
@@ -84,7 +85,6 @@ object FmRingModulator: TFmRingModulator
       Value = 0.009999999776482582
       WheelStep = 1.000000000000000000
       OnChange = DialFrequencyChange
-      DefaultValue = 0.000000000000000000
     end
   end
   object GSPL: TGuiStitchedPNGList

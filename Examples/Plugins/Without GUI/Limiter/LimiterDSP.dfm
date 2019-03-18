@@ -77,8 +77,6 @@ object LimiterDataModule: TLimiterDataModule
   OnProcess = VSTModuleProcess
   OnProcess32Replacing = VSTModuleProcess
   OnSampleRateChange = VSTModuleSampleRateChange
-  Left = 218
-  Top = 81
   Height = 150
   Width = 215
 end

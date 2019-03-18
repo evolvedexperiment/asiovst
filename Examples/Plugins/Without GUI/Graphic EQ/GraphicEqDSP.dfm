@@ -453,8 +453,6 @@ object PluginDataModule: TPluginDataModule
   OnProcess = VSTModuleProcessLR
   OnProcess32Replacing = VSTModuleProcessLR
   OnSampleRateChange = VSTModuleSampleRateChange
-  Left = 838
-  Top = 136
   Height = 150
   Width = 215
 end

@@ -115,21 +115,24 @@ function BlendPixelNative(Foreground, Background: TPixel32): TPixel32;
 var
   Alpha : Byte;
 begin
- if Foreground.A =   0 then Result := Background else
- if Foreground.A = $FF then Result := Foreground else
+  if Foreground.A = 0 then
+    Result := Background
+  else if Foreground.A = $FF then
+    Result := Foreground
+  else
   begin
-   Alpha := (ForeGround.ARGB shr 24);
-   ForeGround.ARGB := ((((Alpha * (ForeGround.ARGB and $00FF00FF)) + CBias)
-     and $FF00FF00) shr 8) or ((Alpha * ((ForeGround.ARGB and $FF00FF00)
-     shr 8) + CBias) and $FF00FF00);
+    Alpha := (Foreground.ARGB shr 24);
+    Foreground.ARGB :=
+      ((((Alpha * (Foreground.ARGB and $00FF00FF)) + CBias) and $FF00FF00) shr 8) or
+      ((Alpha * ((Foreground.ARGB and $FF00FF00) shr 8) + CBias) and $FF00FF00);
 
-   Alpha := Alpha xor $FF;
+    Alpha := Alpha xor $FF;
 
-   Background.ARGB := ((((Alpha * (Background.ARGB and $00FF00FF)) + CBias)
-     and $FF00FF00) shr 8) or ((Alpha * ((Background.ARGB and $FF00FF00)
-     shr 8) + CBias) and $FF00FF00);
+    Background.ARGB :=
+      ((((Alpha * (Background.ARGB and $00FF00FF)) + CBias) and $FF00FF00) shr 8) or
+      ((Alpha * ((Background.ARGB and $FF00FF00) shr 8) + CBias) and $FF00FF00);
 
-   Result.ARGB := (Background.ARGB + Foreground.ARGB) or $FF000000;
+    Result.ARGB := (Background.ARGB + Foreground.ARGB) or $FF000000;
   end;
 {$ELSE}
 asm
@@ -251,15 +254,15 @@ begin
   end;
 
  Alpha := (ForeGround.ARGB shr 24);
- ForeGround.ARGB := ((((Alpha * (ForeGround.ARGB and $00FF00FF)) + CBias)
-   and $FF00FF00) shr 8) or ((Alpha * ((ForeGround.ARGB and $FF00FF00)
-   shr 8) + CBias) and $FF00FF00);
+ ForeGround.ARGB :=
+   ((((Alpha * (ForeGround.ARGB and $00FF00FF)) + CBias) and $FF00FF00) shr 8) or
+   ((Alpha * ((ForeGround.ARGB and $FF00FF00) shr 8) + CBias) and $FF00FF00);
 
  Alpha := Alpha xor $FF;
 
- Background.ARGB := ((((Alpha * (Background.ARGB and $00FF00FF)) + CBias)
-   and $FF00FF00) shr 8) or ((Alpha * ((Background.ARGB and $FF00FF00)
-   shr 8) + CBias) and $FF00FF00);
+ Background.ARGB :=
+   ((((Alpha * (Background.ARGB and $00FF00FF)) + CBias) and $FF00FF00) shr 8) or
+   ((Alpha * ((Background.ARGB and $FF00FF00) shr 8) + CBias) and $FF00FF00);
 
  Background.ARGB := (Background.ARGB + Foreground.ARGB) or $FF000000;
 {$ELSE}
@@ -377,11 +380,11 @@ end;
 procedure BlendPixelLineNative(Foreground: TPixel32; Destination: PPixel32; Count: Integer);
 {$IFDEF PUREPASCAL}
 begin
- while Count > 0 do
+  while Count > 0 do
   begin
-   BlendPixelInplace(Foreground, Destination^);
-   Inc(Destination);
-   Dec(Count);
+    BlendPixelInplace(Foreground, Destination^);
+    Inc(Destination);
+    Dec(Count);
   end;
 {$ELSE}
 asm
@@ -541,12 +544,12 @@ end;
 procedure BlendLineNative(Source, Destination: PPixel32; Count: Integer);
 {$IFDEF PUREPASCAL}
 begin
- while Count > 0 do
+  while Count > 0 do
   begin
-   BlendPixelInplace(Source^, Destination^);
-   Inc(Source);
-   Inc(Destination);
-   Dec(Count);
+    BlendPixelInplace(Source^, Destination^);
+    Inc(Source);
+    Inc(Destination);
+    Dec(Count);
   end;
 {$ELSE}
 asm
@@ -697,19 +700,19 @@ end;
 function CombinePixelNative(ForeGround, Background: TPixel32; Weight: Cardinal): TPixel32;
 {$IFDEF PUREPASCAL}
 begin
- if Weight = 0 then Result := Background else
- if Weight >= $FF then Result := ForeGround else
+  if Weight = 0 then Result := Background else
+  if Weight >= $FF then Result := ForeGround else
   begin
-   ForeGround.ARGB := (((Weight * ((ForeGround.ARGB and $FF00FF00) shr 8)) +
-     CBias) and $FF00FF00) + ((((Weight * (ForeGround.ARGB and $00FF00FF)) +
-     CBias) and $FF00FF00) shr 8);
+    ForeGround.ARGB := (((Weight * ((ForeGround.ARGB and $FF00FF00) shr 8)) +
+      CBias) and $FF00FF00) + ((((Weight * (ForeGround.ARGB and $00FF00FF)) +
+      CBias) and $FF00FF00) shr 8);
 
-   Weight := Weight xor $000000FF;
-   Background.ARGB := (((Weight * ((Background.ARGB and $FF00FF00) shr 8)) +
-     CBias) and $FF00FF00) + ((((Weight * (Background.ARGB and $00FF00FF)) +
-     CBias) and $FF00FF00) shr 8);
+    Weight := Weight xor $000000FF;
+    Background.ARGB := (((Weight * ((Background.ARGB and $FF00FF00) shr 8)) +
+      CBias) and $FF00FF00) + ((((Weight * (Background.ARGB and $00FF00FF)) +
+      CBias) and $FF00FF00) shr 8);
 
-   Result.ARGB := Background.ARGB + Foreground.ARGB;
+    Result.ARGB := Background.ARGB + Foreground.ARGB;
   end;
 {$ELSE}
 asm
@@ -807,19 +810,22 @@ end;
 procedure CombinePixelInplaceNative(ForeGround: TPixel32; var Background: TPixel32; Weight: Cardinal);
 {$IFDEF PUREPASCAL}
 begin
- if Weight = 0 then Exit else
- if Weight >= $FF then Background := ForeGround else
+  if Weight = 0 then
+    Exit
+  else if Weight >= $FF then
+    Background := Foreground
+  else
   begin
-   ForeGround.ARGB := (((Weight * ((ForeGround.ARGB and $FF00FF00) shr 8)) +
-     CBias) and $FF00FF00) + ((((Weight * (ForeGround.ARGB and $00FF00FF)) +
-     CBias) and $FF00FF00) shr 8);
+    Foreground.ARGB :=
+      (((Weight * ((Foreground.ARGB and $FF00FF00) shr 8)) + CBias) and $FF00FF00) +
+      ((((Weight * (Foreground.ARGB and $00FF00FF)) + CBias) and $FF00FF00) shr 8);
 
-   Weight := Weight xor $000000FF;
-   Background.ARGB := (((Weight * ((Background.ARGB and $FF00FF00) shr 8)) +
-     CBias) and $FF00FF00) + ((((Weight * (Background.ARGB and $00FF00FF)) +
-     CBias) and $FF00FF00) shr 8);
+    Weight := Weight xor $000000FF;
+    Background.ARGB :=
+      (((Weight * ((Background.ARGB and $FF00FF00) shr 8)) + CBias) and $FF00FF00) +
+      ((((Weight * (Background.ARGB and $00FF00FF)) + CBias) and $FF00FF00) shr 8);
 
-   Background.ARGB := Background.ARGB + Foreground.ARGB;
+    Background.ARGB := Background.ARGB + Foreground.ARGB;
   end;
 {$ELSE}
 asm
@@ -925,11 +931,11 @@ end;
 procedure CombinePixelLineNative(Foreground: TPixel32; Destination: PPixel32;
   Count: Integer; Weight: Cardinal);
 begin
- while Count > 0 do
+  while Count > 0 do
   begin
-   CombinePixelInplace(Foreground, Destination^, Weight);
-   Inc(Destination);
-   Dec(Count);
+    CombinePixelInplace(Foreground, Destination^, Weight);
+    Inc(Destination);
+    Dec(Count);
   end;
 end;
 
@@ -937,12 +943,12 @@ procedure CombineLineNative(Source, Destination: PPixel32; Count: Integer;
   Weight: Cardinal);
 {$IFDEF PUREPASCAL}
 begin
- while Count > 0 do
+  while Count > 0 do
   begin
-   CombinePixelInplace(Source^, Destination^, Weight);
-   Inc(Source);
-   Inc(Destination);
-   Dec(Count);
+    CombinePixelInplace(Source^, Destination^, Weight);
+    Inc(Source);
+    Inc(Destination);
+    Dec(Count);
   end;
 {$ELSE}
 asm
@@ -1091,38 +1097,42 @@ end;
 
 function MergePixelNative(Foreground, Background: TPixel32): TPixel32;
 var
-  Temp  : Integer;
-  Scale : Integer;
+  Temp: Integer;
+  Scale: Integer;
 begin
- if Foreground.A = $FF then Result := Foreground else
- if Foreground.A = $0  then Result := Background else
- if Background.A = $0  then Result := Foreground else
- if Background.A = $FF
-  then Result := BlendPixel(Foreground, Background)
+  if Foreground.A = $FF then
+    Result := Foreground
+  else if Foreground.A = $0 then
+    Result := Background
+  else if Background.A = $0 then
+    Result := Foreground
+  else if Background.A = $FF then
+    Result := BlendPixel(Foreground, Background)
   else
-   begin
+  begin
     Temp := Sqr($FF) - (Foreground.A xor $FF) * (Background.A xor $FF);
     Result.A := (Temp + $80) shr 8;
     Scale := (Sqr($FF) * Foreground.A) div Temp;
     Result.R := Background.R + (Scale * ($FF + Foreground.R - Background.R) + $7F) shr 8 + 1 - Scale;
     Result.G := Background.G + (Scale * ($FF + Foreground.G - Background.G) + $7F) shr 8 + 1 - Scale;
     Result.B := Background.B + (Scale * ($FF + Foreground.B - Background.B) + $7F) shr 8 + 1 - Scale;
-   end;
+  end;
 end;
 
-procedure MergePixelInplaceNative(Foreground: TPixel32; var Background: TPixel32);
+procedure MergePixelInplaceNative(Foreground: TPixel32;
+  var Background: TPixel32);
 begin
- Background := MergePixelNative(Foreground, Background);
+  Background := MergePixelNative(Foreground, Background);
 end;
 
 procedure MergeLineNative(Source, Destination: PPixel32; Count: Cardinal);
 begin
- while Count > 0 do
+  while Count > 0 do
   begin
-   Destination^ := MergePixel(Source^, Destination^);
-   Inc(Source);
-   Inc(Destination);
-   Dec(Count);
+    Destination^ := MergePixel(Source^, Destination^);
+    Inc(Source);
+    Inc(Destination);
+    Dec(Count);
   end;
 end;
 
@@ -1140,7 +1150,7 @@ end;
 
 procedure EMMSMMX;
 asm
-  EMMS
+  EMMS;
 end;
 
 function BlendPixelMMX(Foreground, Background: TPixel32): TPixel32;
@@ -2368,237 +2378,235 @@ var
   P : PLongword;
 {$ENDIF}
 begin
- {$IFNDEF PUREPASCAL}
- GetAlignedMemory(AlphaPointer, 256 * 8 * SizeOf(Cardinal));
+{$IFNDEF PUREPASCAL}
+  GetAlignedMemory(AlphaPointer, 256 * 8 * SizeOf(Cardinal));
 
- P := AlphaPointer;
- for I := 0 to 255 do
+  P := AlphaPointer;
+  for I := 0 to 255 do
   begin
-   L := I + I shl 16;
-   P^ := L;
-   Inc(P);
-   P^ := L;
-   Inc(P);
-   P^ := L;
-   Inc(P);
-   P^ := L;
-   Inc(P);
+    L := I + I shl 16;
+    P^ := L;
+    Inc(P);
+    P^ := L;
+    Inc(P);
+    P^ := L;
+    Inc(P);
+    P^ := L;
+    Inc(P);
   end;
- P := AlphaPointer;
- Inc(P, $FF * 4);
- BiasPointer := P;
- Assert(PCardinal(BiasPointer)^ = $00FF00FF);
+  P := AlphaPointer;
+  Inc(P, $FF * 4);
+  BiasPointer := P;
+  Assert(PCardinal(BiasPointer)^ = $00FF00FF);
 
- {$IFDEF AlternativeSSE2}
- GetAlignedMemory(ScaleBiasPointer, 8 * SizeOf(Cardinal));
- P := ScaleBiasPointer;
- for I := 0 to 3 do
+{$IFDEF AlternativeSSE2}
+  GetAlignedMemory(ScaleBiasPointer, 8 * SizeOf(Cardinal));
+  P := ScaleBiasPointer;
+  for I := 0 to 3 do
   begin
-   P^ := $10101;
-   Inc(P);
+    P^ := $10101;
+    Inc(P);
   end;
- for I := 0 to 3 do
+  for I := 0 to 3 do
   begin
-   P^ := $800000;
-   Inc(P);
+    P^ := $800000;
+    Inc(P);
   end;
- {$ENDIF}
- {$ENDIF}
+{$ENDIF}
+{$ENDIF}
 end;
 
 procedure FreeTables;
 begin
- {$IFNDEF PUREPASCAL}
- BiasPointer := nil;
- FreeAlignedMemory(AlphaPointer);
- {$IFDEF AlternativeSSE2}
- FreeAlignedMemory(ScaleBiasPointer);
- {$ENDIF}
- {$ENDIF}
+{$IFNDEF PUREPASCAL}
+  BiasPointer := nil;
+  FreeAlignedMemory(AlphaPointer);
+{$IFDEF AlternativeSSE2}
+  FreeAlignedMemory(ScaleBiasPointer);
+{$ENDIF}
+{$ENDIF}
 end;
 
 procedure BindFunctions;
 begin
- // create function binding list for 32-bit float conversions
- GBindingBlend := TFunctionBindingList.Create;
+  // create function binding list for 32-bit float conversions
+  GBindingBlend := TFunctionBindingList.Create;
 
- // create function binding for EMMS procedure
- GBindingEMMS := TFunctionBinding.Create(@@EMMS, @EMMSNative);
- GBindingBlend.AddBinding(GBindingEMMS);
- with GBindingEMMS do
+  // create function binding for EMMS procedure
+  GBindingEMMS := TFunctionBinding.Create(@@EMMS, @EMMSNative);
+  GBindingBlend.AddBinding(GBindingEMMS);
+  with GBindingEMMS do
   begin
-   Add(@EMMSNative);
-   {$IFNDEF PUREPASCAL}
-   Add(@EMMSMMX, [pfMMX]);
-   Add(@EMMSNative, [pfSSE2]);
-   {$ENDIF}
-   RebindProcessorSpecific;
+    ADD(@EMMSNative);
+{$IFNDEF PUREPASCAL}
+    ADD(@EMMSMMX, [pfMMX]);
+    ADD(@EMMSNative, [pfSSE2]);
+{$ENDIF}
+    RebindProcessorSpecific;
   end;
 
- // create function binding for blend register
- GBindingBlendPixel := TFunctionBinding.Create(
-   @@BlendPixel, @BlendPixelNative);
- GBindingBlend.AddBinding(GBindingBlendPixel);
- with GBindingBlendPixel do
+  // create function binding for blend register
+  GBindingBlendPixel := TFunctionBinding.Create(@@BlendPixel,
+    @BlendPixelNative);
+  GBindingBlend.AddBinding(GBindingBlendPixel);
+  with GBindingBlendPixel do
   begin
-   Add(@BlendPixelNative);
-   {$IFNDEF PUREPASCAL}
-//   Add(@BlendPixelMMX, [pfMMX]);
-   Add(@BlendPixelSSE2, [pfSSE2]);
-   {$ENDIF}
-   RebindProcessorSpecific;
+    ADD(@BlendPixelNative);
+{$IFNDEF PUREPASCAL}
+    // Add(@BlendPixelMMX, [pfMMX]);
+    ADD(@BlendPixelSSE2, [pfSSE2]);
+{$ENDIF}
+    RebindProcessorSpecific;
   end;
 
- // create function binding for blend memory
- GBindingBlendPixelInplace := TFunctionBinding.Create(
-   @@BlendPixelInplace, @BlendPixelInplaceNative);
- GBindingBlend.AddBinding(GBindingBlendPixelInplace);
- with GBindingBlendPixelInplace do
+  // create function binding for blend memory
+  GBindingBlendPixelInplace := TFunctionBinding.Create(@@BlendPixelInplace,
+    @BlendPixelInplaceNative);
+  GBindingBlend.AddBinding(GBindingBlendPixelInplace);
+  with GBindingBlendPixelInplace do
   begin
-   Add(@BlendPixelInplaceNative);
-   {$IFNDEF PUREPASCAL}
-   Add(@BlendPixelInplaceMMX, [pfMMX]);
-   Add(@BlendPixelInplaceSSE2, [pfSSE2]);
-   {$ENDIF}
-   RebindProcessorSpecific;
+    ADD(@BlendPixelInplaceNative);
+{$IFNDEF PUREPASCAL}
+    ADD(@BlendPixelInplaceMMX, [pfMMX]);
+    ADD(@BlendPixelInplaceSSE2, [pfSSE2]);
+{$ENDIF}
+    RebindProcessorSpecific;
   end;
 
- // create function binding for blend line
- GBindingBlendPixelLine := TFunctionBinding.Create(
-   @@BlendPixelLine, @BlendPixelLineNative);
- GBindingBlend.AddBinding(GBindingBlendPixelLine);
- with GBindingBlendPixelLine do
+  // create function binding for blend line
+  GBindingBlendPixelLine := TFunctionBinding.Create(@@BlendPixelLine,
+    @BlendPixelLineNative);
+  GBindingBlend.AddBinding(GBindingBlendPixelLine);
+  with GBindingBlendPixelLine do
   begin
-   Add(@BlendPixelLineNative);
-   {$IFNDEF PUREPASCAL}
-//   Add(@BlendPixelLineMMX, [pfMMX]);
-   Add(@BlendPixelLineSSE2, [pfSSE2]);
-   {$ENDIF}
-   RebindProcessorSpecific;
+    ADD(@BlendPixelLineNative);
+{$IFNDEF PUREPASCAL}
+    // Add(@BlendPixelLineMMX, [pfMMX]);
+    ADD(@BlendPixelLineSSE2, [pfSSE2]);
+{$ENDIF}
+    RebindProcessorSpecific;
   end;
 
- // create function binding for blend line
- GBindingBlendLine := TFunctionBinding.Create(
-   @@BlendLine, @BlendLineNative);
- GBindingBlend.AddBinding(GBindingBlendLine);
- with GBindingBlendLine do
+  // create function binding for blend line
+  GBindingBlendLine := TFunctionBinding.Create(@@BlendLine, @BlendLineNative);
+  GBindingBlend.AddBinding(GBindingBlendLine);
+  with GBindingBlendLine do
   begin
-   Add(@BlendLineNative);
-   {$IFNDEF PUREPASCAL}
-   Add(@BlendLineMMX, [pfMMX]);
-   Add(@BlendLineSSE2, [pfSSE2]);
-   {$ENDIF}
-   RebindProcessorSpecific;
+    ADD(@BlendLineNative);
+{$IFNDEF PUREPASCAL}
+    ADD(@BlendLineMMX, [pfMMX]);
+    ADD(@BlendLineSSE2, [pfSSE2]);
+{$ENDIF}
+    RebindProcessorSpecific;
   end;
 
- // create function binding for combine register
- GBindingCombinePixel := TFunctionBinding.Create(
-   @@CombinePixel, @CombinePixelNative);
- GBindingBlend.AddBinding(GBindingCombinePixel);
- with GBindingCombinePixel do
+  // create function binding for combine register
+  GBindingCombinePixel := TFunctionBinding.Create(@@CombinePixel,
+    @CombinePixelNative);
+  GBindingBlend.AddBinding(GBindingCombinePixel);
+  with GBindingCombinePixel do
   begin
-   Add(@CombinePixelNative);
-   {$IFNDEF PUREPASCAL}
-   Add(@CombinePixelMMX, [pfMMX]);
-   Add(@CombinePixelSSE2, [pfSSE2]);
-   {$ENDIF}
-   RebindProcessorSpecific;
+    ADD(@CombinePixelNative);
+{$IFNDEF PUREPASCAL}
+    ADD(@CombinePixelMMX, [pfMMX]);
+    ADD(@CombinePixelSSE2, [pfSSE2]);
+{$ENDIF}
+    RebindProcessorSpecific;
   end;
 
- // create function binding for combine memory
- GBindingCombinePixelInplace := TFunctionBinding.Create(
-   @@CombinePixelInplace, @CombinePixelInplaceNative);
- GBindingBlend.AddBinding(GBindingCombinePixelInplace);
- with GBindingCombinePixelInplace do
+  // create function binding for combine memory
+  GBindingCombinePixelInplace := TFunctionBinding.Create(@@CombinePixelInplace,
+    @CombinePixelInplaceNative);
+  GBindingBlend.AddBinding(GBindingCombinePixelInplace);
+  with GBindingCombinePixelInplace do
   begin
-   Add(@CombinePixelInplaceNative);
-   {$IFNDEF PUREPASCAL}
-   Add(@CombinePixelInplaceMMX, [pfMMX]);
-   Add(@CombinePixelInplaceSSE2, [pfSSE2]);
-   {$ENDIF}
-   RebindProcessorSpecific;
+    ADD(@CombinePixelInplaceNative);
+{$IFNDEF PUREPASCAL}
+    ADD(@CombinePixelInplaceMMX, [pfMMX]);
+    ADD(@CombinePixelInplaceSSE2, [pfSSE2]);
+{$ENDIF}
+    RebindProcessorSpecific;
   end;
 
- // create function binding for combine memory
- GBindingCombinePixelLine := TFunctionBinding.Create(
-   @@CombinePixelLine, @CombinePixelLineNative);
- GBindingBlend.AddBinding(GBindingCombinePixelLine);
- with GBindingCombinePixelLine do
+  // create function binding for combine memory
+  GBindingCombinePixelLine := TFunctionBinding.Create(@@CombinePixelLine,
+    @CombinePixelLineNative);
+  GBindingBlend.AddBinding(GBindingCombinePixelLine);
+  with GBindingCombinePixelLine do
   begin
-   Add(@CombinePixelLineNative);
-   {$IFNDEF PUREPASCAL}
-//   Add(@CombinePixelLineMMX, [pfMMX]);
-//   Add(@CombinePixelLineSSE2, [pfSSE2]);
-   {$ENDIF}
-   RebindProcessorSpecific;
+    ADD(@CombinePixelLineNative);
+{$IFNDEF PUREPASCAL}
+    // Add(@CombinePixelLineMMX, [pfMMX]);
+    // Add(@CombinePixelLineSSE2, [pfSSE2]);
+{$ENDIF}
+    RebindProcessorSpecific;
   end;
 
- // create function binding for combine line
- GBindingCombineLine := TFunctionBinding.Create(
-   @@CombineLine, @CombineLineNative);
- GBindingBlend.AddBinding(GBindingCombineLine);
- with GBindingCombineLine do
+  // create function binding for combine line
+  GBindingCombineLine := TFunctionBinding.Create(@@CombineLine,
+    @CombineLineNative);
+  GBindingBlend.AddBinding(GBindingCombineLine);
+  with GBindingCombineLine do
   begin
-   Add(@CombineLineNative);
-   {$IFNDEF PUREPASCAL}
-   Add(@CombineLineMMX, [pfMMX]);
-   {$IFNDEF CPUx86_64}
-   Add(@CombineLineSSE2, [pfSSE2]);
-   {$ENDIF}
-   {$ENDIF}
-   RebindProcessorSpecific;
+    ADD(@CombineLineNative);
+{$IFNDEF PUREPASCAL}
+    ADD(@CombineLineMMX, [pfMMX]);
+{$IFNDEF CPUx86_64}
+    ADD(@CombineLineSSE2, [pfSSE2]);
+{$ENDIF}
+{$ENDIF}
+    RebindProcessorSpecific;
   end;
 
- // create function binding for combine register
- GBindingMergePixel := TFunctionBinding.Create(
-   @@MergePixel, @MergePixelNative);
- GBindingBlend.AddBinding(GBindingMergePixel);
- with GBindingMergePixel do
+  // create function binding for combine register
+  GBindingMergePixel := TFunctionBinding.Create(@@MergePixel,
+    @MergePixelNative);
+  GBindingBlend.AddBinding(GBindingMergePixel);
+  with GBindingMergePixel do
   begin
-   Add(@MergePixelNative);
-   {$IFNDEF PUREPASCAL}
-//   Add(@MergePixelMMX, [pfMMX]);
-//   Add(@MergePixelSSE2, [pfSSE2]);
-   {$ENDIF}
-   RebindProcessorSpecific;
+    ADD(@MergePixelNative);
+{$IFNDEF PUREPASCAL}
+    // Add(@MergePixelMMX, [pfMMX]);
+    // Add(@MergePixelSSE2, [pfSSE2]);
+{$ENDIF}
+    RebindProcessorSpecific;
   end;
 
- // create function binding for Merge memory
- GBindingMergePixelInplace := TFunctionBinding.Create(
-   @@MergePixelInplace, @MergePixelInplaceNative);
- GBindingBlend.AddBinding(GBindingMergePixelInplace);
- with GBindingMergePixelInplace do
+  // create function binding for Merge memory
+  GBindingMergePixelInplace := TFunctionBinding.Create(@@MergePixelInplace,
+    @MergePixelInplaceNative);
+  GBindingBlend.AddBinding(GBindingMergePixelInplace);
+  with GBindingMergePixelInplace do
   begin
-   Add(@MergePixelInplaceNative);
-   {$IFNDEF PUREPASCAL}
-//   Add(@MergePixelInplaceMMX, [pfMMX]);
-//   Add(@MergePixelInplaceSSE2, [pfSSE2]);
-   {$ENDIF}
-   RebindProcessorSpecific;
+    ADD(@MergePixelInplaceNative);
+{$IFNDEF PUREPASCAL}
+    // Add(@MergePixelInplaceMMX, [pfMMX]);
+    // Add(@MergePixelInplaceSSE2, [pfSSE2]);
+{$ENDIF}
+    RebindProcessorSpecific;
   end;
 
- // create function binding for Merge line
- GBindingMergeLine := TFunctionBinding.Create(
-   @@MergeLine, @MergeLineNative);
- GBindingBlend.AddBinding(GBindingMergeLine);
- with GBindingMergeLine do
+  // create function binding for Merge line
+  GBindingMergeLine := TFunctionBinding.Create(@@MergeLine, @MergeLineNative);
+  GBindingBlend.AddBinding(GBindingMergeLine);
+  with GBindingMergeLine do
   begin
-   Add(@MergeLineNative);
-   {$IFNDEF PUREPASCAL}
-//   Add(@MergeLineMMX, [pfMMX]);
-//   Add(@MergeLineSSE2, [pfSSE2]);
-   {$ENDIF}
-   RebindProcessorSpecific;
+    ADD(@MergeLineNative);
+{$IFNDEF PUREPASCAL}
+    // Add(@MergeLineMMX, [pfMMX]);
+    // Add(@MergeLineSSE2, [pfSSE2]);
+{$ENDIF}
+    RebindProcessorSpecific;
   end;
 
- // processor specific rebind
- GBindingBlend.RebindProcessorSpecific;
+  // processor specific rebind
+  GBindingBlend.RebindProcessorSpecific;
 end;
 
 procedure UnbindFunctions;
 begin
- GBindingBlend.Free;
- GBindingBlend := nil;
+  GBindingBlend.Free;
+  GBindingBlend := nil;
 end;
 
 initialization

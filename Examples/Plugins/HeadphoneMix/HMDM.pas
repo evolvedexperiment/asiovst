@@ -49,8 +49,7 @@ type
     procedure HMMPolarityDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure HMMPolarityChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
-    FCTSimulator : TCustomIIRCrosstalkSimulator;
-  public
+    FCTSimulator: TCustomIIRCrosstalkSimulator;
   end;
 
 implementation
@@ -68,88 +67,97 @@ uses
 
 procedure THMModule.VSTModuleOpen(Sender: TObject);
 begin
- FCTSimulator := TCustomIIRCrosstalkSimulator.Create;
+  FCTSimulator := TCustomIIRCrosstalkSimulator.Create;
 
- Parameter[0] := 50;
- Parameter[1] := 0;
+  Parameter[0] := 50;
+  Parameter[1] := 0;
 end;
 
 procedure THMModule.VSTModuleClose(Sender: TObject);
 begin
- FreeAndNil(FCTSimulator);
+  FreeAndNil(FCTSimulator);
 end;
 
-procedure THMModule.HMMEffectChange(Sender: TObject;
-  const Index: Integer; var Value: Single);
+procedure THMModule.HMMEffectChange(Sender: TObject; const Index: Integer;
+  var Value: Single);
 begin
- if Assigned(FCTSimulator)
-  then FCTSimulator.Mix := Value;
+  if Assigned(FCTSimulator) then
+    FCTSimulator.Mix := Value;
 end;
 
-procedure THMModule.HMMModelDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+procedure THMModule.HMMModelDisplay(Sender: TObject; const Index: Integer;
+  var PreDefined: AnsiString);
 begin
- case Round(Parameter[index]) of
-  0 : PreDefined := 'handcrafted';
-  1 : PreDefined := 'matched IRCAM';
-  2 : PreDefined := 'matched HDPHX';
- end;
-end;
-
-procedure THMModule.HMMModelChange(Sender: TObject;
-  const Index: Integer; var Value: Single);
-begin
- if Assigned(FCTSimulator) then
   case Round(Parameter[index]) of
-   0 : begin
-        FCTSimulator.Model := csmHandcrafted;
-        FCTSimulator.Diameter := 0.12;
-       end;
-   1 : begin
-        FCTSimulator.Model := csmIRCAM;
-        FCTSimulator.Diameter := 0.11;
-       end;
-   2 : begin
-        FCTSimulator.Model := csmHDPHX;
-        FCTSimulator.Diameter := 0.11;
-       end;
+    0:
+      PreDefined := 'handcrafted';
+    1:
+      PreDefined := 'matched IRCAM';
+    2:
+      PreDefined := 'matched HDPHX';
   end;
 end;
 
-procedure THMModule.HMMPolarityDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+procedure THMModule.HMMModelChange(Sender: TObject; const Index: Integer;
+  var Value: Single);
 begin
- if Parameter[index] > 0.5
-  then PreDefined := '-'
-  else PreDefined := '+';
+  if Assigned(FCTSimulator) then
+    case Round(Parameter[index]) of
+      0:
+        begin
+          FCTSimulator.Model := csmHandcrafted;
+          FCTSimulator.Diameter := 0.12;
+        end;
+      1:
+        begin
+          FCTSimulator.Model := csmIRCAM;
+          FCTSimulator.Diameter := 0.11;
+        end;
+      2:
+        begin
+          FCTSimulator.Model := csmHDPHX;
+          FCTSimulator.Diameter := 0.11;
+        end;
+    end;
 end;
 
-procedure THMModule.HMMPolarityChange(Sender: TObject;
-  const Index: Integer; var Value: Single);
+procedure THMModule.HMMPolarityDisplay(Sender: TObject; const Index: Integer;
+  var PreDefined: AnsiString);
 begin
- if Assigned(FCTSimulator)
-  then FCTSimulator.Polarity := (Value < 0.5);
+  if Parameter[index] > 0.5 then
+    PreDefined := '-'
+  else
+    PreDefined := '+';
+end;
+
+procedure THMModule.HMMPolarityChange(Sender: TObject; const Index: Integer;
+  var Value: Single);
+begin
+  if Assigned(FCTSimulator) then
+    FCTSimulator.Polarity := (Value < 0.5);
 end;
 
 procedure THMModule.VSTModuleProcess(const Inputs,
   Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
-  SampleIndex  : Integer;
+  SampleIndex: Integer;
 begin
- for SampleIndex := 0 to SampleFrames - 1 do
+  for SampleIndex := 0 to SampleFrames - 1 do
   begin
-   Outputs[0, SampleIndex] := Inputs[1, SampleIndex];
-   Outputs[1, SampleIndex] := Inputs[1, SampleIndex];
+    Outputs[0, SampleIndex] := Inputs[1, SampleIndex];
+    Outputs[1, SampleIndex] := Inputs[1, SampleIndex];
 
-   FCTSimulator.ProcessSample(Outputs[0, SampleIndex], Outputs[1, SampleIndex]);
+    FCTSimulator.ProcessSample(Outputs[0, SampleIndex],
+      Outputs[1, SampleIndex]);
   end;
 end;
 
-procedure THMModule.VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
+procedure THMModule.VSTModuleSampleRateChange(Sender: TObject;
+  const SampleRate: Single);
 begin
- if Abs(SampleRate) > 0 then
-  if Assigned(FCTSimulator)
-   then FCTSimulator.SampleRate := SampleRate;
+  if Abs(SampleRate) > 0 then
+    if Assigned(FCTSimulator) then
+      FCTSimulator.SampleRate := SampleRate;
 end;
 
 end.

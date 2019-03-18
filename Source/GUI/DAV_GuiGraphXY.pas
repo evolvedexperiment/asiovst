@@ -1143,7 +1143,6 @@ begin
             YBounds[0] := 0;
           if YBounds[1] > Height - 1 then
             YBounds[1] := Height - 1;
-          // if (YBounds[0] >= YBounds[1]) then Continue;
 
           for y := YBounds[0] to YBounds[1] do
           begin

@@ -376,7 +376,7 @@ object FmBassExtender: TFmBassExtender
       Width = 64
       Height = 64
       Color = 2372409
-      CurveMapping = -0.400000005960464500
+      CurveMapping = -0.400000005960464400
       DefaultValue = 1.000000000000000000
       Max = 6.000000000000000000
       Min = 1.000000000000000000

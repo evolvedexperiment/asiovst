@@ -53,8 +53,8 @@ type
     procedure ParamDepthChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamDriftChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
-    FChorus          : array [0..1] of TDspChorus32;
-    FCriticalSection : TCriticalSection;
+    FChorus: array [0 .. 1] of TDspChorus32;
+    FCriticalSection: TCriticalSection;
     function GetChorus(Index: Integer): TDspChorus32;
   public
     property Chorus[Index: Integer]: TDspChorus32 read GetChorus;
@@ -76,223 +76,241 @@ resourcestring
 
 procedure TChorusModule.VSTModuleCreate(Sender: TObject);
 begin
- FCriticalSection := TCriticalSection.Create;
+  FCriticalSection := TCriticalSection.Create;
 end;
 
 procedure TChorusModule.VSTModuleDestroy(Sender: TObject);
 begin
- FreeAndNil(FCriticalSection);
+  FreeAndNil(FCriticalSection);
 end;
 
 procedure TChorusModule.VSTModuleOpen(Sender: TObject);
 var
-  Channel : Integer;
+  Channel: Integer;
 begin
- // create chorus
- for Channel := 0 to Length(FChorus) - 1 do
+  // create chorus
+  for Channel := 0 to Length(FChorus) - 1 do
   begin
-   FChorus[Channel] := TDspChorus32.Create;
-   FChorus[Channel].SampleRate := SampleRate;
+    FChorus[Channel] := TDspChorus32.Create;
+    FChorus[Channel].SampleRate := SampleRate;
   end;
 
- // initialize parameters
- Parameter[0] :=  0.2;
- Parameter[1] :=  4;
- Parameter[2] :=  5;
- Parameter[3] := 50;
- Parameter[4] :=  8;
- with Programs[0] do
+  // initialize parameters
+  Parameter[0] := 0.2;
+  Parameter[1] := 4;
+  Parameter[2] := 5;
+  Parameter[3] := 50;
+  Parameter[4] := 8;
+  with Programs[0] do
   begin
-   Parameter[0] :=  0.2;
-   Parameter[1] :=  4;
-   Parameter[2] :=  5;
-   Parameter[3] := 50;
-   Parameter[4] :=  8;
+    Parameter[0] := 0.2;
+    Parameter[1] := 4;
+    Parameter[2] := 5;
+    Parameter[3] := 50;
+    Parameter[4] := 8;
   end;
- with Programs[1] do
+  with Programs[1] do
   begin
-   Parameter[0] :=  0.02;
-   Parameter[1] :=  2;
-   Parameter[2] :=  2;
-   Parameter[3] := 50;
-   Parameter[4] :=  0.2;
+    Parameter[0] := 0.02;
+    Parameter[1] := 2;
+    Parameter[2] := 2;
+    Parameter[3] := 50;
+    Parameter[4] := 0.2;
   end;
- with Programs[2] do
+  with Programs[2] do
   begin
-   Parameter[0] :=  0.04;
-   Parameter[1] :=  4;
-   Parameter[2] :=  4;
-   Parameter[3] := 50;
-   Parameter[4] :=  0.4;
+    Parameter[0] := 0.04;
+    Parameter[1] := 4;
+    Parameter[2] := 4;
+    Parameter[3] := 50;
+    Parameter[4] := 0.4;
   end;
- with Programs[3] do
+  with Programs[3] do
   begin
-   Parameter[0] :=  0.62;
-   Parameter[1] :=  4;
-   Parameter[2] :=  4.5;
-   Parameter[3] := 50;
-   Parameter[4] :=  19.8;
+    Parameter[0] := 0.62;
+    Parameter[1] := 4;
+    Parameter[2] := 4.5;
+    Parameter[3] := 50;
+    Parameter[4] := 19.8;
   end;
- with Programs[4] do
+  with Programs[4] do
   begin
-   Parameter[0] :=  1.3;
-   Parameter[1] :=  6;
-   Parameter[2] :=  9.5;
-   Parameter[3] := 77;
-   Parameter[4] := 16.8;
+    Parameter[0] := 1.3;
+    Parameter[1] := 6;
+    Parameter[2] := 9.5;
+    Parameter[3] := 77;
+    Parameter[4] := 16.8;
   end;
- with Programs[5] do
+  with Programs[5] do
   begin
-   Parameter[0] :=  2.5;
-   Parameter[1] :=  1;
-   Parameter[2] :=  25;
-   Parameter[3] :=  25;
-   Parameter[4] :=  25;
+    Parameter[0] := 2.5;
+    Parameter[1] := 1;
+    Parameter[2] := 25;
+    Parameter[3] := 25;
+    Parameter[4] := 25;
   end;
- with Programs[6] do
+  with Programs[6] do
   begin
-   Parameter[0] :=  2.5;
-   Parameter[1] :=  1;
-   Parameter[2] :=  25;
-   Parameter[3] :=  25;
-   Parameter[4] :=  25;
+    Parameter[0] := 2.5;
+    Parameter[1] := 1;
+    Parameter[2] := 25;
+    Parameter[3] := 25;
+    Parameter[4] := 25;
   end;
- with Programs[7] do
+  with Programs[7] do
   begin
-   Parameter[0] :=  0.33;
-   Parameter[1] :=  8;
-   Parameter[2] :=  57;
-   Parameter[3] :=  15;
-   Parameter[4] :=  25;
+    Parameter[0] := 0.33;
+    Parameter[1] := 8;
+    Parameter[2] := 57;
+    Parameter[3] := 15;
+    Parameter[4] := 25;
   end;
- with Programs[8] do
+  with Programs[8] do
   begin
-   Parameter[0] :=  0.33;
-   Parameter[1] :=  8;
-   Parameter[2] :=  100;
-   Parameter[3] :=  72.7;
-   Parameter[4] :=  33.6;
+    Parameter[0] := 0.33;
+    Parameter[1] := 8;
+    Parameter[2] := 100;
+    Parameter[3] := 72.7;
+    Parameter[4] := 33.6;
   end;
 end;
 
 procedure TChorusModule.VSTModuleClose(Sender: TObject);
 begin
- FreeAndNil(FChorus[0]);
- FreeAndNil(FChorus[1]);
+  FreeAndNil(FChorus[0]);
+  FreeAndNil(FChorus[1]);
 end;
 
 function TChorusModule.GetChorus(Index: Integer): TDspChorus32;
 begin
- if Index in [0..1]
-  then Result := FChorus[Index]
-  else raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
+  if Index in [0 .. 1] then
+    Result := FChorus[Index]
+  else
+    raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
 end;
 
-procedure TChorusModule.ParamSpeedChange(Sender: TObject; const Index: Integer; var Value: Single);
+procedure TChorusModule.ParamSpeedChange(Sender: TObject; const Index: Integer;
+  var Value: Single);
 begin
- FCriticalSection.Enter;
- try
-  if Assigned(FChorus[0]) then FChorus[0].Speed := Value;
-  if Assigned(FChorus[1]) then FChorus[1].Speed := Value;
- finally
-  FCriticalSection.Leave;
- end;
+  FCriticalSection.Enter;
+  try
+    if Assigned(FChorus[0]) then
+      FChorus[0].Speed := Value;
+    if Assigned(FChorus[1]) then
+      FChorus[1].Speed := Value;
+  finally
+    FCriticalSection.Leave;
+  end;
 end;
 
-procedure TChorusModule.ParamStagesChange(Sender: TObject; const Index: Integer; var Value: Single);
+procedure TChorusModule.ParamStagesChange(Sender: TObject; const Index: Integer;
+  var Value: Single);
 begin
- FCriticalSection.Enter;
- try
-  if Assigned(FChorus[0]) then FChorus[0].Stages := Round(Value);
-  if Assigned(FChorus[1]) then FChorus[1].Stages := Round(Value);
- finally
-  FCriticalSection.Leave;
- end;
+  FCriticalSection.Enter;
+  try
+    if Assigned(FChorus[0]) then
+      FChorus[0].Stages := Round(Value);
+    if Assigned(FChorus[1]) then
+      FChorus[1].Stages := Round(Value);
+  finally
+    FCriticalSection.Leave;
+  end;
 end;
 
-procedure TChorusModule.ParamDriftChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TChorusModule.ParamDriftChange(Sender: TObject; const Index: Integer;
+  var Value: Single);
 var
-  StageIndex : Integer;
+  StageIndex: Integer;
 begin
- FCriticalSection.Enter;
- try
-  if Assigned(FChorus[0]) then FChorus[0].Drift := 0.01 * Value;
-  if Assigned(FChorus[1]) then
-   if Value > 0
-    then FChorus[1].Drift := 0.01 * Value else
-   for StageIndex := 0 to FChorus[1].Stages - 1
-    do FChorus[1].LFO[StageIndex].Assign(FChorus[0].LFO[Index]);
- finally
-  FCriticalSection.Leave;
- end;
+  FCriticalSection.Enter;
+  try
+    if Assigned(FChorus[0]) then
+      FChorus[0].Drift := 0.01 * Value;
+    if Assigned(FChorus[1]) then
+      if Value > 0 then
+        FChorus[1].Drift := 0.01 * Value
+      else
+        for StageIndex := 0 to FChorus[1].Stages - 1 do
+          FChorus[1].LFO[StageIndex].Assign(FChorus[0].LFO[Index]);
+  finally
+    FCriticalSection.Leave;
+  end;
 end;
 
-procedure TChorusModule.ParamDepthChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TChorusModule.ParamDepthChange(Sender: TObject; const Index: Integer;
+  var Value: Single);
 begin
- FCriticalSection.Enter;
- try
-  if Assigned(FChorus[0]) then FChorus[0].Depth := 0.01 * Value;
-  if Assigned(FChorus[1]) then FChorus[1].Depth := 0.01 * Value;
- finally
-  FCriticalSection.Leave;
- end;
+  FCriticalSection.Enter;
+  try
+    if Assigned(FChorus[0]) then
+      FChorus[0].Depth := 0.01 * Value;
+    if Assigned(FChorus[1]) then
+      FChorus[1].Depth := 0.01 * Value;
+  finally
+    FCriticalSection.Leave;
+  end;
 end;
 
-procedure TChorusModule.ParamMixChange(Sender: TObject; const Index: Integer; var Value: Single);
+procedure TChorusModule.ParamMixChange(Sender: TObject; const Index: Integer;
+  var Value: Single);
 begin
- FCriticalSection.Enter;
- try
-  if Assigned(FChorus[0]) then FChorus[0].Mix := 0.01 * Value;
-  if Assigned(FChorus[1]) then FChorus[1].Mix := 0.01 * Value;
- finally
-  FCriticalSection.Leave;
- end;
+  FCriticalSection.Enter;
+  try
+    if Assigned(FChorus[0]) then
+      FChorus[0].Mix := 0.01 * Value;
+    if Assigned(FChorus[1]) then
+      FChorus[1].Mix := 0.01 * Value;
+  finally
+    FCriticalSection.Leave;
+  end;
 end;
 
 procedure TChorusModule.VSTModuleProcess(const Inputs,
   Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
-  Channel, Sample : Integer;
+  Channel, Sample: Integer;
 begin
- FCriticalSection.Enter;
- try
-  for Channel := 0 to 1 do
-   for Sample := 0 to SampleFrames - 1
-    do Outputs[Channel, Sample] := FastTanhContinousError4(FChorus[Channel].ProcessSample32(Inputs[Channel, Sample]))
- finally
-  FCriticalSection.Leave;
- end;
+  FCriticalSection.Enter;
+  try
+    for Channel := 0 to 1 do
+      for Sample := 0 to SampleFrames - 1 do
+        Outputs[Channel, Sample] := FastTanhContinousError4
+          (FChorus[Channel].ProcessSample32(Inputs[Channel, Sample]))
+  finally
+    FCriticalSection.Leave;
+  end;
 end;
 
 procedure TChorusModule.VSTModuleProcessDoubleReplacing(const Inputs,
   Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
 var
-  Channel, Sample : Integer;
+  Channel, Sample: Integer;
 begin
- FCriticalSection.Enter;
- try
-  for Channel := 0 to Length(FChorus) - 1 do
-   for Sample := 0 to SampleFrames - 1
-    do Outputs[Channel, Sample] := FastTanhContinousError4(FChorus[Channel].ProcessSample32(Inputs[Channel, Sample]))
- finally
-  FCriticalSection.Leave;
- end;
+  FCriticalSection.Enter;
+  try
+    for Channel := 0 to Length(FChorus) - 1 do
+      for Sample := 0 to SampleFrames - 1 do
+        Outputs[Channel, Sample] := FastTanhContinousError4
+          (FChorus[Channel].ProcessSample32(Inputs[Channel, Sample]))
+  finally
+    FCriticalSection.Leave;
+  end;
 end;
 
 procedure TChorusModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 begin
- if Abs(SampleRate) > 0 then
+  if Abs(SampleRate) > 0 then
   begin
-   FCriticalSection.Enter;
-   try
-    if Assigned(FChorus[0]) then FChorus[0].SampleRate := SampleRate;
-    if Assigned(FChorus[1]) then FChorus[1].SampleRate := SampleRate;
-   finally
-    FCriticalSection.Leave;
-   end;
+    FCriticalSection.Enter;
+    try
+      if Assigned(FChorus[0]) then
+        FChorus[0].SampleRate := SampleRate;
+      if Assigned(FChorus[1]) then
+        FChorus[1].SampleRate := SampleRate;
+    finally
+      FCriticalSection.Leave;
+    end;
   end;
 end;
 

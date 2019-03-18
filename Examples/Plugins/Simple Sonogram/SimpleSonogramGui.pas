@@ -33,8 +33,8 @@ unit SimpleSonogramGui;
 interface
 
 uses
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
-  Forms, Controls, ExtCtrls, Graphics, StdCtrls, Menus, DAV_Types, 
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
+  Forms, Controls, ExtCtrls, Graphics, StdCtrls, Menus, DAV_Types,
   DAV_VSTModule, DAV_GuiPixelMap;
 
 type
@@ -69,7 +69,7 @@ type
     procedure FormShow(Sender: TObject);
     procedure FormResize(Sender: TObject);
   private
-    FBackground : TGuiCustomPixelMap;
+    FBackground: TGuiCustomPixelMap;
   end;
 
 implementation
@@ -85,64 +85,57 @@ uses
 
 procedure TFmSonogram.FormCreate(Sender: TObject);
 begin
- // Create Background Image
- FBackground := TGuiPixelMapMemory.Create;
+  // Create Background Image
+  FBackground := TGuiPixelMapMemory.Create;
 
- ControlStyle := ControlStyle + [csOpaque];
-// Sonogram.ControlStyle := Sonogram.ControlStyle + [csOpaque];
+  ControlStyle := ControlStyle + [csOpaque];
 end;
 
 procedure TFmSonogram.FormDestroy(Sender: TObject);
 begin
- FreeAndNil(FBackground);
+  FreeAndNil(FBackground);
 end;
 
 procedure TFmSonogram.TimerTimer(Sender: TObject);
 begin
- Invalidate;
+  Invalidate;
 end;
 
 procedure TFmSonogram.FormPaint(Sender: TObject);
 begin
- with FBackground do
+  with FBackground do
   begin
-   Draw(TSonogramDataModule(Owner).Sonogram.Bitmap, 8, 8);
-(*
-   Pen.Color := $0070848D;
-   Pen.Width := 1;
-   Brush.Style := bsClear;
-   RoundRect(7, 7, 265, 265, 2, 2);
-*)
+    Draw(TSonogramDataModule(Owner).Sonogram.Bitmap, 8, 8);
   end;
- if Assigned(FBackground)
-  then FBackground.PaintTo(Canvas);
+  if Assigned(FBackground) then
+    FBackground.PaintTo(Canvas);
 end;
 
 procedure TFmSonogram.FormResize(Sender: TObject);
 var
-  x, y   : Integer;
-  Filter : array [0..1] of Single;
-  h, hr  : Single;
-  ScnLn  : PPixel32Array;
+  x, y: Integer;
+  Filter: array [0 .. 1] of Single;
+  h, hr: Single;
+  ScnLn: PPixel32Array;
 begin
- with FBackground do
+  with FBackground do
   begin
-   SetSize(ClientWidth, ClientHeight);
-   Filter[0] := 0;
-   Filter[1] := 0;
-   hr   := 1 / Height;
-   for y := 0 to Height - 1 do
+    SetSize(ClientWidth, ClientHeight);
+    Filter[0] := 0;
+    Filter[1] := 0;
+    hr := 1 / Height;
+    for y := 0 to Height - 1 do
     begin
-     ScnLn := Scanline[y];
-     h    := 0.1 * (1 - Sqr(2 * (y - Height div 2) * hr));
-     for x := 0 to Width - 1 do
+      ScnLn := Scanline[y];
+      h := 0.1 * (1 - Sqr(2 * (y - Height div 2) * hr));
+      for x := 0 to Width - 1 do
       begin
-       Filter[1] := 0.97 * Filter[0] + 0.03 * Random;
-       Filter[0] := Filter[1];
+        Filter[1] := 0.97 * Filter[0] + 0.03 * Random;
+        Filter[0] := Filter[1];
 
-       ScnLn[x].B := Round($70 - $34 * (Filter[1] - h));
-       ScnLn[x].G := Round($84 - $48 * (Filter[1] - h));
-       ScnLn[x].R := Round($8D - $50 * (Filter[1] - h));
+        ScnLn[x].B := Round($70 - $34 * (Filter[1] - h));
+        ScnLn[x].G := Round($84 - $48 * (Filter[1] - h));
+        ScnLn[x].R := Round($8D - $50 * (Filter[1] - h));
       end;
     end;
   end;
@@ -150,65 +143,77 @@ end;
 
 procedure TFmSonogram.FormShow(Sender: TObject);
 var
-  MenuItem : TMenuItem;
+  MenuItem: TMenuItem;
 begin
- MenuItem := nil;
- with TSonogramDataModule(Owner) do
+  MenuItem := nil;
+  with TSonogramDataModule(Owner) do
   begin
-   case Round(Parameter[0]) of
-     6 : MenuItem := MiOrder6;
-     7 : MenuItem := MiOrder7;
-     8 : MenuItem := MiOrder8;
-     9 : MenuItem := MiOrder9;
-    10 : MenuItem := MiOrder10;
-    11 : MenuItem := MiOrder11;
-   end;
+    case Round(Parameter[0]) of
+      6:
+        MenuItem := MiOrder6;
+      7:
+        MenuItem := MiOrder7;
+      8:
+        MenuItem := MiOrder8;
+      9:
+        MenuItem := MiOrder9;
+      10:
+        MenuItem := MiOrder10;
+      11:
+        MenuItem := MiOrder11;
+    end;
   end;
 
- if Assigned(MenuItem) then
-  with MenuItem do
-   begin
-    Checked := True;
-    LbFftOrder.Caption := 'FFT Order: ' + IntToStr(Tag);
-   end;
+  if Assigned(MenuItem) then
+    with MenuItem do
+    begin
+      Checked := True;
+      LbFftOrder.Caption := 'FFT Order: ' + IntToStr(Tag);
+    end;
 
- with TSonogramDataModule(Owner) do
+  with TSonogramDataModule(Owner) do
   begin
-   case Round(Log2(Parameter[1])) of
-     1 : MenuItem := MiOverlapOrder1;
-     2 : MenuItem := MiOverlapOrder2;
-     3 : MenuItem := MiOverlapOrder3;
-     4 : MenuItem := MiOverlapOrder4;
-     5 : MenuItem := MiOverlapOrder5;
-     6 : MenuItem := MiOverlapOrder6;
-   end;
+    case Round(Log2(Parameter[1])) of
+      1:
+        MenuItem := MiOverlapOrder1;
+      2:
+        MenuItem := MiOverlapOrder2;
+      3:
+        MenuItem := MiOverlapOrder3;
+      4:
+        MenuItem := MiOverlapOrder4;
+      5:
+        MenuItem := MiOverlapOrder5;
+      6:
+        MenuItem := MiOverlapOrder6;
+    end;
   end;
 
- if Assigned(MenuItem) then
-  with MenuItem do
-   begin
-    Checked := True;
-    LbOverlapFactor.Caption := 'Overlap Order: ' + IntToStr(Tag);
-   end;
+  if Assigned(MenuItem) then
+    with MenuItem do
+    begin
+      Checked := True;
+      LbOverlapFactor.Caption := 'Overlap Order: ' + IntToStr(Tag);
+    end;
 end;
 
 procedure TFmSonogram.MiOrderClick(Sender: TObject);
 begin
- with TMenuItem(Sender) do
+  with TMenuItem(Sender) do
   begin
-   TSonogramDataModule(Self.Owner).Parameter[0] := Tag;
-   Checked := True;
-   LbFftOrder.Caption := 'FFT Order: ' + IntToStr(Tag);
+    TSonogramDataModule(Self.Owner).Parameter[0] := Tag;
+    Checked := True;
+    LbFftOrder.Caption := 'FFT Order: ' + IntToStr(Tag);
   end;
 end;
 
 procedure TFmSonogram.MiOverlapOrderClick(Sender: TObject);
 begin
- with TMenuItem(Sender) do
+  with TMenuItem(Sender) do
   begin
-   TSonogramDataModule(Self.Owner).Parameter[1] := 1 shl Tag;
-   Checked := True;
-   LbOverlapFactor.Caption := 'Overlap Order: ' + IntToStr(Tag);
+    TSonogramDataModule(Self.Owner).Parameter[1] := 1 shl Tag;
+    Checked := True;
+    LbOverlapFactor.Caption := 'Overlap Order: ' + IntToStr(Tag);
   end;
 end;
 

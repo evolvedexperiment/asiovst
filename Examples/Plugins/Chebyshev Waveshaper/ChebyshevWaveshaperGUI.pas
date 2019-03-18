@@ -47,10 +47,10 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure GuiDialChange(Sender: TObject);
   private
-    FDials  : array of TGuiStitchedDial;
-    FLabels : array of TGuiLabel;
+    FDials: array of TGuiStitchedDial;
+    FLabels: array of TGuiLabel;
   public
-    procedure UpdateHarmonic(Index: Integer);  
+    procedure UpdateHarmonic(Index: Integer);
   end;
 
 implementation
@@ -66,53 +66,55 @@ uses
 
 procedure TFmChebyshevWaveshaper.FormCreate(Sender: TObject);
 var
-  ParameterIndex  : Integer;
+  ParameterIndex: Integer;
 begin
- ClientWidth := 8 + 6 * 56;
- ClientHeight := 8 + 4 * 72;
+  ClientWidth := 8 + 6 * 56;
+  ClientHeight := 8 + 4 * 72;
 
- with TChebyshevWaveshaperDataModule(Owner) do
+  with TChebyshevWaveshaperDataModule(Owner) do
   begin
-   SetLength(FDials, numParams);
-   SetLength(FLabels, numParams);
-   for ParameterIndex := 0 to numParams - 2 do
+    SetLength(FDials, numParams);
+    SetLength(FLabels, numParams);
+    for ParameterIndex := 0 to numParams - 2 do
     begin
-     FDials[ParameterIndex] := TGuiStitchedDial.Create(Self);
-     with FDials[ParameterIndex] do
+      FDials[ParameterIndex] := TGuiStitchedDial.Create(Self);
+      with FDials[ParameterIndex] do
       begin
-       Parent     := Self;
-       Anchors    := [];
-       Width      := 48;
-       Height     := 48;
-       Left       := 8 + (ParameterIndex mod 6 * (Width + 8));
-       Top        := 8 + (ParameterIndex div 6) * 72;
-       ImageList  := GSPL;
-       ImageIndex := 0;
-       Min        := -1;
-       Max        := 1;
-       Tag        := ParameterIndex;
-       Value      := Sign(Parameter[ParameterIndex]) * Sqr(Parameter[ParameterIndex]);
-       OnChange   := GuiDialChange;
+        Parent := Self;
+        Anchors := [];
+        Width := 48;
+        Height := 48;
+        Left := 8 + (ParameterIndex mod 6 * (Width + 8));
+        Top := 8 + (ParameterIndex div 6) * 72;
+        ImageList := GSPL;
+        ImageIndex := 0;
+        Min := -1;
+        Max := 1;
+        Tag := ParameterIndex;
+        Value := Sign(Parameter[ParameterIndex]) *
+          Sqr(Parameter[ParameterIndex]);
+        OnChange := GuiDialChange;
       end;
-     FLabels[ParameterIndex] := TGuiLabel.Create(Self);
-     with FLabels[ParameterIndex] do
+      FLabels[ParameterIndex] := TGuiLabel.Create(Self);
+      with FLabels[ParameterIndex] do
       begin
-       Parent           := Self;
-       Anchors          := [];
-       Width            := 48;
-       Height           := 16;
-       Left             := 8 + (ParameterIndex mod 6 * (Width + 8));
-       Top              := 56 + (ParameterIndex div 6) * 72;
-       Alignment        := taCenter;
-       FontOversampling := fo3x;
-       if ParameterIndex = 0
-        then Caption    := 'Fun.'
-        else Caption    := 'H' + IntToStr(ParameterIndex + 1);
-       Font.Color       := 13877402;
-       Font.Height      := -13;
-       Font.Name        := 'Verdana';
-       Font.Style       := [fsBold];
-       Tag              := ParameterIndex;
+        Parent := Self;
+        Anchors := [];
+        Width := 48;
+        Height := 16;
+        Left := 8 + (ParameterIndex mod 6 * (Width + 8));
+        Top := 56 + (ParameterIndex div 6) * 72;
+        Alignment := taCenter;
+        FontOversampling := fo3x;
+        if ParameterIndex = 0 then
+          Caption := 'Fun.'
+        else
+          Caption := 'H' + IntToStr(ParameterIndex + 1);
+        Font.Color := 13877402;
+        Font.Height := -13;
+        Font.Name := 'Verdana';
+        Font.Style := [fsBold];
+        Tag := ParameterIndex;
       end;
     end;
   end;
@@ -120,37 +122,37 @@ end;
 
 procedure TFmChebyshevWaveshaper.FormDestroy(Sender: TObject);
 var
-  ParameterIndex : Integer;
+  ParameterIndex: Integer;
 begin
- with TChebyshevWaveshaperDataModule(Owner) do
+  with TChebyshevWaveshaperDataModule(Owner) do
   begin
-   for ParameterIndex := 0 to numParams - 1 do
+    for ParameterIndex := 0 to numParams - 1 do
     begin
-     FreeAndNil(FDials[ParameterIndex]);
-     FreeAndNil(FLabels[ParameterIndex]);
+      FreeAndNil(FDials[ParameterIndex]);
+      FreeAndNil(FLabels[ParameterIndex]);
     end;
-   SetLength(FDials, 0);
-   SetLength(FLabels, 0);
+    SetLength(FDials, 0);
+    SetLength(FLabels, 0);
   end;
 end;
 
 procedure TFmChebyshevWaveshaper.GuiDialChange(Sender: TObject);
 var
-  NewValue : Single;
+  NewValue: Single;
 begin
- with TChebyshevWaveshaperDataModule(Owner), (Sender as TGuiStitchedDial) do
+  with TChebyshevWaveshaperDataModule(Owner), (Sender as TGuiStitchedDial) do
   begin
-   NewValue := Sign(Value) * Sqrt(Abs(Value));
-   if Parameter[Tag] <> NewValue
-    then Parameter[Tag] := NewValue;
+    NewValue := Sign(Value) * Sqrt(Abs(Value));
+    if Parameter[Tag] <> NewValue then
+      Parameter[Tag] := NewValue;
   end;
 end;
 
 procedure TFmChebyshevWaveshaper.UpdateHarmonic(Index: Integer);
 begin
- with TChebyshevWaveshaperDataModule(Owner), FDials[Index] do
+  with TChebyshevWaveshaperDataModule(Owner), FDials[Index] do
   begin
-   Value := Sign(Parameter[Index]) * Sqr(Parameter[Index]);
+    Value := Sign(Parameter[Index]) * Sqr(Parameter[Index]);
   end;
 end;
 

@@ -44,13 +44,14 @@ type
   { TVSTOpAmp }
 
   TVSTOpAmp = class(TVSTModule)
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: THandle);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
     procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
     procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
+      ParentWindow: NativeUInt);
   private
-    FGain : Double;
+    FGain: Double;
   public
     property Gain: Double read FGain;
   end;
@@ -68,54 +69,54 @@ uses
 
 { TVSTOpAmp }
 
-procedure TVSTOpAmp.VSTModuleOpen(Sender: TObject);
+procedure TVSTOpAmp.VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
+  ParentWindow: NativeUInt);
 begin
- FGain := 1;
- Parameter[0] := 1;
+  GUI := TVSTGUI.Create(Self);
+
+  with TVSTGUI(GUI) do
+  begin
+    LbGain.Caption := 'OpAmp Gain';
+    SbGain.Max := 1000;
+    SbGain.Min := 100;
+    SbGain.Position := 100;
+  end;
 end;
 
-procedure TVSTOpAmp.VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
-  ParentWindow: THandle);
+procedure TVSTOpAmp.VSTModuleOpen(Sender: TObject);
 begin
- GUI := TVSTGUI.Create(Self);
-
- with TVSTGUI(GUI) do
-  begin
-   LbGain.Caption  := 'OpAmp Gain';
-   SbGain.Max      := 1000;
-   SbGain.Min      := 100;
-   SbGain.Position := 100;
-  end;
+  FGain := 1;
+  Parameter[0] := 1;
 end;
 
 procedure TVSTOpAmp.VSTModuleProcess(const Inputs,
   Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
-  i, j : Integer;
+  i, j: Integer;
 begin
- for j := 0 to min(numOutputs, numInputs) - 1 do
-  for i := 0 to SampleFrames - 1
-   do Outputs[j, i] := FastTanhOpt5Term(FGain * Inputs[j, i]);
+  for j := 0 to Min(numOutputs, numInputs) - 1 do
+    for i := 0 to SampleFrames - 1 do
+      Outputs[j, i] := FastTanhOpt5Term(FGain * Inputs[j, i]);
 end;
 
-procedure TVSTOpAmp.VSTModuleProcessDoubleReplacing(const inputs,
+procedure TVSTOpAmp.VSTModuleProcessDoubleReplacing(const Inputs,
   Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
 var
-  i, j : Integer;
+  i, j: Integer;
 begin
- for j := 0 to min(numOutputs, numInputs) - 1 do
-  for i := 0 to SampleFrames - 1
-   do Outputs[j, i] := FastTanhOpt5Term(FGain * Inputs[j, i]);
+  for j := 0 to Min(numOutputs, numInputs) - 1 do
+    for i := 0 to SampleFrames - 1 do
+      Outputs[j, i] := FastTanhOpt5Term(FGain * Inputs[j, i]);
 end;
 
 procedure TVSTOpAmp.VSTModuleParameterChange(Sender: TObject;
   const Index: Integer; var Value: Single);
 begin
- FGain := 2 * dB_to_Amp(Value);
+  FGain := 2 * dB_to_Amp(Value);
 
- // eventually update GUI
- if FEditorForm is TVSTGUI
-  then TVSTGUI(FEditorForm).UpdateGain;
+  // eventually update GUI
+  if FEditorForm is TVSTGUI then
+    TVSTGUI(FEditorForm).UpdateGain;
 end;
 
 end.

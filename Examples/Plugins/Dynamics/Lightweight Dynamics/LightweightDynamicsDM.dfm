@@ -1,5 +1,4 @@
 object LightweightDynamicsDataModule: TLightweightDynamicsDataModule
-  OldCreateOrder = True
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0.2'
   EffectName = 'Lightweight Dynamics'
@@ -416,8 +415,6 @@ object LightweightDynamicsDataModule: TLightweightDynamicsDataModule
   OnProcess = VSTModuleProcessGateCompressorLimiter
   OnProcess32Replacing = VSTModuleProcessGateCompressorLimiter
   OnSampleRateChange = VSTModuleSampleRateChange
-  Left = 589
-  Top = 100
   Height = 150
   Width = 215
 end

@@ -425,10 +425,10 @@ begin
           for Channel := 0 to FInputChannelCount - 1 do
           begin
             PChannelArray := CurrentBuffer^[0].buffers[Index];
-            if Assigned(PChannelArray)
-             then FInConverters[Channel].ic64(PChannelArray,
-                    PDouble(TAsioAudioDataCollection64(FAudioDataInput).ChannelDataPointerList[Channel]),
-                    FBufferSize);
+            if Assigned(PChannelArray) then
+              FInConverters[Channel].ic64(PChannelArray,
+                PDouble(TAsioAudioDataCollection64(FAudioDataInput).ChannelDataPointerList[Channel]),
+                FBufferSize);
             Inc(CurrentBuffer);
           end;
       end;

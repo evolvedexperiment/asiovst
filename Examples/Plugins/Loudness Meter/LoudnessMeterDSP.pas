@@ -66,15 +66,15 @@ type
     procedure ParameterPeakMomChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterLoudnessChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
-    FR128Stereo          : TStereoR128;
+    FR128Stereo: TStereoR128;
 
-    FIsRunning           : Boolean;
-    FUnitOffset          : Single;
+    FIsRunning: Boolean;
+    FUnitOffset: Single;
     procedure PeakLoudnessChanged(Sender: TObject; Loudness: Single);
     procedure LoudnessChanged(Sender: TObject; Loudness: Single);
     function GetTotalSamples: Integer;
   protected
-    FCriticalSection  : TCriticalSection;
+    FCriticalSection: TCriticalSection;
     function GetLoudness: Single;
     function GetPeakHoldLoudness: Single;
     function GetLoudnessShort: Single;
@@ -101,252 +101,270 @@ uses
   Math, DAV_Common, DAV_Approximations, LoudnessMeterGUI;
 
 const
-  CMeanSquareBias : Single = 1E-10;
+  CMeanSquareBias: Single = 1E-10;
 
-
-{ TLoudnessMeterModule }
+  { TLoudnessMeterModule }
 
 procedure TLoudnessMeterModule.VSTModuleCreate(Sender: TObject);
 begin
- FCriticalSection := TCriticalSection.Create;
+  FCriticalSection := TCriticalSection.Create;
 end;
 
 procedure TLoudnessMeterModule.VSTModuleDestroy(Sender: TObject);
 begin
- FreeAndNil(FCriticalSection);
+  FreeAndNil(FCriticalSection);
 end;
 
 procedure TLoudnessMeterModule.VSTModuleOpen(Sender: TObject);
 begin
- FR128Stereo := TStereoR128.Create;
- FR128Stereo.OnPeakLoudnessChanged := PeakLoudnessChanged;
- FR128Stereo.OnLoudnessChanged := LoudnessChanged;
+  FR128Stereo := TStereoR128.Create;
+  FR128Stereo.OnPeakLoudnessChanged := PeakLoudnessChanged;
+  FR128Stereo.OnLoudnessChanged := LoudnessChanged;
 
- ChooseProcess;
+  ChooseProcess;
 
- // initialize parameters
- Parameter[0] := 0;
- Parameter[1] := 0;
- Parameter[2] := 0;
+  // initialize parameters
+  Parameter[0] := 0;
+  Parameter[1] := 0;
+  Parameter[2] := 0;
 
- // set editor form class
- EditorFormClass := TFmLoudnessMeter;
+  // set editor form class
+  EditorFormClass := TFmLoudnessMeter;
 end;
 
 procedure TLoudnessMeterModule.VSTModuleClose(Sender: TObject);
 begin
- FreeAndNil(FR128Stereo);
+  FreeAndNil(FR128Stereo);
 end;
 
 { Parameters }
 
-procedure TLoudnessMeterModule.ParameterScaleChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TLoudnessMeterModule.ParameterScaleChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
- if Round(Value) = 0
-  then FUnitOffset := 23.056476593
-  else FUnitOffset := 0.056476593;
+  if Round(Value) = 0 then
+    FUnitOffset := 23.056476593
+  else
+    FUnitOffset := 0.056476593;
 
- FR128Stereo.ResetUpdate;
+  FR128Stereo.ResetUpdate;
 
- // update GUI
- if EditorForm is TFmLoudnessMeter
-  then TFmLoudnessMeter(EditorForm).UpdateScale;
+  // update GUI
+  if EditorForm is TFmLoudnessMeter then
+    TFmLoudnessMeter(EditorForm).UpdateScale;
 end;
 
-procedure TLoudnessMeterModule.ParameterTimeChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TLoudnessMeterModule.ParameterTimeChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
- FR128Stereo.Time := TLoudnessTime(Round(Value));
- FR128Stereo.ResetUpdate;
+  FR128Stereo.Time := TLoudnessTime(Round(Value));
+  FR128Stereo.ResetUpdate;
 
- // update GUI
- if EditorForm is TFmLoudnessMeter
-  then TFmLoudnessMeter(EditorForm).UpdateTime;
+  // update GUI
+  if EditorForm is TFmLoudnessMeter then
+    TFmLoudnessMeter(EditorForm).UpdateTime;
 end;
 
-procedure TLoudnessMeterModule.ParameterStateChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TLoudnessMeterModule.ParameterStateChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
- if FIsRunning <> (Round(Value) = 1) then
+  if FIsRunning <> (Round(Value) = 1) then
   begin
-   FIsRunning := Round(Value) = 1;
-   if FIsRunning
-    then FR128Stereo.StartIntegration
-    else FR128Stereo.StopIntegration;
+    FIsRunning := Round(Value) = 1;
+    if FIsRunning then
+      FR128Stereo.StartIntegration
+    else
+      FR128Stereo.StopIntegration;
   end;
 
- // update GUI
- if EditorForm is TFmLoudnessMeter
-  then TFmLoudnessMeter(EditorForm).UpdateState;
+  // update GUI
+  if EditorForm is TFmLoudnessMeter then
+    TFmLoudnessMeter(EditorForm).UpdateState;
 end;
 
-procedure TLoudnessMeterModule.ParameterStateDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+procedure TLoudnessMeterModule.ParameterStateDisplay(Sender: TObject;
+  const Index: Integer; var PreDefined: AnsiString);
 begin
- case Round(Parameter[Index]) of
-  0 : PreDefined := 'Stopped';
-  1 : PreDefined := 'Running';
- end;
+  case Round(Parameter[Index]) of
+    0:
+      PreDefined := 'Stopped';
+    1:
+      PreDefined := 'Running';
+  end;
 end;
 
-procedure TLoudnessMeterModule.ParameterTimeDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+procedure TLoudnessMeterModule.ParameterTimeDisplay(Sender: TObject;
+  const Index: Integer; var PreDefined: AnsiString);
 begin
- case Round(Parameter[Index]) of
-  0 : PreDefined := 'Mom';
-  1 : PreDefined := 'Short';
-  2 : PreDefined := 'Int';
- end;
+  case Round(Parameter[Index]) of
+    0:
+      PreDefined := 'Mom';
+    1:
+      PreDefined := 'Short';
+    2:
+      PreDefined := 'Int';
+  end;
 end;
 
-procedure TLoudnessMeterModule.LoudnessChanged(Sender: TObject; Loudness: Single);
+procedure TLoudnessMeterModule.LoudnessChanged(Sender: TObject;
+  Loudness: Single);
 begin
- // update parameter
- Parameter[3] := Limit(23 + Loudness, -18, 9);
+  // update parameter
+  Parameter[3] := Limit(23 + Loudness, -18, 9);
 
- // update GUI
- if EditorForm is TFmLoudnessMeter
-  then TFmLoudnessMeter(EditorForm).UpdateLoudness;
+  // update GUI
+  if EditorForm is TFmLoudnessMeter then
+    TFmLoudnessMeter(EditorForm).UpdateLoudness;
 end;
 
-procedure TLoudnessMeterModule.PeakLoudnessChanged(Sender: TObject; Loudness: Single);
+procedure TLoudnessMeterModule.PeakLoudnessChanged(Sender: TObject;
+  Loudness: Single);
 begin
- // update parameter
- Parameter[4] := Limit(23 + Loudness, -18, 9);
+  // update parameter
+  Parameter[4] := Limit(23 + Loudness, -18, 9);
 
- // update GUI
- if EditorForm is TFmLoudnessMeter
-  then TFmLoudnessMeter(EditorForm).UpdatePeak;
+  // update GUI
+  if EditorForm is TFmLoudnessMeter then
+    TFmLoudnessMeter(EditorForm).UpdatePeak;
 end;
 
-procedure TLoudnessMeterModule.ParameterScaleDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+procedure TLoudnessMeterModule.ParameterScaleDisplay(Sender: TObject;
+  const Index: Integer; var PreDefined: AnsiString);
 begin
- if Round(Parameter[Index]) = 0
-  then PreDefined := 'LU'
-  else PreDefined := 'LUFS';
+  if Round(Parameter[Index]) = 0 then
+    PreDefined := 'LU'
+  else
+    PreDefined := 'LUFS';
 end;
 
 function TLoudnessMeterModule.GetLoudness: Single;
 begin
- Result := FR128Stereo.Loudness;
+  Result := FR128Stereo.Loudness;
 end;
 
 function TLoudnessMeterModule.GetLoudnessIntegration: Single;
 begin
- Result := FR128Stereo.LoudnessIntegration;
+  Result := FR128Stereo.LoudnessIntegration;
 end;
 
 function TLoudnessMeterModule.GetLoudnessMomentary: Single;
 begin
- Result := FR128Stereo.LoudnessMomentary;
+  Result := FR128Stereo.LoudnessMomentary;
 end;
 
 function TLoudnessMeterModule.GetLoudnessShort: Single;
 begin
- Result := FR128Stereo.LoudnessShort;
+  Result := FR128Stereo.LoudnessShort;
 end;
 
 function TLoudnessMeterModule.GetPeakHoldLoudness: Single;
 begin
- Result := FR128Stereo.Loudness;
+  Result := FR128Stereo.Loudness;
 end;
 
 function TLoudnessMeterModule.GetTotalSamples: Integer;
 begin
- Result := FR128Stereo.TotalSamples;
+  Result := FR128Stereo.TotalSamples;
 end;
 
 procedure TLoudnessMeterModule.ResetPeak;
 begin
- FR128Stereo.ResetPeak;
+  FR128Stereo.ResetPeak;
 end;
 
-procedure TLoudnessMeterModule.ParameterLoudnessDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+procedure TLoudnessMeterModule.ParameterLoudnessDisplay(Sender: TObject;
+  const Index: Integer; var PreDefined: AnsiString);
 var
-  Value : Single;
+  Value: Single;
 begin
- Value := RoundTo(23 + Loudness, -1);
+  Value := RoundTo(23 + Loudness, -1);
 
- // correct FS scale
- if Round(Parameter[0]) = 1
-  then PreDefined := FloatToAnsiString(Value - 23, 4)
-  else PreDefined := FloatToAnsiString(Value, 4);
+  // correct FS scale
+  if Round(Parameter[0]) = 1 then
+    PreDefined := FloatToAnsiString(Value - 23, 4)
+  else
+    PreDefined := FloatToAnsiString(Value, 4);
 
- if Value < -18.1 then PreDefined := 'LOW' else
- if Value > 9 then PreDefined := 'OVER';
+  if Value < -18.1 then
+    PreDefined := 'LOW'
+  else if Value > 9 then
+    PreDefined := 'OVER';
 end;
 
-procedure TLoudnessMeterModule.ParameterPeakMomDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+procedure TLoudnessMeterModule.ParameterPeakMomDisplay(Sender: TObject;
+  const Index: Integer; var PreDefined: AnsiString);
 var
-  Value : Single;
+  Value: Single;
 begin
- Value := RoundTo(23 + PeakHold, -1);
+  Value := RoundTo(23 + PeakHold, -1);
 
- // correct FS scale
- if Round(Parameter[0]) = 1
-  then PreDefined := FloatToAnsiString(Value - 23, 4)
-  else PreDefined := FloatToAnsiString(Value, 4);
+  // correct FS scale
+  if Round(Parameter[0]) = 1 then
+    PreDefined := FloatToAnsiString(Value - 23, 4)
+  else
+    PreDefined := FloatToAnsiString(Value, 4);
 
- if Value < -18.1 then PreDefined := 'LOW' else
- if Value > 9 then PreDefined := 'OVER';
+  if Value < -18.1 then
+    PreDefined := 'LOW'
+  else if Value > 9 then
+    PreDefined := 'OVER';
 end;
 
-procedure TLoudnessMeterModule.ParameterLoudnessChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TLoudnessMeterModule.ParameterLoudnessChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
- Value := Limit(23 + FR128Stereo.Loudness, -18, 9);
+  Value := Limit(23 + FR128Stereo.Loudness, -18, 9);
 end;
 
-procedure TLoudnessMeterModule.ParameterPeakMomChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TLoudnessMeterModule.ParameterPeakMomChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
- Value := Limit(23 + FR128Stereo.LoudnessPeak, -18, 9);
+  Value := Limit(23 + FR128Stereo.LoudnessPeak, -18, 9);
 end;
 
 procedure TLoudnessMeterModule.ChooseProcess;
 begin
- case numInputs of
-   1 : OnProcess := VSTModuleProcessMono;
-   2 : OnProcess := VSTModuleProcessStereo;
-  else raise Exception.Create('Number of channels not supported');
- end;
+  case numInputs of
+    1:
+      OnProcess := VSTModuleProcessMono;
+    2:
+      OnProcess := VSTModuleProcessStereo;
+  else
+    raise Exception.Create('Number of channels not supported');
+  end;
 
- OnProcess32Replacing := OnProcess;
+  OnProcess32Replacing := OnProcess;
 end;
 
-procedure TLoudnessMeterModule.VSTModuleSampleRateChange(
-  Sender: TObject; const SampleRate: Single);
+procedure TLoudnessMeterModule.VSTModuleSampleRateChange(Sender: TObject;
+  const SampleRate: Single);
 begin
- if Abs(Self.SampleRate) > 0
-  then FR128Stereo.SampleRate := Abs(SampleRate);
+  if Abs(Self.SampleRate) > 0 then
+    FR128Stereo.SampleRate := Abs(SampleRate);
 end;
 
 procedure TLoudnessMeterModule.VSTModuleProcessMono(const Inputs,
   Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
-  SampleIndex  : Integer;
+  SampleIndex: Integer;
 begin
- for SampleIndex := 0 to SampleFrames - 1 do
+  for SampleIndex := 0 to SampleFrames - 1 do
   begin
-   FR128Stereo.ProcessMono(Inputs[0, SampleIndex]);
-   Outputs[0, SampleIndex] := Inputs[0, SampleIndex];
+    FR128Stereo.ProcessMono(Inputs[0, SampleIndex]);
+    Outputs[0, SampleIndex] := Inputs[0, SampleIndex];
   end;
 end;
 
 procedure TLoudnessMeterModule.VSTModuleProcessStereo(const Inputs,
   Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
-  SampleIndex  : Integer;
+  SampleIndex: Integer;
 begin
- for SampleIndex := 0 to SampleFrames - 1 do
+  for SampleIndex := 0 to SampleFrames - 1 do
   begin
-   FR128Stereo.ProcessStereo(Inputs[0, SampleIndex], Inputs[1, SampleIndex]);
-   Outputs[0, SampleIndex] := Inputs[0, SampleIndex];
-   Outputs[1, SampleIndex] := Inputs[1, SampleIndex];
+    FR128Stereo.ProcessStereo(Inputs[0, SampleIndex], Inputs[1, SampleIndex]);
+    Outputs[0, SampleIndex] := Inputs[0, SampleIndex];
+    Outputs[1, SampleIndex] := Inputs[1, SampleIndex];
   end;
 end;
 

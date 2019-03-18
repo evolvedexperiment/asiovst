@@ -16,8 +16,7 @@ uses
   DAV_VSTEffect,
   DAV_VSTBasicModule,
   HumRemovalDSP in 'HumRemovalDSP.pas' {HumRemovalModule: TVSTModule},
-  HumRemovalGUI in 'HumRemovalGUI.pas' {FmHumRemoval},
-  DAV_DspGoertzel in '..\..\..\Source\DSP\DAV_DspGoertzel.pas';
+  HumRemovalGUI in 'HumRemovalGUI.pas' {FmHumRemoval};
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin

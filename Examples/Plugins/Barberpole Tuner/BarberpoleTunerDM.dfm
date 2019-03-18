@@ -1,5 +1,4 @@
 object BarberpoleTunerDataModule: TBarberpoleTunerDataModule
-  OldCreateOrder = True
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'BarberpoleTuner'
@@ -40,8 +39,6 @@ object BarberpoleTunerDataModule: TBarberpoleTunerDataModule
   OnProcess = VSTModuleProcess
   OnProcess32Replacing = VSTModuleProcess
   OnSampleRateChange = VSTModuleSampleRateChange
-  Left = 424
-  Top = 78
   Height = 150
   Width = 215
 end

@@ -35,8 +35,8 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC} LCLIntf, {$ELSE} Windows, {$ENDIF} Messages, SysUtils, Classes, 
-  Graphics, Controls, Forms, Dialogs, Menus, ComCtrls, StdCtrls, XPMan, 
+  {$IFDEF FPC} LCLIntf, {$ELSE} Windows, {$ENDIF} Messages, SysUtils, Classes,
+  Graphics, Controls, Forms, Dialogs, Menus, ComCtrls, StdCtrls, XPMan,
   DAV_VSTHost, DAV_SEHost;
 
 type
@@ -70,9 +70,9 @@ type
     procedure MIBatchConvertClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
   private
-    FVSTPluginDLL : TFileName;
+    FVSTPluginDLL: TFileName;
     procedure SaveModule(Filename: TFileName);
-    procedure OpenVSTFile(FileName: TFileName);
+    procedure OpenVSTFile(Filename: TFileName);
   end;
 
 var
@@ -81,7 +81,7 @@ var
 implementation
 
 uses
-  {$IFDEF HAS_UNIT_ANSISTRINGS} AnsiStrings, {$ENDIF} FileCtrl,
+{$IFDEF HAS_UNIT_ANSISTRINGS} AnsiStrings, {$ENDIF} FileCtrl,
   DAV_DLLResources;
 
 {$IFDEF FPC}
@@ -92,147 +92,155 @@ uses
 
 procedure TFmVST2SEM.FormShow(Sender: TObject);
 begin
- if UpperCase(InputBox('Confirmation',
-  'Some plugins might come with a license, that doesn''t allow them to be wrapped in this kind of wrapper.' + #13#10#13#10 + 
-  'By typing ''I CONFIRM'' you have to confirm, that you read the license of the plugins you wrap carefully ' +
-  'and that you won''t create converted SE modules if the license does not allow this.', '')) <> 'I CONFIRM'
-   then exit;
+  if UpperCase(InputBox('Confirmation',
+    'Some plugins might come with a license, that doesn''t allow them to be wrapped in this kind of wrapper.'
+    + #13#10#13#10 +
+    'By typing ''I CONFIRM'' you have to confirm, that you read the license of the plugins you wrap carefully '
+    + 'and that you won''t create converted SE modules if the license does not allow this.',
+    '')) <> 'I CONFIRM' then
+    exit;
 end;
 
 procedure TFmVST2SEM.MIBatchConvertClick(Sender: TObject);
 var
-  Dir : string;
-  SR  : TSearchRec;
+  Dir: string;
+  SR: TSearchRec;
 begin
- Dir := '';
- SelectDirectory('Select a directory', '', Dir);
- if Dir = '' then exit;
- if FindFirst(Dir + '\' + '*.dll', faAnyFile, SR) = 0 then
+  Dir := '';
+  SelectDirectory('Select a directory', '', Dir);
+  if Dir = '' then
+    exit;
+  if FindFirst(Dir + '\' + '*.dll', faAnyFile, SR) = 0 then
   begin
-   repeat
-    try
-     OpenVSTFile(Dir + '\' + SR.Name);
-     SaveModule(Dir + '\' + SR.Name + '.sem');
-    finally
-     Application.ProcessMessages;
-    end;
-   until FindNext(SR) <> 0;
+    repeat
+      try
+        OpenVSTFile(Dir + '\' + SR.Name);
+        SaveModule(Dir + '\' + SR.Name + '.sem');
+      finally
+        Application.ProcessMessages;
+      end;
+    until FindNext(SR) <> 0;
 
-   // Must free up resources used by these successful finds
-   FindClose(SR);
+    // Must free up resources used by these successful finds
+    FindClose(SR);
   end;
- ShowMessage('Wrapped SEMs successfully created!');
+  ShowMessage('Wrapped SEMs successfully created!');
 end;
 
 procedure TFmVST2SEM.MIExitClick(Sender: TObject);
 begin
- Close;
+  Close;
 end;
 
 procedure TFmVST2SEM.MIOpenClick(Sender: TObject);
 begin
- with TOpenDialog.Create(Self) do
+  with TOpenDialog.Create(Self) do
   begin
-   DefaultExt := '.dll';
-   Filter := 'VST Plugin (*.DLL)|*.DLL';
-   Options := Options + [ofFileMustExist];
-   Title := 'Select a VST Plugin';
-   if Execute then OpenVSTFile(FileName)
+    DefaultExt := '.dll';
+    Filter := 'VST Plugin (*.DLL)|*.DLL';
+    Options := Options + [ofFileMustExist];
+    Title := 'Select a VST Plugin';
+    if Execute then
+      OpenVSTFile(Filename)
   end;
 end;
 
-procedure TFmVST2SEM.OpenVSTFile(FileName: TFileName);
+procedure TFmVST2SEM.OpenVSTFile(Filename: TFileName);
 var
-  str : AnsiString;
+  str: AnsiString;
 begin
- try
-  FVSTPluginDLL := FileName;
-  if VstHost[0].Active then
-   begin
-    VstHost[0].Close;
-    VstHost[0].UnLoad;
-   end;
-  VstHost[0].LoadFromFile(FileName);
-  VstHost[0].Open;
-  str := Trim(VstHost[0].GetEffectName);
-  if str = '' then
-   begin
-    str := AnsiString(ExtractFileName(FVSTPluginDLL));
-    if Pos(AnsiChar('.'), str) > 1 then SetLength(str, Pos(AnsiChar('.'), str) - 1);
-   end;
-  while Pos(AnsiChar(' '), str) > 0 do str[Pos(AnsiChar(' '), str)] := '_';
-  VstName.Text := string(Uppercase(str));
-  MemoName.Clear;
-  MemoName.Lines.Add('DAV VST-Wrapper - ' + VstName.Text);
-  MemoID.Clear;
-  MemoID.Lines.Add('VST2SEM - ' + VstName.Text);
-  MemoInfo.Clear;
-  MemoInfo.Lines.Add('Inputs: ' + IntToStr(VstHost[0].numInputs));
-  MemoInfo.Lines.Add('Outputs: ' + IntToStr(VstHost[0].numOutputs));
-  MemoInfo.Lines.Add('Parameters: ' + IntToStr(VstHost[0].numParams));
-  MISaveAs.Enabled := True;
- except
-  MISaveAs.Enabled := False;
- end;
+  try
+    FVSTPluginDLL := Filename;
+    if VstHost[0].Active then
+    begin
+      VstHost[0].Close;
+      VstHost[0].UnLoad;
+    end;
+    VstHost[0].LoadFromFile(Filename);
+    VstHost[0].Open;
+    str := Trim(VstHost[0].GetEffectName);
+    if str = '' then
+    begin
+      str := AnsiString(ExtractFileName(FVSTPluginDLL));
+      if Pos(AnsiChar('.'), str) > 1 then
+        SetLength(str, Pos(AnsiChar('.'), str) - 1);
+    end;
+    while Pos(AnsiChar(' '), str) > 0 do
+      str[Pos(AnsiChar(' '), str)] := '_';
+    VstName.Text := string(UpperCase(str));
+    MemoName.Clear;
+    MemoName.Lines.Add('DAV VST-Wrapper - ' + VstName.Text);
+    MemoID.Clear;
+    MemoID.Lines.Add('VST2SEM - ' + VstName.Text);
+    MemoInfo.Clear;
+    MemoInfo.Lines.Add('Inputs: ' + IntToStr(VstHost[0].numInputs));
+    MemoInfo.Lines.Add('Outputs: ' + IntToStr(VstHost[0].numOutputs));
+    MemoInfo.Lines.Add('Parameters: ' + IntToStr(VstHost[0].numParams));
+    MISaveAs.Enabled := True;
+  except
+    MISaveAs.Enabled := False;
+  end;
 end;
 
 procedure TFmVST2SEM.MISaveAsClick(Sender: TObject);
 begin
- with TSaveDialog.Create(Self) do
+  with TSaveDialog.Create(Self) do
   begin
-   DefaultExt := '.SEM';
-   Filter     := 'SE Module (*.SEM)|*.SEM';
-   Title      := 'Save as SEM Module';
-   FileName   := FVSTPluginDLL + '.sem';
-   if Execute then
+    DefaultExt := '.SEM';
+    Filter := 'SE Module (*.SEM)|*.SEM';
+    Title := 'Save as SEM Module';
+    Filename := FVSTPluginDLL + '.sem';
+    if Execute then
     begin
-     SaveModule(FileName);
-//     ShowMessage('Wrapped SEM successfully created!');
+      SaveModule(Filename);
+      // ShowMessage('Wrapped SEM successfully created!');
     end;
   end;
 end;
 
 procedure TFmVST2SEM.MISaveClick(Sender: TObject);
 begin
- SaveModule(FVSTPluginDLL + '.sem');
+  SaveModule(FVSTPluginDLL + '.sem');
 end;
 
 procedure TFmVST2SEM.SaveModule(Filename: TFileName);
 var
-  RS : TResourceStream;
-  RM : TPEResourceModule;
-  RD : TResourceDetails;
+  RS: TResourceStream;
+  RM: TPEResourceModule;
+  RD: TResourceDetails;
 begin
- assert(FileExists(FVSTPluginDLL));
+  assert(FileExists(FVSTPluginDLL));
 
- RM := TPEResourceModule.Create;
- with RM do
-  try
-   // load template
-   RS := TResourceStream.Create(HInstance, 'VST2SEM', 'SEM');
-   try
-    LoadFromStream(RS);
-   finally
-    FreeAndNil(RS);
-   end;
-
-   while ResourceCount > 0 do DeleteResource(0);
-
-   // store SE modules
-   with TMemoryStream.Create do
+  RM := TPEResourceModule.Create;
+  with RM do
     try
-     LoadFromFile(FVSTPluginDLL);
-     RD := TResourceDetails.CreateResourceDetails(RM, 0, VstName.Text, 'VST', Size, Memory);
-     AddResource(RD);
-    finally
-     Free;
-    end;
+      // load template
+      RS := TResourceStream.Create(HInstance, 'VST2SEM', 'SEM');
+      try
+        LoadFromStream(RS);
+      finally
+        FreeAndNil(RS);
+      end;
 
-   SortResources;
-   SaveToFile(Filename);
-  finally
-   FreeAndNil(RM);
-  end;
+      while ResourceCount > 0 do
+        DeleteResource(0);
+
+      // store SE modules
+      with TMemoryStream.Create do
+        try
+          LoadFromFile(FVSTPluginDLL);
+          RD := TResourceDetails.CreateResourceDetails(RM, 0, VstName.Text,
+            'VST', Size, Memory);
+          AddResource(RD);
+        finally
+          Free;
+        end;
+
+      SortResources;
+      SaveToFile(Filename);
+    finally
+      FreeAndNil(RM);
+    end;
 end;
 
 end.

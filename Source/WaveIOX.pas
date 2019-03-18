@@ -207,7 +207,8 @@ end;
 
 destructor TWaveStream.Destroy;
 begin
-  if (FFormat <> nil) then FreeMem(FFormat);
+  if (FFormat <> nil) then
+    FreeMem(FFormat);
 
   mmioSeek(FMM, 0, SEEK_END);
 
@@ -368,7 +369,8 @@ destructor TMemoryWaveStream.Destroy;
 begin
   inherited Destroy;
 
-  if (FMMIO <> 0) then mmioClose(FMMIO, 0);
+  if (FMMIO <> 0) then
+    mmioClose(FMMIO, 0);
 end;
 
 

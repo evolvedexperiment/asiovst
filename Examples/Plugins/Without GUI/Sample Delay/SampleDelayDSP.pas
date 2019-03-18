@@ -53,15 +53,15 @@ type
     procedure ParameterInvFBDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterInvFBChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
-    FCriticalSection : TCriticalSection;
-    FBuffer          : array [0..1] of PDAVSingleFixedArray;
-    FMix             : array [0..1] of Single;
-    FClearBuffer     : Boolean;
-    FFeedbackSign    : Single;
-    FFeedback        : Single;
-    FFeedFactor      : Single;
-    FBufferSize      : Integer;
-    FBufferPos       : Integer;
+    FCriticalSection: TCriticalSection;
+    FBuffer: array [0 .. 1] of PDAVSingleFixedArray;
+    FMix: array [0 .. 1] of Single;
+    FClearBuffer: Boolean;
+    FFeedbackSign: Single;
+    FFeedback: Single;
+    FFeedFactor: Single;
+    FBufferSize: Integer;
+    FBufferPos: Integer;
     procedure CalculateFeedfactor;
   public
     property ClearBufferOnChange: Boolean read FClearBuffer write FClearBuffer;
@@ -80,132 +80,140 @@ uses
 
 procedure TSampleDelayVST.VSTModuleCreate(Sender: TObject);
 begin
- FCriticalSection := TCriticalSection.Create;
+  FCriticalSection := TCriticalSection.Create;
 end;
 
 procedure TSampleDelayVST.VSTModuleDestroy(Sender: TObject);
 begin
- FreeAndNil(FCriticalSection);
+  FreeAndNil(FCriticalSection);
 end;
 
 procedure TSampleDelayVST.VSTModuleOpen(Sender: TObject);
 begin
- FBufferPos := 0;
- FClearBuffer := True;
+  FBufferPos := 0;
+  FClearBuffer := True;
 
- // initialize parameters
- Parameter[0] := 441;
- Parameter[1] := 0;
- Parameter[2] := 0;
- Parameter[3] := 0;
- Parameter[4] := 100;
+  // initialize parameters
+  Parameter[0] := 441;
+  Parameter[1] := 0;
+  Parameter[2] := 0;
+  Parameter[3] := 0;
+  Parameter[4] := 100;
 end;
 
 procedure TSampleDelayVST.VSTModuleClose(Sender: TObject);
 begin
- Dispose(FBuffer[0]);
- Dispose(FBuffer[1]);
+  Dispose(FBuffer[0]);
+  Dispose(FBuffer[1]);
 end;
 
-procedure TSampleDelayVST.SDDelayLengthChange(Sender: TObject; const Index: Integer; var Value: Single);
+procedure TSampleDelayVST.SDDelayLengthChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 var
-  Channel, newLatency : Integer;
+  Channel, newLatency: Integer;
 begin
- FCriticalSection.Enter;
- try
-  newLatency := (Round(Value) + 1);
-  if FBufferSize < newLatency then
-   begin
-    for Channel := 0 to Length(FBuffer) - 1 do
-     begin
-      ReallocMem(FBuffer[Channel], newLatency * SizeOf(Single));
+  FCriticalSection.Enter;
+  try
+    newLatency := (Round(Value) + 1);
+    if FBufferSize < newLatency then
+    begin
+      for Channel := 0 to Length(FBuffer) - 1 do
+      begin
+        ReallocMem(FBuffer[Channel], newLatency * SizeOf(Single));
 
-      if ClearBufferOnChange
-       then FillChar(FBuffer[Channel]^[FBufferSize], (newLatency - FBufferSize) * SizeOf(Single), 0)
-       else
+        if ClearBufferOnChange then
+          FillChar(FBuffer[Channel]^[FBufferSize], (newLatency - FBufferSize) *
+            SizeOf(Single), 0)
+        else
         begin
-         Move(FBuffer[Channel]^[FBufferPos], FBuffer[Channel]^[(newLatency - FBufferPos)], (FBufferSize - FBufferPos) * SizeOf(Single));
-         if (newLatency - 2 * FBufferPos) > 0
-          then FillChar(FBuffer[Channel]^[FBufferPos], (newLatency - 2 * FBufferPos) * SizeOf(Single), 0);
+          Move(FBuffer[Channel]^[FBufferPos],
+            FBuffer[Channel]^[(newLatency - FBufferPos)],
+            (FBufferSize - FBufferPos) * SizeOf(Single));
+          if (newLatency - 2 * FBufferPos) > 0 then
+            FillChar(FBuffer[Channel]^[FBufferPos],
+              (newLatency - 2 * FBufferPos) * SizeOf(Single), 0);
         end;
-     end;
-    FBufferSize := newLatency;
-   end else
-  if FBufferSize > newLatency then
-   begin
-    FBufferSize := newLatency;
-    for Channel := 0 to Length(FBuffer) - 1 do
-     begin
-      ReallocMem(FBuffer[Channel], newLatency * SizeOf(Single));
-      if not ClearBufferOnChange and (FBufferPos < newLatency)
-       then Move(FBuffer[Channel]^[FBufferSize + FBufferPos - newLatency], FBuffer[Channel]^[FBufferPos], (newLatency - FBufferPos) * SizeOf(Single));
-     end;
-    if FBufferPos >= FBufferSize
-     then FBufferPos := 0;
-   end;
- finally
-  FCriticalSection.Leave;
- end;
+      end;
+      FBufferSize := newLatency;
+    end
+    else if FBufferSize > newLatency then
+    begin
+      FBufferSize := newLatency;
+      for Channel := 0 to Length(FBuffer) - 1 do
+      begin
+        ReallocMem(FBuffer[Channel], newLatency * SizeOf(Single));
+        if not ClearBufferOnChange and (FBufferPos < newLatency) then
+          Move(FBuffer[Channel]^[FBufferSize + FBufferPos - newLatency],
+            FBuffer[Channel]^[FBufferPos], (newLatency - FBufferPos) *
+            SizeOf(Single));
+      end;
+      if FBufferPos >= FBufferSize then
+        FBufferPos := 0;
+    end;
+  finally
+    FCriticalSection.Leave;
+  end;
 end;
 
-procedure TSampleDelayVST.ParameterFeedbackChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TSampleDelayVST.ParameterFeedbackChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
- FFeedback := (0.01 * Value);
- CalculateFeedFactor;
+  FFeedback := (0.01 * Value);
+  CalculateFeedfactor;
 end;
 
-procedure TSampleDelayVST.ParameterInvFBChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TSampleDelayVST.ParameterInvFBChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
- FFeedbackSign := 2 * Value - 1;
- CalculateFeedFactor;
+  FFeedbackSign := 2 * Value - 1;
+  CalculateFeedfactor;
 end;
 
 procedure TSampleDelayVST.CalculateFeedfactor;
 begin
- FFeedFactor := FFeedbackSign * abs(FFeedback);
+  FFeedFactor := FFeedbackSign * abs(FFeedback);
 end;
 
-procedure TSampleDelayVST.ParameterInvFBDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+procedure TSampleDelayVST.ParameterInvFBDisplay(Sender: TObject;
+  const Index: Integer; var PreDefined: AnsiString);
 begin
- if Parameter[Index] < 0.5
-  then PreDefined := 'Off'
-  else PreDefined := 'On';
+  if Parameter[Index] < 0.5 then
+    PreDefined := 'Off'
+  else
+    PreDefined := 'On';
 end;
 
-procedure TSampleDelayVST.ParameterWetMixChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TSampleDelayVST.ParameterWetMixChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
- FMix[1] := 0.01 * Value;
+  FMix[1] := 0.01 * Value;
 end;
 
-procedure TSampleDelayVST.ParamDryMixChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TSampleDelayVST.ParamDryMixChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
- FMix[0] := 0.01 * Value;
+  FMix[0] := 0.01 * Value;
 end;
 
 procedure TSampleDelayVST.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
   SampleIndex : Integer;
 begin
- FCriticalSection.Enter;
- try
-  for SampleIndex := 0 to SampleFrames - 1 do
-   begin
-    FBuffer[0, FBufferPos] := Inputs[0, SampleIndex] + FFeedFactor * FBuffer[0, FBufferPos];
-    FBuffer[1, FBufferPos] := Inputs[1, SampleIndex] + FFeedFactor * FBuffer[1, FBufferPos];
-    Inc(FBufferPos);
-    if FBufferPos >= FBufferSize
-     then FBufferPos := 0;
-    Outputs[0, SampleIndex] := FMix[0] * Inputs[0, SampleIndex] + FMix[1] * FBuffer[0, FBufferPos];
-    Outputs[1, SampleIndex] := FMix[0] * Inputs[1, SampleIndex] + FMix[1] * FBuffer[1, FBufferPos];
-   end;
- finally
-  FCriticalSection.Leave;
- end;
+  FCriticalSection.Enter;
+  try
+    for SampleIndex := 0 to SampleFrames - 1 do
+    begin
+      FBuffer[0, FBufferPos] := Inputs[0, SampleIndex] + FFeedFactor * FBuffer[0, FBufferPos];
+      FBuffer[1, FBufferPos] := Inputs[1, SampleIndex] + FFeedFactor * FBuffer[1, FBufferPos];
+      Inc(FBufferPos);
+      if FBufferPos >= FBufferSize then
+        FBufferPos := 0;
+      Outputs[0, SampleIndex] := FMix[0] * Inputs[0, SampleIndex] + FMix[1] * FBuffer[0, FBufferPos];
+      Outputs[1, SampleIndex] := FMix[0] * Inputs[1, SampleIndex] + FMix[1] * FBuffer[1, FBufferPos];
+    end;
+  finally
+    FCriticalSection.Leave;
+  end;
 end;
 
 procedure TSampleDelayVST.VSTModuleProcessDoubleReplacing(const Inputs,
@@ -213,21 +221,21 @@ procedure TSampleDelayVST.VSTModuleProcessDoubleReplacing(const Inputs,
 var
   SampleIndex : Integer;
 begin
- FCriticalSection.Enter;
- try
-  for SampleIndex := 0 to SampleFrames - 1 do
-   begin
-    FBuffer[0, FBufferPos] := Inputs[0, SampleIndex] + FFeedFactor * FBuffer[0, FBufferPos];
-    FBuffer[1, FBufferPos] := Inputs[1, SampleIndex] + FFeedFactor * FBuffer[1, FBufferPos];
-    Inc(FBufferPos);
-    if FBufferPos >= FBufferSize
-     then FBufferPos := 0;
-    Outputs[0, SampleIndex] := FMix[0] * Inputs[0, SampleIndex] + FMix[1] * FBuffer[0, FBufferPos];
-    Outputs[1, SampleIndex] := FMix[0] * Inputs[1, SampleIndex] + FMix[1] * FBuffer[1, FBufferPos];
-   end;
- finally
-  FCriticalSection.Leave;
- end;
+  FCriticalSection.Enter;
+  try
+    for SampleIndex := 0 to SampleFrames - 1 do
+    begin
+      FBuffer[0, FBufferPos] := Inputs[0, SampleIndex] + FFeedFactor * FBuffer[0, FBufferPos];
+      FBuffer[1, FBufferPos] := Inputs[1, SampleIndex] + FFeedFactor * FBuffer[1, FBufferPos];
+      Inc(FBufferPos);
+      if FBufferPos >= FBufferSize then
+        FBufferPos := 0;
+      Outputs[0, SampleIndex] := FMix[0] * Inputs[0, SampleIndex] + FMix[1] * FBuffer[0, FBufferPos];
+      Outputs[1, SampleIndex] := FMix[0] * Inputs[1, SampleIndex] + FMix[1] * FBuffer[1, FBufferPos];
+    end;
+  finally
+    FCriticalSection.Leave;
+  end;
 end;
 
 end.

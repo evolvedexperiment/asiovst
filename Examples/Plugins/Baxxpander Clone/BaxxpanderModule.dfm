@@ -125,8 +125,6 @@ object BaxxpanderModule: TBaxxpanderModule
   OnProcess = VSTModuleProcessNormal
   OnProcess32Replacing = VSTModuleProcessNormal
   OnSampleRateChange = VSTModuleSampleRateChange
-  Left = 218
-  Top = 77
   Height = 150
   Width = 215
 end

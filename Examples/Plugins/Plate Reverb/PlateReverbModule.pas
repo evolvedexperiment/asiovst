@@ -35,7 +35,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
   Forms, SyncObjs, DAV_Types, DAV_VSTModule, DAV_DspPlateReverb;
 
 type
@@ -56,11 +56,11 @@ type
     procedure ParameterDryChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterModulationChange(Sender: TObject; const Index: Integer; var Value: Single);
   protected
-    FPlateReverb     : TPlateReverb;
-    FCrossover       : Single;
-    FState           : Single;
-    FMix             : array [0..1] of Single;
-    FCriticalSection : TCriticalSection;
+    FPlateReverb: TPlateReverb;
+    FCrossover: Single;
+    FState: Single;
+    FMix: array [0 .. 1] of Single;
+    FCriticalSection: TCriticalSection;
   public
     property Dry: Single read FMix[0] write FMix[0];
     property Wet: Single read FMix[1] write FMix[1];
@@ -79,246 +79,232 @@ uses
 
 procedure TPlateReverbVST.VSTModuleCreate(Sender: TObject);
 begin
- FCriticalSection := TCriticalSection.Create;
+  FCriticalSection := TCriticalSection.Create;
 end;
 
 procedure TPlateReverbVST.VSTModuleDestroy(Sender: TObject);
 begin
- FreeAndNil(FCriticalSection);
+  FreeAndNil(FCriticalSection);
 end;
 
 procedure TPlateReverbVST.VSTModuleOpen(Sender: TObject);
 begin
- FPlateReverb := TPlateReverb.Create;
- FPlateReverb.SampleRate := SampleRate;
- FCrossover := 0.01;
+  FPlateReverb := TPlateReverb.Create;
+  FPlateReverb.SampleRate := SampleRate;
+  FCrossover := 0.01;
 
- // default parameter
- Parameter[0] := 50;
- Parameter[1] := 50;
- Parameter[2] := 10;
- Parameter[3] := 50;
- Parameter[4] := 13000;
- Parameter[5] := 75;
- Parameter[6] := 70;
- Parameter[7] := 50;
+  // default parameter
+  Parameter[0] := 50;
+  Parameter[1] := 50;
+  Parameter[2] := 10;
+  Parameter[3] := 50;
+  Parameter[4] := 13000;
+  Parameter[5] := 75;
+  Parameter[6] := 70;
+  Parameter[7] := 50;
 
- // default preset
- Programs[1].CopyParameters(0);
- Programs[2].CopyParameters(0);
+  // default preset
+  Programs[1].CopyParameters(0);
+  Programs[2].CopyParameters(0);
 
-(*
- // preset 1
- with Programs[1] do
+  // preset 3
+  with Programs[3] do
   begin
-   Parameter[0] := 0.5;
-   Parameter[1] := 0.6;
-   Parameter[2] := 0.4;
-   Parameter[3] := 0.5;
-   Parameter[4] := 0;
-   Parameter[5] := 0;
-   Parameter[6] := 1;
+    Parameter[0] := 100 * Random;
+    Parameter[1] := 100 * Random;
+    Parameter[2] := 100 * Random;
+    Parameter[3] := 100 * Random;
+    Parameter[4] := 100 * Random;
+    Parameter[5] := 100 * Random;
+    Parameter[6] := 100 * Random;
+    Parameter[7] := 100 * Random;
   end;
 
- // preset 2
- with Programs[2] do
-  begin
-   Parameter[0] := 0.2;
-   Parameter[1] := 0.6;
-   Parameter[2] := 0.8;
-   Parameter[3] := 1;
-   Parameter[4] := 0;
-   Parameter[5] := 1;
-   Parameter[6] := 1;
-  end;
-*)
-
- // preset 3
- with Programs[3] do
-  begin
-   Parameter[0] := 100 * Random;
-   Parameter[1] := 100 * Random;
-   Parameter[2] := 100 * Random;
-   Parameter[3] := 100 * Random;
-   Parameter[4] := 100 * Random;
-   Parameter[5] := 100 * Random;
-   Parameter[6] := 100 * Random;
-   Parameter[7] := 100 * Random;
-  end;
-
- // set editor form class
- EditorFormClass := TFmPlateReverb;
+  // set editor form class
+  EditorFormClass := TFmPlateReverb;
 end;
 
 procedure TPlateReverbVST.VSTModuleClose(Sender: TObject);
 begin
- FreeAndNil(FPlateReverb);
+  FreeAndNil(FPlateReverb);
 end;
 
-procedure TPlateReverbVST.ParameterDryChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TPlateReverbVST.ParameterDryChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
- Dry := 0.01 * Value;
+  Dry := 0.01 * Value;
 
- // update GUI
- if EditorForm is TFmPlateReverb
-  then TFmPlateReverb(EditorForm).UpdateDry;
+  // update GUI
+  if EditorForm is TFmPlateReverb then
+    TFmPlateReverb(EditorForm).UpdateDry;
 end;
 
-procedure TPlateReverbVST.ParameterWetChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TPlateReverbVST.ParameterWetChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
- Wet := 0.01 * Value;
+  Wet := 0.01 * Value;
 
- // update GUI
- if EditorForm is TFmPlateReverb
-  then TFmPlateReverb(EditorForm).UpdateWet;
+  // update GUI
+  if EditorForm is TFmPlateReverb then
+    TFmPlateReverb(EditorForm).UpdateWet;
 end;
 
-procedure TPlateReverbVST.ParameterModulationChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TPlateReverbVST.ParameterModulationChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
- FCriticalSection.Enter;
- try
-  if Assigned(FPlateReverb)
-   then FPlateReverb.Modulation := 0.01 * Value;
- finally
-  FCriticalSection.Leave;
- end;
+  FCriticalSection.Enter;
+  try
+    if Assigned(FPlateReverb) then
+      FPlateReverb.Modulation := 0.01 * Value;
+  finally
+    FCriticalSection.Leave;
+  end;
 
- // update GUI
- if EditorForm is TFmPlateReverb
-  then TFmPlateReverb(EditorForm).UpdateModulation;
+  // update GUI
+  if EditorForm is TFmPlateReverb then
+    TFmPlateReverb(EditorForm).UpdateModulation;
 end;
 
-procedure TPlateReverbVST.ParameterPreDelayChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TPlateReverbVST.ParameterPreDelayChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
- FCriticalSection.Enter;
- try
-  if Assigned(FPlateReverb)
-   then FPlateReverb.PreDelay := 1E-3 * Value;
- finally
-  FCriticalSection.Leave;
- end;
+  FCriticalSection.Enter;
+  try
+    if Assigned(FPlateReverb) then
+      FPlateReverb.PreDelay := 1E-3 * Value;
+  finally
+    FCriticalSection.Leave;
+  end;
 
- // update GUI
- if EditorForm is TFmPlateReverb
-  then TFmPlateReverb(EditorForm).UpdatePreDelay;
+  // update GUI
+  if EditorForm is TFmPlateReverb then
+    TFmPlateReverb(EditorForm).UpdatePreDelay;
 end;
 
-procedure TPlateReverbVST.ParameterDecayChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TPlateReverbVST.ParameterDecayChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
- FCriticalSection.Enter;
- try
-  if Assigned(FPlateReverb)
-   then FPlateReverb.Decay := 0.0025 * Value;
- finally
-  FCriticalSection.Leave;
- end;
+  FCriticalSection.Enter;
+  try
+    if Assigned(FPlateReverb) then
+      FPlateReverb.Decay := 0.0025 * Value;
+  finally
+    FCriticalSection.Leave;
+  end;
 
- // update GUI
- if EditorForm is TFmPlateReverb
-  then TFmPlateReverb(EditorForm).UpdateDecay;
+  // update GUI
+  if EditorForm is TFmPlateReverb then
+    TFmPlateReverb(EditorForm).UpdateDecay;
 end;
 
-procedure TPlateReverbVST.ParameterDampingChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TPlateReverbVST.ParameterDampingChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
- FCriticalSection.Enter;
- try
-  if Assigned(FPlateReverb)
-   then FPlateReverb.DampingFrequency := Value;
- finally
-  FCriticalSection.Leave;
- end;
+  FCriticalSection.Enter;
+  try
+    if Assigned(FPlateReverb) then
+      FPlateReverb.DampingFrequency := Value;
+  finally
+    FCriticalSection.Leave;
+  end;
 
- // update GUI
- if EditorForm is TFmPlateReverb
-  then TFmPlateReverb(EditorForm).UpdateDampingFrequency;
+  // update GUI
+  if EditorForm is TFmPlateReverb then
+    TFmPlateReverb(EditorForm).UpdateDampingFrequency;
 end;
 
-procedure TPlateReverbVST.ParameterInputDiffusionChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TPlateReverbVST.ParameterInputDiffusionChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
- FCriticalSection.Enter;
- try
-  if Assigned(FPlateReverb)
-   then FPlateReverb.InputDiffusion := 0.01 * Value;
- finally
-  FCriticalSection.Leave;
- end;
+  FCriticalSection.Enter;
+  try
+    if Assigned(FPlateReverb) then
+      FPlateReverb.InputDiffusion := 0.01 * Value;
+  finally
+    FCriticalSection.Leave;
+  end;
 
- // update GUI
- if EditorForm is TFmPlateReverb
-  then TFmPlateReverb(EditorForm).UpdateInputDiffusion;
+  // update GUI
+  if EditorForm is TFmPlateReverb then
+    TFmPlateReverb(EditorForm).UpdateInputDiffusion;
 end;
 
-procedure TPlateReverbVST.ParameterDecayChangeDiffusion(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TPlateReverbVST.ParameterDecayChangeDiffusion(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
- FCriticalSection.Enter;
- try
-  if Assigned(FPlateReverb)
-   then FPlateReverb.DecayDiffusion := 0.01 * Value;
- finally
-  FCriticalSection.Leave;
- end;
+  FCriticalSection.Enter;
+  try
+    if Assigned(FPlateReverb) then
+      FPlateReverb.DecayDiffusion := 0.01 * Value;
+  finally
+    FCriticalSection.Leave;
+  end;
 
- // update GUI
- if EditorForm is TFmPlateReverb
-  then TFmPlateReverb(EditorForm).UpdateDecayDiffusion;
+  // update GUI
+  if EditorForm is TFmPlateReverb then
+    TFmPlateReverb(EditorForm).UpdateDecayDiffusion;
 end;
 
-procedure TPlateReverbVST.VSTModuleProcess(const inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
+procedure TPlateReverbVST.VSTModuleProcess(const inputs,
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
   SampleIndex: Integer;
 begin
- FCriticalSection.Enter;
- try
-  for SampleIndex := 0 to SampleFrames - 1 do
-   begin
-    FState := FPlateReverb.ProcessSample32(FCrossover * FState + (1 - FCrossover) * (Inputs[0, SampleIndex] + Inputs[1, SampleIndex]) * CHalf32);
+  FCriticalSection.Enter;
+  try
+    for SampleIndex := 0 to SampleFrames - 1 do
+    begin
+      FState := FPlateReverb.ProcessSample32(FCrossover * FState +
+        (1 - FCrossover) * (inputs[0, SampleIndex] + inputs[1, SampleIndex])
+        * CHalf32);
 
-    // Calculate output MIXING with anything already there
-    Outputs[0, SampleIndex] := Outputs[0, SampleIndex] + FMix[0] * Inputs[0, SampleIndex] + FMix[1] * FPlateReverb.OutputLeft;
-    Outputs[1, SampleIndex] := Outputs[1, SampleIndex] + FMix[0] * Inputs[1, SampleIndex] + FMix[1] * FPlateReverb.OutputRight;
-   end;
- finally
-  FCriticalSection.Leave;
- end;
+      // Calculate output MIXING with anything already there
+      Outputs[0, SampleIndex] := Outputs[0, SampleIndex] + FMix[0] *
+        inputs[0, SampleIndex] + FMix[1] * FPlateReverb.OutputLeft;
+      Outputs[1, SampleIndex] := Outputs[1, SampleIndex] + FMix[0] *
+        inputs[1, SampleIndex] + FMix[1] * FPlateReverb.OutputRight;
+    end;
+  finally
+    FCriticalSection.Leave;
+  end;
 end;
 
-procedure TPlateReverbVST.VSTModuleProcessReplacing(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
+procedure TPlateReverbVST.VSTModuleProcessReplacing(const inputs,
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
   SampleIndex: Integer;
 begin
- FCriticalSection.Enter;
- try
-  for SampleIndex := 0 to SampleFrames - 1 do
-   begin
-    FState := FPlateReverb.ProcessSample32(FCrossover * FState + (1 - FCrossover) * (Inputs[0, SampleIndex] + Inputs[1, SampleIndex]) * CHalf32);
+  FCriticalSection.Enter;
+  try
+    for SampleIndex := 0 to SampleFrames - 1 do
+    begin
+      FState := FPlateReverb.ProcessSample32(FCrossover * FState +
+        (1 - FCrossover) * (inputs[0, SampleIndex] + inputs[1, SampleIndex])
+        * CHalf32);
 
-    // Calculate output REPLACING with anything already there
-    Outputs[0, SampleIndex] := FMix[0] * Inputs[0, SampleIndex] + FMix[1] * FPlateReverb.OutputLeft;
-    Outputs[1, SampleIndex] := FMix[0] * Inputs[1, SampleIndex] + FMix[1] * FPlateReverb.OutputRight;
-   end;
- finally
-  FCriticalSection.Leave;
- end;
+      // Calculate output REPLACING with anything already there
+      Outputs[0, SampleIndex] := FMix[0] * inputs[0, SampleIndex] + FMix[1] *
+        FPlateReverb.OutputLeft;
+      Outputs[1, SampleIndex] := FMix[0] * inputs[1, SampleIndex] + FMix[1] *
+        FPlateReverb.OutputRight;
+    end;
+  finally
+    FCriticalSection.Leave;
+  end;
 end;
 
-procedure TPlateReverbVST.VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
+procedure TPlateReverbVST.VSTModuleSampleRateChange(Sender: TObject;
+  const SampleRate: Single);
 begin
- if SampleRate = 0 then exit;
- FCriticalSection.Enter;
- try
-  if Assigned(FPlateReverb)
-   then FPlateReverb.SampleRate := Abs(SampleRate);
- finally
-  FCriticalSection.Leave;
- end;
+  if SampleRate = 0 then
+    exit;
+  FCriticalSection.Enter;
+  try
+    if Assigned(FPlateReverb) then
+      FPlateReverb.SampleRate := Abs(SampleRate);
+  finally
+    FCriticalSection.Leave;
+  end;
 end;
 
 end.

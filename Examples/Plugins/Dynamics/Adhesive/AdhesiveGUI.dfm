@@ -697,6 +697,7 @@ object FmAdhesive: TFmAdhesive
     Width = 48
     Height = 48
     CurveMapping = -1.799999952316284000
+    DefaultValue = 20.000000000000000000
     Max = 2000.000000000000000000
     Min = 20.000000000000000000
     ScrollRange = 400.000000000000000000
@@ -706,7 +707,6 @@ object FmAdhesive: TFmAdhesive
     Value = 20.000000000000000000
     WheelStep = 1.000000000000000000
     OnChange = DialFilterChange
-    DefaultValue = 0.000000000000000000
   end
   object DialAttack: TGuiStitchedDial
     Left = 153
@@ -714,6 +714,7 @@ object FmAdhesive: TFmAdhesive
     Width = 48
     Height = 48
     CurveMapping = -2.299999952316284000
+    DefaultValue = 0.009999999776482582
     Max = 30.000000000000000000
     Min = 0.009999999776482582
     ScrollRange = 400.000000000000000000
@@ -723,7 +724,6 @@ object FmAdhesive: TFmAdhesive
     Value = 0.100000001490116100
     WheelStep = 1.000000000000000000
     OnChange = DialAttackChange
-    DefaultValue = 0.000000000000000000
   end
   object DialRelease: TGuiStitchedDial
     Left = 230
@@ -731,16 +731,16 @@ object FmAdhesive: TFmAdhesive
     Width = 48
     Height = 48
     CurveMapping = -0.750000000000000000
+    DefaultValue = 0.200000002980232200
     Max = 1.500000000000000000
     Min = 0.200000002980232200
     ScrollRange = 400.000000000000000000
     ImageList = GSPL
     ImageIndex = 1
     Transparent = True
-    Value = 0.400000005960464500
+    Value = 0.400000005960464400
     WheelStep = 1.000000000000000000
     OnChange = DialReleaseChange
-    DefaultValue = 0.000000000000000000
   end
   object DialMix: TGuiStitchedDial
     Left = 302
@@ -780,6 +780,7 @@ object FmAdhesive: TFmAdhesive
     Width = 56
     Height = 56
     CurveMapping = -0.959999978542327900
+    DefaultValue = 2.000000000000000000
     Max = 10.000000000000000000
     Min = 2.000000000000000000
     ScrollRange = 400.000000000000000000
@@ -789,14 +790,13 @@ object FmAdhesive: TFmAdhesive
     Value = 10.000000000000000000
     WheelStep = 1.000000000000000000
     OnChange = DialRatioChange
-    DefaultValue = 0.000000000000000000
   end
   object DialKnee: TGuiStitchedDial
     Left = 297
     Top = 221
     Width = 56
     Height = 56
-    CurveMapping = -0.800000011920929000
+    CurveMapping = -0.800000011920928900
     Max = 10.000000000000000000
     ScrollRange = 400.000000000000000000
     ImageList = GSPL
@@ -812,7 +812,7 @@ object FmAdhesive: TFmAdhesive
     Top = 221
     Width = 56
     Height = 56
-    CurveMapping = -0.800000011920929000
+    CurveMapping = -0.800000011920928900
     Max = 40.000000000000000000
     ScrollRange = 400.000000000000000000
     ImageList = GSPL

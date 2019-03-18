@@ -107,8 +107,6 @@ object SampleDelayVST: TSampleDelayVST
   OnProcess = VSTModuleProcess
   OnProcess32Replacing = VSTModuleProcess
   OnProcess64Replacing = VSTModuleProcessDoubleReplacing
-  Left = 248
-  Top = 106
   Height = 150
   Width = 215
 end

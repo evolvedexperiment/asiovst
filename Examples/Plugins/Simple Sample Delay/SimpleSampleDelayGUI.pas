@@ -55,7 +55,6 @@ type
     procedure SBDryMixChange(Sender: TObject);
     procedure SBWetMixChange(Sender: TObject);
     procedure CBFeedbackInvClick(Sender: TObject);
-  private
   public
     procedure UpdateDelayLength;
     procedure UpdateFeedback;
@@ -77,98 +76,102 @@ uses
 
 procedure TFmSimpleSampleDelay.FormShow(Sender: TObject);
 begin
- UpdateDelayLength;
+  UpdateDelayLength;
 end;
 
 procedure TFmSimpleSampleDelay.SampleBarChange(Sender: TObject);
 begin
- with TSimpleSampleDelayVST(Owner) do
+  with TSimpleSampleDelayVST(Owner) do
   begin
-   if Parameter[0] <> SampleBar.Position
-    then Parameter[0] := SampleBar.Position;
+    if Parameter[0] <> SampleBar.Position then
+      Parameter[0] := SampleBar.Position;
   end;
 end;
 
 procedure TFmSimpleSampleDelay.SBFeedbackChange(Sender: TObject);
 begin
- with TSimpleSampleDelayVST(Owner) do
+  with TSimpleSampleDelayVST(Owner) do
   begin
-   if Parameter[1] <> 0.1 * SBFeedback.Position
-    then Parameter[1] := 0.1 * SBFeedback.Position;
+    if Parameter[1] <> 0.1 * SBFeedback.Position then
+      Parameter[1] := 0.1 * SBFeedback.Position;
   end;
 end;
 
 procedure TFmSimpleSampleDelay.CBFeedbackInvClick(Sender: TObject);
 begin
- with TSimpleSampleDelayVST(Owner) do
+  with TSimpleSampleDelayVST(Owner) do
   begin
-   if Parameter[2] <> Integer(CBFeedbackInv.Checked)
-    then Parameter[2] := Integer(CBFeedbackInv.Checked);
+    if Parameter[2] <> Integer(CBFeedbackInv.Checked) then
+      Parameter[2] := Integer(CBFeedbackInv.Checked);
   end;
 end;
 
 procedure TFmSimpleSampleDelay.SBDryMixChange(Sender: TObject);
 begin
- with TSimpleSampleDelayVST(Owner) do
+  with TSimpleSampleDelayVST(Owner) do
   begin
-   if Parameter[3] <> 0.1 * SBDryMix.Position
-    then Parameter[3] := 0.1 * SBDryMix.Position;
+    if Parameter[3] <> 0.1 * SBDryMix.Position then
+      Parameter[3] := 0.1 * SBDryMix.Position;
   end;
 end;
 
 procedure TFmSimpleSampleDelay.SBWetMixChange(Sender: TObject);
 begin
- with TSimpleSampleDelayVST(Owner) do
+  with TSimpleSampleDelayVST(Owner) do
   begin
-   if Parameter[4] <> 0.1 * SBWetMix.Position
-    then Parameter[4] := 0.1 * SBWetMix.Position;
+    if Parameter[4] <> 0.1 * SBWetMix.Position then
+      Parameter[4] := 0.1 * SBWetMix.Position;
   end;
 end;
 
 procedure TFmSimpleSampleDelay.UpdateDelayLength;
 begin
- with TSimpleSampleDelayVST(Owner) do
+  with TSimpleSampleDelayVST(Owner) do
   begin
-   if Round(Parameter[0]) <> SampleBar.Position
-    then SampleBar.Position := Round(Parameter[0]);
-   LbSamples.Caption := 'Delay: ' + IntToStr(Round(Parameter[0])) + ' samples ' +
-                        '(= ' + FloatToStrF(1000 * Parameter[0] / SampleRate, ffGeneral, 4, 4) + ' ms)';
+    if Round(Parameter[0]) <> SampleBar.Position then
+      SampleBar.Position := Round(Parameter[0]);
+    LbSamples.Caption := 'Delay: ' + IntToStr(Round(Parameter[0])) + ' samples '
+      + '(= ' + FloatToStrF(1000 * Parameter[0] / SampleRate, ffGeneral, 4,
+      4) + ' ms)';
   end;
 end;
 
 procedure TFmSimpleSampleDelay.UpdateFeedback;
 begin
- with TSimpleSampleDelayVST(Owner) do
+  with TSimpleSampleDelayVST(Owner) do
   begin
-   if Round(10 * Parameter[1]) <> SBFeedback.Position
-    then SBFeedback.Position := Round(10 * Parameter[1]);
-   UpdateFeedbackInvert;
-   LbFeedbackValue.Caption := 'Feedback: ' + FloatToStrF(Parameter[1], ffGeneral, 3, 3) + ' %';
+    if Round(10 * Parameter[1]) <> SBFeedback.Position then
+      SBFeedback.Position := Round(10 * Parameter[1]);
+    UpdateFeedbackInvert;
+    LbFeedbackValue.Caption := 'Feedback: ' + FloatToStrF(Parameter[1],
+      ffGeneral, 3, 3) + ' %';
   end;
 end;
 
 procedure TFmSimpleSampleDelay.UpdateFeedbackInvert;
 begin
- CBFeedbackInv.Checked := TSimpleSampleDelayVST(Owner).Parameter[2] > 0.5;
+  CBFeedbackInv.Checked := TSimpleSampleDelayVST(Owner).Parameter[2] > 0.5;
 end;
 
 procedure TFmSimpleSampleDelay.UpdateDryMix;
 begin
- with TSimpleSampleDelayVST(Owner) do
+  with TSimpleSampleDelayVST(Owner) do
   begin
-   if Round(10 * Parameter[3]) <> SBDryMix.Position
-    then SBDryMix.Position := Round(10 * Parameter[3]);
-   LbDryMixValue.Caption := 'Dry Mix: ' + FloatToStrF(Parameter[3], ffGeneral, 3, 3) + ' %';
+    if Round(10 * Parameter[3]) <> SBDryMix.Position then
+      SBDryMix.Position := Round(10 * Parameter[3]);
+    LbDryMixValue.Caption := 'Dry Mix: ' + FloatToStrF(Parameter[3], ffGeneral,
+      3, 3) + ' %';
   end;
 end;
 
 procedure TFmSimpleSampleDelay.UpdateWetMix;
 begin
- with TSimpleSampleDelayVST(Owner) do
+  with TSimpleSampleDelayVST(Owner) do
   begin
-   if Round(10 * Parameter[4]) <> SBWetMix.Position
-    then SBWetMix.Position := Round(10 * Parameter[4]);
-   LbWetMixValue.Caption := 'Wet Mix: ' + FloatToStrF(Parameter[4], ffGeneral, 3, 3) + ' %';
+    if Round(10 * Parameter[4]) <> SBWetMix.Position then
+      SBWetMix.Position := Round(10 * Parameter[4]);
+    LbWetMixValue.Caption := 'Wet Mix: ' + FloatToStrF(Parameter[4], ffGeneral,
+      3, 3) + ' %';
   end;
 end;
 

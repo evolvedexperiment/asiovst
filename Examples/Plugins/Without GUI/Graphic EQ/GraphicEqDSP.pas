@@ -35,7 +35,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
   Forms, DAV_Types, DAV_VSTModule, DAV_DspFilter, DAV_DspFilterBasics;
 
 type
@@ -47,8 +47,7 @@ type
     procedure VSTModuleProcessLR(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
     procedure VSTModuleProcessMS(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
   private
-    FEQs : array [0..1, 0..10] of TBasicPeakFilter;
-  public
+    FEQs: array [0 .. 1, 0 .. 10] of TBasicPeakFilter;
   end;
 
 implementation
@@ -61,75 +60,76 @@ implementation
 
 procedure TPluginDataModule.VSTModuleOpen(Sender: TObject);
 var
-  Channel, Band : Integer;
+  Channel, Band: Integer;
 const
-  CDefaultFrequencies : array [0..10] of Single = (20, 40, 80, 160, 320, 640,
-    1250, 2500, 5000, 10000, 20000);   
+  CDefaultFrequencies: array [0 .. 10] of Single = (20, 40, 80, 160, 320, 640,
+    1250, 2500, 5000, 10000, 20000);
 begin
- for Channel := 0 to Length(FEQs) - 1 do
-  for Band := 0 to Length(FEQs[Channel]) - 1 do
-   begin
-    if not Assigned(FEQs[Channel, Band])
-     then FEQs[Channel, Band] := TBasicPeakFilter.Create;
-    with FEQs[Channel, Band] do
-     begin
-      SampleRate := Self.SampleRate;
-      Frequency := CDefaultFrequencies[Band];
-      Bandwidth := 1;
-     end;
-   end;
+  for Channel := 0 to Length(FEQs) - 1 do
+    for Band := 0 to Length(FEQs[Channel]) - 1 do
+    begin
+      if not Assigned(FEQs[Channel, Band]) then
+        FEQs[Channel, Band] := TBasicPeakFilter.Create;
+      with FEQs[Channel, Band] do
+      begin
+        SampleRate := Self.SampleRate;
+        Frequency := CDefaultFrequencies[Band];
+        Bandwidth := 1;
+      end;
+    end;
 end;
 
 procedure TPluginDataModule.VSTModuleClose(Sender: TObject);
 var
-  Channel, Band : Integer;
+  Channel, Band: Integer;
 begin
- for Channel := 0 to Length(FEQs) - 1 do
-  for Band := 0 to Length(FEQs[Channel]) - 1 do
-   if not Assigned(FEQs[Channel, Band]) then FreeAndNil(FEQs[Channel, Band]);
+  for Channel := 0 to Length(FEQs) - 1 do
+    for Band := 0 to Length(FEQs[Channel]) - 1 do
+      if not Assigned(FEQs[Channel, Band]) then
+        FreeAndNil(FEQs[Channel, Band]);
 end;
 
 procedure TPluginDataModule.VSTModuleParameterChange(Sender: TObject;
   const Index: Integer; var Value: Single);
 begin
- if Assigned(FEQs[Index div 11, Index mod 11])
-  then FEQs[Index div 11, Index mod 11].Gain := -Value;
+  if Assigned(FEQs[Index div 11, Index mod 11]) then
+    FEQs[Index div 11, Index mod 11].Gain := -Value;
 end;
 
 procedure TPluginDataModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 var
-  Channel, Band : Integer;
+  Channel, Band: Integer;
 begin
- if Abs(SampleRate) > 0 then
-  for Channel := 0 to Length(FEQs) - 1 do
-   for Band := 0 to Length(FEQs[Channel]) - 1 do
-    begin
-     if not Assigned(FEQs[Channel, Band])
-      then FEQs[Channel, Band] := TBasicPeakFilter.Create;
-     FEQs[Channel, Band].SampleRate := SampleRate;
-    end;
+  if Abs(SampleRate) > 0 then
+    for Channel := 0 to Length(FEQs) - 1 do
+      for Band := 0 to Length(FEQs[Channel]) - 1 do
+      begin
+        if not Assigned(FEQs[Channel, Band]) then
+          FEQs[Channel, Band] := TBasicPeakFilter.Create;
+        FEQs[Channel, Band].SampleRate := SampleRate;
+      end;
 end;
 
 procedure TPluginDataModule.VSTModuleProcessLR(const Inputs,
   Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
-  Sample : Integer;
+  Sample: Integer;
 begin
- for Sample := 0 to SampleFrames - 1 do
+  for Sample := 0 to SampleFrames - 1 do
   begin
-   Outputs[0, Sample] := FEQs[0, 0].ProcessSample64(FEQs[0, 1].ProcessSample64(
-     FEQs[0, 2].ProcessSample64(FEQs[0, 3].ProcessSample64(
-     FEQs[0, 4].ProcessSample64(FEQs[0, 5].ProcessSample64(
-     FEQs[0, 6].ProcessSample64(FEQs[0, 7].ProcessSample64(
-     FEQs[0, 8].ProcessSample64(FEQs[0, 9].ProcessSample64(
-     FEQs[0,10].ProcessSample64(Inputs[0, Sample])))))))))));
-   Outputs[1, Sample] := FEQs[1, 0].ProcessSample64(FEQs[1, 1].ProcessSample64(
-     FEQs[1, 2].ProcessSample64(FEQs[1, 3].ProcessSample64(
-     FEQs[1, 4].ProcessSample64(FEQs[1, 5].ProcessSample64(
-     FEQs[1, 6].ProcessSample64(FEQs[1, 7].ProcessSample64(
-     FEQs[1, 8].ProcessSample64(FEQs[1, 9].ProcessSample64(
-     FEQs[1,10].ProcessSample64(Inputs[1, Sample])))))))))));
+    Outputs[0, Sample] := FEQs[0, 0].ProcessSample64(FEQs[0, 1].ProcessSample64(
+      FEQs[0, 2].ProcessSample64(FEQs[0, 3].ProcessSample64(
+      FEQs[0, 4].ProcessSample64(FEQs[0, 5].ProcessSample64(
+      FEQs[0, 6].ProcessSample64(FEQs[0, 7].ProcessSample64(
+      FEQs[0, 8].ProcessSample64(FEQs[0, 9].ProcessSample64(
+      FEQs[0,10].ProcessSample64(Inputs[0, Sample])))))))))));
+    Outputs[1, Sample] := FEQs[1, 0].ProcessSample64(FEQs[1, 1].ProcessSample64(
+      FEQs[1, 2].ProcessSample64(FEQs[1, 3].ProcessSample64(
+      FEQs[1, 4].ProcessSample64(FEQs[1, 5].ProcessSample64(
+      FEQs[1, 6].ProcessSample64(FEQs[1, 7].ProcessSample64(
+      FEQs[1, 8].ProcessSample64(FEQs[1, 9].ProcessSample64(
+      FEQs[1,10].ProcessSample64(Inputs[1, Sample])))))))))));
   end;
 end;
 
@@ -141,23 +141,23 @@ var
 const
   CQuarter32 : Single = 0.25;
 begin
- for Sample := 0 to SampleFrames - 1 do
+  for Sample := 0 to SampleFrames - 1 do
   begin
-   Outputs[0, Sample] := FEQs[0, 0].ProcessSample64(FEQs[0, 1].ProcessSample64(
-     FEQs[0, 2].ProcessSample64(FEQs[0, 3].ProcessSample64(
-     FEQs[0, 4].ProcessSample64(FEQs[0, 5].ProcessSample64(
-     FEQs[0, 6].ProcessSample64(FEQs[0, 7].ProcessSample64(
-     FEQs[0, 8].ProcessSample64(FEQs[0, 9].ProcessSample64(
-     FEQs[0,10].ProcessSample64(Inputs[0, Sample] + Inputs[1, Sample])))))))))));
-   Outputs[1, Sample] := FEQs[1, 0].ProcessSample64(FEQs[1, 1].ProcessSample64(
-     FEQs[1, 2].ProcessSample64(FEQs[1, 3].ProcessSample64(
-     FEQs[1, 4].ProcessSample64(FEQs[1, 5].ProcessSample64(
-     FEQs[1, 6].ProcessSample64(FEQs[1, 7].ProcessSample64(
-     FEQs[1, 8].ProcessSample64(FEQs[1, 9].ProcessSample64(
-     FEQs[1,10].ProcessSample64(Inputs[0, Sample] - Inputs[1, Sample])))))))))));
-   Temp := CQuarter32 * (Outputs[1, Sample] + Outputs[0, Sample]);
-   Outputs[1, Sample] := CQuarter32 * (Outputs[1, Sample] - Outputs[0, Sample]);
-   Outputs[0, Sample] := Temp;
+    Outputs[0, Sample] := FEQs[0, 0].ProcessSample64(FEQs[0, 1].ProcessSample64(
+      FEQs[0, 2].ProcessSample64(FEQs[0, 3].ProcessSample64(
+      FEQs[0, 4].ProcessSample64(FEQs[0, 5].ProcessSample64(
+      FEQs[0, 6].ProcessSample64(FEQs[0, 7].ProcessSample64(
+      FEQs[0, 8].ProcessSample64(FEQs[0, 9].ProcessSample64(
+      FEQs[0,10].ProcessSample64(Inputs[0, Sample] + Inputs[1, Sample])))))))))));
+    Outputs[1, Sample] := FEQs[1, 0].ProcessSample64(FEQs[1, 1].ProcessSample64(
+      FEQs[1, 2].ProcessSample64(FEQs[1, 3].ProcessSample64(
+      FEQs[1, 4].ProcessSample64(FEQs[1, 5].ProcessSample64(
+      FEQs[1, 6].ProcessSample64(FEQs[1, 7].ProcessSample64(
+      FEQs[1, 8].ProcessSample64(FEQs[1, 9].ProcessSample64(
+      FEQs[1,10].ProcessSample64(Inputs[0, Sample] - Inputs[1, Sample])))))))))));
+    Temp := CQuarter32 * (Outputs[1, Sample] + Outputs[0, Sample]);
+    Outputs[1, Sample] := CQuarter32 * (Outputs[1, Sample] - Outputs[0, Sample]);
+    Outputs[0, Sample] := Temp;
   end;
 end;
 

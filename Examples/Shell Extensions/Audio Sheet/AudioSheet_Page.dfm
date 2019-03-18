@@ -29,6 +29,10 @@ object FmPage: TFmPage
       Font.Name = 'Verdana'
       Font.Style = []
       ParentFont = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object LbSamplerate: TLabel
         Left = 22
         Top = 9
@@ -153,6 +157,10 @@ object FmPage: TFmPage
     object TSSignalProperties: TTabSheet
       Caption = 'Signal Properties'
       ImageIndex = 2
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object SignalMemo: TMemo
         Left = 0
         Top = 0
@@ -173,9 +181,12 @@ object FmPage: TFmPage
     Top = 148
     Width = 324
     Height = 249
+    Cursor.SampleActive = 0
+    Cursor.SamplePassive = 0
     AudioDataCollection = ADC
     DisplayChannels = <>
     LineWidth = 0
+    Normalize = False
     XAxis.SampleUpper = 127
     XAxis.FractionalLower = -0.500000000000000000
     XAxis.FractionalUpper = 0.500000000000000000

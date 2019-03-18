@@ -2,8 +2,8 @@ unit PulsingDSP;
 
 interface
 
-uses 
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
+uses
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
   Forms, DAV_Types, DAV_DspPulsing, DAV_VSTModule;
 
 type
@@ -17,8 +17,7 @@ type
     procedure ParameterMaximumChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterMinimumChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
-    FPulsing : array of TSymetricPulsing;
-  public
+    FPulsing: array of TSymetricPulsing;
   end;
 
 implementation
@@ -34,96 +33,97 @@ uses
 
 procedure TPulsingDataModule.VSTModuleOpen(Sender: TObject);
 var
-  Channel : Integer;
+  Channel: Integer;
 begin
- SetLength(FPulsing, numInputs);
+  SetLength(FPulsing, numInputs);
 
- for Channel := 0 to Length(FPulsing) - 1 do
+  for Channel := 0 to Length(FPulsing) - 1 do
   begin
-   FPulsing[Channel] := TSymetricPulsing.Create;
+    FPulsing[Channel] := TSymetricPulsing.Create;
   end;
 
- // initialize parameters
- Parameter[0] := 1000;
- Parameter[1] := 0;
- Parameter[2] := -40;
- Parameter[3] := 400;
+  // initialize parameters
+  Parameter[0] := 1000;
+  Parameter[1] := 0;
+  Parameter[2] := -40;
+  Parameter[3] := 400;
 
- // set editor form class
- EditorFormClass := TFmPulsing;
+  // set editor form class
+  EditorFormClass := TFmPulsing;
 end;
 
-procedure TPulsingDataModule.ParameterPeriodChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TPulsingDataModule.ParameterPeriodChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 var
-  Channel : Integer;
+  Channel: Integer;
 begin
- for Channel := 0 to Length(FPulsing) - 1 do
-  if Assigned(FPulsing[Channel]) then
-   with FPulsing[Channel] do
-    begin
-     Period_s := 1E-3 * Value;
-//     Length_s := 0.5 * 1E-3 * Value;
-    end;
+  for Channel := 0 to Length(FPulsing) - 1 do
+    if Assigned(FPulsing[Channel]) then
+      with FPulsing[Channel] do
+      begin
+        Period_s := 1E-3 * Value;
+        // Length_s := 0.5 * 1E-3 * Value;
+      end;
 end;
 
-procedure TPulsingDataModule.ParameterSlewrateChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TPulsingDataModule.ParameterSlewrateChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 var
-  Channel : Integer;
+  Channel: Integer;
 begin
- for Channel := 0 to Length(FPulsing) - 1 do
-  if Assigned(FPulsing[Channel])
-   then FPulsing[Channel].SlewRate_dB_s := Value;
+  for Channel := 0 to Length(FPulsing) - 1 do
+    if Assigned(FPulsing[Channel]) then
+      FPulsing[Channel].SlewRate_dB_s := Value;
 end;
 
-procedure TPulsingDataModule.ParameterMinimumChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TPulsingDataModule.ParameterMinimumChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 var
-  Channel : Integer;
+  Channel: Integer;
 begin
- for Channel := 0 to Length(FPulsing) - 1 do
-  if Assigned(FPulsing[Channel])
-   then FPulsing[Channel].Minimum_dB := Value;
+  for Channel := 0 to Length(FPulsing) - 1 do
+    if Assigned(FPulsing[Channel]) then
+      FPulsing[Channel].Minimum_dB := Value;
 end;
 
-procedure TPulsingDataModule.ParameterMaximumChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TPulsingDataModule.ParameterMaximumChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 var
-  Channel : Integer;
+  Channel: Integer;
 begin
- for Channel := 0 to Length(FPulsing) - 1 do
-  if Assigned(FPulsing[Channel])
-   then FPulsing[Channel].Maximum_dB := Value;
+  for Channel := 0 to Length(FPulsing) - 1 do
+    if Assigned(FPulsing[Channel]) then
+      FPulsing[Channel].Maximum_dB := Value;
 end;
 
 procedure TPulsingDataModule.VSTModuleClose(Sender: TObject);
 var
-  Channel : Integer;
+  Channel: Integer;
 begin
- for Channel := 0 to Length(FPulsing) - 1
-  do FreeAndNil(FPulsing[Channel]);
+  for Channel := 0 to Length(FPulsing) - 1 do
+    FreeAndNil(FPulsing[Channel]);
 end;
 
 procedure TPulsingDataModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 var
-  Channel : Integer;
+  Channel: Integer;
 begin
- if Abs(SampleRate) > 0 then
-  for Channel := 0 to Length(FPulsing) - 1
-   do FPulsing[Channel].SampleRate := Abs(SampleRate);
+  if Abs(SampleRate) > 0 then
+    for Channel := 0 to Length(FPulsing) - 1 do
+      FPulsing[Channel].SampleRate := Abs(SampleRate);
 end;
 
 procedure TPulsingDataModule.VSTModuleProcess(const Inputs,
   Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
-  Channel : Integer;
-  Sample  : Integer;
+  Channel: Integer;
+  Sample: Integer;
 begin
- for Channel := 0 to Length(FPulsing) - 1 do
-  for Sample := 0 to SampleFrames - 1
-   do Outputs[Channel, Sample] := FPulsing[Channel].ProcessSample32(Inputs[Channel, Sample]);
+  for Channel := 0 to Length(FPulsing) - 1 do
+    for Sample := 0 to SampleFrames - 1 do
+      Outputs[Channel, Sample] := FPulsing[Channel].ProcessSample32
+        (Inputs[Channel, Sample]);
 end;
 
 end.

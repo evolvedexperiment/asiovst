@@ -35,15 +35,15 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  FastMove, {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, 
+  FastMove, {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils,
   Classes, Forms, DAV_Types, DAV_VSTEffect, DAV_VSTModule;
 
 type
   TPerformanceTestModule = class(TVSTModule)
     procedure VSTModuleCreate(Sender: TObject);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; SampleFrames: Integer);
-    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; SampleFrames: Integer);
+    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: NativeUInt);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
+    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
   private
     function GetProcessorCycles: Double;
   public
@@ -199,28 +199,29 @@ begin
 end;
 
 procedure TPerformanceTestModule.VSTModuleEditOpen(Sender: TObject;
-  var GUI: TForm; ParentWindow: Cardinal);
+  var GUI: TForm; ParentWindow: NativeUInt);
 begin
   GUI := TFmPerformanceTest.Create(Self);
 end;
 
 procedure TPerformanceTestModule.VSTModuleProcess(
-  const Inputs, Outputs: TDAVArrayOfSingleFixedArray; SampleFrames: Integer);
+  const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 begin
   Move(Inputs[0, 0], Outputs[0, 0], SampleFrames * SizeOf(Single));
   Move(Inputs[1, 0], Outputs[1, 0], SampleFrames * SizeOf(Single));
 end;
 
 procedure TPerformanceTestModule.VSTModuleProcessDoubleReplacing(
-  const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; SampleFrames: Integer);
+  const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
 begin
   Move(Inputs[0, 0], Outputs[0, 0], SampleFrames * SizeOf(Double));
   Move(Inputs[1, 0], Outputs[1, 0], SampleFrames * SizeOf(Double));
 end;
 
 initialization
- if IsRDTSCPresent
-  then StartStop := RDTSC
-  else StartStop := NoRDTSC;
+  if IsRDTSCPresent then
+    StartStop := RDTSC
+  else
+    StartStop := NoRDTSC;
 
 end.

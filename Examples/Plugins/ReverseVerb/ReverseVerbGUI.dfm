@@ -117,6 +117,7 @@ object FmReverseVerb: TFmReverseVerb
     Top = 32
     Width = 72
     Height = 72
+    DefaultValue = 1.000000000000000000
     Max = 10.000000000000000000
     Min = 1.000000000000000000
     ScrollRange = 400.000000000000000000
@@ -125,7 +126,6 @@ object FmReverseVerb: TFmReverseVerb
     Value = 1.000000000000000000
     WheelStep = 1.000000000000000000
     OnChange = DialIRChange
-    DefaultValue = 0.000000000000000000
   end
   object DialGain: TGuiStitchedDial
     Left = 86
@@ -148,6 +148,7 @@ object FmReverseVerb: TFmReverseVerb
     Width = 72
     Height = 72
     CurveMapping = -2.099999904632568000
+    DefaultValue = 20.000000000000000000
     Max = 20000.000000000000000000
     Min = 20.000000000000000000
     ScrollRange = 400.000000000000000000
@@ -156,7 +157,6 @@ object FmReverseVerb: TFmReverseVerb
     Value = 20.000000000000000000
     WheelStep = 1.000000000000000000
     OnChange = DialDampChange
-    DefaultValue = 0.000000000000000000
   end
   object GSPL: TGuiStitchedPNGList
     StitchedPNGs = <

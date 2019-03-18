@@ -34,7 +34,7 @@ interface
 
 {$I DAV_Compiler.inc}
 
-uses 
+uses
   {$IFDEF FPC} LCLIntf, {$ELSE} Windows, Messages, {$ENDIF} SysUtils, Classes,
   SyncObjs, Forms, DAV_Types, DAV_VSTModule, DAV_DspDynamics;
 
@@ -50,8 +50,8 @@ type
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleDestroy(Sender: TObject);
   private
-    FCriticalSection : TCriticalSection;
-    FLimiters        : array [0..1] of TLimiter;
+    FCriticalSection: TCriticalSection;
+    FLimiters: array [0 .. 1] of TLimiter;
   public
   end;
 
@@ -65,110 +65,111 @@ implementation
 
 procedure TLimiterDataModule.VSTModuleCreate(Sender: TObject);
 begin
- FCriticalSection := TCriticalSection.Create;
+  FCriticalSection := TCriticalSection.Create;
 end;
 
 procedure TLimiterDataModule.VSTModuleDestroy(Sender: TObject);
 begin
- FreeAndNil(FCriticalSection);
+  FreeAndNil(FCriticalSection);
 end;
 
 procedure TLimiterDataModule.VSTModuleOpen(Sender: TObject);
 var
-  ChannelIndex : Integer;
+  ChannelIndex: Integer;
 begin
- for ChannelIndex := 0 to Length(FLimiters) - 1 do
+  for ChannelIndex := 0 to Length(FLimiters) - 1 do
   begin
-   FLimiters[ChannelIndex] := TLimiter.Create;
-   FLimiters[ChannelIndex].SampleRate := SampleRate;
+    FLimiters[ChannelIndex] := TLimiter.Create;
+    FLimiters[ChannelIndex].SampleRate := SampleRate;
   end;
 
- Parameter[0] := -10;
+  Parameter[0] := -10;
 end;
 
 procedure TLimiterDataModule.VSTModuleClose(Sender: TObject);
 var
-  ChannelIndex : Integer;
+  ChannelIndex: Integer;
 begin
- for ChannelIndex := 0 to Length(FLimiters) - 1
-  do FreeAndNil(FLimiters[ChannelIndex]);
+  for ChannelIndex := 0 to Length(FLimiters) - 1 do
+    FreeAndNil(FLimiters[ChannelIndex]);
 end;
 
-procedure TLimiterDataModule.ParameterThresholdChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TLimiterDataModule.ParameterThresholdChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 var
-  ChannelIndex : Integer;
+  ChannelIndex: Integer;
 begin
- FCriticalSection.Enter;
- try
-  for ChannelIndex := 0 to Length(FLimiters) - 1 do
-   if Assigned(FLimiters[ChannelIndex])
-    then FLimiters[ChannelIndex].Threshold_dB := Value;
- finally
-  FCriticalSection.Leave;
- end;
+  FCriticalSection.Enter;
+  try
+    for ChannelIndex := 0 to Length(FLimiters) - 1 do
+      if Assigned(FLimiters[ChannelIndex]) then
+        FLimiters[ChannelIndex].Threshold_dB := Value;
+  finally
+    FCriticalSection.Leave;
+  end;
 end;
 
-procedure TLimiterDataModule.ParameterReleaseChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TLimiterDataModule.ParameterReleaseChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 var
-  ChannelIndex : Integer;
+  ChannelIndex: Integer;
 begin
- FCriticalSection.Enter;
- try
-  for ChannelIndex := 0 to Length(FLimiters) - 1 do
-   if Assigned(FLimiters[ChannelIndex])
-    then FLimiters[ChannelIndex].Release := Value;
- finally
-  FCriticalSection.Leave;
- end;
+  FCriticalSection.Enter;
+  try
+    for ChannelIndex := 0 to Length(FLimiters) - 1 do
+      if Assigned(FLimiters[ChannelIndex]) then
+        FLimiters[ChannelIndex].Release := Value;
+  finally
+    FCriticalSection.Leave;
+  end;
 end;
 
-procedure TLimiterDataModule.ParameterAttackChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TLimiterDataModule.ParameterAttackChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 var
-  ChannelIndex : Integer;
+  ChannelIndex: Integer;
 begin
- FCriticalSection.Enter;
- try
-  for ChannelIndex := 0 to Length(FLimiters) - 1 do
-   if Assigned(FLimiters[ChannelIndex])
-    then FLimiters[ChannelIndex].Attack := Value;
- finally
-  FCriticalSection.Leave;
- end;
+  FCriticalSection.Enter;
+  try
+    for ChannelIndex := 0 to Length(FLimiters) - 1 do
+      if Assigned(FLimiters[ChannelIndex]) then
+        FLimiters[ChannelIndex].Attack := Value;
+  finally
+    FCriticalSection.Leave;
+  end;
 end;
 
 procedure TLimiterDataModule.VSTModuleProcess(const Inputs,
   Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
-  SampleIndex  : Integer;
-  ChannelIndex : Integer;
+  SampleIndex: Integer;
+  ChannelIndex: Integer;
 begin
- FCriticalSection.Enter;
- try
-  for SampleIndex := 0 to SampleFrames - 1 do
-   for ChannelIndex := 0 to Length(FLimiters) - 1
-    do Outputs[ChannelIndex, SampleIndex] := FLimiters[ChannelIndex].ProcessSample32(Inputs[ChannelIndex, SampleIndex]);
- finally
-  FCriticalSection.Leave;
- end;
+  FCriticalSection.Enter;
+  try
+    for SampleIndex := 0 to SampleFrames - 1 do
+      for ChannelIndex := 0 to Length(FLimiters) - 1 do
+        Outputs[ChannelIndex, SampleIndex] :=
+          FLimiters[ChannelIndex].ProcessSample32(Inputs[ChannelIndex, SampleIndex]);
+  finally
+    FCriticalSection.Leave;
+  end;
 end;
 
 procedure TLimiterDataModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 var
-  ChannelIndex : Integer;
+  ChannelIndex: Integer;
 begin
- FCriticalSection.Enter;
- try
-  if Abs(SampleRate) > 0 then
-   for ChannelIndex := 0 to Length(FLimiters) - 1 do
-    if Assigned(FLimiters[ChannelIndex])
-     then FLimiters[ChannelIndex].SampleRate := SampleRate;
- finally
-  FCriticalSection.Leave;
- end;
+  FCriticalSection.Enter;
+  try
+    if Abs(SampleRate) > 0 then
+      for ChannelIndex := 0 to Length(FLimiters) - 1 do
+        if Assigned(FLimiters[ChannelIndex]) then
+          FLimiters[ChannelIndex].SampleRate := SampleRate;
+  finally
+    FCriticalSection.Leave;
+  end;
 end;
 
 end.

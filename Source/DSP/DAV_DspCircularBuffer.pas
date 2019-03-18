@@ -1560,13 +1560,7 @@ begin
 end;
 
 function TCustomCircularReserveMultiBuffer32.ReadReserveBuffer
-  (const Data: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal)
-  : Cardinal;
-(*
-  var
-  Channel        : Integer;
-  PartialSamples : Cardinal;
-*)
+  (const Data: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal): Cardinal;
 begin
   Assert(Length(Data) >= ChannelCount);
 
@@ -1574,31 +1568,6 @@ begin
     Result := SampleFrames
   else
     Result := FLatency;
-
-  (*
-    if FReadBufferPos + Result >= FBufferSize then
-    begin
-    PartialSamples := FBufferSize - FReadBufferPos;
-    for Channel := 0 to ChannelCount - 1 do
-    begin
-    Move(FBuffer[Channel]^[FReadBufferPos],  Data[Channel]^[0], PartialSamples * SizeOf(Single));
-    Move(FBuffer[Channel]^[0],  Data[Channel]^[PartialSamples], (Result - PartialSamples) * SizeOf(Single));
-    end;
-
-    FReadBufferPos := (Result - PartialSamples);
-
-    if FReadBufferPos >= FBufferSize
-    then FReadBufferPos := FReadBufferPos - FBufferSize;
-    end
-    else
-    begin
-    for Channel := 0 to ChannelCount - 1
-    do Move(FBuffer[Channel]^[FReadBufferPos], Data[Channel]^[0], Result * SizeOf(Single));
-    FReadBufferPos := FReadBufferPos + Result;
-    end;
-    FSamplesInBuffer := FSamplesInBuffer - Result;
-    Assert(FSamplesInBuffer >= 0);
-  *)
 end;
 
 function TCustomCircularReserveMultiBuffer32.WriteReserveBuffer

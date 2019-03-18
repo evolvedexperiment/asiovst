@@ -35,9 +35,9 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
-  Forms, Graphics, Controls, ExtCtrls, DAV_Types, DAV_VSTModule, DAV_GuiLabel, 
-  DAV_GuiPanel, DAV_GuiPixelMap, DAV_GuiStitchedControls, DAV_GuiStitchedDial, 
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
+  Forms, Graphics, Controls, ExtCtrls, DAV_Types, DAV_VSTModule, DAV_GuiLabel,
+  DAV_GuiPanel, DAV_GuiPixelMap, DAV_GuiStitchedControls, DAV_GuiStitchedDial,
   DAV_GuiStitchedPngList, DAV_GuiImageControl, DAV_GuiCustomControl,
   DAV_GuiGraphicControl;
 
@@ -88,46 +88,46 @@ uses
 
 procedure TFmExciter.FormCreate(Sender: TObject);
 begin
- FBackground := TGuiPixelMapMemory.Create;
+  FBackground := TGuiPixelMapMemory.Create;
 end;
 
 procedure TFmExciter.FormDestroy(Sender: TObject);
 begin
- FreeAndNil(FBackground);
+  FreeAndNil(FBackground);
 end;
 
 procedure TFmExciter.FormPaint(Sender: TObject);
 begin
- if Assigned(FBackground)
-  then FBackground.PaintTo(Canvas);
+  if Assigned(FBackground) then
+    FBackground.PaintTo(Canvas);
 end;
 
 procedure TFmExciter.FormResize(Sender: TObject);
 var
-  x, y  : Integer;
-  s     : array [0..1] of Single;
-  b     : ShortInt;
-  ScnLn : PPixel32Array;
-  h, hr : Single;
+  x, y: Integer;
+  s: array [0 .. 1] of Single;
+  b: ShortInt;
+  ScnLn: PPixel32Array;
+  h, hr: Single;
 begin
- with FBackground do
+  with FBackground do
   begin
-   SetSize(ClientWidth, ClientHeight);
-   hr := 1 / Height;
-   s[0] := 0;
-   s[1] := 0;
-   for y := 0 to Height - 1 do
+    SetSize(ClientWidth, ClientHeight);
+    hr := 1 / Height;
+    s[0] := 0;
+    s[1] := 0;
+    for y := 0 to Height - 1 do
     begin
-     ScnLn := Scanline[y];
-     h := 0.6 * (1 - Sqr(2 * (y - Height div 2) * hr));
-     for x := 0 to Width - 1 do
+      ScnLn := Scanline[y];
+      h := 0.6 * (1 - Sqr(2 * (y - Height div 2) * hr));
+      for x := 0 to Width - 1 do
       begin
-       s[1] := 0.97 * s[0] + 0.03 * (2 * Random - 1);
-       b := Round($3F + $1A * (h + s[1]));
-       s[0] := s[1];
-       ScnLn[x].B := b;
-       ScnLn[x].G := b;
-       ScnLn[x].R := b;
+        s[1] := 0.97 * s[0] + 0.03 * (2 * Random - 1);
+        b := Round($3F + $1A * (h + s[1]));
+        s[0] := s[1];
+        ScnLn[x].b := b;
+        ScnLn[x].G := b;
+        ScnLn[x].R := b;
       end;
     end;
   end;
@@ -135,109 +135,102 @@ end;
 
 procedure TFmExciter.DialTuneChange(Sender: TObject);
 begin
- with Owner as TExciterDataModule do
+  with Owner as TExciterDataModule do
   begin
-   ParameterByName['Tune'] := DialTune.Value;
+    ParameterByName['Tune'] := DialTune.Value;
   end;
 end;
 
 procedure TFmExciter.DialMixChange(Sender: TObject);
 begin
- with Owner as TExciterDataModule do
+  with Owner as TExciterDataModule do
   begin
-   ParameterByName['Mix'] := DialMix.Value;
-  end; 
+    ParameterByName['Mix'] := DialMix.Value;
+  end;
 end;
 
 procedure TFmExciter.DialShapeChange(Sender: TObject);
 begin
- with Owner as TExciterDataModule do
+  with Owner as TExciterDataModule do
   begin
-   ParameterByName['Shape'] := DialShape.Value;
+    ParameterByName['Shape'] := DialShape.Value;
   end;
 end;
 
 procedure TFmExciter.DialOrderChange(Sender: TObject);
 var
-  CurrentOrder : Single;
-  DesiredOrder : Integer;
+  CurrentOrder: Single;
+  DesiredOrder: Integer;
 begin
- with Owner as TExciterDataModule do
+  with Owner as TExciterDataModule do
   begin
-   DesiredOrder := Round(DialOrder.Value);
-   CurrentOrder := ParameterByName['Order'];
-   if DesiredOrder <> CurrentOrder
-    then ParameterByName['Order'] := CurrentOrder;
-(*
-   if Round(CurrentOrder) = DesiredOrder then
-    if DialOrder.Value < CurrentOrder
-     then ParameterByName['Order'] := DesiredOrder - 1 else
-    if DialOrder.Value > CurrentOrder
-     then ParameterByName['Order'] := DesiredOrder + 1 else
-   else ParameterByName['Order'] := DesiredOrder;
-*)
+    DesiredOrder := Round(DialOrder.Value);
+    CurrentOrder := ParameterByName['Order'];
+    if DesiredOrder <> CurrentOrder then
+      ParameterByName['Order'] := CurrentOrder;
   end;
 end;
 
 procedure TFmExciter.FormShow(Sender: TObject);
 begin
- UpdateTune;
- UpdateOrder;
- UpdateShape;
- UpdateMix;
+  UpdateTune;
+  UpdateOrder;
+  UpdateShape;
+  UpdateMix;
 end;
 
 procedure TFmExciter.UpdateTune;
 var
-  Freq : Single;
+  Freq: Single;
 begin
- with Owner as TExciterDataModule do
+  with Owner as TExciterDataModule do
   begin
-   Freq := ParameterByName['Tune'];
-   if Freq < 1000
-    then LbFreqValue.Caption := FloatToStrF(Freq, ffGeneral, 3, 3) + 'Hz'
-    else LbFreqValue.Caption := FloatToStrF(1E-3 * Freq, ffGeneral, 3, 3) + 'kHz';
-   if DialTune.Value <> Freq
-    then DialTune.Value := Freq;
+    Freq := ParameterByName['Tune'];
+    if Freq < 1000 then
+      LbFreqValue.Caption := FloatToStrF(Freq, ffGeneral, 3, 3) + 'Hz'
+    else
+      LbFreqValue.Caption := FloatToStrF(1E-3 * Freq, ffGeneral, 3, 3) + 'kHz';
+    if DialTune.Value <> Freq then
+      DialTune.Value := Freq;
   end;
 end;
 
 procedure TFmExciter.UpdateMix;
 var
-  Mix : Single;
+  Mix: Single;
 begin
- with Owner as TExciterDataModule do
+  with Owner as TExciterDataModule do
   begin
-   Mix := ParameterByName['Mix'];
-   LbMixValue.Caption := FloatToStrF(Mix, ffGeneral, 3, 1) + '%';
-   if DialMix.Value <> Mix
-    then DialMix.Value := Mix;
+    Mix := ParameterByName['Mix'];
+    LbMixValue.Caption := FloatToStrF(Mix, ffGeneral, 3, 1) + '%';
+    if DialMix.Value <> Mix then
+      DialMix.Value := Mix;
   end;
 end;
 
 procedure TFmExciter.UpdateShape;
 var
-  Shape : Single;
+  Shape: Single;
 begin
- with Owner as TExciterDataModule do
+  with Owner as TExciterDataModule do
   begin
-   Shape := ParameterByName['Shape'];
-   LbShapeValue.Caption := FloatToStrF(Shape, ffGeneral, 3, 1) + '%';
-   if DialShape.Value <> Shape
-    then DialShape.Value := Shape;
+    Shape := ParameterByName['Shape'];
+    LbShapeValue.Caption := FloatToStrF(Shape, ffGeneral, 3, 1) + '%';
+    if DialShape.Value <> Shape then
+      DialShape.Value := Shape;
   end;
 end;
 
 procedure TFmExciter.UpdateOrder;
 var
-  Order : Integer;
+  Order: Integer;
 begin
- with Owner as TExciterDataModule do
+  with Owner as TExciterDataModule do
   begin
-   Order := Round(ParameterByName['Order']);
-   LbOrderValue.Caption := IntToStr(Order);
-   if DialOrder.Value <> Order
-    then DialOrder.Value := Order;
+    Order := Round(ParameterByName['Order']);
+    LbOrderValue.Caption := IntToStr(Order);
+    if DialOrder.Value <> Order then
+      DialOrder.Value := Order;
   end;
 end;
 

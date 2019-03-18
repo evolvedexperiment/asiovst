@@ -118,8 +118,8 @@ begin
        MFTimeDomain.IsImpulseResponse := RMS[0] > 0.5 * RMS[1];
 
        MFFFTRealDouble.Do_FFT_only(@MFFreqDomain[i].Data[0], @MFTimeDomain[i].Data[0]);
-       if abs(RMS[0] - RMS[1]) < 0.1
-        then MFFFTRealDouble.RescaleA_Only(@MFFreqDomain[i].Data[0]);
+       if abs(RMS[0] - RMS[1]) < 0.1 then
+         MFFFTRealDouble.RescaleA_Only(@MFFreqDomain[i].Data[0]);
        if (abs(RMS[0] - RMS[1]) < 0.05) and (Count = 1) then
         begin
          cd := 1;

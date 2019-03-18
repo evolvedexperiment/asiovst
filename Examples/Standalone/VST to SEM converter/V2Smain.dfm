@@ -27,6 +27,10 @@ object FmVST2SEM: TFmVST2SEM
     object TSVSTPlugin: TTabSheet
       Caption = 'VST Plugin Properties'
       ImageIndex = 1
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       DesignSize = (
         313
         206)
@@ -58,6 +62,10 @@ object FmVST2SEM: TFmVST2SEM
     end
     object TSSEMProperties: TTabSheet
       Caption = 'SEM Properties'
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       DesignSize = (
         313
         206)

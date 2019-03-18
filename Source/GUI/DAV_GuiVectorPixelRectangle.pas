@@ -986,21 +986,8 @@ begin
           BlendPixelLine(PixelColor32, @ScnLn[XPos[0]], XPos[1] - XPos[0] + 1)
         else
         begin
-          // if ClipRect.Left  then
-
           BlendPixelInplace(PixelColor32, ScnLn[XPos[0]]);
           BlendPixelInplace(PixelColor32, ScnLn[XPos[1]]);
-
-          (*
-            XCount := XCount - 1;
-            if XCount > (XPos[1] - XPos[0] - 1)
-            then XCount := (XPos[1] - XPos[0] - 1);
-
-            if XCount > 0 then
-            begin
-            BlendPixelLine(PixelColor32, @ScnLn[XPos[0] + 1], XCount);
-            end;
-          *)
         end;
       end;
     end;

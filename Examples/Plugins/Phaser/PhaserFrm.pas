@@ -35,7 +35,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
   Forms, Controls, StdCtrls, ExtCtrls, Graphics, DAV_Types, DAV_VSTModule,
   DAV_GuiSlider;
 
@@ -89,139 +89,139 @@ uses
 
 procedure TPhaserForm.FormShow(Sender: TObject);
 begin
- UpdateDepth;
- UpdateFeedback;
- UpdateMinimum;
- UpdateMaximum;
- UpdateRate;
- UpdateStages;
+  UpdateDepth;
+  UpdateFeedback;
+  UpdateMinimum;
+  UpdateMaximum;
+  UpdateRate;
+  UpdateStages;
 end;
 
 procedure TPhaserForm.SBDepthChange(Sender: TObject);
 begin
   with TPhaserModule(Owner) do
-   begin
+  begin
     Parameter[0] := SBDepth.Value * 0.1;
-   end;
+  end;
 end;
 
 procedure TPhaserForm.SBFeedbackChange(Sender: TObject);
 begin
   with TPhaserModule(Owner) do
-   begin
+  begin
     Parameter[1] := SBFeedback.Value * 0.1;
-   end;
+  end;
 end;
 
 procedure TPhaserForm.SBMinimumChange(Sender: TObject);
 begin
   with TPhaserModule(Owner) do
-   begin
-    if Parameter[2] <> FreqLinearToLog(SBMinimum.Value * 1E-3)
-     then Parameter[2] := FreqLinearToLog(SBMinimum.Value * 1E-3);
-   end;
+  begin
+    if Parameter[2] <> FreqLinearToLog(SBMinimum.Value * 1E-3) then
+      Parameter[2] := FreqLinearToLog(SBMinimum.Value * 1E-3);
+  end;
 end;
 
 procedure TPhaserForm.SBMaximumChange(Sender: TObject);
 begin
   with TPhaserModule(Owner) do
-   begin
-    if Parameter[3] <> FreqLinearToLog(SBMaximum.Value * 1E-3)
-     then Parameter[3] := FreqLinearToLog(SBMaximum.Value * 1E-3);
-   end;
+  begin
+    if Parameter[3] <> FreqLinearToLog(SBMaximum.Value * 1E-3) then
+      Parameter[3] := FreqLinearToLog(SBMaximum.Value * 1E-3);
+  end;
 end;
 
 procedure TPhaserForm.SBRateChange(Sender: TObject);
 begin
   with TPhaserModule(Owner) do
-   begin
+  begin
     Parameter[4] := SBRate.Value * 1E-3;
-   end;
+  end;
 end;
 
 procedure TPhaserForm.SBStagesChange(Sender: TObject);
 begin
   with TPhaserModule(Owner) do
-   begin
+  begin
     Parameter[5] := SBStages.Value;
-   end;
+  end;
 end;
 
 procedure TPhaserForm.UpdateDepth;
 var
-  Depth : Integer;
+  Depth: Integer;
 begin
- with TPhaserModule(Owner) do
+  with TPhaserModule(Owner) do
   begin
-   Depth := Round(10 * Parameter[0]);
-   if SBDepth.Value <> Depth
-    then SBDepth.Value := Depth;
-   LbDepthValue.Caption := FloatToStrF(Parameter[0], ffGeneral, 4, 4) + '%';
+    Depth := Round(10 * Parameter[0]);
+    if SBDepth.Value <> Depth then
+      SBDepth.Value := Depth;
+    LbDepthValue.Caption := FloatToStrF(Parameter[0], ffGeneral, 4, 4) + '%';
   end;
 end;
 
 procedure TPhaserForm.UpdateFeedback;
 var
-  Feedback : Integer;
+  Feedback: Integer;
 begin
- with TPhaserModule(Owner) do
+  with TPhaserModule(Owner) do
   begin
-   Feedback := Round(10 * Parameter[1]);
-   if SBFeedback.Value <> Feedback
-    then SBFeedback.Value := Feedback;
-   LbFeedbackValue.Caption := FloatToStrF(Parameter[1], ffFixed, 3, 1) + '%';
+    Feedback := Round(10 * Parameter[1]);
+    if SBFeedback.Value <> Feedback then
+      SBFeedback.Value := Feedback;
+    LbFeedbackValue.Caption := FloatToStrF(Parameter[1], ffFixed, 3, 1) + '%';
   end;
 end;
 
 procedure TPhaserForm.UpdateMinimum;
 var
-  Minimum : Integer;
+  Minimum: Integer;
 begin
- with TPhaserModule(Owner) do
+  with TPhaserModule(Owner) do
   begin
-   Minimum := Round(1000 * FreqLogToLinear(Parameter[2]));
-   if SBMinimum.Value <> Minimum
-    then SBMinimum.Value := Minimum;
-   LbMinimumValue.Caption := FloatToStrF(Parameter[2], ffFixed, 6, 0) + 'Hz';
+    Minimum := Round(1000 * FreqLogToLinear(Parameter[2]));
+    if SBMinimum.Value <> Minimum then
+      SBMinimum.Value := Minimum;
+    LbMinimumValue.Caption := FloatToStrF(Parameter[2], ffFixed, 6, 0) + 'Hz';
   end;
 end;
 
 procedure TPhaserForm.UpdateMaximum;
 var
-  Maximum : Integer;
+  Maximum: Integer;
 begin
- with TPhaserModule(Owner) do
+  with TPhaserModule(Owner) do
   begin
-   Maximum := Round(1000 * FreqLogToLinear(Parameter[3]));
-   if SBMaximum.Value <> Maximum
-    then SBMaximum.Value := Maximum;
-   LbMaximumValue.Caption := FloatToStrF(Parameter[3], ffFixed, 6, 0) + 'Hz';
+    Maximum := Round(1000 * FreqLogToLinear(Parameter[3]));
+    if SBMaximum.Value <> Maximum then
+      SBMaximum.Value := Maximum;
+    LbMaximumValue.Caption := FloatToStrF(Parameter[3], ffFixed, 6, 0) + 'Hz';
   end;
 end;
 
 procedure TPhaserForm.UpdateRate;
 var
-  Rate : Integer;
+  Rate: Integer;
 begin
- with TPhaserModule(Owner) do
+  with TPhaserModule(Owner) do
   begin
-   Rate := Round(1000 * Parameter[4]);
-   if SBRate.Value <> Rate
-    then SBRate.Value := Rate;
-   LbRateValue.Caption := FloatToStrF(Parameter[4], ffFixed, 2, 2) + 'Hz';
+    Rate := Round(1000 * Parameter[4]);
+    if SBRate.Value <> Rate then
+      SBRate.Value := Rate;
+    LbRateValue.Caption := FloatToStrF(Parameter[4], ffFixed, 2, 2) + 'Hz';
   end;
 end;
 
 procedure TPhaserForm.UpdateStages;
 var
-  Stages : Integer;
+  Stages: Integer;
 begin
- with TPhaserModule(Owner) do
+  with TPhaserModule(Owner) do
   begin
-   Stages := Round(Parameter[5]);
-   if SBStages.Value <> Stages
-    then SBStages.Value := Stages;
-   LbStagesValue.Caption := IntToStr(Stages);
+    Stages := Round(Parameter[5]);
+    if SBStages.Value <> Stages then
+      SBStages.Value := Stages;
+    LbStagesValue.Caption := IntToStr(Stages);
   end;
 end;
 

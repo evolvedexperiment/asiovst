@@ -517,12 +517,11 @@ begin
     if Assigned(FOnPaint) then
       FOnPaint(Self);
 
-    if Assigned(FBuffer)
+    if Assigned(FBuffer) then
 {$IFDEF FPC}
-    then
       FBuffer.PaintTo(Canvas, -2, -16);
 {$ELSE}
-    then FBuffer.PaintTo(Canvas);
+      FBuffer.PaintTo(Canvas);
 {$ENDIF}
   end;
 end;

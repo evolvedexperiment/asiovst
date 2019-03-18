@@ -22,15 +22,14 @@ object FmSimpleVibrato: TFmSimpleVibrato
     Width = 50
     Height = 25
     Alignment = taCenter
-    FontOversampling = fo4x
     Caption = 'Speed'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -19
     Font.Name = 'Tahoma'
     Font.Style = []
+    FontOversampling = fo4x
     ParentFont = False
-    Shadow.Color = clBlack
   end
   object LbDepth: TGuiLabel
     Left = 72
@@ -38,15 +37,14 @@ object FmSimpleVibrato: TFmSimpleVibrato
     Width = 50
     Height = 25
     Alignment = taCenter
-    FontOversampling = fo4x
     Caption = 'Depth'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -19
     Font.Name = 'Tahoma'
     Font.Style = []
+    FontOversampling = fo4x
     ParentFont = False
-    Shadow.Color = clBlack
   end
   object LbSpeedValue: TGuiLabel
     Left = 3
@@ -54,15 +52,14 @@ object FmSimpleVibrato: TFmSimpleVibrato
     Width = 60
     Height = 20
     Alignment = taCenter
-    FontOversampling = fo4x
     Caption = '0.2 Hz'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    FontOversampling = fo4x
     ParentFont = False
-    Shadow.Color = clBlack
   end
   object LbDepthValue: TGuiLabel
     Left = 67
@@ -70,15 +67,14 @@ object FmSimpleVibrato: TFmSimpleVibrato
     Width = 60
     Height = 20
     Alignment = taCenter
-    FontOversampling = fo4x
     Caption = '2'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    FontOversampling = fo4x
     ParentFont = False
-    Shadow.Color = clBlack
   end
   object DialSpeed: TGuiStitchedDial
     Left = 16
@@ -88,11 +84,13 @@ object FmSimpleVibrato: TFmSimpleVibrato
     CurveMapping = -1.799999952316284000
     Max = 10.000000000000000000
     Min = 0.009999999776482582
-    OnChange = DialSpeedChange
-    ImageIndex = 0
+    ScrollRange = 400.000000000000000000
     ImageList = GSPL
+    ImageIndex = 0
     Value = 0.009999999776482582
     WheelStep = 1.000000000000000000
+    OnChange = DialSpeedChange
+    DefaultValue = 0.000000000000000000
   end
   object DialDepth: TGuiStitchedDial
     Left = 80
@@ -100,10 +98,13 @@ object FmSimpleVibrato: TFmSimpleVibrato
     Width = 36
     Height = 36
     Max = 100.000000000000000000
-    OnChange = DialDepthChange
-    ImageIndex = 0
+    ScrollRange = 400.000000000000000000
     ImageList = GSPL
+    ImageIndex = 0
     WheelStep = 1.000000000000000000
+    OnChange = DialDepthChange
+    DefaultValue = 0.000000000000000000
+    Value = 0.000000000000000000
   end
   object GSPL: TGuiStitchedPNGList
     StitchedPNGs = <
@@ -1195,7 +1196,6 @@ object FmSimpleVibrato: TFmSimpleVibrato
           9BA0C66898C64E7D0000000049454E44AE426082}
         DisplayName = 'Knob'
         GlyphCount = 65
-        StitchKind = skHorizontal
         Height = 36
         Width = 2340
       end>

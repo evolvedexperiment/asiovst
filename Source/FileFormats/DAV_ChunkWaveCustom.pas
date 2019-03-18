@@ -225,62 +225,60 @@ implementation
 
 constructor TWavSDA8Chunk.Create;
 begin
- inherited;
- ChunkFlags := ChunkFlags + [cfPadSize, cfReversedByteOrder];
+  inherited;
+  ChunkFlags := ChunkFlags + [cfPadSize, cfReversedByteOrder];
 end;
 
 class function TWavSDA8Chunk.GetClassChunkName: TChunkName;
 begin
- Result := 'SDA8';
+  Result := 'SDA8';
 end;
 
 procedure TWavSDA8Chunk.AssignTo(Dest: TPersistent);
 begin
- inherited;
- // not yet defined
+  inherited;
+  // not yet defined
 end;
 
 procedure TWavSDA8Chunk.LoadFromStream(Stream: TStream);
 begin
- inherited;
- with Stream
-  do Position := Position + FChunkSize;
+  inherited;
+  with Stream do
+    Position := Position + FChunkSize;
 end;
 
 procedure TWavSDA8Chunk.SaveToStream(Stream: TStream);
 begin
- FChunkSize := 0;
- inherited;
+  FChunkSize := 0;
+  inherited;
 
- // check and eventually add zero pad
- CheckAddZeroPad(Stream);
+  // check and eventually add zero pad
+  CheckAddZeroPad(Stream);
 end;
-
 
 { TWavSDAChunk }
 
 class function TWavSDAChunk.GetClassChunkName: TChunkName;
 begin
- Result := 'SDA ';
+  Result := 'SDA ';
 end;
-
 
 { TWavItaHeaderChunk }
 
 constructor TWavItaHeaderChunk.Create;
 begin
- inherited;
- StartAddress := @FItaHeader;
+  inherited;
+  StartAddress := @FItaHeader;
 end;
 
 procedure TWavItaHeaderChunk.AssignTo(Dest: TPersistent);
 begin
- inherited;
+  inherited;
 end;
 
 class function TWavItaHeaderChunk.GetClassChunkName: TChunkName;
 begin
- Result := 'itah';
+  Result := 'itah';
 end;
 
 class function TWavItaHeaderChunk.GetClassChunkSize: Integer;
@@ -288,147 +286,143 @@ begin
   Result := 256;
 end;
 
-
 { TWavAFspChunk }
 
 class function TWavAFspChunk.GetClassChunkName: TChunkName;
 begin
- Result := 'afsp';
+  Result := 'afsp';
 end;
-
 
 { TBWFLinkChunk }
 
 class function TBWFLinkChunk.GetClassChunkName: TChunkName;
 begin
- Result := 'link';
+  Result := 'link';
 end;
-
 
 { TBWFAXMLChunk }
 
 class function TBwfAXMLChunk.GetClassChunkName: TChunkName;
 begin
- Result := 'axml';
+  Result := 'axml';
 end;
-
 
 { TWavDisplayChunk }
 
 constructor TWavDisplayChunk.Create;
 begin
- inherited;
- ChunkFlags := ChunkFlags + [cfPadSize];
+  inherited;
+  ChunkFlags := ChunkFlags + [cfPadSize];
 end;
 
 procedure TWavDisplayChunk.AssignTo(Dest: TPersistent);
 begin
- inherited;
- if Dest is TWavDisplayChunk then
+  inherited;
+  if Dest is TWavDisplayChunk then
   begin
-   TWavDisplayChunk(Dest).FTypeID := FTypeID;
-   TWavDisplayChunk(Dest).FData := FData;
+    TWavDisplayChunk(Dest).FTypeID := FTypeID;
+    TWavDisplayChunk(Dest).FData := FData;
   end;
 end;
 
 class function TWavDisplayChunk.GetClassChunkName: TChunkName;
 begin
- Result := 'DISP';
+  Result := 'DISP';
 end;
 
 procedure TWavDisplayChunk.LoadFromStream(Stream: TStream);
 var
-  ChunkEnd : Integer;
+  ChunkEnd: Integer;
 begin
- inherited;
- // calculate end of stream position
- ChunkEnd := Stream.Position + FChunkSize;
-// assert(ChunkEnd <= Stream.Size);
+  inherited;
+  // calculate end of stream position
+  ChunkEnd := Stream.Position + FChunkSize;
+  // assert(ChunkEnd <= Stream.Size);
 
- // read type ID
- Stream.Read(FTypeID, SizeOf(Cardinal));
+  // read type ID
+  Stream.Read(FTypeID, SizeOf(Cardinal));
 
- // set length of data and read data
- SetLength(FData, FChunkSize - SizeOf(Cardinal));
- Stream.Read(FData[1], Length(FData));
+  // set length of data and read data
+  SetLength(FData, FChunkSize - SizeOf(Cardinal));
+  Stream.Read(FData[1], Length(FData));
 
- assert(Stream.Position <= ChunkEnd);
+  assert(Stream.Position <= ChunkEnd);
 
- // goto end of this chunk
- Stream.Position := ChunkEnd;
+  // goto end of this chunk
+  Stream.Position := ChunkEnd;
 
- // eventually skip padded zeroes
- if cfPadSize in ChunkFlags
-  then Stream.Position := Stream.Position + CalculateZeroPad;
+  // eventually skip padded zeroes
+  if cfPadSize in ChunkFlags then
+    Stream.Position := Stream.Position + CalculateZeroPad;
 end;
 
 procedure TWavDisplayChunk.SaveToStream(Stream: TStream);
 begin
- // calculate chunk size
- FChunkSize := SizeOf(Cardinal) + Length(FData);
+  // calculate chunk size
+  FChunkSize := SizeOf(Cardinal) + Length(FData);
 
- // write basic chunk information
- inherited;
+  // write basic chunk information
+  inherited;
 
- // write custom chunk information
- with Stream do
+  // write custom chunk information
+  with Stream do
   begin
-   Write(FTypeID, SizeOf(Cardinal));
-   Write(FData[1], FChunkSize - SizeOf(Cardinal));
+    Write(FTypeID, SizeOf(Cardinal));
+    Write(FData[1], FChunkSize - SizeOf(Cardinal));
   end;
 
- // check and eventually add zero pad
- CheckAddZeroPad(Stream);
+  // check and eventually add zero pad
+  CheckAddZeroPad(Stream);
 end;
 
 { TWavPeakChunk }
 
 constructor TWavPeakChunk.Create;
 begin
- inherited;
- ChunkFlags := ChunkFlags + [cfPadSize];
+  inherited;
+  ChunkFlags := ChunkFlags + [cfPadSize];
 end;
 
 procedure TWavPeakChunk.AssignTo(Dest: TPersistent);
 begin
- inherited;
- if Dest is TWavPeakChunk
-  then TWavPeakChunk(Dest).Peak := Peak; 
+  inherited;
+  if Dest is TWavPeakChunk then
+    TWavPeakChunk(Dest).Peak := Peak;
 end;
 
 class function TWavPeakChunk.GetClassChunkName: TChunkName;
 begin
- Result := 'PEAK';
+  Result := 'PEAK';
 end;
 
 procedure TWavPeakChunk.LoadFromStream(Stream: TStream);
 var
-  ChunkEnd : Integer;
+  ChunkEnd: Integer;
 begin
- inherited;
- ChunkEnd := Stream.Position + FChunkSize;
- Stream.Read(Peak, SizeOf(TPeakRecord));
- Stream.Position := ChunkEnd;
+  inherited;
+  ChunkEnd := Stream.Position + FChunkSize;
+  Stream.Read(Peak, SizeOf(TPeakRecord));
+  Stream.Position := ChunkEnd;
 end;
 
 procedure TWavPeakChunk.SaveToStream(Stream: TStream);
 begin
- // calculate chunk size
- FChunkSize := SizeOf(TPeakRecord);
+  // calculate chunk size
+  FChunkSize := SizeOf(TPeakRecord);
 
- // write basic chunk information
- inherited;
+  // write basic chunk information
+  inherited;
 
- // write custom chunk information
- Stream.Write(Peak, FChunkSize);
+  // write custom chunk information
+  Stream.Write(Peak, FChunkSize);
 
- // check and eventually add zero pad
- CheckAddZeroPad(Stream);
+  // check and eventually add zero pad
+  CheckAddZeroPad(Stream);
 end;
 
 initialization
-  RegisterWaveChunks([TWavItaHeaderChunk, TWavSDA8Chunk, TWavSDAChunk,
-    TBWFLinkChunk, TBWFAXMLChunk, TWavDisplayChunk, TWavAFspChunk,
-    TWavPeakChunk])
+
+RegisterWaveChunks([TWavItaHeaderChunk, TWavSDA8Chunk, TWavSDAChunk,
+  TBWFLinkChunk, TBwfAXMLChunk, TWavDisplayChunk, TWavAFspChunk, TWavPeakChunk])
 
 end.

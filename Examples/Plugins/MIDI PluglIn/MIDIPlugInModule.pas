@@ -35,14 +35,15 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
   Forms, DAV_Types, DAV_VSTEffect, DAV_VSTModule;
 
 type
   TMIDIModule = class(TVSTModule)
     procedure ParamTransposeChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleProcessMidi(Sender: TObject; MidiEvent: TVstMidiEvent);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
+    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
+      ParentWindow: NativeUInt);
   end;
 
 implementation
@@ -56,21 +57,21 @@ implementation
 uses
   MIDIPlugInGUI;
 
-procedure TMIDIModule.ParamTransposeChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TMIDIModule.ParamTransposeChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
   with (EditorForm As TVSTGUI) do
-   begin
+  begin
     LbTranspose.Caption := 'transpose: ' + IntToStr(Round(Value));
 
-   // Update Scrollbar, if necessary
-    if par0.Position <> Round(Value)
-     then par0.Position := Round(Value);
-   end;
+    // Update Scrollbar, if necessary
+    if par0.Position <> Round(Value) then
+      par0.Position := Round(Value);
+  end;
 end;
 
-procedure TMIDIModule.VSTModuleEditOpen(Sender: TObject;
-  var GUI: TForm; ParentWindow: Cardinal);
+procedure TMIDIModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
+  ParentWindow: NativeUInt);
 begin
   GUI := TVSTGUI.Create(Self);
 end;
@@ -78,47 +79,47 @@ end;
 procedure TMIDIModule.VSTModuleProcessMidi(Sender: TObject;
   MidiEvent: TVstMidiEvent);
 var
-  newnote, time, data1, data2, status, channel: integer;
+  newnote, time, data1, data2, status, channel: Integer;
 begin
   channel := MidiEvent.midiData[0] and $0F;
   status := MidiEvent.midiData[0] and $F0;
   data1 := MidiEvent.midiData[1] and $7F;
   data2 := MidiEvent.midiData[2] and $7F;
   time := MidiEvent.deltaFrames;
- // example MIDI code:
+  // example MIDI code:
   if (status = $90) and (data2 > 0) then // "Note On" ?
-   begin
-  // data1 contains note number
-  // data2 contains note velocity
+  begin
+    // data1 contains note number
+    // data2 contains note velocity
     newnote := Round(Limit(data1 + Parameter[0], 0, 120));
     MIDI_NoteOn(channel, newnote, data2, time);
-   end
+  end
   else if ((status = $90) and (data2 = 0)) or (status = $80) then
- // "Note Off" ?
-   begin
-  // data1 contains note number
-  // data2 contains note off velocity
-  // send "Note Off" back to host (MIDI thru)
+  // "Note Off" ?
+  begin
+    // data1 contains note number
+    // data2 contains note off velocity
+    // send "Note Off" back to host (MIDI thru)
     newnote := Round(Limit(data1 + Parameter[0], 0, 120));
     MIDI_NoteOff(channel, newnote, data2, time);
-   end
+  end
   else if (status = $A0) then // "Polyphonic Aftertouch" ?
- // data1 contains note number
-// data2 contains aftertouch value
+    // data1 contains note number
+    // data2 contains aftertouch value
 
   else if (status = $B0) then // "MIDI Controller" ?
- // data1 contains CC number
-// data2 contains data value
+    // data1 contains CC number
+    // data2 contains data value
 
   else if (status = $C0) then // "Program Change" ?
- // data1 contains program number
+    // data1 contains program number
 
   else if (status = $D0) then // "Channel Aftertouch" ?
- // data1 contains channel aftertouch value
+    // data1 contains channel aftertouch value
 
   else if (status = $E0) then // "Pitchbend" ?
- // data1 and data2 make up the 12 bit pitchbend value
-  ;
+    // data1 and data2 make up the 12 bit pitchbend value
+    ;
 end;
 
 end.

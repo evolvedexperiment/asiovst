@@ -7,7 +7,6 @@ object TransientDataModule: TTransientDataModule
   VendorName = 'Delphi ASIO & VST Project / mda'
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Transient Processor'
   IORatio = 1.000000000000000000
   UniqueID = 'mdaK'
@@ -19,7 +18,6 @@ object TransientDataModule: TTransientDataModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Attack'
       LargeStepFloat = 2.000000000000000000
@@ -34,7 +32,6 @@ object TransientDataModule: TTransientDataModule
       OnParameterChange = ParameterAttackChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Release'
       LargeStepFloat = 2.000000000000000000
@@ -49,7 +46,6 @@ object TransientDataModule: TTransientDataModule
       OnParameterChange = ParameterReleaseChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Output'
       LargeStepFloat = 10.000000000000000000
@@ -65,7 +61,6 @@ object TransientDataModule: TTransientDataModule
       OnParameterChange = ParameterOutputChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Filter'
       LargeStepFloat = 2.000000000000000000
@@ -81,7 +76,6 @@ object TransientDataModule: TTransientDataModule
       OnCustomParameterDisplay = ParameterFilterDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Attack Hold'
       LargeStepFloat = 2.000000000000000000
@@ -94,7 +88,6 @@ object TransientDataModule: TTransientDataModule
       OnParameterChange = ParameterAttackChangeHold
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Release Hold'
       LargeStepFloat = 2.000000000000000000
@@ -111,8 +104,6 @@ object TransientDataModule: TTransientDataModule
   OnClose = VSTModuleClose
   OnProcess = VSTModuleProcess
   OnProcess32Replacing = VSTModuleProcess
-  Left = 188
-  Top = 77
   Height = 150
   Width = 215
 end

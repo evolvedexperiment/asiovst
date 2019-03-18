@@ -14,10 +14,9 @@ object WrapperDataModule: TWrapperDataModule
   ShellPlugins = <>
   Programs = <>
   ParameterProperties = <>
+  ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnCanDo = VSTModuleCanDo
-  Left = 218
-  Top = 81
   Height = 150
   Width = 215
   object VstHost: TVstHost
