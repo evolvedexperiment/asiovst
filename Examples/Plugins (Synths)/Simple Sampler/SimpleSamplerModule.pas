@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTEffect,
   DAV_VSTModule, DAV_AudioFileWAV, DAV_AudioFileAIFF, DAV_AudioFileAU,
-  DAV_AudioData, SimpleSamplerVoice, SimpleSamplerGUI, VoiceList;
+  DAV_AudioData, DAV_SynthUtils, SimpleSamplerVoice, SimpleSamplerGUI;
 
 type
   TVSTSSModule = class(TVSTModule)
@@ -17,7 +17,7 @@ type
     procedure VSTModuleProcess32Replacing(const Inputs,
       Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
   private
-    FVoices: TVoiceList;
+    FVoices: TVoiceList; // TSimpleSamplerVoiceList
     FSample: PDAVSingleFixedArray;
     FSampleLength: Integer;
   public

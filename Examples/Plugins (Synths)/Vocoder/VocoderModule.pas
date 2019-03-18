@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, SysUtils, Classes, Forms, DAV_Types, DAV_VSTEffect, DAV_VSTModule,
-  VocoderVoice, VoiceList, DAV_DspVocoder, DAV_DspDownsampleScheduler;
+  DAV_SynthUtils, DAV_DspVocoder, DAV_DspDownsampleScheduler, VocoderVoice;
 
 type
   TVSTSSModule = class(TVSTModule)

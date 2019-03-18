@@ -22,7 +22,7 @@ implementation
 {$ENDIF}
 
 uses
-  DAV_SynthUtils, SineSynthModule, SineSynthVoice, VoiceList;
+  DAV_SynthUtils, SineSynthModule, SineSynthVoice;
 
 { TVSTGUI }
 

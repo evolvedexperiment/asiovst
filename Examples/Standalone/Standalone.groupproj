@@ -1,0 +1,456 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{6C6152B6-BC10-4EAD-B64E-6B900EE19CCE}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="Third Octave Analyser\Analyser.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Third Octave Analyser 3D\Analyser3D.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Third Octave Goertzel Analyser\AnalyserGoertzel.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="ASIO-Host Demo\ASIODemo.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="ASIO-AudioData-Host Demo\ASIODemoAudioData.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Simple MP3 Host\ASIOMP3VST.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Buffered ASIO MP3 Player\ASIOMP3.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Buffered ASIO Audiofile Player\AsioBufferdAudioFilePlayer.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Barberpole Tuner\BarberpoleTuner.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Generator\Generator.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Just Noticable EQ Difference Test\JustNoticableDifferenceEqualizerTest.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Knob Grabber\KnobGrabber.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Loudness Calculation\LoudnessR128.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Simple Lunch-Box\LunchBox.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Metronome\Metronome.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="MiniHost Core\MiniHost.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Multi Sine Generator\MultiSineGenerator.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Noise Generator\NoiseGen.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Noise Shaper Filter Designer\NoiseShaperFilterDesigner.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Noiseshaping Filter Designer\NoiseshapingFilterDesigner.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="PortAudio Demo\PortAudioDemo.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Preset Parser\PresetParser.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="SEM Explorer\SemExplorer.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="SEM Merger\SemMerger.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="SEM Screenshot Tool\SemScreenshotTool.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Simple ASIO Recorder\SimpleAsioRecorder.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Simple HD Recorder\SimpleHDRecorder.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Simple MP3 Player\SimpleMp3Player.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Simple Signal Generator\SimpleSignalGenerator.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Simple VST Plugin Analyser\VSTAnalyser.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="VST Host Custom GUI\VSTEditor.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="VST Plugin Scanner\VSTPluginScanner.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="VST Plugin Screenshot Tool\VstPluginScreenshotTool.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="VST to Sonogram\VST2Sonogram.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="WAV Tagger\WavTagger.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="WinEar\WinEar.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="Analyser">
+        <MSBuild Projects="Third Octave Analyser\Analyser.dproj"/>
+    </Target>
+    <Target Name="Analyser:Clean">
+        <MSBuild Projects="Third Octave Analyser\Analyser.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Analyser:Make">
+        <MSBuild Projects="Third Octave Analyser\Analyser.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Analyser3D">
+        <MSBuild Projects="Third Octave Analyser 3D\Analyser3D.dproj"/>
+    </Target>
+    <Target Name="Analyser3D:Clean">
+        <MSBuild Projects="Third Octave Analyser 3D\Analyser3D.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Analyser3D:Make">
+        <MSBuild Projects="Third Octave Analyser 3D\Analyser3D.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="AnalyserGoertzel">
+        <MSBuild Projects="Third Octave Goertzel Analyser\AnalyserGoertzel.dproj"/>
+    </Target>
+    <Target Name="AnalyserGoertzel:Clean">
+        <MSBuild Projects="Third Octave Goertzel Analyser\AnalyserGoertzel.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="AnalyserGoertzel:Make">
+        <MSBuild Projects="Third Octave Goertzel Analyser\AnalyserGoertzel.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="ASIODemo">
+        <MSBuild Projects="ASIO-Host Demo\ASIODemo.dproj"/>
+    </Target>
+    <Target Name="ASIODemo:Clean">
+        <MSBuild Projects="ASIO-Host Demo\ASIODemo.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ASIODemo:Make">
+        <MSBuild Projects="ASIO-Host Demo\ASIODemo.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="ASIODemoAudioData">
+        <MSBuild Projects="ASIO-AudioData-Host Demo\ASIODemoAudioData.dproj"/>
+    </Target>
+    <Target Name="ASIODemoAudioData:Clean">
+        <MSBuild Projects="ASIO-AudioData-Host Demo\ASIODemoAudioData.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ASIODemoAudioData:Make">
+        <MSBuild Projects="ASIO-AudioData-Host Demo\ASIODemoAudioData.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="ASIOMP3VST">
+        <MSBuild Projects="Simple MP3 Host\ASIOMP3VST.dproj"/>
+    </Target>
+    <Target Name="ASIOMP3VST:Clean">
+        <MSBuild Projects="Simple MP3 Host\ASIOMP3VST.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ASIOMP3VST:Make">
+        <MSBuild Projects="Simple MP3 Host\ASIOMP3VST.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="ASIOMP3">
+        <MSBuild Projects="Buffered ASIO MP3 Player\ASIOMP3.dproj"/>
+    </Target>
+    <Target Name="ASIOMP3:Clean">
+        <MSBuild Projects="Buffered ASIO MP3 Player\ASIOMP3.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ASIOMP3:Make">
+        <MSBuild Projects="Buffered ASIO MP3 Player\ASIOMP3.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="AsioBufferdAudioFilePlayer">
+        <MSBuild Projects="Buffered ASIO Audiofile Player\AsioBufferdAudioFilePlayer.dproj"/>
+    </Target>
+    <Target Name="AsioBufferdAudioFilePlayer:Clean">
+        <MSBuild Projects="Buffered ASIO Audiofile Player\AsioBufferdAudioFilePlayer.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="AsioBufferdAudioFilePlayer:Make">
+        <MSBuild Projects="Buffered ASIO Audiofile Player\AsioBufferdAudioFilePlayer.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="BarberpoleTuner">
+        <MSBuild Projects="Barberpole Tuner\BarberpoleTuner.dproj"/>
+    </Target>
+    <Target Name="BarberpoleTuner:Clean">
+        <MSBuild Projects="Barberpole Tuner\BarberpoleTuner.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="BarberpoleTuner:Make">
+        <MSBuild Projects="Barberpole Tuner\BarberpoleTuner.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Generator">
+        <MSBuild Projects="Generator\Generator.dproj"/>
+    </Target>
+    <Target Name="Generator:Clean">
+        <MSBuild Projects="Generator\Generator.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Generator:Make">
+        <MSBuild Projects="Generator\Generator.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="JustNoticableDifferenceEqualizerTest">
+        <MSBuild Projects="Just Noticable EQ Difference Test\JustNoticableDifferenceEqualizerTest.dproj"/>
+    </Target>
+    <Target Name="JustNoticableDifferenceEqualizerTest:Clean">
+        <MSBuild Projects="Just Noticable EQ Difference Test\JustNoticableDifferenceEqualizerTest.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="JustNoticableDifferenceEqualizerTest:Make">
+        <MSBuild Projects="Just Noticable EQ Difference Test\JustNoticableDifferenceEqualizerTest.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="KnobGrabber">
+        <MSBuild Projects="Knob Grabber\KnobGrabber.dproj"/>
+    </Target>
+    <Target Name="KnobGrabber:Clean">
+        <MSBuild Projects="Knob Grabber\KnobGrabber.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="KnobGrabber:Make">
+        <MSBuild Projects="Knob Grabber\KnobGrabber.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="LoudnessR128">
+        <MSBuild Projects="Loudness Calculation\LoudnessR128.dproj"/>
+    </Target>
+    <Target Name="LoudnessR128:Clean">
+        <MSBuild Projects="Loudness Calculation\LoudnessR128.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="LoudnessR128:Make">
+        <MSBuild Projects="Loudness Calculation\LoudnessR128.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="LunchBox">
+        <MSBuild Projects="Simple Lunch-Box\LunchBox.dproj"/>
+    </Target>
+    <Target Name="LunchBox:Clean">
+        <MSBuild Projects="Simple Lunch-Box\LunchBox.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="LunchBox:Make">
+        <MSBuild Projects="Simple Lunch-Box\LunchBox.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Metronome">
+        <MSBuild Projects="Metronome\Metronome.dproj"/>
+    </Target>
+    <Target Name="Metronome:Clean">
+        <MSBuild Projects="Metronome\Metronome.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Metronome:Make">
+        <MSBuild Projects="Metronome\Metronome.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="MiniHost">
+        <MSBuild Projects="MiniHost Core\MiniHost.dproj"/>
+    </Target>
+    <Target Name="MiniHost:Clean">
+        <MSBuild Projects="MiniHost Core\MiniHost.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="MiniHost:Make">
+        <MSBuild Projects="MiniHost Core\MiniHost.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="MultiSineGenerator">
+        <MSBuild Projects="Multi Sine Generator\MultiSineGenerator.dproj"/>
+    </Target>
+    <Target Name="MultiSineGenerator:Clean">
+        <MSBuild Projects="Multi Sine Generator\MultiSineGenerator.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="MultiSineGenerator:Make">
+        <MSBuild Projects="Multi Sine Generator\MultiSineGenerator.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="NoiseGen">
+        <MSBuild Projects="Noise Generator\NoiseGen.dproj"/>
+    </Target>
+    <Target Name="NoiseGen:Clean">
+        <MSBuild Projects="Noise Generator\NoiseGen.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="NoiseGen:Make">
+        <MSBuild Projects="Noise Generator\NoiseGen.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="NoiseShaperFilterDesigner">
+        <MSBuild Projects="Noise Shaper Filter Designer\NoiseShaperFilterDesigner.dproj"/>
+    </Target>
+    <Target Name="NoiseShaperFilterDesigner:Clean">
+        <MSBuild Projects="Noise Shaper Filter Designer\NoiseShaperFilterDesigner.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="NoiseShaperFilterDesigner:Make">
+        <MSBuild Projects="Noise Shaper Filter Designer\NoiseShaperFilterDesigner.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="NoiseshapingFilterDesigner">
+        <MSBuild Projects="Noiseshaping Filter Designer\NoiseshapingFilterDesigner.dproj"/>
+    </Target>
+    <Target Name="NoiseshapingFilterDesigner:Clean">
+        <MSBuild Projects="Noiseshaping Filter Designer\NoiseshapingFilterDesigner.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="NoiseshapingFilterDesigner:Make">
+        <MSBuild Projects="Noiseshaping Filter Designer\NoiseshapingFilterDesigner.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="PortAudioDemo">
+        <MSBuild Projects="PortAudio Demo\PortAudioDemo.dproj"/>
+    </Target>
+    <Target Name="PortAudioDemo:Clean">
+        <MSBuild Projects="PortAudio Demo\PortAudioDemo.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="PortAudioDemo:Make">
+        <MSBuild Projects="PortAudio Demo\PortAudioDemo.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="PresetParser">
+        <MSBuild Projects="Preset Parser\PresetParser.dproj"/>
+    </Target>
+    <Target Name="PresetParser:Clean">
+        <MSBuild Projects="Preset Parser\PresetParser.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="PresetParser:Make">
+        <MSBuild Projects="Preset Parser\PresetParser.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="SemExplorer">
+        <MSBuild Projects="SEM Explorer\SemExplorer.dproj"/>
+    </Target>
+    <Target Name="SemExplorer:Clean">
+        <MSBuild Projects="SEM Explorer\SemExplorer.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="SemExplorer:Make">
+        <MSBuild Projects="SEM Explorer\SemExplorer.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="SemMerger">
+        <MSBuild Projects="SEM Merger\SemMerger.dproj"/>
+    </Target>
+    <Target Name="SemMerger:Clean">
+        <MSBuild Projects="SEM Merger\SemMerger.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="SemMerger:Make">
+        <MSBuild Projects="SEM Merger\SemMerger.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="SemScreenshotTool">
+        <MSBuild Projects="SEM Screenshot Tool\SemScreenshotTool.dproj"/>
+    </Target>
+    <Target Name="SemScreenshotTool:Clean">
+        <MSBuild Projects="SEM Screenshot Tool\SemScreenshotTool.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="SemScreenshotTool:Make">
+        <MSBuild Projects="SEM Screenshot Tool\SemScreenshotTool.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="SimpleAsioRecorder">
+        <MSBuild Projects="Simple ASIO Recorder\SimpleAsioRecorder.dproj"/>
+    </Target>
+    <Target Name="SimpleAsioRecorder:Clean">
+        <MSBuild Projects="Simple ASIO Recorder\SimpleAsioRecorder.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="SimpleAsioRecorder:Make">
+        <MSBuild Projects="Simple ASIO Recorder\SimpleAsioRecorder.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="SimpleHDRecorder">
+        <MSBuild Projects="Simple HD Recorder\SimpleHDRecorder.dproj"/>
+    </Target>
+    <Target Name="SimpleHDRecorder:Clean">
+        <MSBuild Projects="Simple HD Recorder\SimpleHDRecorder.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="SimpleHDRecorder:Make">
+        <MSBuild Projects="Simple HD Recorder\SimpleHDRecorder.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="SimpleMp3Player">
+        <MSBuild Projects="Simple MP3 Player\SimpleMp3Player.dproj"/>
+    </Target>
+    <Target Name="SimpleMp3Player:Clean">
+        <MSBuild Projects="Simple MP3 Player\SimpleMp3Player.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="SimpleMp3Player:Make">
+        <MSBuild Projects="Simple MP3 Player\SimpleMp3Player.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="SimpleSignalGenerator">
+        <MSBuild Projects="Simple Signal Generator\SimpleSignalGenerator.dproj"/>
+    </Target>
+    <Target Name="SimpleSignalGenerator:Clean">
+        <MSBuild Projects="Simple Signal Generator\SimpleSignalGenerator.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="SimpleSignalGenerator:Make">
+        <MSBuild Projects="Simple Signal Generator\SimpleSignalGenerator.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="VSTAnalyser">
+        <MSBuild Projects="Simple VST Plugin Analyser\VSTAnalyser.dproj"/>
+    </Target>
+    <Target Name="VSTAnalyser:Clean">
+        <MSBuild Projects="Simple VST Plugin Analyser\VSTAnalyser.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="VSTAnalyser:Make">
+        <MSBuild Projects="Simple VST Plugin Analyser\VSTAnalyser.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="VSTEditor">
+        <MSBuild Projects="VST Host Custom GUI\VSTEditor.dproj"/>
+    </Target>
+    <Target Name="VSTEditor:Clean">
+        <MSBuild Projects="VST Host Custom GUI\VSTEditor.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="VSTEditor:Make">
+        <MSBuild Projects="VST Host Custom GUI\VSTEditor.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="VSTPluginScanner">
+        <MSBuild Projects="VST Plugin Scanner\VSTPluginScanner.dproj"/>
+    </Target>
+    <Target Name="VSTPluginScanner:Clean">
+        <MSBuild Projects="VST Plugin Scanner\VSTPluginScanner.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="VSTPluginScanner:Make">
+        <MSBuild Projects="VST Plugin Scanner\VSTPluginScanner.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="VstPluginScreenshotTool">
+        <MSBuild Projects="VST Plugin Screenshot Tool\VstPluginScreenshotTool.dproj"/>
+    </Target>
+    <Target Name="VstPluginScreenshotTool:Clean">
+        <MSBuild Projects="VST Plugin Screenshot Tool\VstPluginScreenshotTool.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="VstPluginScreenshotTool:Make">
+        <MSBuild Projects="VST Plugin Screenshot Tool\VstPluginScreenshotTool.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="VST2Sonogram">
+        <MSBuild Projects="VST to Sonogram\VST2Sonogram.dproj"/>
+    </Target>
+    <Target Name="VST2Sonogram:Clean">
+        <MSBuild Projects="VST to Sonogram\VST2Sonogram.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="VST2Sonogram:Make">
+        <MSBuild Projects="VST to Sonogram\VST2Sonogram.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="WavTagger">
+        <MSBuild Projects="WAV Tagger\WavTagger.dproj"/>
+    </Target>
+    <Target Name="WavTagger:Clean">
+        <MSBuild Projects="WAV Tagger\WavTagger.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="WavTagger:Make">
+        <MSBuild Projects="WAV Tagger\WavTagger.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="WinEar">
+        <MSBuild Projects="WinEar\WinEar.dproj"/>
+    </Target>
+    <Target Name="WinEar:Clean">
+        <MSBuild Projects="WinEar\WinEar.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="WinEar:Make">
+        <MSBuild Projects="WinEar\WinEar.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="Analyser;Analyser3D;AnalyserGoertzel;ASIODemo;ASIODemoAudioData;ASIOMP3VST;ASIOMP3;AsioBufferdAudioFilePlayer;BarberpoleTuner;Generator;JustNoticableDifferenceEqualizerTest;KnobGrabber;LoudnessR128;LunchBox;Metronome;MiniHost;MultiSineGenerator;NoiseGen;NoiseShaperFilterDesigner;NoiseshapingFilterDesigner;PortAudioDemo;PresetParser;SemExplorer;SemMerger;SemScreenshotTool;SimpleAsioRecorder;SimpleHDRecorder;SimpleMp3Player;SimpleSignalGenerator;VSTAnalyser;VSTEditor;VSTPluginScanner;VstPluginScreenshotTool;VST2Sonogram;WavTagger;WinEar"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="Analyser:Clean;Analyser3D:Clean;AnalyserGoertzel:Clean;ASIODemo:Clean;ASIODemoAudioData:Clean;ASIOMP3VST:Clean;ASIOMP3:Clean;AsioBufferdAudioFilePlayer:Clean;BarberpoleTuner:Clean;Generator:Clean;JustNoticableDifferenceEqualizerTest:Clean;KnobGrabber:Clean;LoudnessR128:Clean;LunchBox:Clean;Metronome:Clean;MiniHost:Clean;MultiSineGenerator:Clean;NoiseGen:Clean;NoiseShaperFilterDesigner:Clean;NoiseshapingFilterDesigner:Clean;PortAudioDemo:Clean;PresetParser:Clean;SemExplorer:Clean;SemMerger:Clean;SemScreenshotTool:Clean;SimpleAsioRecorder:Clean;SimpleHDRecorder:Clean;SimpleMp3Player:Clean;SimpleSignalGenerator:Clean;VSTAnalyser:Clean;VSTEditor:Clean;VSTPluginScanner:Clean;VstPluginScreenshotTool:Clean;VST2Sonogram:Clean;WavTagger:Clean;WinEar:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="Analyser:Make;Analyser3D:Make;AnalyserGoertzel:Make;ASIODemo:Make;ASIODemoAudioData:Make;ASIOMP3VST:Make;ASIOMP3:Make;AsioBufferdAudioFilePlayer:Make;BarberpoleTuner:Make;Generator:Make;JustNoticableDifferenceEqualizerTest:Make;KnobGrabber:Make;LoudnessR128:Make;LunchBox:Make;Metronome:Make;MiniHost:Make;MultiSineGenerator:Make;NoiseGen:Make;NoiseShaperFilterDesigner:Make;NoiseshapingFilterDesigner:Make;PortAudioDemo:Make;PresetParser:Make;SemExplorer:Make;SemMerger:Make;SemScreenshotTool:Make;SimpleAsioRecorder:Make;SimpleHDRecorder:Make;SimpleMp3Player:Make;SimpleSignalGenerator:Make;VSTAnalyser:Make;VSTEditor:Make;VSTPluginScanner:Make;VstPluginScreenshotTool:Make;VST2Sonogram:Make;WavTagger:Make;WinEar:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

@@ -34,7 +34,7 @@ implementation
 {$R *.DFM}
 
 uses
-  DAV_SynthUtils, VocoderModule, VocoderVoice, VoiceList;
+  DAV_SynthUtils, VocoderModule, VocoderVoice;
 
 { TVSTGUI }
 

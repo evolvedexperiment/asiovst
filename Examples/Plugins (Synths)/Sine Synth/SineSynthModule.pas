@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, SysUtils, Classes, Forms, DAV_Types, DAV_VSTEffect, DAV_VSTModule,
-  SineSynthVoice, VoiceList;
+  DAV_SynthUtils, SineSynthVoice;
 
 type
   TVSTSSModule = class(TVSTModule)
