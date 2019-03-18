@@ -1,4 +1,4 @@
-program SwitchTest;
+program StitchedSwitchTest;
 
 {$I DAV_Compiler.inc}
 

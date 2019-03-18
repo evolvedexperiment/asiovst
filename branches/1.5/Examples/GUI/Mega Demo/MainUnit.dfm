@@ -25,6 +25,10 @@ object FmMegaDemo: TFmMegaDemo
     TabPosition = tpBottom
     object TsCheckBox: TTabSheet
       Caption = 'CheckBox'
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object CbItem1: TGuiControlsCheckBox
         Left = 3
         Top = 3
@@ -106,6 +110,10 @@ object FmMegaDemo: TFmMegaDemo
     object TsRadioButton: TTabSheet
       Caption = 'Radio Button'
       ImageIndex = 1
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object RbItem1: TGuiControlsRadioButton
         Left = 3
         Top = 3
