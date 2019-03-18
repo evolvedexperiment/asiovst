@@ -34,9 +34,9 @@ interface
 
 {$I DAV_Compiler.inc}
 
-uses 
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
-  Forms, Controls, StdCtrls, DAV_Types, DAV_VSTModule, DAV_GuiLabel, 
+uses
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
+  Forms, Controls, StdCtrls, DAV_Types, DAV_VSTModule, DAV_GuiLabel,
   DAV_GuiStitchedControls, DAV_GuiStitchedDial, DAV_GuiStitchedPngList,
   DAV_GuiImageControl, DAV_GuiCustomControl, DAV_GuiGraphicControl;
 
@@ -77,74 +77,78 @@ uses
 
 procedure TFmReverseVerb.FormShow(Sender: TObject);
 begin
- UpdateIRSelect;
- UpdateGain;
- UpdateDamping;
+  UpdateIRSelect;
+  UpdateGain;
+  UpdateDamping;
 end;
 
 procedure TFmReverseVerb.DialDampChange(Sender: TObject);
 begin
- with TReverseVerbDataModule(Owner) do
+  with TReverseVerbDataModule(Owner) do
   begin
-   Parameter[4] := DialDamp.Value;
+    Parameter[4] := DialDamp.Value;
   end;
 end;
 
 procedure TFmReverseVerb.DialGainChange(Sender: TObject);
 begin
- with TReverseVerbDataModule(Owner) do
+  with TReverseVerbDataModule(Owner) do
   begin
-   Parameter[3] := DialGain.Value;
+    Parameter[3] := DialGain.Value;
   end;
 end;
 
 procedure TFmReverseVerb.DialIRChange(Sender: TObject);
 begin
- with TReverseVerbDataModule(Owner) do
+  with TReverseVerbDataModule(Owner) do
   begin
-   if Round(Parameter[2]) <> Round(DialIR.Value)
-    then Parameter[2] := Round(DialIR.Value);
+    if Round(Parameter[2]) <> Round(DialIR.Value) then
+      Parameter[2] := Round(DialIR.Value);
   end;
 end;
 
 procedure TFmReverseVerb.LbIRSelectedMouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
- case Button of
-  mbLeft  : DialIR.Value := Round(DialIR.Value) + 1;
-  mbRight : DialIR.Value := Round(DialIR.Value) - 1;
- end;
+  case Button of
+    mbLeft:
+      DialIR.Value := Round(DialIR.Value) + 1;
+    mbRight:
+      DialIR.Value := Round(DialIR.Value) - 1;
+  end;
 end;
 
 procedure TFmReverseVerb.UpdateGain;
 begin
- with TReverseVerbDataModule(Owner) do
+  with TReverseVerbDataModule(Owner) do
   begin
-   if DialGain.Value <> Parameter[3]
-    then DialGain.Value := Parameter[3];
-   LbGainValue.Caption := FloatToStrF(RoundTo(Parameter[3], -1), ffGeneral, 2, 2) + ' dB';
+    if DialGain.Value <> Parameter[3] then
+      DialGain.Value := Parameter[3];
+    LbGainValue.Caption := FloatToStrF(RoundTo(Parameter[3], -1), ffGeneral, 2, 2) + ' dB';
   end;
 end;
 
 procedure TFmReverseVerb.UpdateDamping;
 begin
- with TReverseVerbDataModule(Owner) do
+  with TReverseVerbDataModule(Owner) do
   begin
-   if DialDamp.Value <> Parameter[4]
-    then DialDamp.Value := Parameter[4];
-   if Parameter[4] < 1000
-    then LbDampValue.Caption := FloatToStrF(RoundTo(Parameter[4], -1), ffGeneral, 3, 3) + ' Hz'
-    else LbDampValue.Caption := FloatToStrF(RoundTo(1E-3 * Parameter[4], -1), ffGeneral, 3, 3) + ' kHz';
+    if DialDamp.Value <> Parameter[4] then
+      DialDamp.Value := Parameter[4];
+    if Parameter[4] < 1000 then
+      LbDampValue.Caption := FloatToStrF(RoundTo(Parameter[4], -1), ffGeneral,
+        3, 3) + ' Hz'
+    else
+      LbDampValue.Caption := FloatToStrF(RoundTo(1E-3 * Parameter[4], -1), ffGeneral, 3, 3) + ' kHz';
   end;
 end;
 
 procedure TFmReverseVerb.UpdateIRSelect;
 begin
- with TReverseVerbDataModule(Owner) do
+  with TReverseVerbDataModule(Owner) do
   begin
-   if Round(DialIR.Value) <> Round(Parameter[2])
-    then DialIR.Value := Round(Parameter[2]);
-   LbIRSelected.Caption := IntToStr(Round(Parameter[2]));
+    if Round(DialIR.Value) <> Round(Parameter[2]) then
+      DialIR.Value := Round(Parameter[2]);
+    LbIRSelected.Caption := IntToStr(Round(Parameter[2]));
   end;
 end;
 

@@ -35,7 +35,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
   Forms, SyncObjs, DAV_Types, DAV_VSTModule, DAV_DspPolyphaseDownsampler,
   DAV_DspPolyphaseUpSampler, DAV_DspFilterSimple;
 
@@ -53,11 +53,11 @@ type
     procedure ParamCoeffsChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamTransitionChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
-    FDownSampler2x   : array [0..CChannelCount - 1] of TPolyphaseDownsampler32;
-    FUpSampler2x     : array [0..CChannelCount - 1] of TPolyphaseUpsampler32;
-    FLowpassFilter   : array [0..CChannelCount - 1] of TFirstOrderLowpassFilter;
-    FTransition      : Double;
-    FCriticalSection : TCriticalSection;
+    FDownSampler2x: array [0 .. CChannelCount - 1] of TPolyphaseDownsampler32;
+    FUpSampler2x: array [0 .. CChannelCount - 1] of TPolyphaseUpsampler32;
+    FLowpassFilter: array [0 .. CChannelCount - 1] of TFirstOrderLowpassFilter;
+    FTransition: Double;
+    FCriticalSection: TCriticalSection;
   end;
 
 implementation
@@ -74,132 +74,135 @@ uses
 
 procedure TOversampledTanhModule.VSTModuleCreate(Sender: TObject);
 begin
- FCriticalSection := TCriticalSection.Create;
+  FCriticalSection := TCriticalSection.Create;
 end;
 
 procedure TOversampledTanhModule.VSTModuleDestroy(Sender: TObject);
 begin
- FreeAndNil(FCriticalSection);
+  FreeAndNil(FCriticalSection);
 end;
 
 procedure TOversampledTanhModule.VSTModuleOpen(Sender: TObject);
 var
-  Channel : Integer;
+  Channel: Integer;
 begin
- // create up & down sampler
- for Channel := 0 to CChannelCount - 1 do
+  // create up & down sampler
+  for Channel := 0 to CChannelCount - 1 do
   begin
-   FDownSampler2x[Channel] := TPolyphaseDownsampler32.Create;
-   FUpSampler2x[Channel] := TPolyphaseUpsampler32.Create;
-   FLowpassFilter[Channel] := TFirstOrderLowpassFilter.Create;
-   FLowpassFilter[Channel].SampleRate := 2 * SampleRate;
-   FLowpassFilter[Channel].Frequency := 0.95 * SampleRate;
+    FDownSampler2x[Channel] := TPolyphaseDownsampler32.Create;
+    FUpSampler2x[Channel] := TPolyphaseUpsampler32.Create;
+    FLowpassFilter[Channel] := TFirstOrderLowpassFilter.Create;
+    FLowpassFilter[Channel].SampleRate := 2 * SampleRate;
+    FLowpassFilter[Channel].Frequency := 0.95 * SampleRate;
   end;
 
- // set editor class
- EditorFormClass := TFmOversampledTanh;
- FTransition := 0.25;
+  // set editor class
+  EditorFormClass := TFmOversampledTanh;
+  FTransition := 0.25;
 
- // initial parameters
-(*
- Parameter[0] := 16;
- Parameter[1] := 0.01;
-*)
-
- Parameter[0] := 4;
- Parameter[1] := 0.5;
+  // initial parameters
+  Parameter[0] := 4;
+  Parameter[1] := 0.5;
 end;
 
 procedure TOversampledTanhModule.VSTModuleClose(Sender: TObject);
 var
-  Channel : Integer;
+  Channel: Integer;
 begin
- for Channel := 0 to CChannelCount - 1 do
+  for Channel := 0 to CChannelCount - 1 do
   begin
-   FreeAndNil(FDownSampler2x[Channel]);
-   FreeAndNil(FUpSampler2x[Channel]);
-   FreeAndNil(FLowpassFilter[Channel]);
+    FreeAndNil(FDownSampler2x[Channel]);
+    FreeAndNil(FUpSampler2x[Channel]);
+    FreeAndNil(FLowpassFilter[Channel]);
   end;
 end;
 
-procedure TOversampledTanhModule.ParamTransitionChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TOversampledTanhModule.ParamTransitionChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 var
-  Channel : Integer;
+  Channel: Integer;
 begin
- FCriticalSection.Enter;
- try
-  FTransition := 0.0001 + 0.4998 * Value;
-  for Channel := 0 to CChannelCount - 1 do
-   begin
-    if Assigned(FDownSampler2x[Channel]) then FDownSampler2x[Channel].Transition := FTransition;
-    if Assigned(FUpSampler2x[Channel]) then FUpSampler2x[Channel].Transition := FTransition;
-   end;
- finally
-  FCriticalSection.Leave;
- end;
+  FCriticalSection.Enter;
+  try
+    FTransition := 0.0001 + 0.4998 * Value;
+    for Channel := 0 to CChannelCount - 1 do
+    begin
+      if Assigned(FDownSampler2x[Channel]) then
+        FDownSampler2x[Channel].Transition := FTransition;
+      if Assigned(FUpSampler2x[Channel]) then
+        FUpSampler2x[Channel].Transition := FTransition;
+    end;
+  finally
+    FCriticalSection.Leave;
+  end;
 
- // update GUI
- if EditorForm is TFmOversampledTanh then
-  with TFmOversampledTanh(EditorForm)
-   do UpdateTransition;
+  // update GUI
+  if EditorForm is TFmOversampledTanh then
+    with TFmOversampledTanh(EditorForm) do
+      UpdateTransition;
 end;
 
 procedure TOversampledTanhModule.ParamCoeffsChange(Sender: TObject;
   const Index: Integer; var Value: Single);
 var
-  Channel          : Integer;
-  CoefficientCount : Integer;
-begin
- FCriticalSection.Enter;
- try
-  if (Value < 1) or (Value > 32) then Exit;
-  CoefficientCount := Round(Value);
-
-  for Channel := 0 to CChannelCount - 1 do
-   begin
-    if Assigned(FDownSampler2x[Channel]) then
-     begin
-      FDownSampler2x[Channel].NumberOfCoefficients := CoefficientCount;
-      FDownSampler2x[Channel].Transition := FTransition;
-     end;
-    if Assigned(FUpSampler2x[Channel]) then
-     begin
-      FUpSampler2x[Channel].NumberOfCoefficients := CoefficientCount;
-      FUpSampler2x[Channel].Transition := FTransition;
-     end;
-   end;
- finally
-  FCriticalSection.Leave;
- end;
-
- // update GUI
- if EditorForm is TFmOversampledTanh then
-  with TFmOversampledTanh(EditorForm)
-   do UpdateCoeffs;
-end;
-
-procedure TOversampledTanhModule.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
-var
-  Channel : Integer;
-  Sample  : Integer;
-  Buffer  : TDAV2SingleArray;
+  Channel: Integer;
+  CoefficientCount: Integer;
 begin
   FCriticalSection.Enter;
   try
-   for Channel := 0 to CChannelCount - 1 do
-    for Sample := 0 to SampleFrames - 1 do
-     begin
-      FUpSampler2x[Channel].ProcessSample32(Inputs[Channel][Sample] + CDenorm32, Buffer);
-      with FLowpassFilter[Channel] do
-       begin
-        Buffer[0] := ProcessSample32(FastTanhContinousError4(Buffer[0]) + CDenorm32);
-        Buffer[1] := ProcessSample32(FastTanhContinousError4(Buffer[1]) - CDenorm32);
-       end;
-      Outputs[Channel][Sample] := FDownSampler2x[Channel].ProcessSample32(Buffer);
-     end;
+    if (Value < 1) or (Value > 32) then
+      Exit;
+    CoefficientCount := Round(Value);
+
+    for Channel := 0 to CChannelCount - 1 do
+    begin
+      if Assigned(FDownSampler2x[Channel]) then
+      begin
+        FDownSampler2x[Channel].NumberOfCoefficients := CoefficientCount;
+        FDownSampler2x[Channel].Transition := FTransition;
+      end;
+      if Assigned(FUpSampler2x[Channel]) then
+      begin
+        FUpSampler2x[Channel].NumberOfCoefficients := CoefficientCount;
+        FUpSampler2x[Channel].Transition := FTransition;
+      end;
+    end;
   finally
-   FCriticalSection.Leave;
+    FCriticalSection.Leave;
+  end;
+
+  // update GUI
+  if EditorForm is TFmOversampledTanh then
+    with TFmOversampledTanh(EditorForm) do
+      UpdateCoeffs;
+end;
+
+procedure TOversampledTanhModule.VSTModuleProcess(const inputs,
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
+var
+  Channel: Integer;
+  Sample: Integer;
+  Buffer: TDAV2SingleArray;
+begin
+  FCriticalSection.Enter;
+  try
+    for Channel := 0 to CChannelCount - 1 do
+      for Sample := 0 to SampleFrames - 1 do
+      begin
+        FUpSampler2x[Channel].ProcessSample32(inputs[Channel][Sample] +
+          CDenorm32, Buffer);
+        with FLowpassFilter[Channel] do
+        begin
+          Buffer[0] := ProcessSample32(FastTanhContinousError4(Buffer[0]) +
+            CDenorm32);
+          Buffer[1] := ProcessSample32(FastTanhContinousError4(Buffer[1]) -
+            CDenorm32);
+        end;
+        Outputs[Channel][Sample] := FDownSampler2x[Channel]
+          .ProcessSample32(Buffer);
+      end;
+  finally
+    FCriticalSection.Leave;
   end;
 end;
 
@@ -208,16 +211,16 @@ procedure TOversampledTanhModule.VSTModuleSampleRateChange(Sender: TObject;
 var
   Channel: Integer;
 begin
- FCriticalSection.Enter;
- try
-  for Channel := 0 to CChannelCount - 1 do
-   begin
-    FLowpassFilter[Channel].SampleRate := 2 * SampleRate;
-    FLowpassFilter[Channel].Frequency := 0.95 * SampleRate;
-   end;
- finally
-  FCriticalSection.Leave;
- end;
+  FCriticalSection.Enter;
+  try
+    for Channel := 0 to CChannelCount - 1 do
+    begin
+      FLowpassFilter[Channel].SampleRate := 2 * SampleRate;
+      FLowpassFilter[Channel].Frequency := 0.95 * SampleRate;
+    end;
+  finally
+    FCriticalSection.Leave;
+  end;
 end;
 
 end.

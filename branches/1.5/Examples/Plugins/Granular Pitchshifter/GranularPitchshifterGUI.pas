@@ -38,7 +38,8 @@ uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
   Forms, Controls, DAV_Types, DAV_VSTModule, DAV_GuiBaseControl, DAV_GuiPng,
   DAV_GuiLabel, DAV_GuiSelectBox, DAV_GuiStitchedControls, DAV_GuiStitchedDial,
-  DAV_GuiStitchedPngList, DAV_GuiCustomControl, DAV_GuiGraphicControl;
+  DAV_GuiStitchedPngList, DAV_GuiCustomControl, DAV_GuiGraphicControl,
+  DAV_GuiImageControl;
 
 type
   TFmGranularPitchShifter = class(TForm)
@@ -75,71 +76,71 @@ uses
 
 procedure TFmGranularPitchShifter.FormShow(Sender: TObject);
 begin
- UpdateSemitones;
- UpdateGranularity;
- UpdateStages;
+  UpdateSemitones;
+  UpdateGranularity;
+  UpdateStages;
 end;
 
 procedure TFmGranularPitchShifter.DialSemitonesChange(Sender: TObject);
 begin
- with TGranularPitchShifterModule(Owner) do
+  with TGranularPitchShifterModule(Owner) do
   begin
-   if Parameter[0] <> DialSemitones.Value
-    then Parameter[0] := DialSemitones.Value;
+    if Parameter[0] <> DialSemitones.Value then
+      Parameter[0] := DialSemitones.Value;
   end;
 end;
 
 procedure TFmGranularPitchShifter.DialGranularityChange(Sender: TObject);
 begin
- with TGranularPitchShifterModule(Owner) do
+  with TGranularPitchShifterModule(Owner) do
   begin
-   if Parameter[1] <> DialGranularity.Value
-    then Parameter[1] := DialGranularity.Value;
+    if Parameter[1] <> DialGranularity.Value then
+      Parameter[1] := DialGranularity.Value;
   end;
 end;
 
 procedure TFmGranularPitchShifter.DialStagesChange(Sender: TObject);
 begin
- with TGranularPitchShifterModule(Owner) do
+  with TGranularPitchShifterModule(Owner) do
   begin
-   if Parameter[2] <> DialStages.Value
-    then Parameter[2] := DialStages.Value;
+    if Parameter[2] <> DialStages.Value then
+      Parameter[2] := DialStages.Value;
   end;
 end;
 
 procedure TFmGranularPitchShifter.UpdateSemitones;
 var
-  Semitones : Single;
+  Semitones: Single;
 begin
- with TGranularPitchShifterModule(Owner) do
+  with TGranularPitchShifterModule(Owner) do
   begin
-   Semitones := Parameter[0];
-   if DialSemitones.Value <> Semitones
-    then DialSemitones.Value := Semitones;
-   LbSemitonesValue.Caption := FloatToStrF(RoundTo(Semitones, -2), ffGeneral, 2, 2);
+    Semitones := Parameter[0];
+    if DialSemitones.Value <> Semitones then
+      DialSemitones.Value := Semitones;
+    LbSemitonesValue.Caption := FloatToStrF(RoundTo(Semitones, -2), ffGeneral, 2, 2);
   end;
 end;
 
 procedure TFmGranularPitchShifter.UpdateGranularity;
 var
-  Granularity : Single;
+  Granularity: Single;
 begin
- with TGranularPitchShifterModule(Owner) do
+  with TGranularPitchShifterModule(Owner) do
   begin
-   Granularity := Parameter[1];
-   if DialGranularity.Value <> Granularity
-    then DialGranularity.Value := Granularity;
-   LbGranularityValue.Caption := FloatToStrF(RoundTo(Granularity, -2), ffGeneral, 4, 4) + ' ms';
+    Granularity := Parameter[1];
+    if DialGranularity.Value <> Granularity then
+      DialGranularity.Value := Granularity;
+    LbGranularityValue.Caption := FloatToStrF(RoundTo(Granularity, -2), ffGeneral, 4, 4) + ' ms';
   end;
 end;
 
 procedure TFmGranularPitchShifter.UpdateStages;
 begin
- with TGranularPitchShifterModule(Owner) do
+  with TGranularPitchShifterModule(Owner) do
   begin
-   if DialStages.Value <> Parameter[2]
-    then DialStages.Value := Parameter[2];
-   LbStagesValue.Caption := IntToStr(Round(Parameter[2]));
+    if DialStages.Value <> Parameter[2] then
+      DialStages.Value := Parameter[2];
+    LbStagesValue.Caption := IntToStr(Round(Parameter[2]));
   end;
 end;
 

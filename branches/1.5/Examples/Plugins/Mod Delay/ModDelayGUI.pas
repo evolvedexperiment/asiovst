@@ -34,7 +34,7 @@ interface
 
 {$I DAV_Compiler.inc}
 
-uses 
+uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
   Forms, Graphics, Controls, StdCtrls, DAV_Types, DAV_VSTModule,
   DAV_GuiPixelMap, DAV_GuiGraphicControl, DAV_GuiLabel;
@@ -69,7 +69,7 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure FormResize(Sender: TObject);
   private
-    FBackground : TGuiCustomPixelMap;
+    FBackground: TGuiCustomPixelMap;
   public
     procedure UpdateGain;
     procedure UpdateMix;
@@ -93,57 +93,57 @@ uses
 
 procedure TFmModDelay.FormCreate(Sender: TObject);
 begin
- // Create Background Image
- FBackground := TGuiPixelMapMemory.Create;
+  // Create Background Image
+  FBackground := TGuiPixelMapMemory.Create;
 end;
 
 procedure TFmModDelay.FormDestroy(Sender: TObject);
 begin
- FreeAndNil(FBackground);
+  FreeAndNil(FBackground);
 end;
 
 procedure TFmModDelay.FormShow(Sender: TObject);
 begin
- UpdateGain;
- UpdateMix;
- UpdateLowpass;
- UpdateDelay;
- UpdateDepth;
- UpdateRate;
- UpdateFeedback;
+  UpdateGain;
+  UpdateMix;
+  UpdateLowpass;
+  UpdateDelay;
+  UpdateDepth;
+  UpdateRate;
+  UpdateFeedback;
 end;
 
 procedure TFmModDelay.FormPaint(Sender: TObject);
 begin
- if Assigned(FBackground)
-  then FBackground.PaintTo(Canvas);
+  if Assigned(FBackground) then
+    FBackground.PaintTo(Canvas);
 end;
 
 procedure TFmModDelay.FormResize(Sender: TObject);
 var
-  x, y   : Integer;
-  Filter : array [0..1] of Single;
-  h, hr  : Single;
-  ScnLn  : PPixel32Array;
+  x, y: Integer;
+  Filter: array [0 .. 1] of Single;
+  h, hr: Single;
+  ScnLn: PPixel32Array;
 begin
- with FBackground do
+  with FBackground do
   begin
-   SetSize(ClientWidth, ClientHeight);
-   Filter[0] := 0;
-   Filter[1] := 0;
-   hr   := 1 / Height;
-   for y := 0 to Height - 1 do
+    SetSize(ClientWidth, ClientHeight);
+    Filter[0] := 0;
+    Filter[1] := 0;
+    hr := 1 / Height;
+    for y := 0 to Height - 1 do
     begin
-     ScnLn := Scanline[y];
-     h    := 0.1 * (1 - sqr(2 * (y - Height div 2) * hr));
-     for x := 0 to Width - 1 do
+      ScnLn := Scanline[y];
+      h := 0.1 * (1 - sqr(2 * (y - Height div 2) * hr));
+      for x := 0 to Width - 1 do
       begin
-       Filter[1] := 0.97 * Filter[0] + 0.03 * random;
-       Filter[0] := Filter[1];
+        Filter[1] := 0.97 * Filter[0] + 0.03 * random;
+        Filter[0] := Filter[1];
 
-       ScnLn[x].B := Round($70 - $34 * (Filter[1] - h));
-       ScnLn[x].G := Round($84 - $48 * (Filter[1] - h));
-       ScnLn[x].R := Round($8D - $50 * (Filter[1] - h));
+        ScnLn[x].B := Round($70 - $34 * (Filter[1] - h));
+        ScnLn[x].G := Round($84 - $48 * (Filter[1] - h));
+        ScnLn[x].R := Round($8D - $50 * (Filter[1] - h));
       end;
     end;
   end;
@@ -151,16 +151,16 @@ end;
 
 procedure TFmModDelay.SbGainChange(Sender: TObject);
 begin
- with Owner as TModDelayModule do
+  with Owner as TModDelayModule do
   begin
-//   if Parameter[0] <> SbGain.Position 
-//    then Parameter[0] := SbGain.Position;
+    // if Parameter[0] <> SbGain.Position then
+    //   Parameter[0] := SbGain.Position;
   end;
 end;
 
 procedure TFmModDelay.UpdateDelay;
 begin
- with Owner as TModDelayModule do
+  with Owner as TModDelayModule do
   begin
 
   end;
@@ -168,7 +168,7 @@ end;
 
 procedure TFmModDelay.UpdateDepth;
 begin
- with Owner as TModDelayModule do
+  with Owner as TModDelayModule do
   begin
 
   end;
@@ -176,7 +176,7 @@ end;
 
 procedure TFmModDelay.UpdateFeedback;
 begin
- with Owner as TModDelayModule do
+  with Owner as TModDelayModule do
   begin
 
   end;
@@ -184,16 +184,16 @@ end;
 
 procedure TFmModDelay.UpdateGain;
 begin
- with Owner as TModDelayModule do
+  with Owner as TModDelayModule do
   begin
-//   if SbGain.Position <> Parameter[0] 
-//    then SbGain.Position := Parameter[0];
+    // if SbGain.Position <> Parameter[0]
+    // then SbGain.Position := Parameter[0];
   end;
 end;
 
 procedure TFmModDelay.UpdateLowpass;
 begin
- with Owner as TModDelayModule do
+  with Owner as TModDelayModule do
   begin
 
   end;
@@ -201,7 +201,7 @@ end;
 
 procedure TFmModDelay.UpdateMix;
 begin
- with Owner as TModDelayModule do
+  with Owner as TModDelayModule do
   begin
 
   end;
@@ -209,7 +209,7 @@ end;
 
 procedure TFmModDelay.UpdateRate;
 begin
- with Owner as TModDelayModule do
+  with Owner as TModDelayModule do
   begin
 
   end;

@@ -38,7 +38,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC}LCLIntf, {$ELSE}Windows, {$ENDIF} Messages, Classes, Controls, 
+  {$IFDEF FPC}LCLIntf, {$ELSE}Windows, {$ENDIF} Messages, Classes, Controls,
   Forms, StdCtrls, ComCtrls, ExtCtrls, Graphics, DAV_VSTPluginConfig;
 
 type
@@ -275,20 +275,20 @@ procedure TVSTPluginWizardForm.btnBrowseClick(Sender: TObject);
 var
   sDirectory: string;
 begin
- sDirectory := edtProjectPath.Text;
- if SelectDirectory(BROWSE_PATH_DIALOG_CAPTION, '', sDirectory)
-  then edtProjectPath.Text := sDirectory;
+  sDirectory := edtProjectPath.Text;
+  if SelectDirectory(BROWSE_PATH_DIALOG_CAPTION, '', sDirectory) then
+    edtProjectPath.Text := sDirectory;
 end;
 
 procedure TVSTPluginWizardForm.edtVersionMajorKeyPress(Sender: TObject;
   var Key: Char);
 begin
- {$IFDEF DELPHI14_UP}
- if CharInSet(AnsiChar(Key), [#8, '0'..'9'])
- {$ELSE}
- if not (Key in [#8, '0'..'9'])
- {$ENDIF}
-  then Key := #0;
+{$IFDEF DELPHI14_UP}
+  if CharInSet(AnsiChar(Key), [#8, '0' .. '9']) then
+{$ELSE}
+  if not(Key in [#8, '0' .. '9']) then
+{$ENDIF}
+    Key := #0;
 end;
 
 procedure TVSTPluginWizardForm.chkUseEditorClick(Sender: TObject);
@@ -410,4 +410,3 @@ begin
 end;
 
 end.
-

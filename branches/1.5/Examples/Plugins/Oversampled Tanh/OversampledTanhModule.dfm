@@ -1,5 +1,4 @@
 object OversampledTanhModule: TOversampledTanhModule
-  OldCreateOrder = True
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
@@ -57,8 +56,6 @@ object OversampledTanhModule: TOversampledTanhModule
   OnProcess = VSTModuleProcess
   OnProcess32Replacing = VSTModuleProcess
   OnSampleRateChange = VSTModuleSampleRateChange
-  Left = 296
-  Top = 130
   Height = 150
   Width = 215
 end

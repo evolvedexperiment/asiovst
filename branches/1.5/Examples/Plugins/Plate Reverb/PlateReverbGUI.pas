@@ -35,8 +35,8 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
-  Forms, Controls, StdCtrls, ExtCtrls, DAV_Types, DAV_VSTModule, DAV_GuiPng, 
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
+  Forms, Controls, StdCtrls, ExtCtrls, DAV_Types, DAV_VSTModule, DAV_GuiPng,
   DAV_GuiBaseControl, DAV_GuiLabel, DAV_GuiPanel, DAV_GuiStitchedControls,
   DAV_GuiStitchedPngList, DAV_GuiStitchedDial, DAV_GuiCustomControl,
   DAV_GuiSelectBox, DAV_GuiButton, DAV_GuiGraphicControl, DAV_GuiImageControl;
@@ -102,178 +102,178 @@ uses
 
 procedure TFmPlateReverb.FormShow(Sender: TObject);
 var
-  i : Integer;
+  i: Integer;
 begin
- with TPlateReverbVST(Owner) do
+  with TPlateReverbVST(Owner) do
   begin
-   SBPreset.Items.Clear;
-   for i := 0 to numPrograms - 1
-    do SBPreset.Items.Add(Programs[i].DisplayName);
-   SBPreset.ItemIndex := CurrentProgram; 
+    SBPreset.Items.Clear;
+    for i := 0 to numPrograms - 1 do
+      SBPreset.Items.Add(Programs[i].DisplayName);
+    SBPreset.ItemIndex := CurrentProgram;
   end;
 end;
 
 procedure TFmPlateReverb.SBPresetChange(Sender: TObject);
 begin
- with TPlateReverbVST(Owner) do
+  with TPlateReverbVST(Owner) do
   begin
-   CurrentProgram := SBPreset.ItemIndex;
-   UpdateDry;
-   UpdateWet;
-   UpdatePreDelay;
-   UpdateDecay;
-   UpdateDampingFrequency;
-   UpdateInputDiffusion;
-   UpdateDecayDiffusion;
-   UpdateModulation;
+    CurrentProgram := SBPreset.ItemIndex;
+    UpdateDry;
+    UpdateWet;
+    UpdatePreDelay;
+    UpdateDecay;
+    UpdateDampingFrequency;
+    UpdateInputDiffusion;
+    UpdateDecayDiffusion;
+    UpdateModulation;
   end;
 end;
 
 procedure TFmPlateReverb.UpdateDry;
 begin
- with TPlateReverbVST(Owner) do
-  if DialDry.Value <> Parameter[0]  then
-   begin
-    DialDry.Value := Parameter[0];
-   end;
+  with TPlateReverbVST(Owner) do
+    if DialDry.Value <> Parameter[0] then
+    begin
+      DialDry.Value := Parameter[0];
+    end;
 end;
 
 procedure TFmPlateReverb.UpdateWet;
 begin
- with TPlateReverbVST(Owner) do
-  if DialWet.Value <> Parameter[1]  then
-   begin
-    DialWet.Value := Parameter[1];
-   end;
+  with TPlateReverbVST(Owner) do
+    if DialWet.Value <> Parameter[1] then
+    begin
+      DialWet.Value := Parameter[1];
+    end;
 end;
 
 procedure TFmPlateReverb.UpdatePreDelay;
 begin
- with TPlateReverbVST(Owner) do
-  if DialPreDelay.Value <> Parameter[2]  then
-   begin
-    DialPreDelay.Value := Parameter[2];
-   end;
+  with TPlateReverbVST(Owner) do
+    if DialPreDelay.Value <> Parameter[2] then
+    begin
+      DialPreDelay.Value := Parameter[2];
+    end;
 end;
 
 procedure TFmPlateReverb.UpdateDecay;
 begin
- with TPlateReverbVST(Owner) do
-  if DialDecay.Value <> Parameter[3]  then
-   begin
-    DialDecay.Value := Parameter[3];
-   end;
+  with TPlateReverbVST(Owner) do
+    if DialDecay.Value <> Parameter[3] then
+    begin
+      DialDecay.Value := Parameter[3];
+    end;
 end;
 
 procedure TFmPlateReverb.UpdateDampingFrequency;
 begin
- with TPlateReverbVST(Owner) do
-  if DialDampingFrequency.Value <> Parameter[4] then
-   begin
-    DialDampingFrequency.Value := Parameter[4];
-   end;
+  with TPlateReverbVST(Owner) do
+    if DialDampingFrequency.Value <> Parameter[4] then
+    begin
+      DialDampingFrequency.Value := Parameter[4];
+    end;
 end;
 
 procedure TFmPlateReverb.UpdateInputDiffusion;
 begin
- with TPlateReverbVST(Owner) do
-  if DialInputDiffusion.Value <> Parameter[5] then
-   begin
-    DialInputDiffusion.Value := Parameter[5];
-   end;
+  with TPlateReverbVST(Owner) do
+    if DialInputDiffusion.Value <> Parameter[5] then
+    begin
+      DialInputDiffusion.Value := Parameter[5];
+    end;
 end;
 
 procedure TFmPlateReverb.UpdateDecayDiffusion;
 begin
- with TPlateReverbVST(Owner) do
-  if DialDecayDiffusion.Value <> Parameter[6] then
-   begin
-    DialDecayDiffusion.Value := Parameter[6];
-   end;
+  with TPlateReverbVST(Owner) do
+    if DialDecayDiffusion.Value <> Parameter[6] then
+    begin
+      DialDecayDiffusion.Value := Parameter[6];
+    end;
 end;
 
 procedure TFmPlateReverb.UpdateModulation;
 begin
- with TPlateReverbVST(Owner) do
-  if DialModulation.Value <> Parameter[7] then
-   begin
-    DialModulation.Value := Parameter[7];
-   end;
+  with TPlateReverbVST(Owner) do
+    if DialModulation.Value <> Parameter[7] then
+    begin
+      DialModulation.Value := Parameter[7];
+    end;
 end;
 
 procedure TFmPlateReverb.DialDryChange(Sender: TObject);
 var
-  Value : Single;
+  Value: Single;
 begin
- with TPlateReverbVST(Owner) do
+  with TPlateReverbVST(Owner) do
   begin
-   Value := DialDry.Value;
-   if Parameter[0] <> Value
-    then Parameter[0] := Value;
+    Value := DialDry.Value;
+    if Parameter[0] <> Value then
+      Parameter[0] := Value;
   end;
 end;
 
 procedure TFmPlateReverb.DialWetChange(Sender: TObject);
 var
-  Value : Single;
+  Value: Single;
 begin
- with TPlateReverbVST(Owner) do
+  with TPlateReverbVST(Owner) do
   begin
-   Value := DialWet.Value;
-   if Parameter[1] <> Value
-    then Parameter[1] := Value;
+    Value := DialWet.Value;
+    if Parameter[1] <> Value then
+      Parameter[1] := Value;
   end;
 end;
 
 procedure TFmPlateReverb.DialPreDelayChange(Sender: TObject);
 begin
- with TPlateReverbVST(Owner) do
-  if Parameter[2] <> DialPreDelay.Value then
-   begin
-    Parameter[2] := DialPreDelay.Value;
-   end;
+  with TPlateReverbVST(Owner) do
+    if Parameter[2] <> DialPreDelay.Value then
+    begin
+      Parameter[2] := DialPreDelay.Value;
+    end;
 end;
 
 procedure TFmPlateReverb.DialDecayChange(Sender: TObject);
 begin
- with TPlateReverbVST(Owner) do
-  if Parameter[3] <> DialDecay.Value then
-   begin
-    Parameter[3] := DialDecay.Value;
-   end;
+  with TPlateReverbVST(Owner) do
+    if Parameter[3] <> DialDecay.Value then
+    begin
+      Parameter[3] := DialDecay.Value;
+    end;
 end;
 
 procedure TFmPlateReverb.DialDampingFrequencyChange(Sender: TObject);
 begin
- with TPlateReverbVST(Owner) do
-  if Parameter[4] <> DialDampingFrequency.Value then
-   begin
-    Parameter[4] := DialDampingFrequency.Value;
-   end;
+  with TPlateReverbVST(Owner) do
+    if Parameter[4] <> DialDampingFrequency.Value then
+    begin
+      Parameter[4] := DialDampingFrequency.Value;
+    end;
 end;
 
 procedure TFmPlateReverb.DialInputDiffusionChange(Sender: TObject);
 begin
- with TPlateReverbVST(Owner) do
-  if Parameter[5] <> DialInputDiffusion.Value then
-   begin
-    Parameter[5] := DialInputDiffusion.Value;
-   end;
+  with TPlateReverbVST(Owner) do
+    if Parameter[5] <> DialInputDiffusion.Value then
+    begin
+      Parameter[5] := DialInputDiffusion.Value;
+    end;
 end;
 
 procedure TFmPlateReverb.DialDecayDiffusionChange(Sender: TObject);
 begin
- with TPlateReverbVST(Owner) do
-  if Parameter[6] <> DialDecayDiffusion.Value then
-   begin
-    Parameter[6] := DialDecayDiffusion.Value;
-   end;
+  with TPlateReverbVST(Owner) do
+    if Parameter[6] <> DialDecayDiffusion.Value then
+    begin
+      Parameter[6] := DialDecayDiffusion.Value;
+    end;
 end;
 
 procedure TFmPlateReverb.BtAboutClick(Sender: TObject);
 begin
- MessageDlg('PlateReverb example plugin written by Christian Budde' + #13#10 +
-            'based on GUI by thcilnnahoj', mtInformation, [mbOK], 0);
+  MessageDlg('PlateReverb example plugin written by Christian Budde' + #13#10 +
+    'based on GUI by thcilnnahoj', mtInformation, [mbOK], 0);
 end;
 
 end.

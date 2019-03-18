@@ -33,7 +33,7 @@ unit SampleDelayDM;
 interface
 
 uses
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
   Forms, SyncObjs, DAV_Types, DAV_VSTModule, DAV_DspDelayLines;
 
 type
@@ -47,8 +47,8 @@ type
     procedure ParameterSamplesRightChange(
       Sender: TObject; const Index: Integer; var Value: Single);
   private
-    FCriticalSection : TCriticalSection;
-    FDelayLine       : array of TDelayLineSamples32;
+    FCriticalSection: TCriticalSection;
+    FDelayLine: array of TDelayLineSamples32;
   public
   end;
 
@@ -65,87 +65,88 @@ uses
 
 procedure TSampleDelayDataModule.VSTModuleCreate(Sender: TObject);
 begin
- FCriticalSection := TCriticalSection.Create;
+  FCriticalSection := TCriticalSection.Create;
 end;
 
 procedure TSampleDelayDataModule.VSTModuleDestroy(Sender: TObject);
 begin
- FreeAndNil(FCriticalSection);
+  FreeAndNil(FCriticalSection);
 end;
 
 procedure TSampleDelayDataModule.VSTModuleOpen(Sender: TObject);
 var
   ChannelIndex: Integer;
 begin
- Assert(numOutputs = numInputs);
- SetLength(FDelayLine, numInputs);
- for ChannelIndex := 0 to Length(FDelayLine) - 1
-  do FDelayLine[ChannelIndex] := TDelayLineSamples32.Create(1025);
+  Assert(numOutputs = numInputs);
+  SetLength(FDelayLine, numInputs);
+  for ChannelIndex := 0 to Length(FDelayLine) - 1 do
+    FDelayLine[ChannelIndex] := TDelayLineSamples32.Create(1025);
 
- // set editor form class
- EditorFormClass := TFmSampleDelay;
+  // set editor form class
+  EditorFormClass := TFmSampleDelay;
 end;
 
 procedure TSampleDelayDataModule.VSTModuleClose(Sender: TObject);
 var
   ChannelIndex: Integer;
 begin
- for ChannelIndex := 0 to Length(FDelayLine) - 1
-  do FreeAndNil(FDelayLine[ChannelIndex]);
+  for ChannelIndex := 0 to Length(FDelayLine) - 1 do
+    FreeAndNil(FDelayLine[ChannelIndex]);
 end;
 
-procedure TSampleDelayDataModule.ParameterSamplesLeftChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TSampleDelayDataModule.ParameterSamplesLeftChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 var
   ChannelIndex: Integer;
 begin
- FCriticalSection.Enter;
- try
-  for ChannelIndex := 0 to Length(FDelayLine) - 1 do
-   if (ChannelIndex mod 2 = 0) and Assigned(FDelayLine[ChannelIndex])
-    then FDelayLine[ChannelIndex].BufferSize := Round(1025 + Value);
- finally
-  FCriticalSection.Leave;
- end;
+  FCriticalSection.Enter;
+  try
+    for ChannelIndex := 0 to Length(FDelayLine) - 1 do
+      if (ChannelIndex mod 2 = 0) and Assigned(FDelayLine[ChannelIndex]) then
+        FDelayLine[ChannelIndex].BufferSize := Round(1025 + Value);
+  finally
+    FCriticalSection.Leave;
+  end;
 
- // eventually update GUI
- if EditorForm is TFmSampleDelay
-  then TFmSampleDelay(EditorForm).UpdateSamplesLeft;
+  // eventually update GUI
+  if EditorForm is TFmSampleDelay then
+    TFmSampleDelay(EditorForm).UpdateSamplesLeft;
 end;
 
-procedure TSampleDelayDataModule.ParameterSamplesRightChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TSampleDelayDataModule.ParameterSamplesRightChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 var
   Channel: Integer;
 begin
- FCriticalSection.Enter;
- try
-  for Channel := 0 to Length(FDelayLine) - 1 do
-   if (Channel mod 2 = 1) and Assigned(FDelayLine[Channel])
-    then FDelayLine[Channel].BufferSize := Round(1025 + Value);
- finally
-  FCriticalSection.Leave;
- end;
+  FCriticalSection.Enter;
+  try
+    for Channel := 0 to Length(FDelayLine) - 1 do
+      if (Channel mod 2 = 1) and Assigned(FDelayLine[Channel]) then
+        FDelayLine[Channel].BufferSize := Round(1025 + Value);
+  finally
+    FCriticalSection.Leave;
+  end;
 
- // eventually update GUI
- if EditorForm is TFmSampleDelay
-  then TFmSampleDelay(EditorForm).UpdateSamplesRight;
+  // eventually update GUI
+  if EditorForm is TFmSampleDelay then
+    TFmSampleDelay(EditorForm).UpdateSamplesRight;
 end;
 
 procedure TSampleDelayDataModule.VSTModuleProcess(const Inputs,
   Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
-  Sample  : Integer;
-  Channel : Integer;
+  Sample: Integer;
+  Channel: Integer;
 begin
- FCriticalSection.Enter;
- try
-  for Channel := 0 to Length(FDelayLine) - 1 do
-   for Sample := 0 to SampleFrames - 1
-    do Outputs[Channel, Sample] := FDelayLine[Channel].ProcessSample32(Inputs[Channel, Sample]);
- finally
-  FCriticalSection.Leave;
- end;
+  FCriticalSection.Enter;
+  try
+    for Channel := 0 to Length(FDelayLine) - 1 do
+      for Sample := 0 to SampleFrames - 1 do
+        Outputs[Channel, Sample] := FDelayLine[Channel].ProcessSample32
+          (Inputs[Channel, Sample]);
+  finally
+    FCriticalSection.Leave;
+  end;
 end;
 
 end.

@@ -35,7 +35,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
   Forms, Controls, StdCtrls, DAV_Types, DAV_VSTModule;
 
 type
@@ -67,36 +67,36 @@ uses
 
 procedure TFmStkPitchShift.FormShow(Sender: TObject);
 begin
- UpdateDelay;
- UpdateEffectMix;
+  UpdateDelay;
+  UpdateEffectMix;
 end;
 
 procedure TFmStkPitchShift.SBSemitonesChange(Sender: TObject);
 begin
- with TStkPitchShiftModule(Owner) do
+  with TStkPitchShiftModule(Owner) do
   begin
-   Parameter[0] := 0.1 * SBSemitones.Position;
+    Parameter[0] := 0.1 * SBSemitones.Position;
   end;
 end;
 
 procedure TFmStkPitchShift.SbEffectMixChange(Sender: TObject);
 begin
- with TStkPitchShiftModule(Owner) do
+  with TStkPitchShiftModule(Owner) do
   begin
-   Parameter[1] := 0.1 * SBEffectMix.Position;
+    Parameter[1] := 0.1 * SbEffectMix.Position;
   end;
 end;
 
 procedure TFmStkPitchShift.UpdateDelay;
 var
-  SemiPos : Integer;
+  SemiPos: Integer;
 begin
- with TStkPitchShiftModule(Owner) do
+  with TStkPitchShiftModule(Owner) do
   begin
-   SemiPos := Round(10 * Parameter[0]);
-   if SBSemitones.Position <> SemiPos
-    then SBSemitones.Position := SemiPos;
-   LbSemitonesValue.Caption := FloatToStrF(Parameter[0], ffGeneral, 4, 4);
+    SemiPos := Round(10 * Parameter[0]);
+    if SBSemitones.Position <> SemiPos then
+      SBSemitones.Position := SemiPos;
+    LbSemitonesValue.Caption := FloatToStrF(Parameter[0], ffGeneral, 4, 4);
   end;
 end;
 
@@ -104,12 +104,12 @@ procedure TFmStkPitchShift.UpdateEffectMix;
 var
   EffectMixPos: Integer;
 begin
- with TStkPitchShiftModule(Owner) do
+  with TStkPitchShiftModule(Owner) do
   begin
-   EffectMixPos := Round(10 * Parameter[1]);
-   if SBEffectMix.Position <> EffectMixPos
-    then SBEffectMix.Position := EffectMixPos;
-   LbEffectMixValue.Caption := FloatToStrF(Parameter[1], ffGeneral, 4, 4) + ' %';
+    EffectMixPos := Round(10 * Parameter[1]);
+    if SbEffectMix.Position <> EffectMixPos then
+      SbEffectMix.Position := EffectMixPos;
+    LbEffectMixValue.Caption := FloatToStrF(Parameter[1], ffGeneral, 4, 4) + ' %';
   end;
 end;
 

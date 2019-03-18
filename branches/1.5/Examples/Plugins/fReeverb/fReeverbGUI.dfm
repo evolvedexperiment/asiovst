@@ -27,8 +27,8 @@ object FmReverb: TFmReverb
     PanelColor = clWhite
     ParentColor = True
     TabOrder = 2
-    UseDockManager = True
     Transparent = True
+    UseDockManager = True
     object LbDry: TGuiLabel
       Left = 4
       Top = 3
@@ -184,6 +184,8 @@ object FmReverb: TFmReverb
       Top = 2
       Width = 156
       Height = 19
+      Items.Strings = (
+        'Random 23')
       Alignment = taLeftJustify
       BorderColor = 5855577
       BorderRadius = 4.000000000000000000
@@ -194,9 +196,6 @@ object FmReverb: TFmReverb
       Font.Height = -13
       Font.Name = 'Tahoma'
       Font.Style = []
-      ItemIndex = -1
-      Items.Strings = (
-        'Random 23')
       ParentFont = False
       SelectBoxColor = 2960685
       OnChange = SBPresetChange

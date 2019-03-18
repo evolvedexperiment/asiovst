@@ -1,5 +1,4 @@
 object HardKneeCompressorDataModule: THardKneeCompressorDataModule
-  OldCreateOrder = True
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'Simple Compressor II'
@@ -94,8 +93,6 @@ object HardKneeCompressorDataModule: THardKneeCompressorDataModule
   OnProcess = VSTModuleProcess
   OnProcess32Replacing = VSTModuleProcess
   OnSampleRateChange = VSTModuleSampleRateChange
-  Left = 239
-  Top = 105
   Height = 150
   Width = 215
 end

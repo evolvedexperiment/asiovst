@@ -57,8 +57,8 @@ type
     procedure ParameterAlgorithmDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterAlgorithmChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
-    FBarberpole      : array [0..1] of TDspBarberpole32;
-    FCriticalSection : TCriticalSection;
+    FBarberpole: array [0 .. 1] of TDspBarberpole32;
+    FCriticalSection: TCriticalSection;
     function GetBarberpole(Index: Integer): TDspBarberpole32;
   public
     property Barberpole[Index: Integer]: TDspBarberpole32 read GetBarberpole;
@@ -80,202 +80,228 @@ resourcestring
 
 procedure TBarberpoleFlangerModule.VSTModuleCreate(Sender: TObject);
 begin
- FCriticalSection := TCriticalSection.Create;
+  FCriticalSection := TCriticalSection.Create;
 end;
 
 procedure TBarberpoleFlangerModule.VSTModuleDestroy(Sender: TObject);
 begin
- FreeAndNil(FCriticalSection);
+  FreeAndNil(FCriticalSection);
 end;
 
 procedure TBarberpoleFlangerModule.VSTModuleOpen(Sender: TObject);
 var
-  Channel : Integer;
+  Channel: Integer;
 begin
- for Channel := 0 to 1 do
+  for Channel := 0 to 1 do
   begin
-   FBarberpole[Channel] := TDspBarberpole32.Create;
-   FBarberpole[Channel].SampleRate := SampleRate;
+    FBarberpole[Channel] := TDspBarberpole32.Create;
+    FBarberpole[Channel].SampleRate := SampleRate;
   end;
 
- // register editor
- EditorFormClass := TFmBarberpoleFlanger;
+  // register editor
+  EditorFormClass := TFmBarberpoleFlanger;
 
- // default parameters
- Parameter[0] :=  2;
- Parameter[1] :=  0.2;
- Parameter[2] :=  5;
- Parameter[3] := 50;
- Parameter[4] :=  2;
+  // default parameters
+  Parameter[0] := 2;
+  Parameter[1] := 0.2;
+  Parameter[2] := 5;
+  Parameter[3] := 50;
+  Parameter[4] := 2;
 
- // program parameters
- with Programs[0] do
+  // program parameters
+  with Programs[0] do
   begin
-   Parameter[0] :=  2;
-   Parameter[1] :=  0.2;
-   Parameter[2] :=  5;
-   Parameter[3] := 50;
-   Parameter[4] :=  2;
+    Parameter[0] := 2;
+    Parameter[1] := 0.2;
+    Parameter[2] := 5;
+    Parameter[3] := 50;
+    Parameter[4] := 2;
   end;
- with Programs[1] do
+  with Programs[1] do
   begin
-   Parameter[0] :=  2;
-   Parameter[1] :=  0.02;
-   Parameter[2] :=  2;
-   Parameter[3] := 50;
-   Parameter[4] :=  2;
+    Parameter[0] := 2;
+    Parameter[1] := 0.02;
+    Parameter[2] := 2;
+    Parameter[3] := 50;
+    Parameter[4] := 2;
   end;
- with Programs[2] do
+  with Programs[2] do
   begin
-   Parameter[0] :=  2;
-   Parameter[1] :=  0.04;
-   Parameter[2] :=  4;
-   Parameter[3] := 50;
-   Parameter[4] :=  2;
+    Parameter[0] := 2;
+    Parameter[1] := 0.04;
+    Parameter[2] := 4;
+    Parameter[3] := 50;
+    Parameter[4] := 2;
   end;
- with Programs[3] do
+  with Programs[3] do
   begin
-   Parameter[0] :=  2;
-   Parameter[1] :=  0.62;
-   Parameter[2] :=  4.5;
-   Parameter[3] := 50;
-   Parameter[4] :=  2;
+    Parameter[0] := 2;
+    Parameter[1] := 0.62;
+    Parameter[2] := 4.5;
+    Parameter[3] := 50;
+    Parameter[4] := 2;
   end;
 end;
 
 procedure TBarberpoleFlangerModule.VSTModuleClose(Sender: TObject);
 begin
- FreeAndNil(FBarberpole[0]);
- FreeAndNil(FBarberpole[1]);
+  FreeAndNil(FBarberpole[0]);
+  FreeAndNil(FBarberpole[1]);
 end;
 
 function TBarberpoleFlangerModule.GetBarberpole(Index: Integer): TDspBarberpole32;
 begin
- if Index in [0..1]
-  then Result := FBarberpole[Index]
-  else raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
+  if Index in [0 .. 1] then
+    Result := FBarberpole[Index]
+  else
+    raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
 end;
 
-procedure TBarberpoleFlangerModule.ParamSpeedChange(Sender: TObject; const Index: Integer; var Value: Single);
+procedure TBarberpoleFlangerModule.ParamSpeedChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
- FCriticalSection.Enter;
- try
-  if Assigned(FBarberpole[0]) then FBarberpole[0].Speed := Value;
-  if Assigned(FBarberpole[1]) then FBarberpole[1].Speed := Value;
- finally
-  FCriticalSection.Leave;
- end;
- if EditorForm is TFmBarberpoleFlanger then
-  with TFmBarberpoleFlanger(EditorForm)
-   do UpdateSpeed;
+  FCriticalSection.Enter;
+  try
+    if Assigned(FBarberpole[0]) then
+      FBarberpole[0].Speed := Value;
+    if Assigned(FBarberpole[1]) then
+      FBarberpole[1].Speed := Value;
+  finally
+    FCriticalSection.Leave;
+  end;
+  if EditorForm is TFmBarberpoleFlanger then
+    with TFmBarberpoleFlanger(EditorForm) do
+      UpdateSpeed;
 end;
 
-procedure TBarberpoleFlangerModule.ParamStagesDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+procedure TBarberpoleFlangerModule.ParamStagesDisplay(Sender: TObject;
+  const Index: Integer; var PreDefined: AnsiString);
 begin
- PreDefined := AnsiString(IntToStr(Round(Parameter[Index])));
+  PreDefined := AnsiString(IntToStr(Round(Parameter[Index])));
 end;
 
-procedure TBarberpoleFlangerModule.ParameterAlgorithmChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TBarberpoleFlangerModule.ParameterAlgorithmChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
- FCriticalSection.Enter;
- try
-  if Assigned(FBarberpole[0]) then FBarberpole[0].Direction := TBarberpoleDirection(Round(Value));
-  if Assigned(FBarberpole[1]) then FBarberpole[1].Direction := TBarberpoleDirection(Round(Value));
- finally
-  FCriticalSection.Leave;
- end;
- if EditorForm is TFmBarberpoleFlanger then
-  with TFmBarberpoleFlanger(EditorForm)
-   do UpdateAlgorithm;
+  FCriticalSection.Enter;
+  try
+    if Assigned(FBarberpole[0]) then
+      FBarberpole[0].Direction := TBarberpoleDirection(Round(Value));
+    if Assigned(FBarberpole[1]) then
+      FBarberpole[1].Direction := TBarberpoleDirection(Round(Value));
+  finally
+    FCriticalSection.Leave;
+  end;
+  if EditorForm is TFmBarberpoleFlanger then
+    with TFmBarberpoleFlanger(EditorForm) do
+      UpdateAlgorithm;
 end;
 
-procedure TBarberpoleFlangerModule.ParameterAlgorithmDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+procedure TBarberpoleFlangerModule.ParameterAlgorithmDisplay(Sender: TObject;
+  const Index: Integer; var PreDefined: AnsiString);
 begin
- case Round(Parameter[Index]) of
-  0 : PreDefined := 'Up';
-  1 : PreDefined := 'Down';
-  2 : PreDefined := 'Up (Inv.)';
-  3 : PreDefined := 'Down (Inv.)';
- end;
+  case Round(Parameter[Index]) of
+    0:
+      PreDefined := 'Up';
+    1:
+      PreDefined := 'Down';
+    2:
+      PreDefined := 'Up (Inv.)';
+    3:
+      PreDefined := 'Down (Inv.)';
+  end;
 end;
 
-procedure TBarberpoleFlangerModule.ParamStagesChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TBarberpoleFlangerModule.ParamStagesChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
- FCriticalSection.Enter;
- try
-  if Assigned(FBarberpole[0]) then FBarberpole[0].Stages := Round(Value);
-  if Assigned(FBarberpole[1]) then FBarberpole[1].Stages := Round(Value);
- finally
-  FCriticalSection.Leave;
- end;
- if EditorForm is TFmBarberpoleFlanger then
-  with TFmBarberpoleFlanger(EditorForm)
-   do UpdateStages;
+  FCriticalSection.Enter;
+  try
+    if Assigned(FBarberpole[0]) then
+      FBarberpole[0].Stages := Round(Value);
+    if Assigned(FBarberpole[1]) then
+      FBarberpole[1].Stages := Round(Value);
+  finally
+    FCriticalSection.Leave;
+  end;
+  if EditorForm is TFmBarberpoleFlanger then
+    with TFmBarberpoleFlanger(EditorForm) do
+      UpdateStages;
 end;
 
-procedure TBarberpoleFlangerModule.ParamDepthChange(Sender: TObject; const Index: Integer; var Value: Single);
+procedure TBarberpoleFlangerModule.ParamDepthChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
- FCriticalSection.Enter;
- try
-  if Assigned(FBarberpole[0]) then FBarberpole[0].Depth := 0.01 * Value;
-  if Assigned(FBarberpole[1]) then FBarberpole[1].Depth := 0.01 * Value;
- finally
-  FCriticalSection.Leave;
- end;
- if EditorForm is TFmBarberpoleFlanger then
-  with TFmBarberpoleFlanger(EditorForm)
-   do UpdateDepth;
+  FCriticalSection.Enter;
+  try
+    if Assigned(FBarberpole[0]) then
+      FBarberpole[0].Depth := 0.01 * Value;
+    if Assigned(FBarberpole[1]) then
+      FBarberpole[1].Depth := 0.01 * Value;
+  finally
+    FCriticalSection.Leave;
+  end;
+  if EditorForm is TFmBarberpoleFlanger then
+    with TFmBarberpoleFlanger(EditorForm) do
+      UpdateDepth;
 end;
 
-procedure TBarberpoleFlangerModule.ParamMixChange(Sender: TObject; const Index: Integer; var Value: Single);
+procedure TBarberpoleFlangerModule.ParamMixChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
- FCriticalSection.Enter;
- try
-  if Assigned(FBarberpole[0]) then FBarberpole[0].Mix := 0.01 * Value;
-  if Assigned(FBarberpole[1]) then FBarberpole[1].Mix := 0.01 * Value;
- finally
-  FCriticalSection.Leave;
- end;
- if EditorForm is TFmBarberpoleFlanger then
-  with TFmBarberpoleFlanger(EditorForm)
-   do UpdateMix;
+  FCriticalSection.Enter;
+  try
+    if Assigned(FBarberpole[0]) then
+      FBarberpole[0].Mix := 0.01 * Value;
+    if Assigned(FBarberpole[1]) then
+      FBarberpole[1].Mix := 0.01 * Value;
+  finally
+    FCriticalSection.Leave;
+  end;
+  if EditorForm is TFmBarberpoleFlanger then
+    with TFmBarberpoleFlanger(EditorForm) do
+      UpdateMix;
 end;
 
 procedure TBarberpoleFlangerModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 begin
- if Abs(SampleRate) = 0 then exit;
+  if Abs(SampleRate) = 0 then
+    exit;
 
- FCriticalSection.Enter;
- try
-  if Assigned(FBarberpole[0]) then FBarberpole[0].SampleRate := Abs(SampleRate);
-  if Assigned(FBarberpole[1]) then FBarberpole[1].SampleRate := Abs(SampleRate);
- finally
-  FCriticalSection.Leave;
- end;
+  FCriticalSection.Enter;
+  try
+    if Assigned(FBarberpole[0]) then
+      FBarberpole[0].SampleRate := Abs(SampleRate);
+    if Assigned(FBarberpole[1]) then
+      FBarberpole[1].SampleRate := Abs(SampleRate);
+  finally
+    FCriticalSection.Leave;
+  end;
 end;
 
 procedure TBarberpoleFlangerModule.VSTModuleProcess(const Inputs,
   Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
-  Channel, Sample : Integer;
+  Channel, Sample: Integer;
 begin
- FCriticalSection.Enter;
- try
-  for Channel := 0 to Length(FBarberpole) - 1 do
-   for Sample := 0 to SampleFrames - 1
-  {$IFDEF CPU64}
-    do Outputs[Channel, Sample] := FastTanhOpt5Term(FBarberpole[Channel].ProcessSample32(Inputs[Channel, Sample]))
-  {$ELSE}
-    do Outputs[Channel, Sample] := FastTanhOpt5TermFPU(FBarberpole[Channel].ProcessSample32(Inputs[Channel, Sample]))
-  {$ENDIF}
- finally
-  FCriticalSection.Leave;
- end;
+  FCriticalSection.Enter;
+  try
+    for Channel := 0 to Length(FBarberpole) - 1 do
+      for Sample := 0 to SampleFrames - 1
+{$IFDEF CPU64}
+        do
+        Outputs[Channel, Sample] :=
+          FastTanhOpt5Term(FBarberpole[Channel].ProcessSample32
+          (Inputs[Channel, Sample]))
+{$ELSE}
+        do Outputs[Channel, Sample] :=
+        FastTanhOpt5TermFPU(FBarberpole[Channel].ProcessSample32
+        (Inputs[Channel, Sample]))
+{$ENDIF}
+  finally
+    FCriticalSection.Leave;
+  end;
 end;
 
 end.

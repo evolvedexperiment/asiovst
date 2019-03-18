@@ -80,35 +80,35 @@ uses
 
 procedure TFmBodeFrequencyShifter.FormCreate(Sender: TObject);
 begin
- // Create BackgRound Image
- FBackground := TGuiPixelMapMemory.Create;
+  // Create background image
+  FBackground := TGuiPixelMapMemory.Create;
 end;
 
 procedure TFmBodeFrequencyShifter.FormResize(Sender: TObject);
 var
-  x, y  : Integer;
-  s     : array [0..1] of Single;
-  h, hr : Single;
-  ScnLn : PPixel32Array;
+  x, y: Integer;
+  s: array [0 .. 1] of Single;
+  h, hr: Single;
+  ScnLn: PPixel32Array;
 begin
- with FBackground do
+  with FBackground do
   begin
-   SetSize(ClientWidth, ClientHeight);
-   s[0] := 0;
-   s[1] := 0;
-   hr   := 1 / Height;
-   for y := 0 to Height - 1 do
+    SetSize(ClientWidth, ClientHeight);
+    s[0] := 0;
+    s[1] := 0;
+    hr := 1 / Height;
+    for y := 0 to Height - 1 do
     begin
-     ScnLn := Scanline[y];
-     h := 0.1 * (1 - sqr(2 * (y - Height div 2) * hr));
-     for x := 0 to Width - 1 do
+      ScnLn := Scanline[y];
+      h := 0.1 * (1 - sqr(2 * (y - Height div 2) * hr));
+      for x := 0 to Width - 1 do
       begin
-       s[1] := 0.97 * s[0] + 0.03 * random;
-       s[0] := s[1];
+        s[1] := 0.97 * s[0] + 0.03 * random;
+        s[0] := s[1];
 
-       ScnLn[x].B := Round($70 - $34 * (s[1] - h));
-       ScnLn[x].G := Round($84 - $48 * (s[1] - h));
-       ScnLn[x].R := Round($8D - $50 * (s[1] - h));
+        ScnLn[x].B := Round($70 - $34 * (s[1] - h));
+        ScnLn[x].G := Round($84 - $48 * (s[1] - h));
+        ScnLn[x].R := Round($8D - $50 * (s[1] - h));
       end;
     end;
   end;
@@ -116,57 +116,57 @@ end;
 
 procedure TFmBodeFrequencyShifter.FormShow(Sender: TObject);
 begin
- with TBodeFrequencyShifterDataModule(Owner) do
+  with TBodeFrequencyShifterDataModule(Owner) do
   begin
-   DialFrequency.Max := ParameterProperties[0].Max;
-   DialFrequency.Min := ParameterProperties[0].Min;
+    DialFrequency.Max := ParameterProperties[0].Max;
+    DialFrequency.Min := ParameterProperties[0].Min;
   end;
 
- UpdateFrequency;
- UpdateMix;
+  UpdateFrequency;
+  UpdateMix;
 end;
 
 procedure TFmBodeFrequencyShifter.FormPaint(Sender: TObject);
 begin
- if Assigned(FBackground)
-  then FBackground.PaintTo(Canvas);
+  if Assigned(FBackground) then
+    FBackground.PaintTo(Canvas);
 end;
 
 procedure TFmBodeFrequencyShifter.DialFrequencyChange(Sender: TObject);
 begin
- with TBodeFrequencyShifterDataModule(Owner) do
+  with TBodeFrequencyShifterDataModule(Owner) do
   begin
-   if Parameter[0] <> DialFrequency.Value
-    then Parameter[0] := DialFrequency.Value;
+    if Parameter[0] <> DialFrequency.Value then
+      Parameter[0] := DialFrequency.Value;
   end;
 end;
 
 procedure TFmBodeFrequencyShifter.DialMixChange(Sender: TObject);
 begin
- with TBodeFrequencyShifterDataModule(Owner) do
+  with TBodeFrequencyShifterDataModule(Owner) do
   begin
-   if Parameter[1] <> DialMix.Value
-    then Parameter[1] := DialMix.Value;
+    if Parameter[1] <> DialMix.Value then
+      Parameter[1] := DialMix.Value;
   end;
 end;
 
 procedure TFmBodeFrequencyShifter.UpdateFrequency;
 begin
- with TBodeFrequencyShifterDataModule(Owner) do
+  with TBodeFrequencyShifterDataModule(Owner) do
   begin
-   if DialFrequency.Value <> Parameter[0]
-    then DialFrequency.Value := Parameter[0];
-   LbFrequencyValue.Caption := string(ParameterDisplay[0] + 'Hz');
+    if DialFrequency.Value <> Parameter[0] then
+      DialFrequency.Value := Parameter[0];
+    LbFrequencyValue.Caption := string(ParameterDisplay[0] + 'Hz');
   end;
 end;
 
 procedure TFmBodeFrequencyShifter.UpdateMix;
 begin
- with TBodeFrequencyShifterDataModule(Owner) do
+  with TBodeFrequencyShifterDataModule(Owner) do
   begin
-   if DialMix.Value <> Parameter[1]
-    then DialMix.Value := Parameter[1];
-   LbMixValue.Caption := string(ParameterDisplay[1] + '%');
+    if DialMix.Value <> Parameter[1] then
+      DialMix.Value := Parameter[1];
+    LbMixValue.Caption := string(ParameterDisplay[1] + '%');
   end;
 end;
 

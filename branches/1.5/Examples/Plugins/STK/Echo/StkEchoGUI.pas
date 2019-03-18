@@ -35,7 +35,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
   Forms, Controls, StdCtrls, DAV_Types, DAV_VSTModule;
 
 type
@@ -67,36 +67,36 @@ uses
 
 procedure TFmStkEcho.FormShow(Sender: TObject);
 begin
- UpdateDelay;
- UpdateEffectMix;
+  UpdateDelay;
+  UpdateEffectMix;
 end;
 
 procedure TFmStkEcho.SBDelayChange(Sender: TObject);
 begin
- with TStkEchoModule(Owner) do
+  with TStkEchoModule(Owner) do
   begin
-   Parameter[0] := 0.1 * SBDelay.Position;
+    Parameter[0] := 0.1 * SBDelay.Position;
   end;
 end;
 
 procedure TFmStkEcho.SbEffectMixChange(Sender: TObject);
 begin
- with TStkEchoModule(Owner) do
+  with TStkEchoModule(Owner) do
   begin
-   Parameter[1] := 0.1 * SBEffectMix.Position;
+    Parameter[1] := 0.1 * SbEffectMix.Position;
   end;
 end;
 
 procedure TFmStkEcho.UpdateDelay;
 var
-  DelayPos : Integer;
+  DelayPos: Integer;
 begin
- with TStkEchoModule(Owner) do
+  with TStkEchoModule(Owner) do
   begin
-   DelayPos := Round(10 * Parameter[0]);
-   if SBDelay.Position <> DelayPos
-    then SBDelay.Position := DelayPos;
-   LbDelayValue.Caption := FloatToStrF(Parameter[0], ffGeneral, 4, 4) + ' ms';
+    DelayPos := Round(10 * Parameter[0]);
+    if SBDelay.Position <> DelayPos then
+      SBDelay.Position := DelayPos;
+    LbDelayValue.Caption := FloatToStrF(Parameter[0], ffGeneral, 4, 4) + ' ms';
   end;
 end;
 
@@ -104,12 +104,12 @@ procedure TFmStkEcho.UpdateEffectMix;
 var
   EffectMixPos: Integer;
 begin
- with TStkEchoModule(Owner) do
+  with TStkEchoModule(Owner) do
   begin
-   EffectMixPos := Round(10 * Parameter[1]);
-   if SBEffectMix.Position <> EffectMixPos
-    then SBEffectMix.Position := EffectMixPos;
-   LbEffectMixValue.Caption := FloatToStrF(Parameter[1], ffGeneral, 4, 4) + ' %';
+    EffectMixPos := Round(10 * Parameter[1]);
+    if SbEffectMix.Position <> EffectMixPos then
+      SbEffectMix.Position := EffectMixPos;
+    LbEffectMixValue.Caption := FloatToStrF(Parameter[1], ffGeneral, 4, 4) + ' %';
   end;
 end;
 

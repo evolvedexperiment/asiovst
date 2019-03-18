@@ -32,8 +32,8 @@ unit SampleDelayGui;
 
 interface
 
-uses 
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
+uses
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
   Forms, Controls, StdCtrls, DAV_Types, DAV_VSTModule, DAV_GuiBackgrounds;
 
 type
@@ -70,66 +70,70 @@ uses
 
 procedure TFmSampleDelay.CbLinkClick(Sender: TObject);
 begin
- UpdateSamplesLeft;
- UpdateSamplesRight;
+  UpdateSamplesLeft;
+  UpdateSamplesRight;
 end;
 
 procedure TFmSampleDelay.FormCreate(Sender: TObject);
 begin
-// BrushedMetal.Active := True;
+  // BrushedMetal.Active := True;
 end;
 
 procedure TFmSampleDelay.FormShow(Sender: TObject);
 begin
- UpdateSamplesLeft;
- UpdateSamplesRight;
+  UpdateSamplesLeft;
+  UpdateSamplesRight;
 end;
 
 procedure TFmSampleDelay.SbSamplesLeftChange(Sender: TObject);
 begin
- with TSampleDelayDataModule(Owner) do
+  with TSampleDelayDataModule(Owner) do
   begin
-   if Round(Parameter[0]) <> SbSamplesLeft.Position
-    then Parameter[0] := SbSamplesLeft.Position;
-   if CbLink.Checked and (Round(Parameter[1]) <> SbSamplesLeft.Position)
-    then Parameter[1] := SbSamplesLeft.Position;
+    if Round(Parameter[0]) <> SbSamplesLeft.Position then
+      Parameter[0] := SbSamplesLeft.Position;
+    if CbLink.Checked and (Round(Parameter[1]) <> SbSamplesLeft.Position) then
+      Parameter[1] := SbSamplesLeft.Position;
   end;
 end;
 
 procedure TFmSampleDelay.SbSamplesRightChange(Sender: TObject);
 begin
- with TSampleDelayDataModule(Owner) do
+  with TSampleDelayDataModule(Owner) do
   begin
-   if Round(Parameter[1]) <> SbSamplesRight.Position
-    then Parameter[1] := SbSamplesRight.Position;
-   if CbLink.Checked and (Round(Parameter[0]) <> SbSamplesRight.Position)
-    then Parameter[0] := SbSamplesRight.Position;
+    if Round(Parameter[1]) <> SbSamplesRight.Position then
+      Parameter[1] := SbSamplesRight.Position;
+    if CbLink.Checked and (Round(Parameter[0]) <> SbSamplesRight.Position) then
+      Parameter[0] := SbSamplesRight.Position;
   end;
 end;
 
 procedure TFmSampleDelay.UpdateSamplesLeft;
 begin
- with TSampleDelayDataModule(Owner) do
+  with TSampleDelayDataModule(Owner) do
   begin
-   if SbSamplesLeft.Position <> Round(Parameter[0])
-    then SbSamplesLeft.Position := Round(Parameter[0]);
+    if SbSamplesLeft.Position <> Round(Parameter[0]) then
+      SbSamplesLeft.Position := Round(Parameter[0]);
 
-   if CbMilliseconds.Checked
-    then LbSamplesLeftValue.Caption := IntToStr(Round(1E3 * Parameter[1] / SampleRate)) + ' ms'
-    else LbSamplesLeftValue.Caption := IntToStr(Round(Parameter[0])) + ' samples';
+    if CbMilliseconds.Checked then
+      LbSamplesLeftValue.Caption :=
+        IntToStr(Round(1E3 * Parameter[1] / SampleRate)) + ' ms'
+    else
+      LbSamplesLeftValue.Caption := IntToStr(Round(Parameter[0])) + ' samples';
   end;
 end;
 
 procedure TFmSampleDelay.UpdateSamplesRight;
 begin
- with TSampleDelayDataModule(Owner) do
+  with TSampleDelayDataModule(Owner) do
   begin
-   if SbSamplesRight.Position <> Round(Parameter[1])
-    then SbSamplesRight.Position := Round(Parameter[1]);
+    if SbSamplesRight.Position <> Round(Parameter[1]) then
+      SbSamplesRight.Position := Round(Parameter[1]);
 
-   if CbMilliseconds.Checked
-    then LbSamplesRightValue.Caption := IntToStr(Round(1E3 * Parameter[1] / SampleRate)) + ' ms'
-    else LbSamplesRightValue.Caption := IntToStr(Round(Parameter[1])) + ' samples';
+    if CbMilliseconds.Checked then
+      LbSamplesRightValue.Caption :=
+        IntToStr(Round(1E3 * Parameter[1] / SampleRate)) + ' ms'
+    else
+      LbSamplesRightValue.Caption := IntToStr(Round(Parameter[1])) + ' samples';
   end;
 end;
 

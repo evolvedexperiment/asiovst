@@ -166,6 +166,7 @@ object FmModDelay2: TFmModDelay2
     Height = 17
     BorderRadius = 4.000000000000000000
     BorderWidth = 1.000000000000000000
+    Caption = ''
     Color = 7373964
     DefaultValue = 50.000000000000000000
     FontShadow.Blur = 2.000000000000000000
@@ -188,6 +189,7 @@ object FmModDelay2: TFmModDelay2
     Height = 17
     BorderRadius = 4.000000000000000000
     BorderWidth = 1.000000000000000000
+    Caption = ''
     Color = 7373964
     DefaultValue = 50.000000000000000000
     FontShadow.Blur = 2.000000000000000000
@@ -210,6 +212,7 @@ object FmModDelay2: TFmModDelay2
     Height = 17
     BorderRadius = 4.000000000000000000
     BorderWidth = 1.000000000000000000
+    Caption = ''
     Color = 7373964
     DefaultValue = 50.000000000000000000
     FontShadow.Blur = 2.000000000000000000
@@ -232,6 +235,7 @@ object FmModDelay2: TFmModDelay2
     Height = 17
     BorderRadius = 4.000000000000000000
     BorderWidth = 1.000000000000000000
+    Caption = ''
     Color = 7373964
     DefaultValue = 50.000000000000000000
     FontShadow.Blur = 2.000000000000000000
@@ -254,6 +258,7 @@ object FmModDelay2: TFmModDelay2
     Height = 17
     BorderRadius = 4.000000000000000000
     BorderWidth = 1.000000000000000000
+    Caption = ''
     Color = 7373964
     DefaultValue = 50.000000000000000000
     FontShadow.Blur = 2.000000000000000000
@@ -276,6 +281,7 @@ object FmModDelay2: TFmModDelay2
     Height = 17
     BorderRadius = 4.000000000000000000
     BorderWidth = 1.000000000000000000
+    Caption = ''
     Color = 7373964
     DefaultValue = 50.000000000000000000
     FontShadow.Blur = 2.000000000000000000
@@ -298,6 +304,7 @@ object FmModDelay2: TFmModDelay2
     Height = 17
     BorderRadius = 4.000000000000000000
     BorderWidth = 1.000000000000000000
+    Caption = ''
     Color = 7373964
     DefaultValue = 50.000000000000000000
     FontShadow.Blur = 2.000000000000000000
@@ -320,6 +327,7 @@ object FmModDelay2: TFmModDelay2
     Height = 17
     BorderRadius = 4.000000000000000000
     BorderWidth = 1.000000000000000000
+    Caption = ''
     Color = 7373964
     DefaultValue = 50.000000000000000000
     FontShadow.Blur = 2.000000000000000000
@@ -342,6 +350,7 @@ object FmModDelay2: TFmModDelay2
     Height = 17
     BorderRadius = 4.000000000000000000
     BorderWidth = 1.000000000000000000
+    Caption = ''
     Color = 7373964
     DefaultValue = 50.000000000000000000
     FontShadow.Blur = 2.000000000000000000
@@ -364,6 +373,7 @@ object FmModDelay2: TFmModDelay2
     Height = 17
     BorderRadius = 4.000000000000000000
     BorderWidth = 1.000000000000000000
+    Caption = ''
     Color = 7373964
     DefaultValue = 50.000000000000000000
     FontShadow.Blur = 2.000000000000000000
@@ -386,6 +396,7 @@ object FmModDelay2: TFmModDelay2
     Height = 17
     BorderRadius = 4.000000000000000000
     BorderWidth = 1.000000000000000000
+    Caption = ''
     Color = 7373964
     DefaultValue = 50.000000000000000000
     FontShadow.Blur = 2.000000000000000000
@@ -408,6 +419,7 @@ object FmModDelay2: TFmModDelay2
     Height = 17
     BorderRadius = 4.000000000000000000
     BorderWidth = 1.000000000000000000
+    Caption = ''
     Color = 7373964
     DefaultValue = 50.000000000000000000
     FontShadow.Blur = 2.000000000000000000
@@ -430,6 +442,7 @@ object FmModDelay2: TFmModDelay2
     Height = 17
     BorderRadius = 4.000000000000000000
     BorderWidth = 1.000000000000000000
+    Caption = ''
     Color = 7373964
     DefaultValue = 50.000000000000000000
     FontShadow.Blur = 2.000000000000000000
@@ -452,6 +465,7 @@ object FmModDelay2: TFmModDelay2
     Height = 17
     BorderRadius = 4.000000000000000000
     BorderWidth = 1.000000000000000000
+    Caption = ''
     Color = 7373964
     DefaultValue = 50.000000000000000000
     FontShadow.Blur = 2.000000000000000000

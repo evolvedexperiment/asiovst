@@ -41,7 +41,6 @@ object FmASIOMP3: TFmASIOMP3
     Top = 7
     Width = 273
     Height = 21
-    ItemHeight = 13
     TabOrder = 0
     OnChange = DriverComboChange
   end
@@ -61,7 +60,6 @@ object FmASIOMP3: TFmASIOMP3
     Width = 233
     Height = 21
     Style = csDropDownList
-    ItemHeight = 13
     TabOrder = 2
     OnChange = ChannelBoxChange
   end
@@ -93,6 +91,7 @@ object FmASIOMP3: TFmASIOMP3
     OnClick = BtSelectClick
   end
   object ASIOHost: TAsioHost
+    AsioTime.SamplePos = 0
     AsioTime.Speed = 1.000000000000000000
     AsioTime.SampleRate = 44100.000000000000000000
     AsioTime.Flags = [atSystemTimeValid, atSamplePositionValid, atSampleRateValid, atSpeedValid]

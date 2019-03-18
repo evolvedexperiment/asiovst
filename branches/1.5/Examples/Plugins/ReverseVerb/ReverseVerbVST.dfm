@@ -229,8 +229,6 @@ object ReverseVerbDataModule: TReverseVerbDataModule
   OnProcess = VSTModuleProcessForward
   OnProcess32Replacing = VSTModuleProcessForward
   OnSampleRateChange = VSTModuleSampleRateChange
-  Left = 191
-  Top = 76
   Height = 150
   Width = 215
 end

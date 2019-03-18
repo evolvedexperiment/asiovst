@@ -205,8 +205,6 @@ object fReeverbVST: TfReeverbVST
   OnProcess = VSTModuleProcess
   OnProcess32Replacing = VSTModuleProcessReplacing
   OnSampleRateChange = VSTModuleSampleRateChange
-  Left = 248
-  Top = 106
   Height = 150
   Width = 215
 end

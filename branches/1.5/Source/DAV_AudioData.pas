@@ -529,8 +529,6 @@ begin
   begin
     AllocateMemory(NewSampleCount);
     FSampleCount := NewSampleCount;
-    // if Assigned(FOnSampleCountChanged)
-    // then FOnSampleCountChanged(Self);
   end;
 end;
 

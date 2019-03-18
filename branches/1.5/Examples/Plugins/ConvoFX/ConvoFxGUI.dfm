@@ -31,7 +31,6 @@ object FmConvoFX: TFmConvoFX
     FontOversampling = fo3x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object LbIRSelected: TGuiLabel
     Left = 8
@@ -48,7 +47,6 @@ object FmConvoFX: TFmConvoFX
     FontOversampling = fo3x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
     OnMouseDown = LbIRSelectedMouseDown
   end
   object LbGain: TGuiLabel
@@ -66,7 +64,6 @@ object FmConvoFX: TFmConvoFX
     FontOversampling = fo3x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object LbGainValue: TGuiLabel
     Left = 86
@@ -83,7 +80,6 @@ object FmConvoFX: TFmConvoFX
     FontOversampling = fo3x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object LbDamp: TGuiLabel
     Left = 168
@@ -100,7 +96,6 @@ object FmConvoFX: TFmConvoFX
     FontOversampling = fo3x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object LbDampValue: TGuiLabel
     Left = 164
@@ -117,7 +112,6 @@ object FmConvoFX: TFmConvoFX
     FontOversampling = fo3x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object DialIR: TGuiStitchedDial
     Left = 8
@@ -126,11 +120,13 @@ object FmConvoFX: TFmConvoFX
     Height = 72
     Max = 40.000000000000000000
     Min = 1.000000000000000000
-    OnChange = DialIRChange
+    ScrollRange = 400.000000000000000000
     ImageList = GSPL
     ImageIndex = 0
     Value = 1.000000000000000000
     WheelStep = 1.000000000000000000
+    OnChange = DialIRChange
+    DefaultValue = 0.000000000000000000
   end
   object DialGain: TGuiStitchedDial
     Left = 86
@@ -139,10 +135,13 @@ object FmConvoFX: TFmConvoFX
     Height = 72
     Max = 6.000000000000000000
     Min = -60.000000000000000000
-    OnChange = DialGainChange
+    ScrollRange = 400.000000000000000000
     ImageList = GSPL
     ImageIndex = 0
     WheelStep = 1.000000000000000000
+    OnChange = DialGainChange
+    DefaultValue = 0.000000000000000000
+    Value = 0.000000000000000000
   end
   object DialDamp: TGuiStitchedDial
     Left = 164
@@ -152,11 +151,13 @@ object FmConvoFX: TFmConvoFX
     CurveMapping = -2.099999904632568000
     Max = 20000.000000000000000000
     Min = 20.000000000000000000
-    OnChange = DialDampChange
+    ScrollRange = 400.000000000000000000
     ImageList = GSPL
     ImageIndex = 0
     Value = 20.000000000000000000
     WheelStep = 1.000000000000000000
+    OnChange = DialDampChange
+    DefaultValue = 0.000000000000000000
   end
   object GSPL: TGuiStitchedPNGList
     StitchedPNGs = <
@@ -1677,7 +1678,6 @@ object FmConvoFX: TFmConvoFX
           94D98A2F3845AB7DFDFF01BC87E34BE0DA3E0D0000000049454E44AE426082}
         DisplayName = 'Knob'
         GlyphCount = 65
-        StitchKind = skHorizontal
         Height = 72
         Width = 4680
       end>

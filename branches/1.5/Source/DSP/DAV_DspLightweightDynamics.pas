@@ -1452,17 +1452,6 @@ var
 begin
   Temp := CDenorm32 + FPrevAbsSample;
 
-  (*
-
-    if FPeak < FThreshold
-    then FAttackFactor := 1 - FastPower2MinError3(-1 / (FAttack * 0.001 * SampleRate))
-    else FAttackFactor := 1 - FastPower2MinError3(-1 / (FAttack * 0.001 * SampleRate * FRatio));
-
-    if FPeak < FThreshold
-    then FReleaseFactor := FastPower2MinError3(-1 / (FRelease * 0.001 * SampleRate))
-    else FReleaseFactor := FastPower2MinError3(-1 / (FRelease * 0.001 * SampleRate * FRatio));
-  *)
-
   if Temp > FPeak then
     FPeak := FPeak + (Temp - FPeak) * FAttackFactor
   else

@@ -54,8 +54,8 @@ type
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleDestroy(Sender: TObject);
   private
-    FVibrato         : array [0..1] of TDspVibrato32;
-    FCriticalSection : TCriticalSection;
+    FVibrato: array [0 .. 1] of TDspVibrato32;
+    FCriticalSection: TCriticalSection;
     function GetVibrato(Index: Integer): TDspVibrato32;
   public
     property Vibrato[Index: Integer]: TDspVibrato32 read GetVibrato;
@@ -77,160 +77,171 @@ resourcestring
 
 procedure TSimpleVibratoModule.VSTModuleCreate(Sender: TObject);
 begin
- FCriticalSection := TCriticalSection.Create;
+  FCriticalSection := TCriticalSection.Create;
 end;
 
 procedure TSimpleVibratoModule.VSTModuleDestroy(Sender: TObject);
 begin
- FreeAndNil(FCriticalSection);
+  FreeAndNil(FCriticalSection);
 end;
 
 procedure TSimpleVibratoModule.VSTModuleOpen(Sender: TObject);
 var
-  Channel : Integer;
+  Channel: Integer;
 begin
- for Channel := 0 to 1 do
+  for Channel := 0 to 1 do
   begin
-   FVibrato[Channel] := TDspVibrato32.Create;
-   FVibrato[Channel].SampleRate := SampleRate;
+    FVibrato[Channel] := TDspVibrato32.Create;
+    FVibrato[Channel].SampleRate := SampleRate;
   end;
 
- // initialize parameters
- Parameter[0] :=  0.2;
- Parameter[1] :=  2;
- with Programs[0] do
+  // initialize parameters
+  Parameter[0] := 0.2;
+  Parameter[1] := 2;
+  with Programs[0] do
   begin
-   Parameter[0] :=  0.2;
-   Parameter[1] :=  2;
+    Parameter[0] := 0.2;
+    Parameter[1] := 2;
   end;
- with Programs[1] do
+  with Programs[1] do
   begin
-   Parameter[0] :=  0.02;
-   Parameter[1] :=  1;
+    Parameter[0] := 0.02;
+    Parameter[1] := 1;
   end;
- with Programs[2] do
+  with Programs[2] do
   begin
-   Parameter[0] :=  0.04;
-   Parameter[1] :=  4;
+    Parameter[0] := 0.04;
+    Parameter[1] := 4;
   end;
- with Programs[3] do
+  with Programs[3] do
   begin
-   Parameter[0] :=  0.62;
-   Parameter[1] :=  4;
+    Parameter[0] := 0.62;
+    Parameter[1] := 4;
   end;
- with Programs[4] do
+  with Programs[4] do
   begin
-   Parameter[0] :=  1.3;
-   Parameter[1] :=  8;
+    Parameter[0] := 1.3;
+    Parameter[1] := 8;
   end;
- with Programs[5] do
+  with Programs[5] do
   begin
-   Parameter[0] :=  2.5;
-   Parameter[1] :=  10;
+    Parameter[0] := 2.5;
+    Parameter[1] := 10;
   end;
- with Programs[6] do
+  with Programs[6] do
   begin
-   Parameter[0] :=  2.5;
-   Parameter[1] :=  10;
+    Parameter[0] := 2.5;
+    Parameter[1] := 10;
   end;
- with Programs[7] do
+  with Programs[7] do
   begin
-   Parameter[0] :=  0.33;
-   Parameter[1] :=  12;
+    Parameter[0] := 0.33;
+    Parameter[1] := 12;
   end;
 
- // set editor form class
- EditorFormClass := TFmSimpleVibrato;
+  // set editor form class
+  EditorFormClass := TFmSimpleVibrato;
 end;
 
 procedure TSimpleVibratoModule.VSTModuleClose(Sender: TObject);
 begin
- FreeAndNil(FVibrato[0]);
- FreeAndNil(FVibrato[1]);
+  FreeAndNil(FVibrato[0]);
+  FreeAndNil(FVibrato[1]);
 end;
 
 function TSimpleVibratoModule.GetVibrato(Index: Integer): TDspVibrato32;
 begin
- if Index in [0..1]
-  then Result := FVibrato[Index]
-  else raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
+  if Index in [0 .. 1] then
+    Result := FVibrato[Index]
+  else
+    raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
 end;
 
-procedure TSimpleVibratoModule.ParamSpeedChange(Sender: TObject; const Index: Integer; var Value: Single);
+procedure TSimpleVibratoModule.ParamSpeedChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
- FCriticalSection.Enter;
- try
-  if Assigned(FVibrato[0]) then FVibrato[0].Speed := Value;
-  if Assigned(FVibrato[1]) then FVibrato[1].Speed := Value;
- finally
-  FCriticalSection.Leave;
- end;
+  FCriticalSection.Enter;
+  try
+    if Assigned(FVibrato[0]) then
+      FVibrato[0].Speed := Value;
+    if Assigned(FVibrato[1]) then
+      FVibrato[1].Speed := Value;
+  finally
+    FCriticalSection.Leave;
+  end;
 
- // update GUI
- if EditorForm is TFmSimpleVibrato then
-  with TFmSimpleVibrato(EditorForm)
-   do UpdateSpeed;
+  // update GUI
+  if EditorForm is TFmSimpleVibrato then
+    with TFmSimpleVibrato(EditorForm) do
+      UpdateSpeed;
 end;
 
-procedure TSimpleVibratoModule.ParamDepthChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TSimpleVibratoModule.ParamDepthChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
- FCriticalSection.Enter;
- try
-  if Assigned(FVibrato[0]) then FVibrato[0].Depth := 0.01 * Value;
-  if Assigned(FVibrato[1]) then FVibrato[1].Depth := 0.01 * Value;
- finally
-  FCriticalSection.Leave;
- end;
+  FCriticalSection.Enter;
+  try
+    if Assigned(FVibrato[0]) then
+      FVibrato[0].Depth := 0.01 * Value;
+    if Assigned(FVibrato[1]) then
+      FVibrato[1].Depth := 0.01 * Value;
+  finally
+    FCriticalSection.Leave;
+  end;
 
- // update GUI
- if EditorForm is TFmSimpleVibrato then
-  with TFmSimpleVibrato(EditorForm)
-   do UpdateDepth;
+  // update GUI
+  if EditorForm is TFmSimpleVibrato then
+    with TFmSimpleVibrato(EditorForm) do
+      UpdateDepth;
 end;
 
 procedure TSimpleVibratoModule.VSTModuleProcess(const Inputs,
   Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
-  Channel, Sample : Integer;
+  Channel, Sample: Integer;
 begin
- FCriticalSection.Enter;
- try
-  for Channel := 0 to 1 do
-   for Sample := 0 to SampleFrames - 1
-    do Outputs[Channel, Sample] := FVibrato[Channel].ProcessSample32(Inputs[Channel, Sample])
- finally
-  FCriticalSection.Leave;
- end;
+  FCriticalSection.Enter;
+  try
+    for Channel := 0 to 1 do
+      for Sample := 0 to SampleFrames - 1 do
+        Outputs[Channel, Sample] := FVibrato[Channel].ProcessSample32
+          (Inputs[Channel, Sample])
+  finally
+    FCriticalSection.Leave;
+  end;
 end;
 
 procedure TSimpleVibratoModule.VSTModuleProcessDoubleReplacing(const Inputs,
   Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
 var
-  Channel, Sample : Integer;
+  Channel, Sample: Integer;
 begin
- FCriticalSection.Enter;
- try
-  for Channel := 0 to 1 do
-   for Sample := 0 to SampleFrames - 1
-    do Outputs[Channel, Sample] := FastTanhContinousError4(FVibrato[Channel].ProcessSample32(Inputs[Channel, Sample]))
- finally
-  FCriticalSection.Leave;
- end;
+  FCriticalSection.Enter;
+  try
+    for Channel := 0 to 1 do
+      for Sample := 0 to SampleFrames - 1 do
+        Outputs[Channel, Sample] := FastTanhContinousError4
+          (FVibrato[Channel].ProcessSample32(Inputs[Channel, Sample]))
+  finally
+    FCriticalSection.Leave;
+  end;
 end;
 
 procedure TSimpleVibratoModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 begin
- if Abs(SampleRate) = 0 then Exit;
+  if Abs(SampleRate) = 0 then
+    Exit;
 
- FCriticalSection.Enter;
- try
-  if Assigned(FVibrato[0]) then FVibrato[0].SampleRate := Abs(SampleRate);
-  if Assigned(FVibrato[1]) then FVibrato[1].SampleRate := Abs(SampleRate);
- finally
-  FCriticalSection.Leave;
- end;
+  FCriticalSection.Enter;
+  try
+    if Assigned(FVibrato[0]) then
+      FVibrato[0].SampleRate := Abs(SampleRate);
+    if Assigned(FVibrato[1]) then
+      FVibrato[1].SampleRate := Abs(SampleRate);
+  finally
+    FCriticalSection.Leave;
+  end;
 end;
 
 end.

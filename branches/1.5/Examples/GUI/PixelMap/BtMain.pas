@@ -115,255 +115,256 @@ uses
 
 procedure TFmPixelMapTest.FormCreate(Sender: TObject);
 begin
- {$IFDEF DIB}
- FGuiBitmap := TGuiPixelMapDIB.Create;
- {$ELSE}
- FGuiBitmap := TGuiPixelMapMemory.Create;
- {$ENDIF}
-
- with FGuiBitmap do
+{$IFDEF DIB}
+  FGuiBitmap := TGuiPixelMapDIB.Create;
+{$ELSE}
+  FGuiBitmap := TGuiPixelMapMemory.Create;
+{$ENDIF}
+  with FGuiBitmap do
   begin
-   Width := PaintBox.Width;
-   Height := PaintBox.Height;
+    Width := PaintBox.Width;
+    Height := PaintBox.Height;
   end;
 
- PaintBox.ControlStyle := PaintBox.ControlStyle + [csOpaque];
- {$IFDEF FPC}
- ControlStyle := ControlStyle + [csOpaque];
- DoubleBuffered := True;
- {$ENDIF}
+  PaintBox.ControlStyle := PaintBox.ControlStyle + [csOpaque];
+{$IFDEF FPC}
+  ControlStyle := ControlStyle + [csOpaque];
+  DoubleBuffered := True;
+{$ENDIF}
 end;
 
 procedure TFmPixelMapTest.FormDblClick(Sender: TObject);
 begin
- ClientHeight := PaintBox.Width + PaintBox.Top + 8;
+  ClientHeight := PaintBox.Width + PaintBox.Top + 8;
 end;
 
 procedure TFmPixelMapTest.FormDestroy(Sender: TObject);
 begin
- FreeAndNil(FGuiBitmap);
+  FreeAndNil(FGuiBitmap);
 end;
 
 procedure TFmPixelMapTest.FormResize(Sender: TObject);
 begin
- if Assigned(FGuiBitmap) then
+  if Assigned(FGuiBitmap) then
   begin
-   FGuiBitmap.SetSize(PaintBox.Width, PaintBox.Height);
-   FGuiBitmap.Clear;
+    FGuiBitmap.SetSize(PaintBox.Width, PaintBox.Height);
+    FGuiBitmap.Clear;
   end;
 end;
 
 procedure TFmPixelMapTest.MiFrameRectanglesClick(Sender: TObject);
 begin
- RenderFrameRectBitmap;
- PaintBox.Invalidate;
+  RenderFrameRectBitmap;
+  PaintBox.Invalidate;
 end;
 
 procedure TFmPixelMapTest.MiLineCircleClick(Sender: TObject);
 begin
- RenderLineCircleBitmap;
- PaintBox.Invalidate;
+  RenderLineCircleBitmap;
+  PaintBox.Invalidate;
 end;
 
 procedure TFmPixelMapTest.MiResizeClick(Sender: TObject);
 begin
- with FGuiBitmap
-  do Resize((2 * Width) div 3, Height);
+  with FGuiBitmap do
+    Resize((2 * Width) div 3, Height);
 
- PaintBox.Invalidate;
+  PaintBox.Invalidate;
 end;
 
 procedure TFmPixelMapTest.MiBasicMixClick(Sender: TObject);
 begin
- ClearBitmap;
- RenderLineCircleBitmap;
- RenderFillRectBitmap;
- RenderFrameRectBitmap;
- PaintBox.Invalidate;
+  ClearBitmap;
+  RenderLineCircleBitmap;
+  RenderFillRectBitmap;
+  RenderFrameRectBitmap;
+  PaintBox.Invalidate;
 end;
 
 procedure TFmPixelMapTest.MiBoxBlurClick(Sender: TObject);
 begin
- with TGuiStackBlurFilter.Create do
-  try
-   Radius := 5;
-   Filter(FGuiBitmap);
-  finally
-   Free;
-  end;
- PaintBox.Invalidate;
+  with TGuiStackBlurFilter.Create do
+    try
+      Radius := 5;
+      Filter(FGuiBitmap);
+    finally
+      Free;
+    end;
+  PaintBox.Invalidate;
 end;
 
 procedure TFmPixelMapTest.MiClearClick(Sender: TObject);
 begin
- ClearBitmap;
- PaintBox.Invalidate;
+  ClearBitmap;
+  PaintBox.Invalidate;
 end;
 
 procedure TFmPixelMapTest.MiCountTestClick(Sender: TObject);
 var
-  i : Integer;
+  i: Integer;
 begin
- i := 0;
- while i < 1 shl 16 do
-  try
-   {$IFDEF DIB}
-   with TGuiPixelMapDIB.Create do
-   {$ELSE}
-   with TGuiPixelMapMemory.Create do
-   {$ENDIF}
-    begin
-     Width := 10;
-     Height := 10;
+  i := 0;
+  while i < 1 shl 16 do
+    try
+{$IFDEF DIB}
+      with TGuiPixelMapDIB.Create do
+{$ELSE}
+      with TGuiPixelMapMemory.Create do
+{$ENDIF}
+      begin
+        Width := 10;
+        Height := 10;
+      end;
+      Inc(i);
+    except
+      raise Exception.CreateFmt('Only %d bitmaps created', [i]);
     end;
-   Inc(i);
-  except
-   raise Exception.CreateFmt('Only %d bitmaps created', [i]);
-  end;
 end;
 
 procedure TFmPixelMapTest.MiExitClick(Sender: TObject);
 begin
- Close;
+  Close;
 end;
 
 procedure TFmPixelMapTest.MiFillRectClick(Sender: TObject);
 begin
- RenderFillRectBitmap;
- PaintBox.Invalidate;
+  RenderFillRectBitmap;
+  PaintBox.Invalidate;
 end;
 
 procedure TFmPixelMapTest.MiSaturationClick(Sender: TObject);
 begin
- with TGuiSaturationFilter.Create do
-  try
-   Value := 1;
-   Filter(FGuiBitmap);
-  finally
-   Free;
-  end;
- PaintBox.Invalidate;
+  with TGuiSaturationFilter.Create do
+    try
+      Value := 1;
+      Filter(FGuiBitmap);
+    finally
+      Free;
+    end;
+  PaintBox.Invalidate;
 end;
 
 procedure TFmPixelMapTest.MiSaveClick(Sender: TObject);
 begin
- FGuiBitmap.SaveToFile('Test.bmp');
+  FGuiBitmap.SaveToFile('Test.bmp');
 end;
 
 procedure TFmPixelMapTest.PaintBoxPaint(Sender: TObject);
 begin
- if Assigned(FGuiBitmap)
-  then FGuiBitmap.PaintTo(PaintBox.Canvas);
+  if Assigned(FGuiBitmap) then
+    FGuiBitmap.PaintTo(PaintBox.Canvas);
 
- with PaintBox do
+  with PaintBox do
   begin
-   if Width > FGuiBitmap.Width
-    then Canvas.FillRect(Rect(FGuiBitmap.Width, 0, Width, Height));
+    if Width > FGuiBitmap.Width then
+      Canvas.FillRect(Rect(FGuiBitmap.Width, 0, Width, Height));
 
-   if Height > FGuiBitmap.Height
-    then Canvas.FillRect(Rect(0, FGuiBitmap.Height, Width, Height));
+    if Height > FGuiBitmap.Height then
+      Canvas.FillRect(Rect(0, FGuiBitmap.Height, Width, Height));
   end;
 end;
 
 procedure TFmPixelMapTest.RenderFillRectBitmap;
 var
-  Color : TPixel32;
-  Level : Integer;
-  X, Y  : Integer;
+  Color: TPixel32;
+  Level: Integer;
+  X, Y: Integer;
 begin
- with FGuiBitmap do
-  for Level := 0 to 10 do
-   begin
-    Color.R := Random($FF);
-    Color.G := Random($FF);
-    Color.B := Random($FF);
-    Color.A := Random($FF);
-
-    X := Random(Width);
-    Y := Random(Height);
-    FillRect(Rect(X, Y, X + Random(Width - 1 - X), Y + Random(Height - 1 - Y)), Color);
-   end;
-end;
-
-procedure TFmPixelMapTest.RenderFrameRectBitmap;
-var
-  Color : TPixel32;
-  Level : Integer;
-  X, Y  : Integer;
-begin
- with FGuiBitmap do
-  for Level := 0 to 10 do
-   begin
-    Color.R := Random($FF);
-    Color.G := Random($FF);
-    Color.B := Random($FF);
-    Color.A := Random($FF);
-
-    X := Random(Width);
-    Y := Random(Height);
-    FrameRect(Rect(X, Y, X + Random(Width - X), Y + Random(Height - Y)), Color);
-   end;
-end;
-
-procedure TFmPixelMapTest.RenderLineBitmap;
-var
-  Color : TPixel32;
-  Level : Integer;
-begin
- with FGuiBitmap do
-  for Level := 0 to 10 do
-   begin
-    Color.R := Random($FF);
-    Color.G := Random($FF);
-    Color.B := Random($FF);
-    Color.A := Random($FF);
-
-    Line(Random(Width), Random(Height), Random(Width), Random(Height), Color);
-   end;
-end;
-
-procedure TFmPixelMapTest.RenderLineCircleBitmap;
-var
-  Color  : TPixel32;
-  Level  : Integer;
-  Index  : Integer;
-  Center : TPoint;
-  X, Y   : Single;
-begin
- with FGuiBitmap do
-  for Level := 0 to 10 do
-   begin
-    Center.X := Width div 2;
-    Center.Y := Height div 2;
-    for Index := 0 to 35 do
-     begin
+  with FGuiBitmap do
+    for Level := 0 to 10 do
+    begin
       Color.R := Random($FF);
       Color.G := Random($FF);
       Color.B := Random($FF);
       Color.A := Random($FF);
 
-      GetSinCos(Pi * Index / 18, X, Y);
-      Line(Center.X, Center.Y, Round(Center.X * (1 + 0.9 * X )),
-        Round(Center.Y * (1 + 0.9 * Y)), Color);
-     end;
-   end;
+      X := Random(Width);
+      Y := Random(Height);
+      FillRect(Rect(X, Y, X + Random(Width - 1 - X),
+        Y + Random(Height - 1 - Y)), Color);
+    end;
+end;
+
+procedure TFmPixelMapTest.RenderFrameRectBitmap;
+var
+  Color: TPixel32;
+  Level: Integer;
+  X, Y: Integer;
+begin
+  with FGuiBitmap do
+    for Level := 0 to 10 do
+    begin
+      Color.R := Random($FF);
+      Color.G := Random($FF);
+      Color.B := Random($FF);
+      Color.A := Random($FF);
+
+      X := Random(Width);
+      Y := Random(Height);
+      FrameRect(Rect(X, Y, X + Random(Width - X),
+        Y + Random(Height - Y)), Color);
+    end;
+end;
+
+procedure TFmPixelMapTest.RenderLineBitmap;
+var
+  Color: TPixel32;
+  Level: Integer;
+begin
+  with FGuiBitmap do
+    for Level := 0 to 10 do
+    begin
+      Color.R := Random($FF);
+      Color.G := Random($FF);
+      Color.B := Random($FF);
+      Color.A := Random($FF);
+
+      Line(Random(Width), Random(Height), Random(Width), Random(Height), Color);
+    end;
+end;
+
+procedure TFmPixelMapTest.RenderLineCircleBitmap;
+var
+  Color: TPixel32;
+  Level: Integer;
+  Index: Integer;
+  Center: TPoint;
+  X, Y: Single;
+begin
+  with FGuiBitmap do
+    for Level := 0 to 10 do
+    begin
+      Center.X := Width div 2;
+      Center.Y := Height div 2;
+      for Index := 0 to 35 do
+      begin
+        Color.R := Random($FF);
+        Color.G := Random($FF);
+        Color.B := Random($FF);
+        Color.A := Random($FF);
+
+        GetSinCos(Pi * Index / 18, X, Y);
+        Line(Center.X, Center.Y, Round(Center.X * (1 + 0.9 * X)),
+          Round(Center.Y * (1 + 0.9 * Y)), Color);
+      end;
+    end;
 end;
 
 procedure TFmPixelMapTest.MiTurnCounterclockwiseClick(Sender: TObject);
 begin
- FGuiBitmap.Turn(True);
- PaintBox.Invalidate;
+  FGuiBitmap.Turn(True);
+  PaintBox.Invalidate;
 end;
 
 procedure TFmPixelMapTest.MiTurnClockwiseClick(Sender: TObject);
 begin
- FGuiBitmap.Turn;
- PaintBox.Invalidate;
+  FGuiBitmap.Turn;
+  PaintBox.Invalidate;
 end;
 
 procedure TFmPixelMapTest.ClearBitmap;
 begin
- FGuiBitmap.Clear;
+  FGuiBitmap.Clear;
 end;
 
 end.

@@ -52,8 +52,8 @@ type
     procedure ParameterFrequencyDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterFrequencyLabel(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
   private
-    FCriticalSection : TCriticalSection;
-    FRingMod         : array of TAutoRingModulator32;
+    FCriticalSection: TCriticalSection;
+    FRingMod: array of TAutoRingModulator32;
     procedure ChooseProcess;
   public
   end;
@@ -74,162 +74,168 @@ const
 
 procedure TRingModulatorDataModule.VSTModuleCreate(Sender: TObject);
 begin
- FCriticalSection := TCriticalSection.Create;
+  FCriticalSection := TCriticalSection.Create;
 end;
 
 procedure TRingModulatorDataModule.VSTModuleDestroy(Sender: TObject);
 begin
- FreeAndNil(FCriticalSection);
+  FreeAndNil(FCriticalSection);
 end;
 
 procedure TRingModulatorDataModule.VSTModuleOpen(Sender: TObject);
 var
-  ChannelIndex : Integer;
-  UpperFreq    : Single;
+  ChannelIndex: Integer;
+  UpperFreq: Single;
 begin
- Assert(numInputs = numOutputs);
- Assert(numInputs > 0);
+  Assert(numInputs = numOutputs);
+  Assert(numInputs > 0);
 
- with TRegistry.Create do
-  try
-   RootKey := HKEY_CURRENT_USER;
-   if OpenKey(CRegKeyRoot, False) then
-    begin
-     if ValueExists('Upper Frequency') then
+  with TRegistry.Create do
+    try
+      RootKey := HKEY_CURRENT_USER;
+      if OpenKey(CRegKeyRoot, False) then
       begin
-       UpperFreq := StrToFloat(ReadString('Upper Frequency'));
-       if UpperFreq > ParameterProperties[0].Min
-        then ParameterProperties[0].Max := UpperFreq;
-      end;
-    end
-  finally
-   Free;
-  end;
+        if ValueExists('Upper Frequency') then
+        begin
+          UpperFreq := StrToFloat(ReadString('Upper Frequency'));
+          if UpperFreq > ParameterProperties[0].Min then
+            ParameterProperties[0].Max := UpperFreq;
+        end;
+      end
+    finally
+      Free;
+    end;
 
- SetLength(FRingMod, numInputs);
+  SetLength(FRingMod, numInputs);
 
- ChooseProcess;
+  ChooseProcess;
 
- for ChannelIndex := 0 to Length(FRingMod) - 1
-  do FRingMod[ChannelIndex] := TAutoRingModulator32.Create;
+  for ChannelIndex := 0 to Length(FRingMod) - 1 do
+    FRingMod[ChannelIndex] := TAutoRingModulator32.Create;
 
- Parameter[0] := 10;
+  Parameter[0] := 10;
 
- Programs[0].Parameter[0] := 10;
- Programs[1].Parameter[0] := 0.1;
- Programs[2].Parameter[0] := 1000;
+  Programs[0].Parameter[0] := 10;
+  Programs[1].Parameter[0] := 0.1;
+  Programs[2].Parameter[0] := 1000;
 end;
 
 procedure TRingModulatorDataModule.VSTModuleClose(Sender: TObject);
 var
-  ChannelIndex : Integer;
+  ChannelIndex: Integer;
 begin
- for ChannelIndex := 0 to Length(FRingMod) - 1
-  do FreeAndNil(FRingMod[ChannelIndex]);
+  for ChannelIndex := 0 to Length(FRingMod) - 1 do
+    FreeAndNil(FRingMod[ChannelIndex]);
 end;
 
 procedure TRingModulatorDataModule.ChooseProcess;
 begin
- case numInputs of
-   1 : OnProcess := VSTModuleProcessMono;
-   2 : OnProcess := VSTModuleProcessStereo;
-  else OnProcess := VSTModuleProcessMultiChannel;
- end;
- OnProcess32Replacing := OnProcess;
+  case numInputs of
+    1:
+      OnProcess := VSTModuleProcessMono;
+    2:
+      OnProcess := VSTModuleProcessStereo;
+  else
+    OnProcess := VSTModuleProcessMultiChannel;
+  end;
+  OnProcess32Replacing := OnProcess;
 end;
 
-procedure TRingModulatorDataModule.ParameterFrequencyChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TRingModulatorDataModule.ParameterFrequencyChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 var
-  ChannelIndex : Integer;
+  ChannelIndex: Integer;
 begin
- FCriticalSection.Enter;
- try
-  for ChannelIndex := 0 to Length(FRingMod) - 1 do
-   if Assigned(FRingMod[ChannelIndex])
-    then FRingMod[ChannelIndex].Frequency := Value;
- finally
-  FCriticalSection.Leave;
- end;
+  FCriticalSection.Enter;
+  try
+    for ChannelIndex := 0 to Length(FRingMod) - 1 do
+      if Assigned(FRingMod[ChannelIndex]) then
+        FRingMod[ChannelIndex].Frequency := Value;
+  finally
+    FCriticalSection.Leave;
+  end;
 end;
 
-procedure TRingModulatorDataModule.ParameterFrequencyDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+procedure TRingModulatorDataModule.ParameterFrequencyDisplay(Sender: TObject;
+  const Index: Integer; var PreDefined: AnsiString);
 begin
- if Parameter[Index] < 1000
-  then PreDefined := FloatToAnsiString(Parameter[Index], 4)
-  else PreDefined := FloatToAnsiString(0.001 * Parameter[Index], 4);
+  if Parameter[Index] < 1000 then
+    PreDefined := FloatToAnsiString(Parameter[Index], 4)
+  else
+    PreDefined := FloatToAnsiString(0.001 * Parameter[Index], 4);
 end;
 
-procedure TRingModulatorDataModule.ParameterFrequencyLabel(
-  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+procedure TRingModulatorDataModule.ParameterFrequencyLabel(Sender: TObject;
+  const Index: Integer; var PreDefined: AnsiString);
 begin
- if Parameter[Index] < 1000
-  then PreDefined := 'Hz'
-  else PreDefined := 'kHz';
+  if Parameter[Index] < 1000 then
+    PreDefined := 'Hz'
+  else
+    PreDefined := 'kHz';
 end;
 
 procedure TRingModulatorDataModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 var
-  ChannelIndex : Integer;
+  ChannelIndex: Integer;
 begin
- FCriticalSection.Enter;
- try
-  if Abs(SampleRate) > 0 then
-   for ChannelIndex := 0 to Length(FRingMod) - 1 do
-    if Assigned(FRingMod[ChannelIndex])
-     then FRingMod[ChannelIndex].SampleRate := Abs(SampleRate);
- finally
-  FCriticalSection.Leave;
- end;
+  FCriticalSection.Enter;
+  try
+    if Abs(SampleRate) > 0 then
+      for ChannelIndex := 0 to Length(FRingMod) - 1 do
+        if Assigned(FRingMod[ChannelIndex]) then
+          FRingMod[ChannelIndex].SampleRate := Abs(SampleRate);
+  finally
+    FCriticalSection.Leave;
+  end;
 end;
 
 procedure TRingModulatorDataModule.VSTModuleProcessMono(const Inputs,
   Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
-  Sample  : Integer;
+  Sample: Integer;
 begin
- FCriticalSection.Enter;
- try
-  for Sample := 0 to SampleFrames - 1
-   do Outputs[0, Sample] := FRingMod[0].ProcessSample32(Inputs[0, Sample]);
- finally
-  FCriticalSection.Leave;
- end;
+  FCriticalSection.Enter;
+  try
+    for Sample := 0 to SampleFrames - 1 do
+      Outputs[0, Sample] := FRingMod[0].ProcessSample32(Inputs[0, Sample]);
+  finally
+    FCriticalSection.Leave;
+  end;
 end;
 
 procedure TRingModulatorDataModule.VSTModuleProcessStereo(const Inputs,
   Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
-  Sample  : Integer;
+  Sample: Integer;
 begin
- FCriticalSection.Enter;
- try
-  for Sample := 0 to SampleFrames - 1 do
-   begin
-    Outputs[0, Sample] := FRingMod[0].ProcessSample32(Inputs[0, Sample]);
-    Outputs[1, Sample] := FRingMod[1].ProcessSample32(Inputs[1, Sample]);
-   end;
- finally
-  FCriticalSection.Leave;
- end;
+  FCriticalSection.Enter;
+  try
+    for Sample := 0 to SampleFrames - 1 do
+    begin
+      Outputs[0, Sample] := FRingMod[0].ProcessSample32(Inputs[0, Sample]);
+      Outputs[1, Sample] := FRingMod[1].ProcessSample32(Inputs[1, Sample]);
+    end;
+  finally
+    FCriticalSection.Leave;
+  end;
 end;
 
 procedure TRingModulatorDataModule.VSTModuleProcessMultiChannel(const Inputs,
   Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
-  Sample  : Integer;
-  ChannelIndex : Integer;
+  Sample: Integer;
+  ChannelIndex: Integer;
 begin
- FCriticalSection.Enter;
- try
-  for ChannelIndex := 0 to Length(FRingMod) - 1 do
-   for Sample := 0 to SampleFrames - 1
-    do Outputs[ChannelIndex, Sample] := FRingMod[ChannelIndex].ProcessSample32(Inputs[ChannelIndex, Sample]);
- finally
-  FCriticalSection.Leave;
- end;
+  FCriticalSection.Enter;
+  try
+    for ChannelIndex := 0 to Length(FRingMod) - 1 do
+      for Sample := 0 to SampleFrames - 1 do
+        Outputs[ChannelIndex, Sample] := FRingMod[ChannelIndex].ProcessSample32
+          (Inputs[ChannelIndex, Sample]);
+  finally
+    FCriticalSection.Leave;
+  end;
 end;
 
 end.

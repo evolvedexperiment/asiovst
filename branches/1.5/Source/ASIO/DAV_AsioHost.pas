@@ -798,10 +798,12 @@ end;
 destructor TCustomAsioHostBasic.Destroy;
 begin
   try
-    if GAsioHost = Self
-     then GAsioHost := nil;
-    if Assigned(FOnDestroy) then FOnDestroy(Self);
-    if Active then Active := False;
+    if GAsioHost = Self then
+      GAsioHost := nil;
+    if Assigned(FOnDestroy) then
+      FOnDestroy(Self);
+    if Active then
+      Active := False;
     CloseDriver;
     {$IFDEF FPC}
     LCLIntf.DeallocateHWnd(FHandle);

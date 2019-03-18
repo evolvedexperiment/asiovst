@@ -147,13 +147,6 @@ end;
 procedure TCustomGuiStitchedButton.UpdateBuffer;
 begin
   inherited;
-
-  (*
-    if not (Assigned(FStitchedList) and (FStitchedImageIndex >= 0)) then
-    if Assigned(FBuffer) and (FGlyphIndex = 0)
-    then FBuffer.FillRect(ClientRect, pxLime32)
-    else FBuffer.FillRect(ClientRect, pxRed32);
-  *)
 end;
 
 end.

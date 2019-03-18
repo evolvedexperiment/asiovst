@@ -170,16 +170,16 @@ resourcestring
 
 constructor TDriver.Create(AudioFileCache: TAudioFileCache);
 begin
- inherited Create(False);
- FAudioFileCache := AudioFileCache;
+  inherited Create(False);
+  FAudioFileCache := AudioFileCache;
 end;
 
 procedure TDriver.Execute;
 begin
- while not Terminated do
+  while not Terminated do
   begin
-   FAudioFileCache.BackgroundProcess;
-   Sleep(1);
+    FAudioFileCache.BackgroundProcess;
+    Sleep(1);
   end;
 end;
 
@@ -187,423 +187,439 @@ end;
 
 constructor TAudioFileCache.Create;
 begin
- inherited;
- FBufferSize := 1 shl 16;
- FBlockSize  := 1 shl 8;
- FLatency    := FBlockSize;
+  inherited;
+  FBufferSize := 1 shl 16;
+  FBlockSize := 1 shl 8;
+  FLatency := FBlockSize;
 
- FBufferPos         := 0;
- FPosition          := 0;
- FReadAheadOffset   := 0;
- FWriteAheadOffset  := FLatency;
+  FBufferPos := 0;
+  FPosition := 0;
+  FReadAheadOffset := 0;
+  FWriteAheadOffset := FLatency;
 
- FAudioFile.BlockSize := 0;
- FAudioFile.OnDecode  := DecodeHandler;
- FAudioFile.OnEncode  := EncodeHandler;
+  FAudioFile.BlockSize := 0;
+  FAudioFile.OnDecode := DecodeHandler;
+  FAudioFile.OnEncode := EncodeHandler;
 
- SetLength(FBuffer, FAudioFile.ChannelCount);
- AllocateBuffer;
- FDriver := TDriver.Create(Self);
+  SetLength(FBuffer, FAudioFile.ChannelCount);
+  AllocateBuffer;
+  FDriver := TDriver.Create(Self);
 end;
 
 constructor TAudioFileCache.Create(const FileName: TFileName);
 var
   AudioFileClass: TAudioFileClass;
 begin
- FCriticalSection := TCriticalSection.Create;
+  FCriticalSection := TCriticalSection.Create;
 
- if FileExists(FileName)
-  then AudioFileClass := FileNameToFormat(FileName)
-  else AudioFileClass := ExtensionToFileFormat(ExtractFileExt(FileName));
+  if FileExists(FileName) then
+    AudioFileClass := FileNameToFormat(FileName)
+  else
+    AudioFileClass := ExtensionToFileFormat(ExtractFileExt(FileName));
 
- if AudioFileClass = nil
-  then raise Exception.Create(RCStrUnableToOpenAudio);
+  if AudioFileClass = nil then
+    raise Exception.Create(RCStrUnableToOpenAudio);
 
- FAudioFile := AudioFileClass.Create(FileName);
+  FAudioFile := AudioFileClass.Create(FileName);
 
- Create;
+  Create;
 end;
 
-constructor TAudioFileCache.Create(const Stream: TStream; AudioFileClass: TAudioFileClass = nil);
+constructor TAudioFileCache.Create(const Stream: TStream;
+  AudioFileClass: TAudioFileClass = nil);
 begin
- FCriticalSection := TCriticalSection.Create;
+  FCriticalSection := TCriticalSection.Create;
 
- if (AudioFileClass = nil) and (Stream.Size > 0)
-  then AudioFileClass := StreamToFormat(Stream);
+  if (AudioFileClass = nil) and (Stream.Size > 0) then
+    AudioFileClass := StreamToFormat(Stream);
 
- if AudioFileClass = nil
-  then raise Exception.Create(RCStrUnableToOpenAudio);
+  if AudioFileClass = nil then
+    raise Exception.Create(RCStrUnableToOpenAudio);
 
- FAudioFile := AudioFileClass.Create(Stream);
+  FAudioFile := AudioFileClass.Create(Stream);
 
- Create;
+  Create;
 end;
 
 destructor TAudioFileCache.Destroy;
 var
-  Channel : Cardinal;
+  Channel: Cardinal;
 begin
- with FDriver do
+  with FDriver do
   begin
-   if Suspended then Resume;
-   Terminate;
-   WaitFor;
-   Free;
+    if Suspended then
+      Resume;
+    Terminate;
+    WaitFor;
+    Free;
   end;
 
- FreeAndNil(FAudioFile);
- for Channel := 0 to Length(FBuffer) - 1 do
-  if Assigned(FBuffer[Channel]) then Dispose(FBuffer[Channel]);
+  FreeAndNil(FAudioFile);
+  for Channel := 0 to Length(FBuffer) - 1 do
+    if Assigned(FBuffer[Channel]) then
+      Dispose(FBuffer[Channel]);
 
- FreeAndNil(FCriticalSection); 
- inherited;
+  FreeAndNil(FCriticalSection);
+  inherited;
 end;
 
-////////////////////////////////////////////////////////////////////////////////
+/// /////////////////////////////////////////////////////////////////////////////
 
 function TAudioFileCache.GetChannelCount: Cardinal;
 begin
- Assert(assigned(FAudioFile));
- Result := FAudioFile.ChannelCount;
+  Assert(Assigned(FAudioFile));
+  Result := FAudioFile.ChannelCount;
 end;
 
 function TAudioFileCache.GetFreeSamplesInBuffer: Cardinal;
 begin
- Assert(FReadAheadOffset + FWriteAheadOffset <= FTotalBufferSize);
- Result := FTotalBufferSize - FReadAheadOffset - FWriteAheadOffset;
- Assert(Result <= FTotalBufferSize);
+  Assert(FReadAheadOffset + FWriteAheadOffset <= FTotalBufferSize);
+  Result := FTotalBufferSize - FReadAheadOffset - FWriteAheadOffset;
+  Assert(Result <= FTotalBufferSize);
 end;
 
 procedure TAudioFileCache.DecodeHandler(Sender: TObject;
   const Coder: TCustomChannelDataCoder; var Position: Cardinal);
 var
-  Channel : Integer;
-  AbsPos  : Cardinal;
+  Channel: Integer;
+  AbsPos: Cardinal;
 begin
- Assert(Coder.ChannelCount = FAudioFile.ChannelCount);
+  Assert(Coder.ChannelCount = FAudioFile.ChannelCount);
 
- if FBufferPos < FReadAheadOffset
-  then AbsPos := FTotalBufferSize + FBufferPos - FReadAheadOffset
-  else AbsPos := FBufferPos - FReadAheadOffset;
+  if FBufferPos < FReadAheadOffset then
+    AbsPos := FTotalBufferSize + FBufferPos - FReadAheadOffset
+  else
+    AbsPos := FBufferPos - FReadAheadOffset;
 
- with TCustomChannel32DataCoder(Coder) do
-  for Channel := 0 to Coder.ChannelCount - 1
-   do WriteData(Channel, AbsPos, ChannelPointer[Channel], SampleFrames);
+  with TCustomChannel32DataCoder(Coder) do
+    for Channel := 0 to Coder.ChannelCount - 1 do
+      WriteData(Channel, AbsPos, ChannelPointer[Channel], SampleFrames);
 
- FReadAheadOffset := FReadAheadOffset + Coder.SampleFrames;
- Assert(FReadAheadOffset < FTotalBufferSize);
+  FReadAheadOffset := FReadAheadOffset + Coder.SampleFrames;
+  Assert(FReadAheadOffset < FTotalBufferSize);
 end;
 
 procedure TAudioFileCache.FillBufferZero(SampleFrames: Cardinal);
 var
-  Channel : Integer;
-  AbsPos  : Cardinal;
+  Channel: Integer;
+  AbsPos: Cardinal;
 begin
- if FBufferPos < FReadAheadOffset
-  then AbsPos := FTotalBufferSize + FBufferPos - FReadAheadOffset
-  else AbsPos := FBufferPos - FReadAheadOffset;
+  if FBufferPos < FReadAheadOffset then
+    AbsPos := FTotalBufferSize + FBufferPos - FReadAheadOffset
+  else
+    AbsPos := FBufferPos - FReadAheadOffset;
 
- Assert(AbsPos < FTotalBufferSize);
+  Assert(AbsPos < FTotalBufferSize);
 
- for Channel := 0 to FAudioFile.ChannelCount - 1
-  do WriteZero(Channel, AbsPos, SampleFrames);
+  for Channel := 0 to FAudioFile.ChannelCount - 1 do
+    WriteZero(Channel, AbsPos, SampleFrames);
 
- FReadAheadOffset := FReadAheadOffset + SampleFrames;
- Assert(FReadAheadOffset < FTotalBufferSize);
+  FReadAheadOffset := FReadAheadOffset + SampleFrames;
+  Assert(FReadAheadOffset < FTotalBufferSize);
 end;
 
 procedure TAudioFileCache.EncodeHandler(Sender: TObject;
   const Coder: TCustomChannelDataCoder; var Position: Cardinal);
 var
-  Channel : Integer;
-  AbsPos  : Cardinal;
+  Channel: Integer;
+  AbsPos: Cardinal;
 begin
- Assert(Coder.ChannelCount = FAudioFile.ChannelCount);
+  Assert(Coder.ChannelCount = FAudioFile.ChannelCount);
 
- AbsPos := FBufferPos + FWriteAheadOffset;
- if AbsPos >= FTotalBufferSize
-  then AbsPos := AbsPos - FTotalBufferSize;
+  AbsPos := FBufferPos + FWriteAheadOffset;
+  if AbsPos >= FTotalBufferSize then
+    AbsPos := AbsPos - FTotalBufferSize;
 
- with TCustomChannel32DataCoder(Coder) do
-  for Channel := 0 to Coder.ChannelCount - 1
-   do ReadData(Channel, AbsPos, ChannelPointer[Channel], SampleFrames);
+  with TCustomChannel32DataCoder(Coder) do
+    for Channel := 0 to Coder.ChannelCount - 1 do
+      ReadData(Channel, AbsPos, ChannelPointer[Channel], SampleFrames);
 
- Assert(FWriteAheadOffset >= FLatency + Coder.SampleFrames);
- FWriteAheadOffset := FWriteAheadOffset - Coder.SampleFrames;
+  Assert(FWriteAheadOffset >= FLatency + Coder.SampleFrames);
+  FWriteAheadOffset := FWriteAheadOffset - Coder.SampleFrames;
 end;
 
 procedure TAudioFileCache.ReadData(const Channel, Position: Integer;
   Data: PDAVSingleFixedArray; SampleFrames: Cardinal);
 var
-  PartialSamples : Cardinal;
+  PartialSamples: Cardinal;
 begin
- Assert(SampleFrames > 0);
- if Cardinal(Position) >= FTotalBufferSize
-  then Assert(Cardinal(Position) < FTotalBufferSize);
+  Assert(SampleFrames > 0);
+  if Cardinal(Position) >= FTotalBufferSize then
+    Assert(Cardinal(Position) < FTotalBufferSize);
 
- if Cardinal(Position) + SampleFrames <= FTotalBufferSize
-  then Move(FBuffer[Channel]^[Position], Data^[0], SampleFrames * SizeOf(Single))
+  if Cardinal(Position) + SampleFrames <= FTotalBufferSize then
+    Move(FBuffer[Channel]^[Position], Data^[0], SampleFrames * SizeOf(Single))
   else
-   begin
+  begin
     PartialSamples := (FTotalBufferSize - Cardinal(Position));
-    Move(FBuffer[Channel]^[Position], Data^[0], PartialSamples * SizeOf(Single));
-    Move(FBuffer[Channel]^[0], Data^[PartialSamples], (SampleFrames - PartialSamples) * SizeOf(Single));
-   end;
+    Move(FBuffer[Channel]^[Position], Data^[0],
+      PartialSamples * SizeOf(Single));
+    Move(FBuffer[Channel]^[0], Data^[PartialSamples],
+      (SampleFrames - PartialSamples) * SizeOf(Single));
+  end;
 end;
 
 procedure TAudioFileCache.WriteData(const Channel, Position: Integer;
   Data: PDAVSingleFixedArray; SampleFrames: Cardinal);
 var
-  PartialSamples : Cardinal;
+  PartialSamples: Cardinal;
 begin
- Assert(Cardinal(Position) < FTotalBufferSize);
- Assert(SampleFrames > 0);
+  Assert(Cardinal(Position) < FTotalBufferSize);
+  Assert(SampleFrames > 0);
 
-(*
- for PartialSamples := 0 to SampleFrames - 1
-  do FBuffer[Channel]^[(Position + PartialSamples) mod FTotalBufferSize] := 1 / FPosition;
-*)
- if Cardinal(Position) + SampleFrames < FTotalBufferSize
-  then Move(Data^[0], FBuffer[Channel]^[Position], SampleFrames * SizeOf(Single))
+  (*
+    for PartialSamples := 0 to SampleFrames - 1
+    do FBuffer[Channel]^[(Position + PartialSamples) mod FTotalBufferSize] := 1 / FPosition;
+  *)
+  if Cardinal(Position) + SampleFrames < FTotalBufferSize then
+    Move(Data^[0], FBuffer[Channel]^[Position], SampleFrames * SizeOf(Single))
   else
-   begin
+  begin
     PartialSamples := (FTotalBufferSize - Cardinal(Position));
-    if PartialSamples > 0
-     then Move(Data^[0], FBuffer[Channel]^[Position], PartialSamples * SizeOf(Single));
-    Move(Data^[PartialSamples], FBuffer[Channel]^[0], (SampleFrames - PartialSamples) * SizeOf(Single));
-   end;
+    if PartialSamples > 0 then
+      Move(Data^[0], FBuffer[Channel]^[Position],
+        PartialSamples * SizeOf(Single));
+    Move(Data^[PartialSamples], FBuffer[Channel]^[0],
+      (SampleFrames - PartialSamples) * SizeOf(Single));
+  end;
 end;
 
 procedure TAudioFileCache.WriteZero(const Channel, Position: Integer;
   SampleFrames: Cardinal);
 var
-  PartialSamples : Cardinal;
+  PartialSamples: Cardinal;
 begin
- Assert(Cardinal(Position) < FTotalBufferSize);
- Assert(SampleFrames > 0);
+  Assert(Cardinal(Position) < FTotalBufferSize);
+  Assert(SampleFrames > 0);
 
- if Cardinal(Position) + SampleFrames < FTotalBufferSize
-  then FillChar(FBuffer[Channel]^[Position], SampleFrames * SizeOf(Single), 0)
+  if Cardinal(Position) + SampleFrames < FTotalBufferSize then
+    FillChar(FBuffer[Channel]^[Position], SampleFrames * SizeOf(Single), 0)
   else
-   begin
+  begin
     PartialSamples := (FTotalBufferSize - Cardinal(Position));
     FillChar(FBuffer[Channel]^[Position], PartialSamples * SizeOf(Single), 0);
-    FillChar(FBuffer[Channel]^[0], (SampleFrames - PartialSamples) * SizeOf(Single), 0);
-   end;
+    FillChar(FBuffer[Channel]^[0], (SampleFrames - PartialSamples) *
+      SizeOf(Single), 0);
+  end;
 end;
-
 
 procedure TAudioFileCache.ReadChannelData(const Channel: Integer;
   Data: PDAVSingleFixedArray);
 begin
- // check channel is valid
- if (Channel < 0) or (Cardinal(Channel) >= ChannelCount)
-  then raise Exception.CreateFmt(RCStrChannelOutOfBounds, [Channel]);
+  // check channel is valid
+  if (Channel < 0) or (Cardinal(Channel) >= ChannelCount) then
+    raise Exception.CreateFmt(RCStrChannelOutOfBounds, [Channel]);
 
- ReadData(Channel, FBufferPos, Data, FBlockSize);
+  ReadData(Channel, FBufferPos, Data, FBlockSize);
 end;
 
 procedure TAudioFileCache.WriteChannelData(const Channel: Integer;
   Data: PDAVSingleFixedArray);
 begin
- // check channel is valid
- if (Channel < 0) or (Cardinal(Channel) >= ChannelCount)
-  then raise Exception.CreateFmt('Channel out of bounds (%d)', [Channel]);
+  // check channel is valid
+  if (Channel < 0) or (Cardinal(Channel) >= ChannelCount) then
+    raise Exception.CreateFmt('Channel out of bounds (%d)', [Channel]);
 
- if FBufferPos < FLatency
-  then WriteData(Channel, FTotalBufferSize + FBufferPos - FLatency, Data, FBlockSize)
-  else WriteData(Channel, FBufferPos - FLatency, Data, FBlockSize);
+  if FBufferPos < FLatency then
+    WriteData(Channel, FTotalBufferSize + FBufferPos - FLatency, Data,
+      FBlockSize)
+  else
+    WriteData(Channel, FBufferPos - FLatency, Data, FBlockSize);
 end;
 
 procedure TAudioFileCache.BackgroundProcess;
 begin
- FCriticalSection.Enter;
- try
-  BackgroundWrite;
-  BackgroundRead;
- finally
-  FCriticalSection.Leave;
- end;
+  FCriticalSection.Enter;
+  try
+    BackgroundWrite;
+    BackgroundRead;
+  finally
+    FCriticalSection.Leave;
+  end;
 end;
 
 procedure TAudioFileCache.BackgroundWrite;
 const
-  CBlockSize : Cardinal = 1 shl 14;
+  CBlockSize: Cardinal = 1 shl 14;
 begin
- // eventuall write samples
- if ChannelCount * (FWriteAheadOffset - FLatency) > CBlockSize
-  then FAudioFile.Encode(FPosition - FWriteAheadOffset, CBlockSize div ChannelCount);
+  // eventuall write samples
+  if ChannelCount * (FWriteAheadOffset - FLatency) > CBlockSize then
+    FAudioFile.Encode(FPosition - FWriteAheadOffset,
+      CBlockSize div ChannelCount);
 end;
 
 procedure TAudioFileCache.BackgroundRead;
 const
-  CBlockSize       : Cardinal = 1 shl 14;
+  CBlockSize: Cardinal = 1 shl 14;
 var
-  SampleFrames     : Cardinal;
-  PartitialSamples : Cardinal;
+  SampleFrames: Cardinal;
+  PartitialSamples: Cardinal;
 begin
- // eventuall read samples
- if ChannelCount * FreeSamplesInBuffer > CBlockSize then
+  // eventuall read samples
+  if ChannelCount * FreeSamplesInBuffer > CBlockSize then
   begin
-   SampleFrames := CBlockSize div ChannelCount;
-   if FPosition + FReadAheadOffset + SampleFrames < FAudioFile.SampleFrames
-    then FAudioFile.Decode(FPosition + FReadAheadOffset, SampleFrames) else
-   if FPosition >= FAudioFile.SampleFrames
-    then FillBufferZero(SampleFrames)
+    SampleFrames := CBlockSize div ChannelCount;
+    if FPosition + FReadAheadOffset + SampleFrames < FAudioFile.SampleFrames
+    then
+      FAudioFile.Decode(FPosition + FReadAheadOffset, SampleFrames)
+    else if FPosition >= FAudioFile.SampleFrames then
+      FillBufferZero(SampleFrames)
     else
-     begin
-      PartitialSamples := FAudioFile.SampleFrames - FPosition + FReadAheadOffset;
+    begin
+      PartitialSamples := FAudioFile.SampleFrames - FPosition +
+        FReadAheadOffset;
       FAudioFile.Decode(FPosition + FReadAheadOffset, PartitialSamples);
       FillBufferZero(SampleFrames - PartitialSamples);
-     end;
+    end;
   end;
 end;
 
 procedure TAudioFileCache.SetBlockSize(const Value: Cardinal);
 begin
- if FBlockSize <> Value then
+  if FBlockSize <> Value then
   begin
-   FBlockSize := Value;
-   BlockSizeChanged;
+    FBlockSize := Value;
+    BlockSizeChanged;
   end;
 end;
 
 procedure TAudioFileCache.SetChannelCount(const Value: Cardinal);
 begin
- if FAudioFile.ChannelCount <> Value then
+  if FAudioFile.ChannelCount <> Value then
   begin
-   FAudioFile.ChannelCount := Value;
-   ChannelCountChanged;
+    FAudioFile.ChannelCount := Value;
+    ChannelCountChanged;
   end;
 end;
 
 procedure TAudioFileCache.SetBufferSize(const Value: Cardinal);
 begin
- if FBufferSize <> Value then
+  if FBufferSize <> Value then
   begin
-   FBufferSize := Value;
-   BufferSizeChanged;
+    FBufferSize := Value;
+    BufferSizeChanged;
   end;
 end;
 
 procedure TAudioFileCache.SetPosition(const Value: Cardinal);
 begin
- if FPosition <> Value then
+  if FPosition <> Value then
   begin
-   FPosition := Value;
-   PositionChanged;
+    FPosition := Value;
+    PositionChanged;
   end;
 end;
 
 procedure TAudioFileCache.SetLatency(const Value: Cardinal);
 begin
- if FLatency <> Value then
+  if FLatency <> Value then
   begin
-   FLatency := Value;
-   LatencyChanged;
+    FLatency := Value;
+    LatencyChanged;
   end;
 end;
 
 procedure TAudioFileCache.BlockSizeChanged;
 begin
- FCriticalSection.Enter;
- try
-  AllocateBuffer;
- finally
-  FCriticalSection.Leave;
- end;
+  FCriticalSection.Enter;
+  try
+    AllocateBuffer;
+  finally
+    FCriticalSection.Leave;
+  end;
 end;
 
 procedure TAudioFileCache.BufferSizeChanged;
 begin
- FCriticalSection.Enter;
- try
-  AllocateBuffer;
- finally
-  FCriticalSection.Leave;
- end;
+  FCriticalSection.Enter;
+  try
+    AllocateBuffer;
+  finally
+    FCriticalSection.Leave;
+  end;
 end;
 
 procedure TAudioFileCache.LatencyChanged;
 begin
- FCriticalSection.Enter;
- try
-  if FWriteAheadOffset < FLatency
-   then FWriteAheadOffset := FLatency;
-  AllocateBuffer;
- finally
-  FCriticalSection.Leave;
- end;
+  FCriticalSection.Enter;
+  try
+    if FWriteAheadOffset < FLatency then
+      FWriteAheadOffset := FLatency;
+    AllocateBuffer;
+  finally
+    FCriticalSection.Leave;
+  end;
 end;
 
 procedure TAudioFileCache.AllocateBuffer;
 var
-  Channel : Integer;
+  Channel: Integer;
 begin
- FTotalBufferSize := Max(FBufferSize, FBlockSize + FLatency);
- for Channel := 0 to FAudioFile.ChannelCount - 1 do
+  FTotalBufferSize := Max(FBufferSize, FBlockSize + FLatency);
+  for Channel := 0 to FAudioFile.ChannelCount - 1 do
   begin
-   ReAllocMem(FBuffer[Channel], FTotalBufferSize * SizeOf(Single));
-   FillChar(FBuffer[Channel]^, FTotalBufferSize * SizeOf(Single), 0);
+    ReAllocMem(FBuffer[Channel], FTotalBufferSize * SizeOf(Single));
+    FillChar(FBuffer[Channel]^, FTotalBufferSize * SizeOf(Single), 0);
   end;
 end;
 
 procedure TAudioFileCache.ChannelCountChanged;
 var
-  Channel : Integer;
+  Channel: Integer;
 begin
- FCriticalSection.Enter;
- try
-  for Channel := FAudioFile.ChannelCount to Length(FBuffer) - 1 do
-   begin
-    Dispose(FBuffer[Channel]);
-    FBuffer[Channel] := nil;
-   end;
-  SetLength(FBuffer, FAudioFile.ChannelCount);
-  AllocateBuffer;
- finally
-  FCriticalSection.Leave;
- end;
+  FCriticalSection.Enter;
+  try
+    for Channel := FAudioFile.ChannelCount to Length(FBuffer) - 1 do
+    begin
+      Dispose(FBuffer[Channel]);
+      FBuffer[Channel] := nil;
+    end;
+    SetLength(FBuffer, FAudioFile.ChannelCount);
+    AllocateBuffer;
+  finally
+    FCriticalSection.Leave;
+  end;
 end;
 
 procedure TAudioFileCache.Advance;
 begin
- FCriticalSection.Enter;
- try
-  Position := Position + FBlockSize;
-  FBufferPos := FBufferPos + FBlockSize;
-  if FBufferPos >= FTotalBufferSize
-   then FBufferPos := FBufferPos - FTotalBufferSize;
- finally
-  FCriticalSection.Leave;
- end;
+  FCriticalSection.Enter;
+  try
+    Position := Position + FBlockSize;
+    FBufferPos := FBufferPos + FBlockSize;
+    if FBufferPos >= FTotalBufferSize then
+      FBufferPos := FBufferPos - FTotalBufferSize;
+  finally
+    FCriticalSection.Leave;
+  end;
 end;
 
 procedure TAudioFileCache.ReadAdvance;
 begin
- FCriticalSection.Enter;
- try
-  if FReadAheadOffset > FBlockSize
-   then FReadAheadOffset := FReadAheadOffset - FBlockSize
-   else FReadAheadOffset := 0;
- finally
-  FCriticalSection.Leave;
- end;
+  FCriticalSection.Enter;
+  try
+    if FReadAheadOffset > FBlockSize then
+      FReadAheadOffset := FReadAheadOffset - FBlockSize
+    else
+      FReadAheadOffset := 0;
+  finally
+    FCriticalSection.Leave;
+  end;
 end;
 
 procedure TAudioFileCache.WriteAdvance;
 begin
- FCriticalSection.Enter;
- try
-  FWriteAheadOffset := FWriteAheadOffset + FBlockSize;
- finally
-  FCriticalSection.Leave;
- end;
+  FCriticalSection.Enter;
+  try
+    FWriteAheadOffset := FWriteAheadOffset + FBlockSize;
+  finally
+    FCriticalSection.Leave;
+  end;
 end;
 
 procedure TAudioFileCache.PositionChanged;
 begin
- // yet todo!
+  // yet todo!
 end;
 
 end.

@@ -86,117 +86,120 @@ uses
 
 procedure TFmChorus.FormShow(Sender: TObject);
 begin
- UpdateDepth;
- UpdateDrift;
- UpdateMix;
- UpdateSpeed;
- UpdateStages;
+  UpdateDepth;
+  UpdateDrift;
+  UpdateMix;
+  UpdateSpeed;
+  UpdateStages;
 end;
 
 procedure TFmChorus.DialDepthChange(Sender: TObject);
 begin
- with TChorusModule(Owner) do
+  with TChorusModule(Owner) do
   begin
-   if Parameter[2] <> DialDepth.Value
-    then Parameter[2] := DialDepth.Value;
+    if Parameter[2] <> DialDepth.Value then
+      Parameter[2] := DialDepth.Value;
   end;
 end;
 
 procedure TFmChorus.DialDriftChange(Sender: TObject);
 begin
- with TChorusModule(Owner) do
+  with TChorusModule(Owner) do
   begin
-   if Parameter[4] <> DialDrift.Value
-    then Parameter[4] := DialDrift.Value;
+    if Parameter[4] <> DialDrift.Value then
+      Parameter[4] := DialDrift.Value;
   end;
 end;
 
 procedure TFmChorus.DialMixChange(Sender: TObject);
 begin
- with TChorusModule(Owner) do
+  with TChorusModule(Owner) do
   begin
-   if Parameter[3] <> DialMix.Value
-    then Parameter[3] := DialMix.Value;
+    if Parameter[3] <> DialMix.Value then
+      Parameter[3] := DialMix.Value;
   end;
 end;
 
 procedure TFmChorus.DialSpeedChange(Sender: TObject);
 begin
- with TChorusModule(Owner) do
+  with TChorusModule(Owner) do
   begin
-   if Parameter[0] <> DialSpeed.Value
-    then Parameter[0] := DialSpeed.Value;
+    if Parameter[0] <> DialSpeed.Value then
+      Parameter[0] := DialSpeed.Value;
   end;
 end;
 
 procedure TFmChorus.DialStagesChange(Sender: TObject);
 begin
- with TChorusModule(Owner) do
+  with TChorusModule(Owner) do
   begin
-   if Parameter[1] <> DialStages.Value
-    then Parameter[1] := DialStages.Value;
+    if Parameter[1] <> DialStages.Value then
+      Parameter[1] := DialStages.Value;
   end;
 end;
 
 procedure TFmChorus.UpdateDepth;
 var
-  Depth : Single;
+  Depth: Single;
 begin
- with TChorusModule(Owner) do
+  with TChorusModule(Owner) do
   begin
-   Depth := Parameter[2];
-   if DialDepth.Value <> Depth
-    then DialDepth.Value := Depth;
-   LbDepthValue.Caption := FloatToStrF(RoundTo(Depth, -1), ffGeneral, 3, 3) + ' %';
+    Depth := Parameter[2];
+    if DialDepth.Value <> Depth then
+      DialDepth.Value := Depth;
+    LbDepthValue.Caption := FloatToStrF(RoundTo(Depth, -1), ffGeneral, 3,
+      3) + ' %';
   end;
 end;
 
 procedure TFmChorus.UpdateDrift;
 var
-  Drift : Single;
+  Drift: Single;
 begin
- with TChorusModule(Owner) do
+  with TChorusModule(Owner) do
   begin
-   Drift := Parameter[4];
-   if DialDrift.Value <> Drift
-    then DialDrift.Value := Drift;
-   LbDriftValue.Caption := FloatToStrF(RoundTo(Drift, -1), ffGeneral, 3, 2) + ' %';
+    Drift := Parameter[4];
+    if DialDrift.Value <> Drift then
+      DialDrift.Value := Drift;
+    LbDriftValue.Caption := FloatToStrF(RoundTo(Drift, -1), ffGeneral, 3,
+      2) + ' %';
   end;
 end;
 
 procedure TFmChorus.UpdateMix;
 var
-  Mix : Single;
+  Mix: Single;
 begin
- with TChorusModule(Owner) do
+  with TChorusModule(Owner) do
   begin
-   Mix := Parameter[3];
-   if DialMix.Value <> Mix
-    then DialMix.Value := Mix;
-   LbMixValue.Caption := FloatToStrF(RoundTo(Mix, -1), ffGeneral, 3, 3) + ' %';
+    Mix := Parameter[3];
+    if DialMix.Value <> Mix then
+      DialMix.Value := Mix;
+    LbMixValue.Caption := FloatToStrF(RoundTo(Mix, -1), ffGeneral, 3, 3) + ' %';
   end;
 end;
 
 procedure TFmChorus.UpdateSpeed;
 var
-  Speed : Single;
+  Speed: Single;
 begin
- with TChorusModule(Owner) do
+  with TChorusModule(Owner) do
   begin
-   Speed := Parameter[0];
-   if DialSpeed.Value <> Speed
-    then DialSpeed.Value := Speed;
-   LbSpeedValue.Caption := FloatToStrF(RoundTo(Speed, -2), ffGeneral, 2, 2) + ' Hz';
+    Speed := Parameter[0];
+    if DialSpeed.Value <> Speed then
+      DialSpeed.Value := Speed;
+    LbSpeedValue.Caption := FloatToStrF(RoundTo(Speed, -2), ffGeneral, 2,
+      2) + ' Hz';
   end;
 end;
 
 procedure TFmChorus.UpdateStages;
 begin
- with TChorusModule(Owner) do
+  with TChorusModule(Owner) do
   begin
-   if DialStages.Value <> Parameter[1]
-    then DialStages.Value := Parameter[1];
-   LbStagesValue.Caption := IntToStr(Round(Parameter[1]));
+    if DialStages.Value <> Parameter[1] then
+      DialStages.Value := Parameter[1];
+    LbStagesValue.Caption := IntToStr(Round(Parameter[1]));
   end;
 end;
 

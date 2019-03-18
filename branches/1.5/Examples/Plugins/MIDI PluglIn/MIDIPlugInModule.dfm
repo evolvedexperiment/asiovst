@@ -31,8 +31,6 @@ object MIDIModule: TMIDIModule
   ParameterCategories = <>
   OnEditOpen = VSTModuleEditOpen
   OnProcessMidi = VSTModuleProcessMidi
-  Left = 243
-  Top = 103
   Height = 150
   Width = 215
 end

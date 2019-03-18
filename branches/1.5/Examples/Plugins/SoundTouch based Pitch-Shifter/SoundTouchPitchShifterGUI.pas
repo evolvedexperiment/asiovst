@@ -34,11 +34,12 @@ interface
 
 {$I DAV_Compiler.inc}
 
-uses 
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
-  Forms, Controls, Graphics, DAV_Types, DAV_VSTModule, DAV_GuiCommon, 
-  DAV_GuiLabel, DAV_GuiBaseControl, DAV_GuiPng, DAV_GuiStitchedControls, 
-  DAV_GuiStitchedDial, DAV_GuiStitchedPngList, DAV_GuiPixelMap;
+uses
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
+  Forms, Controls, Graphics, DAV_Types, DAV_VSTModule, DAV_GuiCommon,
+  DAV_GuiLabel, DAV_GuiBaseControl, DAV_GuiPng, DAV_GuiStitchedControls,
+  DAV_GuiStitchedDial, DAV_GuiStitchedPngList, DAV_GuiPixelMap,
+  DAV_GuiImageControl, DAV_GuiCustomControl, DAV_GuiGraphicControl;
 
 type
   TFmSoundTouchPitchShifter = class(TForm)
@@ -52,7 +53,7 @@ type
     procedure FormResize(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
   private
-    FBackground : TGuiCustomPixelMap;
+    FBackground: TGuiCustomPixelMap;
   public
     procedure UpdateSemitones;
   end;
@@ -70,43 +71,43 @@ uses
 
 procedure TFmSoundTouchPitchShifter.FormCreate(Sender: TObject);
 begin
- FBackground := TGuiPixelMapMemory.Create;
+  FBackground := TGuiPixelMapMemory.Create;
 end;
 
 procedure TFmSoundTouchPitchShifter.FormDestroy(Sender: TObject);
 begin
- FreeAndNil(FBackground);
+  FreeAndNil(FBackground);
 end;
 
 procedure TFmSoundTouchPitchShifter.FormPaint(Sender: TObject);
 begin
- if Assigned(FBackground)
-  then FBackground.PaintTo(Canvas);
+  if Assigned(FBackground) then
+    FBackground.PaintTo(Canvas);
 end;
 
 procedure TFmSoundTouchPitchShifter.FormResize(Sender: TObject);
 var
-  X, Y   : Integer;
-  Filter : array [0..1] of Single;
-  Value  : Byte;
-  ScnLn  : PPixel32Array;
+  X, Y: Integer;
+  Filter: array [0 .. 1] of Single;
+  Value: Byte;
+  ScnLn: PPixel32Array;
 begin
- with FBackground do
+  with FBackground do
   begin
-   SetSize(ClientWidth, ClientHeight);
-   Filter[0] := 0;
-   Filter[1] := 0;
-   for Y := 0 to Height - 1 do
+    SetSize(ClientWidth, ClientHeight);
+    Filter[0] := 0;
+    Filter[1] := 0;
+    for Y := 0 to Height - 1 do
     begin
-     ScnLn := Scanline[Y];
-     for X := 0 to Width - 1 do
+      ScnLn := Scanline[Y];
+      for X := 0 to Width - 1 do
       begin
-       Filter[1] := 0.97 * Filter[0] + 0.03 * (2 * Random - 1);
-       Filter[0] := Filter[1];
-       Value := Round($0E * Filter[1]);
-       ScnLn[X].B := $0F + Value;
-       ScnLn[X].G := $12 + Value;
-       ScnLn[X].R := $13 + Value;
+        Filter[1] := 0.97 * Filter[0] + 0.03 * (2 * Random - 1);
+        Filter[0] := Filter[1];
+        Value := Round($0E * Filter[1]);
+        ScnLn[X].B := $0F + Value;
+        ScnLn[X].G := $12 + Value;
+        ScnLn[X].R := $13 + Value;
       end;
     end;
   end;
@@ -114,24 +115,24 @@ end;
 
 procedure TFmSoundTouchPitchShifter.DialSemitonesChange(Sender: TObject);
 begin
- with TSoundTouchPitchShifterModule(Owner) do
+  with TSoundTouchPitchShifterModule(Owner) do
   begin
-   if Parameter[0] <> DialSemitones.Value
-    then Parameter[0] := DialSemitones.Value
+    if Parameter[0] <> DialSemitones.Value then
+      Parameter[0] := DialSemitones.Value
   end;
 end;
 
 procedure TFmSoundTouchPitchShifter.UpdateSemitones;
 var
-  SemiTones : Integer;
+  SemiTones: Integer;
 begin
- with TSoundTouchPitchShifterModule(Owner) do
+  with TSoundTouchPitchShifterModule(Owner) do
   begin
-   if DialSemitones.Value <> Parameter[0]
-    then DialSemitones.Value := Parameter[0];
-   SemiTones := Round(Parameter[0]);
-   LbSemitoneValue.Caption := IntToStr(SemiTones) + ' : ' +
-     IntToStr(Round(100 * (Parameter[0] - SemiTones)));
+    if DialSemitones.Value <> Parameter[0] then
+      DialSemitones.Value := Parameter[0];
+    SemiTones := Round(Parameter[0]);
+    LbSemitoneValue.Caption := IntToStr(SemiTones) + ' : ' +
+      IntToStr(Round(100 * (Parameter[0] - SemiTones)));
   end;
 end;
 

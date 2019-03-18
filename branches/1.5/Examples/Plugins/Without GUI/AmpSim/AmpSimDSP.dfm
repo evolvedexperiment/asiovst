@@ -1,5 +1,4 @@
 object AmpSimModule: TAmpSimModule
-  OldCreateOrder = True
   Flags = [effFlagsCanMono, effFlagsCanReplacing, effFlagsCanDoubleReplacing]
   Version = '1.0'
   EffectName = 'AmpSim'
@@ -161,8 +160,6 @@ object AmpSimModule: TAmpSimModule
   OnProcess64Replacing = VSTModuleProcessDoubleReplacing
   OnSampleRateChange = VSTModuleSampleRateChange
   OnSuspend = VSTModuleSuspend
-  Left = 864
-  Top = 84
   Height = 150
   Width = 215
 end

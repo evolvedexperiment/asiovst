@@ -261,7 +261,6 @@ object LA1701DataModule: TLA1701DataModule
   OnProcess32Replacing = VSTModuleProcess
   OnProcess64Replacing = VSTModuleProcessDoubleReplacing
   OnSampleRateChange = VSTModuleSampleRateChange
-  OnSoftBypass = VSTModuleSoftBypass
   Height = 150
   Width = 215
 end

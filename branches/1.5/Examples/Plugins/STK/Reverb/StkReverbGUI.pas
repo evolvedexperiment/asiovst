@@ -34,8 +34,8 @@ interface
 
 {$I DAV_Compiler.inc}
 
-uses 
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
+uses
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
   Forms, Controls, StdCtrls, DAV_Types, DAV_VSTModule;
 
 type
@@ -45,7 +45,7 @@ type
     LbT60Value: TLabel;
     procedure SBT60Change(Sender: TObject);
   public
-    procedure UpdateT60;  
+    procedure UpdateT60;
   end;
 
 implementation
@@ -61,19 +61,19 @@ uses
 
 procedure TFmStkReverb.SBT60Change(Sender: TObject);
 begin
- with TStkReverbModule(Owner) do
+  with TStkReverbModule(Owner) do
   begin
-   Parameter[0] := SBT60.Position;
+    Parameter[0] := SBT60.Position;
   end;
 end;
 
 procedure TFmStkReverb.UpdateT60;
 begin
- with TStkReverbModule(Owner) do
+  with TStkReverbModule(Owner) do
   begin
-   if SBT60.Position <> Round(Parameter[0])
-    then SBT60.Position := Round(Parameter[0]);
-   LbT60Value.Caption := FloatToStrF(Parameter[0], ffGeneral, 4, 4) + ' ms';  
+    if SBT60.Position <> Round(Parameter[0]) then
+      SBT60.Position := Round(Parameter[0]);
+    LbT60Value.Caption := FloatToStrF(Parameter[0], ffGeneral, 4, 4) + ' ms';
   end;
 end;
 

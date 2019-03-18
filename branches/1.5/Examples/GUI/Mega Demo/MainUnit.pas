@@ -56,112 +56,116 @@ implementation
 
 procedure TFmMegaDemo.MiExitClick(Sender: TObject);
 begin
- Close;
+  Close;
 end;
 
 procedure TFmMegaDemo.MiFontOversamplingClick(Sender: TObject);
 var
-  FontOS     : TFontOversampling;
-  TabIndex   : Integer;
-  Index      : Integer;
-  GroupIndex : Integer;
+  FontOS: TFontOversampling;
+  TabIndex: Integer;
+  Index: Integer;
+  GroupIndex: Integer;
 begin
- if Sender is TMenuItem
-  then TMenuItem(Sender).Checked := True;
+  if Sender is TMenuItem then
+    TMenuItem(Sender).Checked := True;
 
- if MiFontOversamplingNone.Checked then FontOS := foNone else
- if MiFontOversampling2x.Checked then FontOS := fo2x else
- if MiFontOversampling3x.Checked then FontOS := fo3x else
- if MiFontOversampling4x.Checked then FontOS := fo4x
-  else FontOS := fo6x;
+  if MiFontOversamplingNone.Checked then
+    FontOS := foNone
+  else if MiFontOversampling2x.Checked then
+    FontOS := fo2x
+  else if MiFontOversampling3x.Checked then
+    FontOS := fo3x
+  else if MiFontOversampling4x.Checked then
+    FontOS := fo4x
+  else
+    FontOS := fo6x;
 
- for TabIndex := 0 to PC.ControlCount - 1 do
-  if PC.Controls[TabIndex] is TTabSheet then
-   with TTabSheet(PC.Controls[TabIndex]) do
-    for Index := 0 to ControlCount - 1 do
-     if Controls[Index] is TGuiControlsRadioButton then
-      with TGuiControlsRadioButton(Controls[Index])
-       do FontOversampling := FontOS else
-     if Controls[Index] is TGuiControlsCheckBox then
-      with TGuiControlsCheckBox(Controls[Index])
-       do FontOversampling := FontOS else
-     if Controls[Index] is TCustomGuiGroup then
-      with TCustomGuiGroup(Controls[Index]) do
-       begin
-        FontOversampling := FontOS;
-        for GroupIndex := 0 to ControlCount - 1 do
-         if Controls[GroupIndex] is TGuiControlsRadioButton then
-          with TGuiControlsRadioButton(Controls[GroupIndex])
-           do FontOversampling := FontOS else
-         if Controls[GroupIndex] is TGuiControlsCheckBox then
-          with TGuiControlsCheckBox(Controls[GroupIndex])
-           do FontOversampling := FontOS;
-       end;
+  for TabIndex := 0 to PC.ControlCount - 1 do
+    if PC.Controls[TabIndex] is TTabSheet then
+      with TTabSheet(PC.Controls[TabIndex]) do
+        for Index := 0 to ControlCount - 1 do
+          if Controls[Index] is TGuiControlsRadioButton then
+            with TGuiControlsRadioButton(Controls[Index]) do
+              FontOversampling := FontOS
+          else if Controls[Index] is TGuiControlsCheckBox then
+            with TGuiControlsCheckBox(Controls[Index]) do
+              FontOversampling := FontOS
+          else if Controls[Index] is TCustomGuiGroup then
+            with TCustomGuiGroup(Controls[Index]) do
+            begin
+              FontOversampling := FontOS;
+              for GroupIndex := 0 to ControlCount - 1 do
+                if Controls[GroupIndex] is TGuiControlsRadioButton then
+                  with TGuiControlsRadioButton(Controls[GroupIndex]) do
+                    FontOversampling := FontOS
+                else if Controls[GroupIndex] is TGuiControlsCheckBox then
+                  with TGuiControlsCheckBox(Controls[GroupIndex]) do
+                    FontOversampling := FontOS;
+            end;
 end;
 
 procedure TFmMegaDemo.MiFontShadowEnabledClick(Sender: TObject);
 var
-  TabIndex   : Integer;
-  Index      : Integer;
-  GroupIndex : Integer;
+  TabIndex: Integer;
+  Index: Integer;
+  GroupIndex: Integer;
 begin
- MiFontShadowEnabled.Checked := not MiFontShadowEnabled.Checked;
+  MiFontShadowEnabled.Checked := not MiFontShadowEnabled.Checked;
 
- for TabIndex := 0 to PC.ControlCount - 1 do
-  if PC.Controls[TabIndex] is TTabSheet then
-   with TTabSheet(PC.Controls[TabIndex]) do
-    for Index := 0 to ControlCount - 1 do
-     if Controls[Index] is TGuiControlsRadioButton then
-      with TGuiControlsRadioButton(Controls[Index])
-       do Shadow.Visible := MiFontShadowEnabled.Checked else
-     if Controls[Index] is TGuiControlsCheckBox then
-      with TGuiControlsCheckBox(Controls[Index])
-       do Shadow.Visible := MiFontShadowEnabled.Checked else
-     if Controls[Index] is TCustomGuiGroup then
-      with TCustomGuiGroup(Controls[Index]) do
-       begin
-        Shadow.Visible := MiFontShadowEnabled.Checked;
-        for GroupIndex := 0 to ControlCount - 1 do
-         if Controls[GroupIndex] is TGuiControlsRadioButton then
-          with TGuiControlsRadioButton(Controls[GroupIndex])
-           do Shadow.Visible := MiFontShadowEnabled.Checked else
-         if Controls[GroupIndex] is TGuiControlsCheckBox then
-          with TGuiControlsCheckBox(Controls[GroupIndex])
-           do Shadow.Visible := MiFontShadowEnabled.Checked;
-       end;
+  for TabIndex := 0 to PC.ControlCount - 1 do
+    if PC.Controls[TabIndex] is TTabSheet then
+      with TTabSheet(PC.Controls[TabIndex]) do
+        for Index := 0 to ControlCount - 1 do
+          if Controls[Index] is TGuiControlsRadioButton then
+            with TGuiControlsRadioButton(Controls[Index]) do
+              Shadow.Visible := MiFontShadowEnabled.Checked
+          else if Controls[Index] is TGuiControlsCheckBox then
+            with TGuiControlsCheckBox(Controls[Index]) do
+              Shadow.Visible := MiFontShadowEnabled.Checked
+          else if Controls[Index] is TCustomGuiGroup then
+            with TCustomGuiGroup(Controls[Index]) do
+            begin
+              Shadow.Visible := MiFontShadowEnabled.Checked;
+              for GroupIndex := 0 to ControlCount - 1 do
+                if Controls[GroupIndex] is TGuiControlsRadioButton then
+                  with TGuiControlsRadioButton(Controls[GroupIndex]) do
+                    Shadow.Visible := MiFontShadowEnabled.Checked
+                else if Controls[GroupIndex] is TGuiControlsCheckBox then
+                  with TGuiControlsCheckBox(Controls[GroupIndex]) do
+                    Shadow.Visible := MiFontShadowEnabled.Checked;
+            end;
 end;
 
 procedure TFmMegaDemo.MiNativeClick(Sender: TObject);
 var
-  TabIndex   : Integer;
-  Index      : Integer;
-  GroupIndex : Integer;
+  TabIndex: Integer;
+  Index: Integer;
+  GroupIndex: Integer;
 begin
- MiNative.Checked := not MiNative.Checked;
+  MiNative.Checked := not MiNative.Checked;
 
- for TabIndex := 0 to PC.ControlCount - 1 do
-  if PC.Controls[TabIndex] is TTabSheet then
-   with TTabSheet(PC.Controls[TabIndex]) do
-    for Index := 0 to ControlCount - 1 do
-     if Controls[Index] is TGuiControlsRadioButton then
-      with TGuiControlsRadioButton(Controls[Index])
-       do Native := MiNative.Checked else
-     if Controls[Index] is TGuiControlsCheckBox then
-      with TGuiControlsCheckBox(Controls[Index])
-       do Native := MiNative.Checked else
-     if Controls[Index] is TCustomGuiGroup then
-      with TCustomGuiGroup(Controls[Index]) do
-       begin
-        Native := MiNative.Checked;
-        for GroupIndex := 0 to ControlCount - 1 do
-         if Controls[GroupIndex] is TGuiControlsRadioButton then
-          with TGuiControlsRadioButton(Controls[GroupIndex])
-           do Native := MiNative.Checked else
-         if Controls[GroupIndex] is TGuiControlsCheckBox then
-          with TGuiControlsCheckBox(Controls[GroupIndex])
-           do Native := MiNative.Checked;
-       end;
+  for TabIndex := 0 to PC.ControlCount - 1 do
+    if PC.Controls[TabIndex] is TTabSheet then
+      with TTabSheet(PC.Controls[TabIndex]) do
+        for Index := 0 to ControlCount - 1 do
+          if Controls[Index] is TGuiControlsRadioButton then
+            with TGuiControlsRadioButton(Controls[Index]) do
+              Native := MiNative.Checked
+          else if Controls[Index] is TGuiControlsCheckBox then
+            with TGuiControlsCheckBox(Controls[Index]) do
+              Native := MiNative.Checked
+          else if Controls[Index] is TCustomGuiGroup then
+            with TCustomGuiGroup(Controls[Index]) do
+            begin
+              Native := MiNative.Checked;
+              for GroupIndex := 0 to ControlCount - 1 do
+                if Controls[GroupIndex] is TGuiControlsRadioButton then
+                  with TGuiControlsRadioButton(Controls[GroupIndex]) do
+                    Native := MiNative.Checked
+                else if Controls[GroupIndex] is TGuiControlsCheckBox then
+                  with TGuiControlsCheckBox(Controls[GroupIndex]) do
+                    Native := MiNative.Checked;
+            end;
 end;
 
 end.
-

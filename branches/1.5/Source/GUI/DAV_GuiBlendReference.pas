@@ -79,209 +79,215 @@ var
   Scale : array [0..1] of Double;
 {$ENDIF}
 begin
- if Foreground.A =   0 then
+  if Foreground.A = 0 then
   begin
-   Result := Background;
-   Exit;
+    Result := Background;
+    Exit;
   end;
 
- if Foreground.A = $FF then
+  if Foreground.A = $FF then
   begin
-   Result := Foreground;
-   Exit;
+    Result := Foreground;
+    Exit;
   end;
 
- with Background do
+  with Background do
   begin
-   {$IFDEF UseLookupTables}
-   AlphaForeground := @GDivTable[Foreground.A];
-   AlphaBackground := @GDivTable[not Foreground.A];
-   R := AlphaForeground[Foreground.R] + AlphaBackground[R];
-   G := AlphaForeground[Foreground.G] + AlphaBackground[G];
-   B := AlphaForeground[Foreground.B] + AlphaBackground[B];
-   {$ELSE}
-   Scale[0] := Foreground.A * COne255th;
-   Scale[1] := 1 - Scale[0];
-   R := Limit(Round(Scale[1] * R + Scale[0] * Foreground.R), 0, $FF);
-   G := Limit(Round(Scale[1] * G + Scale[0] * Foreground.G), 0, $FF);
-   B := Limit(Round(Scale[1] * B + Scale[0] * Foreground.B), 0, $FF);
-   {$ENDIF}
+{$IFDEF UseLookupTables}
+    AlphaForeground := @GDivTable[Foreground.A];
+    AlphaBackground := @GDivTable[not Foreground.A];
+    R := AlphaForeground[Foreground.R] + AlphaBackground[R];
+    G := AlphaForeground[Foreground.G] + AlphaBackground[G];
+    B := AlphaForeground[Foreground.B] + AlphaBackground[B];
+{$ELSE}
+    Scale[0] := Foreground.A * COne255th;
+    Scale[1] := 1 - Scale[0];
+    R := Limit(Round(Scale[1] * R + Scale[0] * Foreground.R), 0, $FF);
+    G := Limit(Round(Scale[1] * G + Scale[0] * Foreground.G), 0, $FF);
+    B := Limit(Round(Scale[1] * B + Scale[0] * Foreground.B), 0, $FF);
+{$ENDIF}
   end;
- Result := Background;
+  Result := Background;
 end;
 
-procedure BlendPixelInplaceReference(Foreground: TPixel32; var Background: TPixel32);
+procedure BlendPixelInplaceReference(Foreground: TPixel32;
+  var Background: TPixel32);
 {$IFDEF UseLookupTables}
 var
-  AlphaForeground : PByteArray;
-  AlphaBackground : PByteArray;
+  AlphaForeground: PByteArray;
+  AlphaBackground: PByteArray;
 {$ELSE}
 var
-  Scale : array [0..1] of Double;
+  Scale: array [0 .. 1] of Double;
 {$ENDIF}
 begin
- if Foreground.A = 0 then Exit;
+  if Foreground.A = 0 then
+    Exit;
 
- if Foreground.A = $FF then
+  if Foreground.A = $FF then
   begin
-   Background := Foreground;
-   Exit;
+    Background := Foreground;
+    Exit;
   end;
 
- with Background do
+  with Background do
   begin
-   {$IFDEF UseLookupTables}
-   AlphaForeground := @GDivTable[Foreground.A];
-   AlphaBackground := @GDivTable[not Foreground.A];
-   R := AlphaForeground[Foreground.R] + AlphaBackground[R];
-   G := AlphaForeground[Foreground.G] + AlphaBackground[G];
-   B := AlphaForeground[Foreground.B] + AlphaBackground[B];
-   {$ELSE}
-   Scale[0] := Foreground.A * COne255th;
-   Scale[1] := 1 - Scale[0];
-   R := Limit(Round(Scale[1] * R + Scale[0] * Foreground.R), 0, $FF);
-   G := Limit(Round(Scale[1] * G + Scale[0] * Foreground.G), 0, $FF);
-   B := Limit(Round(Scale[1] * B + Scale[0] * Foreground.B), 0, $FF);
-   {$ENDIF}
+{$IFDEF UseLookupTables}
+    AlphaForeground := @GDivTable[Foreground.A];
+    AlphaBackground := @GDivTable[not Foreground.A];
+    R := AlphaForeground[Foreground.R] + AlphaBackground[R];
+    G := AlphaForeground[Foreground.G] + AlphaBackground[G];
+    B := AlphaForeground[Foreground.B] + AlphaBackground[B];
+{$ELSE}
+    Scale[0] := Foreground.A * COne255th;
+    Scale[1] := 1 - Scale[0];
+    R := Limit(Round(Scale[1] * R + Scale[0] * Foreground.R), 0, $FF);
+    G := Limit(Round(Scale[1] * G + Scale[0] * Foreground.G), 0, $FF);
+    B := Limit(Round(Scale[1] * B + Scale[0] * Foreground.B), 0, $FF);
+{$ENDIF}
   end;
 end;
 
 procedure BlendPixelLineReference(Foreground: TPixel32; Destination: PPixel32; Count: Cardinal);
 begin
- while Count > 0 do
+  while Count > 0 do
   begin
-   BlendPixelInplaceReference(Foreground, Destination^);
-   Inc(Destination);
-   Dec(Count);
+    BlendPixelInplaceReference(Foreground, Destination^);
+    Inc(Destination);
+    Dec(Count);
   end;
 end;
 
 procedure BlendLineReference(Source, Destination: PPixel32; Count: Integer);
 begin
- while Count > 0 do
+  while Count > 0 do
   begin
-   BlendPixelInplaceReference(Source^, Destination^);
-   Inc(Source);
-   Inc(Destination);
-   Dec(Count);
+    BlendPixelInplaceReference(Source^, Destination^);
+    Inc(Source);
+    Inc(Destination);
+    Dec(Count);
   end;
 end;
 
-function CombinePixelReference(ForeGround, Background: TPixel32; Weight: Cardinal): TPixel32;
+function CombinePixelReference(Foreground, Background: TPixel32;
+  Weight: Cardinal): TPixel32;
 {$IFDEF UseLookupTables}
 var
-  AlphaForeground : PByteArray;
-  AlphaBackground : PByteArray;
+  AlphaForeground: PByteArray;
+  AlphaBackground: PByteArray;
 {$ELSE}
 var
-  Scale : array [0..1] of Double;
+  Scale: array [0 .. 1] of Double;
 {$ENDIF}
 begin
- if Weight = 0 then
+  if Weight = 0 then
   begin
-   Result := Background;
-   Exit;
+    Result := Background;
+    Exit;
   end;
 
- if Weight >= $FF then
+  if Weight >= $FF then
   begin
-   Result := ForeGround;
-   Exit;
+    Result := Foreground;
+    Exit;
   end;
 
- with ForeGround do
+  with Foreground do
   begin
-   {$IFDEF UseLookupTables}
-   AlphaForeground := @GDivTable[Weight];
-   AlphaBackground := @GDivTable[255 - Weight];
-   R := AlphaBackground[Background.R] + AlphaForeground[R];
-   G := AlphaBackground[Background.G] + AlphaForeground[G];
-   B := AlphaBackground[Background.B] + AlphaForeground[B];
-   A := AlphaBackground[Background.A] + AlphaForeground[A];
-   {$ELSE}
-   Scale[0] := Weight * COne255th;
-   Scale[1] := 1 - Scale[0];
-   R := Limit(Round(Scale[1] * Background.R + Scale[0] * R), 0, $FF);
-   G := Limit(Round(Scale[1] * Background.G + Scale[0] * G), 0, $FF);
-   B := Limit(Round(Scale[1] * Background.B + Scale[0] * B), 0, $FF);
-   A := Limit(Round(Scale[1] * Background.A + Scale[0] * A), 0, $FF);
-   {$ENDIF}
+{$IFDEF UseLookupTables}
+    AlphaForeground := @GDivTable[Weight];
+    AlphaBackground := @GDivTable[255 - Weight];
+    R := AlphaBackground[Background.R] + AlphaForeground[R];
+    G := AlphaBackground[Background.G] + AlphaForeground[G];
+    B := AlphaBackground[Background.B] + AlphaForeground[B];
+    A := AlphaBackground[Background.A] + AlphaForeground[A];
+{$ELSE}
+    Scale[0] := Weight * COne255th;
+    Scale[1] := 1 - Scale[0];
+    R := Limit(Round(Scale[1] * Background.R + Scale[0] * R), 0, $FF);
+    G := Limit(Round(Scale[1] * Background.G + Scale[0] * G), 0, $FF);
+    B := Limit(Round(Scale[1] * Background.B + Scale[0] * B), 0, $FF);
+    A := Limit(Round(Scale[1] * Background.A + Scale[0] * A), 0, $FF);
+{$ENDIF}
   end;
- Result := ForeGround;
+  Result := Foreground;
 end;
 
-procedure CombinePixelInplaceReference(ForeGround: TPixel32; var Background: TPixel32; Weight: Cardinal);
+procedure CombinePixelInplaceReference(Foreground: TPixel32;
+  var Background: TPixel32; Weight: Cardinal);
 {$IFDEF UseLookupTables}
 var
-  AlphaForeground : PByteArray;
-  AlphaBackground : PByteArray;
+  AlphaForeground: PByteArray;
+  AlphaBackground: PByteArray;
 {$ELSE}
 var
-  Scale : array [0..1] of Double;
+  Scale: array [0 .. 1] of Double;
 {$ENDIF}
 begin
- if Weight = 0
-  then Exit;
+  if Weight = 0 then
+    Exit;
 
- if Weight >= $FF then
+  if Weight >= $FF then
   begin
-   Background := ForeGround;
-   Exit;
+    Background := Foreground;
+    Exit;
   end;
 
- with ForeGround do
+  with Foreground do
   begin
-   {$IFDEF UseLookupTables}
-   AlphaForeground := @GDivTable[Weight];
-   AlphaBackground := @GDivTable[255 - Weight];
-   R := AlphaBackground[Background.R] + AlphaForeground[R];
-   G := AlphaBackground[Background.G] + AlphaForeground[G];
-   B := AlphaBackground[Background.B] + AlphaForeground[B];
-   A := AlphaBackground[Background.A] + AlphaForeground[A];
-   {$ELSE}
-   Scale[0] := Weight * COne255th;
-   Scale[1] := 1 - Scale[0];
-   R := Limit(Round(Scale[1] * Background.R + Scale[0] * R), 0, $FF);
-   G := Limit(Round(Scale[1] * Background.G + Scale[0] * G), 0, $FF);
-   B := Limit(Round(Scale[1] * Background.B + Scale[0] * B), 0, $FF);
-   A := Limit(Round(Scale[1] * Background.A + Scale[0] * A), 0, $FF);
-   {$ENDIF}
+{$IFDEF UseLookupTables}
+    AlphaForeground := @GDivTable[Weight];
+    AlphaBackground := @GDivTable[255 - Weight];
+    R := AlphaBackground[Background.R] + AlphaForeground[R];
+    G := AlphaBackground[Background.G] + AlphaForeground[G];
+    B := AlphaBackground[Background.B] + AlphaForeground[B];
+    A := AlphaBackground[Background.A] + AlphaForeground[A];
+{$ELSE}
+    Scale[0] := Weight * COne255th;
+    Scale[1] := 1 - Scale[0];
+    R := Limit(Round(Scale[1] * Background.R + Scale[0] * R), 0, $FF);
+    G := Limit(Round(Scale[1] * Background.G + Scale[0] * G), 0, $FF);
+    B := Limit(Round(Scale[1] * Background.B + Scale[0] * B), 0, $FF);
+    A := Limit(Round(Scale[1] * Background.A + Scale[0] * A), 0, $FF);
+{$ENDIF}
   end;
- Background := ForeGround;
+  Background := Foreground;
 end;
 
 procedure CombineLineReference(Source, Destination: PPixel32; Count: Integer;
   Weight: Cardinal);
 begin
- while Count > 0 do
+  while Count > 0 do
   begin
-   CombinePixelInplace(Source^, Destination^, Weight);
-   Inc(Source);
-   Inc(Destination);
-   Dec(Count);
+    CombinePixelInplace(Source^, Destination^, Weight);
+    Inc(Source);
+    Inc(Destination);
+    Dec(Count);
   end;
 end;
-
 
 function MergePixelReference(Foreground, Background: TPixel32): TPixel32;
 {$IFDEF UseLookupTables}
 var
-  Fw, Bw : PByteArray;
-  Wa     : Byte;
+  Fw, Bw: PByteArray;
+  Wa: Byte;
 {$ELSE}
 var
-  Temp  : Double;
-  Scale : Double;
+  Temp: Double;
+  Scale: Double;
 {$ENDIF}
 begin
- if Foreground.A = $FF then Result := Foreground else
- if Foreground.A = $0  then Result := Background else
- if Background.A = $0  then Result := Foreground else
- if Background.A = $FF
-  then Result := BlendPixel(Foreground, Background)
+  if Foreground.A = $FF then
+    Result := Foreground
+  else if Foreground.A = $0 then
+    Result := Background
+  else if Background.A = $0 then
+    Result := Foreground
+  else if Background.A = $FF then
+    Result := BlendPixel(Foreground, Background)
   else
-   begin
-    {$IFDEF UseLookupTables}
+  begin
+{$IFDEF UseLookupTables}
     Result.A := GDivTable[Foreground.A xor 255, Background.A xor 255] xor 255;
     Wa := GRcTable[Result.A, Foreground.A];
     Fw := @GDivTable[Wa];
@@ -289,7 +295,7 @@ begin
     Result.R := Fw[Foreground.R] + Bw[Background.R];
     Result.G := Fw[Foreground.G] + Bw[Background.G];
     Result.B := Fw[Foreground.B] + Bw[Background.B];
-    {$ELSE}
+{$ELSE}
     Temp := $FF - ($FF - Foreground.A) * (1 - Background.A * COne255th);
     Result.A := Round(Temp);
     Scale := Foreground.A / Temp;
@@ -297,42 +303,44 @@ begin
     Result.R := Round(Background.R + Scale * (Foreground.R - Background.R));
     Result.G := Round(Background.G + Scale * (Foreground.G - Background.G));
     Result.B := Round(Background.B + Scale * (Foreground.B - Background.B));
-    {$ENDIF}
-   end;
+{$ENDIF}
+  end;
 end;
 
-procedure MergePixelInplaceReference(Foreground: TPixel32; var Background: TPixel32);
+procedure MergePixelInplaceReference(Foreground: TPixel32;
+  var Background: TPixel32);
 begin
- Background := MergePixelReference(Foreground, Background);
+  Background := MergePixelReference(Foreground, Background);
 end;
 
 procedure MergeLineReference(Source, Destination: PPixel32; Count: Cardinal);
 begin
- while Count > 0 do
+  while Count > 0 do
   begin
-   Destination^ := MergePixel(Source^, Destination^);
-   Inc(Source);
-   Inc(Destination);
-   Dec(Count);
+    Destination^ := MergePixel(Source^, Destination^);
+    Inc(Source);
+    Inc(Destination);
+    Dec(Count);
   end;
 end;
-
 
 { Global Functions }
 
 {$IFDEF UseLookupTables}
+
 procedure CreateTables;
 var
-  I, J : Integer;
+  I, J: Integer;
 begin
- for J := 0 to 255 do
-  for I := 0 to 255 do
-   begin
-    GDivTable[I, J] := Round(I * J * COne255th);
-    if I > 0
-     then GRcTable[I, J] := Round(J * 255 / I)
-     else GRcTable[I, J] := 0;
-   end;
+  for J := 0 to 255 do
+    for I := 0 to 255 do
+    begin
+      GDivTable[I, J] := Round(I * J * COne255th);
+      if I > 0 then
+        GRcTable[I, J] := Round(J * 255 / I)
+      else
+        GRcTable[I, J] := 0;
+    end;
 end;
 
 procedure FreeTables;

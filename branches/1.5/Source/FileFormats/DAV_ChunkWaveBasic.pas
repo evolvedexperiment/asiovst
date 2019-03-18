@@ -314,7 +314,7 @@ type
     FChunkList : TDavChunkList;
     function GetChunkClass(ChunkName : TChunkName): TDavCustomChunkClass; virtual;
     function GetChunkSize: Cardinal; override;
-    procedure AssignTo(Dest: TPersistent); override; 
+    procedure AssignTo(Dest: TPersistent); override;
     procedure ConvertStreamToChunk(ChunkClass: TDavCustomChunkClass; Stream: TStream); virtual;
   public
     AssociatedDataListRecord : TAssociatedDataListRecord;
@@ -353,7 +353,7 @@ type
 
   TPlaylistChunk = class(TWavDefinedChunk)
   private
-    FCount            : Cardinal; 
+    FCount            : Cardinal;
     FPlaylistSegments : TOwnedCollection;
     procedure CalculateChunkSize;
   protected
@@ -815,13 +815,13 @@ function WaveChunkClassByName(Value: string): TDavDefinedChunkClass;
 var
   X: Integer;
 begin
- Result := nil;
- for X := Length(WaveChunkClasses) - 1 downto 0 do
+  Result := nil;
+  for X := Length(WaveChunkClasses) - 1 downto 0 do
   begin
-   if WaveChunkClasses[X].ClassName = Value then
+    if WaveChunkClasses[X].ClassName = Value then
     begin
-     Result := WaveChunkClasses[X];
-     Break;
+      Result := WaveChunkClasses[X];
+      Break;
     end;
   end;
 end;
@@ -830,287 +830,289 @@ function WaveChunkClassByChunkName(Value: TChunkName): TDavDefinedChunkClass;
 var
   X: Integer;
 begin
- Result := nil;
- for X := 0 to Length(WaveChunkClasses) - 1 do
-  if CompareChunkNames(WaveChunkClasses[X].GetClassChunkName, Value) then
-   begin
-    Result := WaveChunkClasses[X];
-    Break;
-   end;
+  Result := nil;
+  for X := 0 to Length(WaveChunkClasses) - 1 do
+    if CompareChunkNames(WaveChunkClasses[X].GetClassChunkName, Value) then
+    begin
+      Result := WaveChunkClasses[X];
+      Break;
+    end;
 end;
 
 function IsWaveChunkClassRegistered(AClass: TDavDefinedChunkClass): Boolean;
 var
-  X : Integer;
+  X: Integer;
 begin
- Result := False;
- for X := Length(WaveChunkClasses) - 1 downto 0 do
+  Result := False;
+  for X := Length(WaveChunkClasses) - 1 downto 0 do
   begin
-   if WaveChunkClasses[X] = AClass then
+    if WaveChunkClasses[X] = AClass then
     begin
-     Result := True;
-     Break;
+      Result := True;
+      Break;
     end;
   end;
 end;
 
 procedure RegisterWaveChunk(AClass: TDavDefinedChunkClass);
 begin
- Classes.RegisterClass(AClass);
- Assert(not IsWaveChunkClassRegistered(AClass));
- SetLength(WaveChunkClasses, Length(WaveChunkClasses) + 1);
- WaveChunkClasses[Length(WaveChunkClasses) - 1] := AClass;
+  Classes.RegisterClass(AClass);
+  Assert(not IsWaveChunkClassRegistered(AClass));
+  SetLength(WaveChunkClasses, Length(WaveChunkClasses) + 1);
+  WaveChunkClasses[Length(WaveChunkClasses) - 1] := AClass;
 end;
 
 procedure RegisterWaveChunks(AClasses: array of TDavDefinedChunkClass);
 var
-  i : Integer;
+  i: Integer;
 begin
- for I := 0 to Length(AClasses) - 1
-  do RegisterWaveChunk(AClasses[I]);
+  for i := 0 to Length(AClasses) - 1 do
+    RegisterWaveChunk(AClasses[i]);
 end;
-
 
 { TWavDefinedChunk }
 
 constructor TWavDefinedChunk.Create;
 begin
- inherited;
- ChunkFlags := ChunkFlags + [cfPadSize];
+  inherited;
+  ChunkFlags := ChunkFlags + [cfPadSize];
 end;
-
 
 { TWavFixedDefinedChunk }
 
 constructor TWavFixedDefinedChunk.Create;
 begin
- inherited;
- ChunkFlags := ChunkFlags + [cfPadSize];
+  inherited;
+  ChunkFlags := ChunkFlags + [cfPadSize];
 end;
-
 
 { TWavChunkText }
 
 constructor TWavChunkText.Create;
 begin
- inherited;
- ChunkFlags := ChunkFlags + [cfPadSize];
+  inherited;
+  ChunkFlags := ChunkFlags + [cfPadSize];
 end;
-
 
 { TWavBinaryChunk }
 
 constructor TWavBinaryChunk.Create;
 begin
- inherited;
- ChunkFlags := ChunkFlags + [cfPadSize];
+  inherited;
+  ChunkFlags := ChunkFlags + [cfPadSize];
 end;
-
 
 { TWavUnknownChunk }
 
 constructor TWavUnknownChunk.Create;
 begin
- inherited;
- ChunkFlags := ChunkFlags + [cfPadSize];
+  inherited;
+  ChunkFlags := ChunkFlags + [cfPadSize];
 end;
-
 
 { TFormatChunk }
 
 constructor TFormatChunk.Create;
 begin
- inherited;
- with FWaveFormatRecord do
+  inherited;
+  with FWaveFormatRecord do
   begin
-   FormatTag      := 1;     // PCM encoding by default
-   Channels       := 1;     // one channel
-   SampleRate     := 44100; // 44.1 kHz
-   BitsPerSample  := 24;    // 24bit
-   BlockAlign     := (BitsPerSample + 7) div 8 * Channels;
-   BytesPerSecond := Channels * BlockAlign * SampleRate;
+    FormatTag := 1; // PCM encoding by default
+    Channels := 1; // one channel
+    SampleRate := 44100; // 44.1 kHz
+    BitsPerSample := 24; // 24bit
+    BlockAlign := (BitsPerSample + 7) div 8 * Channels;
+    BytesPerSecond := Channels * BlockAlign * SampleRate;
   end;
- SetLength(FFormatSpecific, 0);
+  SetLength(FFormatSpecific, 0);
 end;
 
 destructor TFormatChunk.Destroy;
 begin
- Dispose(FFormatExtensible);
- inherited;
+  Dispose(FFormatExtensible);
+  inherited;
 end;
 
 procedure TFormatChunk.AssignTo(Dest: TPersistent);
 begin
- inherited;
- if Dest is TFormatChunk then
+  inherited;
+  if Dest is TFormatChunk then
   begin
-   TFormatChunk(Dest).FWaveFormatRecord := FWaveFormatRecord;
-   SetLength(TFormatChunk(Dest).FFormatSpecific, Length(FFormatSpecific));
-   Move(FFormatSpecific[0], TFormatChunk(Dest).FFormatSpecific[0], Length(FFormatSpecific));
+    TFormatChunk(Dest).FWaveFormatRecord := FWaveFormatRecord;
+    SetLength(TFormatChunk(Dest).FFormatSpecific, Length(FFormatSpecific));
+    Move(FFormatSpecific[0], TFormatChunk(Dest).FFormatSpecific[0],
+      Length(FFormatSpecific));
   end;
 end;
 
 procedure TFormatChunk.CalculateChunkSize;
 begin
- FChunkSize := SizeOf(TWavFormatRecord);
- if FWaveFormatRecord.FormatTag <> 1
-  then FChunkSize := FChunkSize + SizeOf(Word) + Cardinal(Length(FFormatSpecific));
+  FChunkSize := SizeOf(TWavFormatRecord);
+  if FWaveFormatRecord.FormatTag <> 1 then
+    FChunkSize := FChunkSize + SizeOf(Word) + Cardinal(Length(FFormatSpecific));
 end;
 
 procedure TFormatChunk.LoadFromStream(Stream: TStream);
 var
-  FormatSpecificBytes : Word;
+  FormatSpecificBytes: Word;
 begin
- inherited;
- with Stream do
+  inherited;
+  with Stream do
   begin
-   // make sure the chunk size is at least the header size
-   Assert(FChunkSize >= SizeOf(TWavFormatRecord));
-   Read(FWaveFormatRecord, SizeOf(TWavFormatRecord));
+    // make sure the chunk size is at least the header size
+    Assert(FChunkSize >= SizeOf(TWavFormatRecord));
+    Read(FWaveFormatRecord, SizeOf(TWavFormatRecord));
 
-   // check whether format specific data can be found:
-   if FChunkSize <= SizeOf(TWavFormatRecord) then Exit;
-   Read(FormatSpecificBytes, SizeOf(Word));
+    // check whether format specific data can be found:
+    if FChunkSize <= SizeOf(TWavFormatRecord) then
+      Exit;
+    Read(FormatSpecificBytes, SizeOf(Word));
 
-   // read format specific bytes
-   Assert(FChunkSize >= SizeOf(TWavFormatRecord) + SizeOf(Word) + FormatSpecificBytes);
+    // read format specific bytes
+    Assert(FChunkSize >= SizeOf(TWavFormatRecord) + SizeOf(Word) +
+      FormatSpecificBytes);
 
-   // check format extensible
-   if FWaveFormatRecord.FormatTag = $FFFE then
+    // check format extensible
+    if FWaveFormatRecord.FormatTag = $FFFE then
     begin
-     // check length
-     if FormatSpecificBytes < SizeOf(TWavFormatChunkExtensible)
-      then raise Exception.Create('Extensible format chunk size too small');
+      // check length
+      if FormatSpecificBytes < SizeOf(TWavFormatChunkExtensible) then
+        raise Exception.Create('Extensible format chunk size too small');
 
-     // allocate memory for the extensible format
-     ReallocMem(FFormatExtensible, FormatSpecificBytes);
+      // allocate memory for the extensible format
+      ReallocMem(FFormatExtensible, FormatSpecificBytes);
 
-     // read format extensible part
-     Read(FFormatExtensible^, FormatSpecificBytes);
+      // read format extensible part
+      Read(FFormatExtensible^, FormatSpecificBytes);
     end
-   else
+    else
     begin
-     // assign general format specific data
-     SetLength(FFormatSpecific, FormatSpecificBytes);
-     Read(FFormatSpecific[0], FormatSpecificBytes);
+      // assign general format specific data
+      SetLength(FFormatSpecific, FormatSpecificBytes);
+      Read(FFormatSpecific[0], FormatSpecificBytes);
     end;
 
-   // Move position to the end of this chunk
-   Position := Position + FChunkSize - SizeOf(TWavFormatRecord) - SizeOf(Word) - FormatSpecificBytes;
+    // Move position to the end of this chunk
+    Position := Position + FChunkSize - SizeOf(TWavFormatRecord) - SizeOf(Word)
+      - FormatSpecificBytes;
   end;
 end;
 
 procedure TFormatChunk.SaveToStream(Stream: TStream);
 var
-  FormatSpecificBytes : Word;
+  FormatSpecificBytes: Word;
 begin
- CalculateChunkSize;
- inherited;
- with Stream do
+  CalculateChunkSize;
+  inherited;
+  with Stream do
   begin
-   // write header
-   Write(FWaveFormatRecord, SizeOf(TWavFormatRecord));
+    // write header
+    Write(FWaveFormatRecord, SizeOf(TWavFormatRecord));
 
-   // write format specific bytes
-   if FWaveFormatRecord.FormatTag <> 1 then
+    // write format specific bytes
+    if FWaveFormatRecord.FormatTag <> 1 then
     begin
-     FormatSpecificBytes := Length(FFormatSpecific);
-     Write(FormatSpecificBytes, SizeOf(Word));
-     if FormatSpecificBytes > 0
-      then Write(FFormatSpecific[0], FormatSpecificBytes);
+      FormatSpecificBytes := Length(FFormatSpecific);
+      Write(FormatSpecificBytes, SizeOf(Word));
+      if FormatSpecificBytes > 0 then
+        Write(FFormatSpecific[0], FormatSpecificBytes);
     end;
   end;
 end;
 
 class function TFormatChunk.GetClassChunkName: TChunkName;
 begin
- Result := 'fmt ';
+  Result := 'fmt ';
 end;
 
 function TFormatChunk.GetFormatTag: TWavEncoding;
 begin
- // check if extensible format
- if (FWaveFormatRecord.FormatTag <> $FFFE) or not Assigned(FFormatExtensible)
-  then Result := TWavEncoding(FWaveFormatRecord.FormatTag)
-  else Move(FFormatExtensible^.GUID, Result, SizeOf(Word));
+  // check if extensible format
+  if (FWaveFormatRecord.FormatTag <> $FFFE) or not Assigned(FFormatExtensible)
+  then
+    Result := TWavEncoding(FWaveFormatRecord.FormatTag)
+  else
+    Move(FFormatExtensible^.GUID, Result, SizeOf(Word));
 end;
 
 function TFormatChunk.GetValidBitsPerSample: Word;
 begin
- if (Length(FFormatSpecific) >= 2) and (FWaveFormatRecord.FormatTag = $FFFE)
-  then Move(FFormatSpecific[0], Result, SizeOf(Word))
-  else Result := FWaveFormatRecord.BitsPerSample;
+  if (Length(FFormatSpecific) >= 2) and (FWaveFormatRecord.FormatTag = $FFFE)
+  then
+    Move(FFormatSpecific[0], Result, SizeOf(Word))
+  else
+    Result := FWaveFormatRecord.BitsPerSample;
 end;
 
 procedure TFormatChunk.SetBitsPerSample(const Value: Word);
 begin
- if FWaveFormatRecord.BitsPerSample <> Value then
+  if FWaveFormatRecord.BitsPerSample <> Value then
   begin
-   if Value < 2
-    then raise Exception.Create('Value must be greater then 1!');
-   FWaveFormatRecord.BitsPerSample := Value;
+    if Value < 2 then
+      raise Exception.Create('Value must be greater then 1!');
+    FWaveFormatRecord.BitsPerSample := Value;
   end;
 end;
 
 procedure TFormatChunk.SetBlockAlign(const Value: Word);
 begin
- if FWaveFormatRecord.BlockAlign <> Value then
+  if FWaveFormatRecord.BlockAlign <> Value then
   begin
-   if Value < 1
-    then raise Exception.Create('Value must be greater then 0!');
-   FWaveFormatRecord.BlockAlign := Value;
+    if Value < 1 then
+      raise Exception.Create('Value must be greater then 0!');
+    FWaveFormatRecord.BlockAlign := Value;
   end;
 end;
 
 procedure TFormatChunk.SetBytesPerSecond(const Value: Cardinal);
 begin
- if FWaveFormatRecord.BytesPerSecond <> Value then
+  if FWaveFormatRecord.BytesPerSecond <> Value then
   begin
-   if Value < 1
-    then raise Exception.Create('Value must be greater then 0!');
-   FWaveFormatRecord.BytesPerSecond := Value;
+    if Value < 1 then
+      raise Exception.Create('Value must be greater then 0!');
+    FWaveFormatRecord.BytesPerSecond := Value;
   end;
 end;
 
 procedure TFormatChunk.SetChannels(const Value: Word);
 begin
- if FWaveFormatRecord.Channels <> Value then
+  if FWaveFormatRecord.Channels <> Value then
   begin
-   if Value < 1
-    then raise Exception.Create('Value must be greater then 0!');
-   FWaveFormatRecord.Channels := Value;
+    if Value < 1 then
+      raise Exception.Create('Value must be greater then 0!');
+    FWaveFormatRecord.Channels := Value;
   end;
 end;
 
 procedure TFormatChunk.SetFormatTag(const Value: TWavEncoding);
 begin
- // ensure that the extensible format is used correctly 
- if Assigned(FFormatExtensible) then
+  // ensure that the extensible format is used correctly
+  if Assigned(FFormatExtensible) then
   begin
-   // Move current format tag to extensible format tag
-   Move(Value, FFormatExtensible.GUID, SizeOf(Word));
+    // Move current format tag to extensible format tag
+    Move(Value, FFormatExtensible.GUID, SizeOf(Word));
   end
- else
+  else
   begin
-   if Value = etExtensible then
+    if Value = etExtensible then
     begin
-     // allocate memory for extensible format
-     ReallocMem(FFormatExtensible, SizeOf(TWavFormatChunkExtensible));
+      // allocate memory for extensible format
+      ReallocMem(FFormatExtensible, SizeOf(TWavFormatChunkExtensible));
 
-     // Move current format tag to extensible format tag
-     Move(FWaveFormatRecord.FormatTag, FFormatExtensible.GUID, SizeOf(Word));
+      // Move current format tag to extensible format tag
+      Move(FWaveFormatRecord.FormatTag, FFormatExtensible.GUID, SizeOf(Word));
     end;
-   FWaveFormatRecord.FormatTag := Word(Value);
+    FWaveFormatRecord.FormatTag := Word(Value);
   end;
 end;
 
 procedure TFormatChunk.SetSampleRate(const Value: Cardinal);
 begin
- if FWaveFormatRecord.SampleRate <> Value then
+  if FWaveFormatRecord.SampleRate <> Value then
   begin
-   if Value < 1
-    then raise Exception.Create('Value must be greater then 0!');
-   FWaveFormatRecord.SampleRate := Value;
+    if Value < 1 then
+      raise Exception.Create('Value must be greater then 0!');
+    FWaveFormatRecord.SampleRate := Value;
   end;
 end;
 
@@ -1118,127 +1120,121 @@ end;
 
 constructor TFactChunk.Create;
 begin
- inherited;
- StartAddress := @FactRecord;
+  inherited;
+  StartAddress := @FactRecord;
 end;
 
 procedure TFactChunk.AssignTo(Dest: TPersistent);
 begin
- inherited;
- if Dest is TFactChunk
-  then TFactChunk(Dest).FactRecord := FactRecord;
+  inherited;
+  if Dest is TFactChunk then
+    TFactChunk(Dest).FactRecord := FactRecord;
 end;
 
 class function TFactChunk.GetClassChunkName: TChunkName;
 begin
- Result := 'fact';
+  Result := 'fact';
 end;
 
 class function TFactChunk.GetClassChunkSize: Integer;
 begin
- Result := SizeOf(TFactRecord);
+  Result := SizeOf(TFactRecord);
 end;
 
 { TInfoSoftwareNameChunk }
 
 class function TInfoSoftwareNameChunk.GetClassChunkName: TChunkName;
 begin
- Result := 'ISFT';
+  Result := 'ISFT';
 end;
 
 { TInfoCommnetChunk }
 
 class function TInfoCommentChunk.GetClassChunkName: TChunkName;
 begin
- Result := 'ICMT';
+  Result := 'ICMT';
 end;
 
 { TInfoCreationDateChunk }
 
 class function TInfoCreationDateChunk.GetClassChunkName: TChunkName;
 begin
- Result := 'ICRD';
+  Result := 'ICRD';
 end;
-
 
 { TInfoCopyrightChunk }
 
 class function TInfoCopyrightChunk.GetClassChunkName: TChunkName;
 begin
- Result := 'ICOP';
+  Result := 'ICOP';
 end;
-
 
 { TInfoSubjectChunk }
 
 class function TInfoSubjectChunk.GetClassChunkName: TChunkName;
 begin
- Result := 'ISBJ';
+  Result := 'ISBJ';
 end;
-
 
 { TInfoTitleChunk }
 
 class function TInfoTitleChunk.GetClassChunkName: TChunkName;
 begin
- Result := 'INAM';
+  Result := 'INAM';
 end;
-
 
 { TInfoArtistChunk }
 
 class function TInfoArtistChunk.GetClassChunkName: TChunkName;
 begin
- Result := 'IART';
+  Result := 'IART';
 end;
-
 
 { TQualityChunk }
 
 class function TQualityChunk.GetClassChunkName: TChunkName;
 begin
- Result := 'qlty';
+  Result := 'qlty';
 end;
-
 
 { TSilentChunk }
 
 constructor TSilentChunk.Create;
 begin
- inherited;
- StartAddress := @SilentRecord;
+  inherited;
+  StartAddress := @SilentRecord;
 end;
 
 procedure TSilentChunk.AssignTo(Dest: TPersistent);
 begin
- inherited;
- if Dest is TSilentChunk
-  then TSilentChunk(Dest).SilentRecord := SilentRecord;
+  inherited;
+  if Dest is TSilentChunk then
+    TSilentChunk(Dest).SilentRecord := SilentRecord;
 end;
 
 class function TSilentChunk.GetClassChunkName: TChunkName;
 begin
- Result := 'slnt';
+  Result := 'slnt';
 end;
 
 class function TSilentChunk.GetClassChunkSize: Integer;
 begin
- Result := SizeOf(TSilentRecord);
+  Result := SizeOf(TSilentRecord);
 end;
 
 { TCustomPaddingChunk }
 
 procedure TCustomPaddingChunk.LoadFromStream(Stream: TStream);
 begin
- inherited;
- with Stream do
+  inherited;
+  with Stream do
   begin
-   // advance position
-   Position := Position + FChunkSize;
+    // advance position
+    Position := Position + FChunkSize;
 
-   // eventually skip padded zeroes
-   if cfPadSize in ChunkFlags
-    then Position := Position + CalculateZeroPad;
+    // eventually skip padded zeroes
+    if cfPadSize in ChunkFlags then
+      Position := Position + CalculateZeroPad;
   end;
 end;
 
@@ -1246,1064 +1242,1159 @@ end;
 
 constructor TJunkChunk.Create;
 begin
- inherited;
- FPadding := 16;
+  inherited;
+  FPadding := 16;
 end;
 
 procedure TJunkChunk.AssignTo(Dest: TPersistent);
 begin
- inherited;
- if Dest is TJunkChunk
-  then TJunkChunk(Dest).Padding := Padding;
+  inherited;
+  if Dest is TJunkChunk then
+    TJunkChunk(Dest).Padding := Padding;
 end;
 
 class function TJunkChunk.GetClassChunkName: TChunkName;
 begin
- Result := 'junk';
+  Result := 'junk';
 end;
 
 procedure TJunkChunk.SaveToStream(Stream: TStream);
 begin
- // calculate chunk size
- FChunkSize := FPadding;
+  // calculate chunk size
+  FChunkSize := FPadding;
 
- // write basic chunk information
- inherited;
+  // write basic chunk information
+  inherited;
 
- // write custom chunk information
- with Stream
-  do Position := Position + FChunkSize;
+  // write custom chunk information
+  with Stream do
+    Position := Position + FChunkSize;
 
- // check and eventually add zero pad
- CheckAddZeroPad(Stream);
+  // check and eventually add zero pad
+  CheckAddZeroPad(Stream);
 end;
-
 
 { TPadChunk }
 
 constructor TPadChunk.Create;
 begin
- inherited;
- FAlignSize := 2048;
+  inherited;
+  FAlignSize := 2048;
 end;
 
 procedure TPadChunk.AssignTo(Dest: TPersistent);
 begin
- inherited;
- if Dest is TCustomPaddingChunk then
+  inherited;
+  if Dest is TCustomPaddingChunk then
   begin
-   TPadChunk(Dest).FAlignSize := FAlignSize;
+    TPadChunk(Dest).FAlignSize := FAlignSize;
   end;
 end;
 
 class function TPadChunk.GetClassChunkName: TChunkName;
 begin
- Result := 'PAD ';
+  Result := 'PAD ';
 end;
 
 procedure TPadChunk.LoadFromStream(Stream: TStream);
 begin
- inherited;
- // set align size
-// FAlignSize :=
+  inherited;
+  // set align size
+  // FAlignSize :=
 end;
 
 procedure TPadChunk.SaveToStream(Stream: TStream);
 begin
- // calculate chunk size
- with Stream
-  do FChunkSize := ((Position + FAlignSize) div FAlignSize) * FAlignSize - Position;
+  // calculate chunk size
+  with Stream do
+    FChunkSize := ((Position + FAlignSize) div FAlignSize) * FAlignSize
+      - Position;
 
- // write basic chunk information
- inherited;
+  // write basic chunk information
+  inherited;
 
- // write custom chunk information
- with Stream
-  do Position := Position + FChunkSize;
+  // write custom chunk information
+  with Stream do
+    Position := Position + FChunkSize;
 
- // check and eventually add zero pad
- CheckAddZeroPad(Stream);
+  // check and eventually add zero pad
+  CheckAddZeroPad(Stream);
 end;
-
 
 { TCustomWavCuedTextChunk }
 
 procedure TCustomWavCuedTextChunk.AssignTo(Dest: TPersistent);
 begin
- inherited;
- if Dest is TCustomWavCuedTextChunk then
+  inherited;
+  if Dest is TCustomWavCuedTextChunk then
   begin
-   TCustomWavCuedTextChunk(Dest).FText  := FText;
-   TCustomWavCuedTextChunk(Dest).FCueID := FCueID;
+    TCustomWavCuedTextChunk(Dest).FText := FText;
+    TCustomWavCuedTextChunk(Dest).FCueID := FCueID;
   end;
 end;
 
 procedure TCustomWavCuedTextChunk.LoadFromStream(Stream: TStream);
 begin
- // load basic chunk information
- inherited;
+  // load basic chunk information
+  inherited;
 
- // load custom chunk information
- with Stream do
+  // load custom chunk information
+  with Stream do
   begin
-   SetLength(FText, FChunkSize - SizeOf(Cardinal));
-   Read(FCueID, SizeOf(Cardinal));
-   Read(FText[1], Length(FText));
+    SetLength(FText, FChunkSize - SizeOf(Cardinal));
+    Read(FCueID, SizeOf(Cardinal));
+    Read(FText[1], Length(FText));
 
-   // eventually skip padded zeroes
-   if cfPadSize in ChunkFlags
-    then Position := Position + CalculateZeroPad;
+    // eventually skip padded zeroes
+    if cfPadSize in ChunkFlags then
+      Position := Position + CalculateZeroPad;
   end;
 end;
 
 procedure TCustomWavCuedTextChunk.SaveToStream(Stream: TStream);
 begin
- // calculate chunk size
- CalculateChunkSize;
+  // calculate chunk size
+  CalculateChunkSize;
 
- // write basic chunk information
- inherited;
+  // write basic chunk information
+  inherited;
 
- // write custom chunk information
- with Stream do
+  // write custom chunk information
+  with Stream do
   begin
-   Write(FCueID, SizeOf(Cardinal));
-   Write(FText[1], Length(FText));
+    Write(FCueID, SizeOf(Cardinal));
+    Write(FText[1], Length(FText));
   end;
 
- // check and eventually add zero pad
- CheckAddZeroPad(Stream);
+  // check and eventually add zero pad
+  CheckAddZeroPad(Stream);
 end;
 
 procedure TCustomWavCuedTextChunk.SetText(const Value: string);
 begin
- FText := Value;
- CalculateChunkSize;
+  FText := Value;
+  CalculateChunkSize;
 end;
 
 procedure TCustomWavCuedTextChunk.CalculateChunkSize;
 begin
- FChunkSize := Length(FText) + SizeOf(Cardinal);
+  FChunkSize := Length(FText) + SizeOf(Cardinal);
 end;
 
 { TLabelChunk }
 
 class function TLabelChunk.GetClassChunkName: TChunkName;
 begin
- Result := 'labl';
+  Result := 'labl';
 end;
 
 { TNoteChunk }
 
 class function TNoteChunk.GetClassChunkName: TChunkName;
 begin
- Result := 'note';
+  Result := 'note';
 end;
 
 { TLabeledTextChunk }
 
 procedure TLabeledTextChunk.CalculateChunkSize;
 begin
- FChunkSize := Length(FText) + SizeOf(TLabeledTextRecord);
+  FChunkSize := Length(FText) + SizeOf(TLabeledTextRecord);
 end;
 
 class function TLabeledTextChunk.GetClassChunkName: TChunkName;
 begin
- Result := 'ltxt';
+  Result := 'ltxt';
 end;
 
 procedure TLabeledTextChunk.AssignTo(Dest: TPersistent);
 begin
- inherited;
- if Dest is TLabeledTextChunk then
+  inherited;
+  if Dest is TLabeledTextChunk then
   begin
-   TLabeledTextChunk(Dest).FText             := FText;
-   TLabeledTextChunk(Dest).LabeledTextRecord := LabeledTextRecord;
+    TLabeledTextChunk(Dest).FText := FText;
+    TLabeledTextChunk(Dest).LabeledTextRecord := LabeledTextRecord;
   end;
 end;
 
 procedure TLabeledTextChunk.LoadFromStream(Stream: TStream);
 begin
- // load basic chunk information
- inherited;
+  // load basic chunk information
+  inherited;
 
- // load custom chunk information
- with Stream do
+  // load custom chunk information
+  with Stream do
   begin
-   SetLength(FText, FChunkSize - SizeOf(TLabeledTextRecord));
-   Read(LabeledTextRecord, SizeOf(TLabeledTextRecord));
-   Read(FText[1], Length(FText));
+    SetLength(FText, FChunkSize - SizeOf(TLabeledTextRecord));
+    Read(LabeledTextRecord, SizeOf(TLabeledTextRecord));
+    Read(FText[1], Length(FText));
 
-   // eventually skip padded zeroes
-   if cfPadSize in ChunkFlags
-    then Position := Position + CalculateZeroPad;
+    // eventually skip padded zeroes
+    if cfPadSize in ChunkFlags then
+      Position := Position + CalculateZeroPad;
   end;
 end;
 
 procedure TLabeledTextChunk.SaveToStream(Stream: TStream);
 begin
- // calculate chunk size
- CalculateChunkSize;
+  // calculate chunk size
+  CalculateChunkSize;
 
- // write basic chunk information
- inherited;
+  // write basic chunk information
+  inherited;
 
- // write custom chunk information
- with Stream do
+  // write custom chunk information
+  with Stream do
   begin
-   Write(LabeledTextRecord, SizeOf(TLabeledTextRecord));
-   Write(FText[1], FChunkSize);
+    Write(LabeledTextRecord, SizeOf(TLabeledTextRecord));
+    Write(FText[1], FChunkSize);
   end;
 
- // check and eventually add zero pad
- CheckAddZeroPad(Stream);
+  // check and eventually add zero pad
+  CheckAddZeroPad(Stream);
 end;
 
 procedure TLabeledTextChunk.SetText(const Value: string);
 begin
- FText := Value;
- CalculateChunkSize;
+  FText := Value;
+  CalculateChunkSize;
 end;
 
 { TCuedFileChunk }
 
 procedure TCuedFileChunk.AssignTo(Dest: TPersistent);
 begin
- inherited;
- if Dest is TCuedFileChunk then
+  inherited;
+  if Dest is TCuedFileChunk then
   begin
-   TCuedFileChunk(Dest).FCueID            := FCueID;
-   TCuedFileChunk(Dest).FMediaType        := FMediaType;
+    TCuedFileChunk(Dest).FCueID := FCueID;
+    TCuedFileChunk(Dest).FMediaType := FMediaType;
 
-   // copy binary data:
-   SetLength(TCuedFileChunk(Dest).FBinaryData, Length(FBinaryData));
-   Move(FBinaryData[0], TCuedFileChunk(Dest).FBinaryData[0], Length(FBinaryData));
+    // copy binary data:
+    SetLength(TCuedFileChunk(Dest).FBinaryData, Length(FBinaryData));
+    Move(FBinaryData[0], TCuedFileChunk(Dest).FBinaryData[0],
+      Length(FBinaryData));
   end;
 end;
 
 procedure TCuedFileChunk.CalculateChunkSize;
 begin
- FChunkSize := SizeOf(FCueID) +  SizeOf(FMediaType) + Length(FBinaryData);
+  FChunkSize := SizeOf(FCueID) + SizeOf(FMediaType) + Length(FBinaryData);
 end;
 
 class function TCuedFileChunk.GetClassChunkName: TChunkName;
 begin
- Result := 'file';
+  Result := 'file';
 end;
 
 procedure TCuedFileChunk.LoadFromStream(Stream: TStream);
 begin
- // calculate chunk size
- inherited;
+  // calculate chunk size
+  inherited;
 
- // load custom chunk information
- with Stream do
+  // load custom chunk information
+  with Stream do
   begin
-   Read(FCueID, SizeOf(FCueID));
-   Read(FMediaType, SizeOf(FMediaType));
+    Read(FCueID, SizeOf(FCueID));
+    Read(FMediaType, SizeOf(FMediaType));
 
-   // read binary data
-   SetLength(FBinaryData, FChunkSize - SizeOf(FCueID) - SizeOf(FMediaType));
-   Read(FBinaryData[0], Length(FBinaryData));
+    // read binary data
+    SetLength(FBinaryData, FChunkSize - SizeOf(FCueID) - SizeOf(FMediaType));
+    Read(FBinaryData[0], Length(FBinaryData));
 
-   // eventually skip padded zeroes
-   if cfPadSize in ChunkFlags
-    then Position := Position + CalculateZeroPad;
+    // eventually skip padded zeroes
+    if cfPadSize in ChunkFlags then
+      Position := Position + CalculateZeroPad;
   end;
 end;
 
 procedure TCuedFileChunk.SaveToStream(Stream: TStream);
 begin
- // calculate chunk size
- CalculateChunkSize;
+  // calculate chunk size
+  CalculateChunkSize;
 
- // write basic chunk information
- inherited;
+  // write basic chunk information
+  inherited;
 
- // write custom chunk information
- with Stream do
+  // write custom chunk information
+  with Stream do
   begin
-   Write(FCueID, SizeOf(FCueID));
-   Write(FMediaType, SizeOf(FMediaType));
+    Write(FCueID, SizeOf(FCueID));
+    Write(FMediaType, SizeOf(FMediaType));
 
-   // write binary data:
-   Write(FBinaryData[0], Length(FBinaryData));
+    // write binary data:
+    Write(FBinaryData[0], Length(FBinaryData));
   end;
 
- // check and eventually add zero pad
- CheckAddZeroPad(Stream);
+  // check and eventually add zero pad
+  CheckAddZeroPad(Stream);
 end;
 
 { TAssociatedDataListChunk }
 
 constructor TAssociatedDataListChunk.Create;
 begin
- inherited;
- FChunkList := TDavChunkList.Create;
+  inherited;
+  FChunkList := TDavChunkList.Create;
 end;
 
 destructor TAssociatedDataListChunk.Destroy;
 begin
- FreeAndNil(FChunkList);
- inherited;
+  FreeAndNil(FChunkList);
+  inherited;
 end;
 
 procedure TAssociatedDataListChunk.AddChunk(Chunk: TDavCustomChunk);
 begin
- FChunkList.Add(Chunk);
+  FChunkList.Add(Chunk);
 end;
 
 procedure TAssociatedDataListChunk.AssignTo(Dest: TPersistent);
 begin
- inherited;
- if Dest is TAssociatedDataListChunk
-  then TAssociatedDataListChunk(Dest).AssociatedDataListRecord := AssociatedDataListRecord;
+  inherited;
+  if Dest is TAssociatedDataListChunk then
+    TAssociatedDataListChunk(Dest).AssociatedDataListRecord :=
+      AssociatedDataListRecord;
 end;
 
 procedure TAssociatedDataListChunk.LoadFromStream(Stream: TStream);
 var
-  ChunkEnd  : Integer;
-  ChunkName : TChunkName;
+  ChunkEnd: Integer;
+  ChunkName: TChunkName;
 begin
- // load basic chunk information
- inherited;
+  // load basic chunk information
+  inherited;
 
- // load custom chunk information
- with Stream do
+  // load custom chunk information
+  with Stream do
   begin
-   ChunkEnd := Position + FChunkSize;
-   Assert(ChunkEnd <= Stream.Size);
+    ChunkEnd := Position + FChunkSize;
+    Assert(ChunkEnd <= Stream.Size);
 
-   // read type ID
-   Read(AssociatedDataListRecord, SizeOf(AssociatedDataListRecord));
+    // read type ID
+    Read(AssociatedDataListRecord, SizeOf(AssociatedDataListRecord));
 
-   while Position < ChunkEnd do
+    while Position < ChunkEnd do
     begin
-     if cfSizeFirst in ChunkFlags then
+      if cfSizeFirst in ChunkFlags then
       begin
-       Position := Position + 4;
-       Read(ChunkName, 4);
-       Position := Position - 8;
+        Position := Position + 4;
+        Read(ChunkName, 4);
+        Position := Position - 8;
       end
-     else
+      else
       begin
-       Read(ChunkName, 4);
-       Position := Position - 4;
+        Read(ChunkName, 4);
+        Position := Position - 4;
       end;
-     ConvertStreamToChunk(GetChunkClass(ChunkName), Stream);
+      ConvertStreamToChunk(GetChunkClass(ChunkName), Stream);
     end;
-   if Position <> ChunkEnd
-    then Position := ChunkEnd;
+    if Position <> ChunkEnd then
+      Position := ChunkEnd;
 
-   // eventually skip padded zeroes
-   if cfPadSize in ChunkFlags
-    then Position := Position + CalculateZeroPad;
+    // eventually skip padded zeroes
+    if cfPadSize in ChunkFlags then
+      Position := Position + CalculateZeroPad;
   end;
 end;
 
 procedure TAssociatedDataListChunk.SaveToStream(Stream: TStream);
 var
-  i : Integer;
+  i: Integer;
 begin
- // calculate chunk size
- FChunkSize := GetChunkSize;
+  // calculate chunk size
+  FChunkSize := GetChunkSize;
 
- // write basic chunk information
- inherited;
+  // write basic chunk information
+  inherited;
 
- // write custom chunk information
- Stream.Write(AssociatedDataListRecord, SizeOf(AssociatedDataListRecord));
+  // write custom chunk information
+  Stream.Write(AssociatedDataListRecord, SizeOf(AssociatedDataListRecord));
 
- // write sub chunks
- for i := 0 to FChunkList.Count - 1
-  do FChunkList[i].SaveToStream(Stream);
+  // write sub chunks
+  for i := 0 to FChunkList.Count - 1 do
+    FChunkList[i].SaveToStream(Stream);
 
- // check and eventually add zero pad
- CheckAddZeroPad(Stream);
+  // check and eventually add zero pad
+  CheckAddZeroPad(Stream);
 end;
 
-procedure TAssociatedDataListChunk.ConvertStreamToChunk(
-  ChunkClass: TDavCustomChunkClass; Stream: TStream);
+procedure TAssociatedDataListChunk.ConvertStreamToChunk
+  (ChunkClass: TDavCustomChunkClass; Stream: TStream);
 var
-  Chunk : TDavCustomChunk;
+  Chunk: TDavCustomChunk;
 begin
- Chunk := ChunkClass.Create;
- Chunk.ChunkFlags := ChunkFlags;
- Chunk.LoadFromStream(Stream);
- AddChunk(Chunk);
+  Chunk := ChunkClass.Create;
+  Chunk.ChunkFlags := ChunkFlags;
+  Chunk.LoadFromStream(Stream);
+  AddChunk(Chunk);
 end;
 
-function TAssociatedDataListChunk.GetChunkClass(
-  ChunkName: TChunkName): TDavCustomChunkClass;
+function TAssociatedDataListChunk.GetChunkClass(ChunkName: TChunkName)
+  : TDavCustomChunkClass;
 var
   X: Integer;
 begin
- Result := TDavUnknownChunk;
- for X := 0 to Length(WaveChunkClasses) - 1 do
-  if CompareChunkNames(WaveChunkClasses[X].GetClassChunkName, ChunkName) then
-   begin
-    Result := WaveChunkClasses[X];
-    Break;
-   end;
+  Result := TDavUnknownChunk;
+  for X := 0 to Length(WaveChunkClasses) - 1 do
+    if CompareChunkNames(WaveChunkClasses[X].GetClassChunkName, ChunkName) then
+    begin
+      Result := WaveChunkClasses[X];
+      Break;
+    end;
 end;
 
 function TAssociatedDataListChunk.GetChunkSize: Cardinal;
 var
-  i : Integer;
+  i: Integer;
 begin
- Result := SizeOf(AssociatedDataListRecord);
- for i := 0 to FChunkList.Count - 1
-  do inc(Result, FChunkList[i].ChunkSize + 8); // Chunk Size + Chunk Frame (8)
+  Result := SizeOf(AssociatedDataListRecord);
+  for i := 0 to FChunkList.Count - 1 do
+    inc(Result, FChunkList[i].ChunkSize + 8); // Chunk Size + Chunk Frame (8)
 end;
 
 class function TAssociatedDataListChunk.GetClassChunkName: TChunkName;
 begin
- Result := 'LIST';
+  Result := 'LIST';
 end;
 
 function TAssociatedDataListChunk.GetCount: Integer;
 begin
- Result := FChunkList.Count;
+  Result := FChunkList.Count;
 end;
 
 function TAssociatedDataListChunk.GetSubChunk(Index: Integer): TDavCustomChunk;
 begin
- if (Index >= 0) and (Index < FChunkList.Count)
-  then Result := FChunkList[Index]
-  else Result := nil;
+  if (Index >= 0) and (Index < FChunkList.Count) then
+    Result := FChunkList[Index]
+  else
+    Result := nil;
 end;
 
 function TAssociatedDataListChunk.GetTypeID: string;
 begin
- Result := string(AssociatedDataListRecord.TypeID);
+  Result := string(AssociatedDataListRecord.TypeID);
 end;
 
 procedure TAssociatedDataListChunk.SetTypeID(const Value: string);
 begin
- Move(Value[1], AssociatedDataListRecord.TypeID, 4);
+  Move(Value[1], AssociatedDataListRecord.TypeID, 4);
 end;
-
 
 { TPlaylistSegmentItem }
 
 procedure TPlaylistSegmentItem.AssignTo(Dest: TPersistent);
 begin
- if Dest is TPlaylistSegmentItem
-  then TPlaylistSegmentItem(Dest).PlaylistSegment := PlaylistSegment
-  else inherited;
+  if Dest is TPlaylistSegmentItem then
+    TPlaylistSegmentItem(Dest).PlaylistSegment := PlaylistSegment
+  else
+    inherited;
 end;
-
 
 { TPlaylistChunk }
 
 constructor TPlaylistChunk.Create;
 begin
- inherited;
- FPlaylistSegments := TOwnedCollection.Create(Self, TPlaylistSegmentItem);
+  inherited;
+  FPlaylistSegments := TOwnedCollection.Create(Self, TPlaylistSegmentItem);
 end;
 
 destructor TPlaylistChunk.Destroy;
 begin
- FreeAndNil(FPlaylistSegments);
- inherited;
+  FreeAndNil(FPlaylistSegments);
+  inherited;
 end;
 
 class function TPlaylistChunk.GetClassChunkName: TChunkName;
 begin
- Result := 'plst';
+  Result := 'plst';
 end;
 
 procedure TPlaylistChunk.AssignTo(Dest: TPersistent);
 begin
- inherited;
- if Dest is TPlaylistChunk then
+  inherited;
+  if Dest is TPlaylistChunk then
   begin
-   TPlaylistChunk(Dest).FCount := FCount;
-   TPlaylistChunk(Dest).FPlaylistSegments.Assign(FPlaylistSegments);
+    TPlaylistChunk(Dest).FCount := FCount;
+    TPlaylistChunk(Dest).FPlaylistSegments.Assign(FPlaylistSegments);
   end;
 end;
 
 procedure TPlaylistChunk.CalculateChunkSize;
 begin
- FChunkSize := SizeOf(Cardinal) + FCount * SizeOf(TPlaylistSegmentRecord);
+  FChunkSize := SizeOf(Cardinal) + FCount * SizeOf(TPlaylistSegmentRecord);
 end;
 
 procedure TPlaylistChunk.LoadFromStream(Stream: TStream);
 var
-  l : Integer;
+  l: Integer;
 begin
- // load basic chunk information
- inherited;
+  // load basic chunk information
+  inherited;
 
- // load custom chunk information
- with Stream do
+  // load custom chunk information
+  with Stream do
   begin
-   Read(FCount, SizeOf(Cardinal));
+    Read(FCount, SizeOf(Cardinal));
 
-   // clear all eventually existing playlist segments
-   FPlaylistSegments.Clear;
+    // clear all eventually existing playlist segments
+    FPlaylistSegments.Clear;
 
-   // load every single playlist segment and add to playlist collection
-   for l := 0 to FCount - 1 do
-    with TPlaylistSegmentItem(FPlaylistSegments.Add)
-     do Read(PlaylistSegment, SizeOf(TPlaylistSegmentRecord));
+    // load every single playlist segment and add to playlist collection
+    for l := 0 to FCount - 1 do
+      with TPlaylistSegmentItem(FPlaylistSegments.Add) do
+        Read(PlaylistSegment, SizeOf(TPlaylistSegmentRecord));
 
-   // eventually skip padded zeroes
-   if cfPadSize in ChunkFlags
-    then Position := Position + CalculateZeroPad;
+    // eventually skip padded zeroes
+    if cfPadSize in ChunkFlags then
+      Position := Position + CalculateZeroPad;
   end;
 end;
 
 procedure TPlaylistChunk.SaveToStream(Stream: TStream);
 var
-  l : Integer;
+  l: Integer;
 begin
- // update FCount:
- FCount := FPlaylistSegments.Count;
+  // update FCount:
+  FCount := FPlaylistSegments.Count;
 
- // now recalculate the chunk size:
- CalculateChunkSize;
+  // now recalculate the chunk size:
+  CalculateChunkSize;
 
- // write chunk name & size
- inherited;
+  // write chunk name & size
+  inherited;
 
- with Stream do
+  with Stream do
   begin
-   // write sampler header
-   Write(FCount, SizeOf(Cardinal));
+    // write sampler header
+    Write(FCount, SizeOf(Cardinal));
 
-   // write every single playlist segment and add to playlist collection
-   for l := 0 to FCount - 1 do
-    with TPlaylistSegmentItem(FPlaylistSegments.Items[l])
-     do Write(PlaylistSegment, SizeOf(TPlaylistSegmentRecord));
+    // write every single playlist segment and add to playlist collection
+    for l := 0 to FCount - 1 do
+      with TPlaylistSegmentItem(FPlaylistSegments.Items[l]) do
+        Write(PlaylistSegment, SizeOf(TPlaylistSegmentRecord));
   end;
 
- // check and eventually add zero pad
- CheckAddZeroPad(Stream);
+  // check and eventually add zero pad
+  CheckAddZeroPad(Stream);
 end;
-
 
 { TCueItem }
 
 procedure TCueItem.AssignTo(Dest: TPersistent);
 begin
- if Dest is TCueItem
-  then TCueItem(Dest).CuePointRecord := CuePointRecord
-  else inherited;
+  if Dest is TCueItem then
+    TCueItem(Dest).CuePointRecord := CuePointRecord
+  else
+    inherited;
 end;
-
 
 { TCueChunk }
 
 constructor TCueChunk.Create;
 begin
- inherited;
- FCueCollection := TOwnedCollection.Create(Self, TCueItem);
+  inherited;
+  FCueCollection := TOwnedCollection.Create(Self, TCueItem);
 end;
 
 destructor TCueChunk.Destroy;
 begin
- FreeAndNil(FCueCollection);
- inherited;
+  FreeAndNil(FCueCollection);
+  inherited;
 end;
 
 class function TCueChunk.GetClassChunkName: TChunkName;
 begin
- Result := 'cue '; 
+  Result := 'cue ';
 end;
 
 procedure TCueChunk.AssignTo(Dest: TPersistent);
 begin
- inherited;
- if Dest is TCueChunk then
+  inherited;
+  if Dest is TCueChunk then
   begin
-   TCueChunk(Dest).FCount := FCount;
-   TCueChunk(Dest).FCueCollection.Assign(FCueCollection);
+    TCueChunk(Dest).FCount := FCount;
+    TCueChunk(Dest).FCueCollection.Assign(FCueCollection);
   end;
 end;
 
 procedure TCueChunk.CalculateChunkSize;
 begin
- FChunkSize := SizeOf(Cardinal) + FCount * SizeOf(TCuePointRecord);
+  FChunkSize := SizeOf(Cardinal) + FCount * SizeOf(TCuePointRecord);
 end;
 
 procedure TCueChunk.LoadFromStream(Stream: TStream);
 var
-  CueCnt   : Integer;
-  ChunkEnd : Cardinal;
+  CueCnt: Integer;
+  ChunkEnd: Cardinal;
 begin
- // load basic chunk information
- inherited;
+  // load basic chunk information
+  inherited;
 
- // load custom chunk information
- with Stream do
+  // load custom chunk information
+  with Stream do
   begin
-   // calculate end of chunk in case there are no cue items in this chunk
-   ChunkEnd := Position + FChunkSize;
+    // calculate end of chunk in case there are no cue items in this chunk
+    ChunkEnd := Position + FChunkSize;
 
-   // read number of cue items in this chunk
-   Read(FCount, SizeOf(Cardinal));
+    // read number of cue items in this chunk
+    Read(FCount, SizeOf(Cardinal));
 
-   // clear all eventually existing cues
-   FCueCollection.Clear;
+    // clear all eventually existing cues
+    FCueCollection.Clear;
 
-   // load every single playlist segment and add to playlist collection
-   for CueCnt := 0 to FCount - 1 do
-    with TCueItem(FCueCollection.Add)
-     do Read(CuePointRecord, SizeOf(TCuePointRecord));
+    // load every single playlist segment and add to playlist collection
+    for CueCnt := 0 to FCount - 1 do
+      with TCueItem(FCueCollection.Add) do
+        Read(CuePointRecord, SizeOf(TCuePointRecord));
 
-   // make sure the position is still inside this chunk
-   Assert(Position <= ChunkEnd);
+    // make sure the position is still inside this chunk
+    Assert(Position <= ChunkEnd);
 
-   // jump to the end of this chunk
-   Position := ChunkEnd;
+    // jump to the end of this chunk
+    Position := ChunkEnd;
 
-   // eventually skip padded zeroes
-   if cfPadSize in ChunkFlags
-    then Position := Position + CalculateZeroPad;
+    // eventually skip padded zeroes
+    if cfPadSize in ChunkFlags then
+      Position := Position + CalculateZeroPad;
   end;
 end;
 
 procedure TCueChunk.SaveToStream(Stream: TStream);
 var
-  l : Integer;
+  l: Integer;
 begin
- // update FCount:
- FCount := FCueCollection.Count;
+  // update FCount:
+  FCount := FCueCollection.Count;
 
- // now recalculate the chunk size:
- CalculateChunkSize;
+  // now recalculate the chunk size:
+  CalculateChunkSize;
 
- // write chunk name & size
- inherited;
+  // write chunk name & size
+  inherited;
 
- // write custom chunk information
- with Stream do
+  // write custom chunk information
+  with Stream do
   begin
-   // write sampler header
-   Write(FCount, SizeOf(Cardinal));
+    // write sampler header
+    Write(FCount, SizeOf(Cardinal));
 
-   // write every single playlist segment and add to playlist collection
-   for l := 0 to FCount - 1 do
-    with TCueItem(FCueCollection.Items[l])
-     do Write(CuePointRecord, SizeOf(TCuePointRecord));
+    // write every single playlist segment and add to playlist collection
+    for l := 0 to FCount - 1 do
+      with TCueItem(FCueCollection.Items[l]) do
+        Write(CuePointRecord, SizeOf(TCuePointRecord));
   end;
 
- // check and eventually add zero pad
- CheckAddZeroPad(Stream);
+  // check and eventually add zero pad
+  CheckAddZeroPad(Stream);
 end;
 
 { TLoopItem }
 
 procedure TLoopItem.AssignTo(Dest: TPersistent);
 begin
- if Dest is TLoopItem
-  then TLoopItem(Dest).LoopRecord := LoopRecord
-  else inherited;
+  if Dest is TLoopItem then
+    TLoopItem(Dest).LoopRecord := LoopRecord
+  else
+    inherited;
 end;
 
 { TSamplerChunk }
 
 constructor TSamplerChunk.Create;
 begin
- inherited;
- FLoopCollection := TOwnedCollection.Create(Self, TLoopItem);
+  inherited;
+  FLoopCollection := TOwnedCollection.Create(Self, TLoopItem);
 end;
 
 destructor TSamplerChunk.Destroy;
 begin
- FreeAndNil(FLoopCollection);
- inherited;
+  FreeAndNil(FLoopCollection);
+  inherited;
 end;
 
 procedure TSamplerChunk.AssignTo(Dest: TPersistent);
 begin
- inherited;
- if Dest is TSamplerChunk then
+  inherited;
+  if Dest is TSamplerChunk then
   begin
-   TSamplerChunk(Dest).SamplerRecord := SamplerRecord;
-   TSamplerChunk(Dest).FLoopCollection.Assign(FLoopCollection);
+    TSamplerChunk(Dest).SamplerRecord := SamplerRecord;
+    TSamplerChunk(Dest).FLoopCollection.Assign(FLoopCollection);
   end;
 end;
 
 procedure TSamplerChunk.CalculateChunkSize;
 begin
- FChunkSize := SizeOf(TSamplerRecord) +
-               SamplerRecord.NumSampleLoops * SizeOf(TLoopRecord) +
-               SamplerRecord.SamplerData;
+  FChunkSize := SizeOf(TSamplerRecord) + SamplerRecord.NumSampleLoops *
+    SizeOf(TLoopRecord) + SamplerRecord.SamplerData;
 end;
 
 class function TSamplerChunk.GetClassChunkName: TChunkName;
 begin
- Result := 'smpl';
+  Result := 'smpl';
 end;
 
 function TSamplerChunk.GetManufacturer: TMidiManufacturer;
 begin
- Result := TMidiManufacturer(SamplerRecord.Manufacturer)
+  Result := TMidiManufacturer(SamplerRecord.Manufacturer)
 end;
 
 function TSamplerChunk.GetSMPTEFormat: TSMPTEFormat;
 begin
- Result := TSMPTEFormat(SamplerRecord.SMPTEFormat);
+  Result := TSMPTEFormat(SamplerRecord.SMPTEFormat);
 end;
 
 procedure TSamplerChunk.LoadFromStream(Stream: TStream);
 var
-  l : Integer;
+  l: Integer;
 begin
- // load basic chunk information
- inherited;
+  // load basic chunk information
+  inherited;
 
- // load custom chunk information
- with Stream do
+  // load custom chunk information
+  with Stream do
   begin
-   Read(SamplerRecord, SizeOf(TSamplerRecord));
+    Read(SamplerRecord, SizeOf(TSamplerRecord));
 
-   // clear all eventually existing loop points
-   FLoopCollection.Clear;
+    // clear all eventually existing loop points
+    FLoopCollection.Clear;
 
-   // load every single loop and add to loop collection
-   for l := 0 to SamplerRecord.NumSampleLoops - 1 do
-    with TLoopItem(FLoopCollection.Add)
-     do Read(LoopRecord, SizeOf(TLoopRecord));
+    // load every single loop and add to loop collection
+    for l := 0 to SamplerRecord.NumSampleLoops - 1 do
+      with TLoopItem(FLoopCollection.Add) do
+        Read(LoopRecord, SizeOf(TLoopRecord));
 
-   // read rest, should only be SamplerRecord.SamplerData
-   Assert(FChunkSize - SizeOf(TSamplerRecord) = SamplerRecord.SamplerData);
-   Position := Position + FChunkSize - SizeOf(TSamplerRecord);
+    // read rest, should only be SamplerRecord.SamplerData
+    Assert(FChunkSize - SizeOf(TSamplerRecord) = SamplerRecord.SamplerData);
+    Position := Position + FChunkSize - SizeOf(TSamplerRecord);
 
-   // eventually skip padded zeroes
-   if cfPadSize in ChunkFlags
-    then Position := Position + CalculateZeroPad;
+    // eventually skip padded zeroes
+    if cfPadSize in ChunkFlags then
+      Position := Position + CalculateZeroPad;
   end;
 end;
 
 procedure TSamplerChunk.SaveToStream(Stream: TStream);
 var
-  l : Integer;
+  l: Integer;
 begin
- // make sure some entries are correct:
- SamplerRecord.NumSampleLoops := FLoopCollection.Count;
- SamplerRecord.SamplerData    := 0;
+  // make sure some entries are correct:
+  SamplerRecord.NumSampleLoops := FLoopCollection.Count;
+  SamplerRecord.SamplerData := 0;
 
- // now recalculate the chunk size:
- CalculateChunkSize;
+  // now recalculate the chunk size:
+  CalculateChunkSize;
 
- // write chunk name & size
- inherited;
+  // write chunk name & size
+  inherited;
 
- // write custom chunk information
- with Stream do
+  // write custom chunk information
+  with Stream do
   begin
-   // write sampler header
-   Write(SamplerRecord, SizeOf(TSamplerRecord));
+    // write sampler header
+    Write(SamplerRecord, SizeOf(TSamplerRecord));
 
-   // write every single loop and add to loop collection
-   for l := 0 to SamplerRecord.NumSampleLoops - 1 do
-    with TLoopItem(FLoopCollection.Items[l])
-     do Write(LoopRecord, SizeOf(TLoopRecord));
+    // write every single loop and add to loop collection
+    for l := 0 to SamplerRecord.NumSampleLoops - 1 do
+      with TLoopItem(FLoopCollection.Items[l]) do
+        Write(LoopRecord, SizeOf(TLoopRecord));
   end;
 
- // check and eventually add zero pad
- CheckAddZeroPad(Stream);
+  // check and eventually add zero pad
+  CheckAddZeroPad(Stream);
 end;
 
 procedure TSamplerChunk.SetManufacturer(const Value: TMidiManufacturer);
 begin
- SamplerRecord.Manufacturer := Cardinal(Value);
+  SamplerRecord.Manufacturer := Cardinal(Value);
 end;
 
 procedure TSamplerChunk.SetSMPTEFormat(const Value: TSMPTEFormat);
 begin
- SamplerRecord.SMPTEFormat := Cardinal(Value);
+  SamplerRecord.SMPTEFormat := Cardinal(Value);
 end;
 
 { TInstrumentChunk }
 
 constructor TInstrumentChunk.Create;
 begin
- inherited;
- StartAddress := @InstrumentRecord;
+  inherited;
+  StartAddress := @InstrumentRecord;
 end;
 
 procedure TInstrumentChunk.AssignTo(Dest: TPersistent);
 begin
- inherited;
- if Dest is TInstrumentChunk
-  then TInstrumentChunk(Dest).InstrumentRecord := InstrumentRecord;
+  inherited;
+  if Dest is TInstrumentChunk then
+    TInstrumentChunk(Dest).InstrumentRecord := InstrumentRecord;
 end;
 
 class function TInstrumentChunk.GetClassChunkName: TChunkName;
 begin
- Result := 'inst';
+  Result := 'inst';
 end;
 
 class function TInstrumentChunk.GetClassChunkSize: Integer;
 begin
- Result := SizeOf(TInstrumentRecord);
+  Result := SizeOf(TInstrumentRecord);
 end;
 
 procedure TInstrumentChunk.SetNoteRange(Low, High: ShortInt);
 begin
- Assert(Low <= High);
- InstrumentRecord.LowNote := Low;
- InstrumentRecord.HighNote := High;
+  Assert(Low <= High);
+  InstrumentRecord.LowNote := Low;
+  InstrumentRecord.HighNote := High;
 end;
 
 procedure TInstrumentChunk.SetVelocityRange(Low, High: Byte);
 begin
- Assert(Low <= High);
- InstrumentRecord.LowVelocity := Low;
- InstrumentRecord.HighVelocity := High;
+  Assert(Low <= High);
+  InstrumentRecord.LowVelocity := Low;
+  InstrumentRecord.HighVelocity := High;
 end;
-
 
 { TCustomBextChunk }
 
 constructor TCustomBextChunk.Create;
 begin
- inherited;
- StartAddress := @BextRecord;
+  inherited;
+  StartAddress := @BextRecord;
 end;
 
 procedure TCustomBextChunk.AssignTo(Dest: TPersistent);
 begin
- inherited;
- if Dest is TCustomBextChunk
-  then TCustomBextChunk(Dest).BextRecord := BextRecord;
+  inherited;
+  if Dest is TCustomBextChunk then
+    TCustomBextChunk(Dest).BextRecord := BextRecord;
 end;
 
 class function TCustomBextChunk.GetClassChunkSize: Integer;
 begin
- Result := SizeOf(TBextRecord);
+  Result := SizeOf(TBextRecord);
 end;
 
 // Some Wrapper Functions
-function TCustomBextChunk.GetDescription: string; begin Result := string(BextRecord.Description); end;
-function TCustomBextChunk.GetOriginationDate: string; begin Result := string(BextRecord.OriginationDate); end;
-function TCustomBextChunk.GetOriginationTime: string; begin Result := string(BextRecord.OriginationTime); end;
-function TCustomBextChunk.GetOriginator: string; begin Result := string(BextRecord.Originator); end;
-function TCustomBextChunk.GetOriginatorRef: string; begin Result := string(BextRecord.OriginatorRef); end;
+function TCustomBextChunk.GetDescription: string;
+begin
+  Result := string(BextRecord.Description);
+end;
+
+function TCustomBextChunk.GetOriginationDate: string;
+begin
+  Result := string(BextRecord.OriginationDate);
+end;
+
+function TCustomBextChunk.GetOriginationTime: string;
+begin
+  Result := string(BextRecord.OriginationTime);
+end;
+
+function TCustomBextChunk.GetOriginator: string;
+begin
+  Result := string(BextRecord.Originator);
+end;
+
+function TCustomBextChunk.GetOriginatorRef: string;
+begin
+  Result := string(BextRecord.OriginatorRef);
+end;
 
 procedure TCustomBextChunk.SetDescription(const Value: string);
 begin
- with BextRecord do
-  if Length(Value) < SizeOf(Description)
-   then Move(Value[1], Description, Length(Value))
-   else Move(Value[1], Description, SizeOf(Description));
+  with BextRecord do
+    if Length(Value) < SizeOf(Description) then
+      Move(Value[1], Description, Length(Value))
+    else
+      Move(Value[1], Description, SizeOf(Description));
 end;
 
 procedure TCustomBextChunk.SetOriginationDate(const Value: string);
 begin
- with BextRecord do
-  if Length(Value) < SizeOf(OriginationDate)
-   then Move(Value[1], OriginationDate, Length(Value))
-   else Move(Value[1], OriginationDate, SizeOf(OriginationDate));
+  with BextRecord do
+    if Length(Value) < SizeOf(OriginationDate) then
+      Move(Value[1], OriginationDate, Length(Value))
+    else
+      Move(Value[1], OriginationDate, SizeOf(OriginationDate));
 end;
 
 procedure TCustomBextChunk.SetOriginationTime(const Value: string);
 begin
- with BextRecord do
-  if Length(Value) < SizeOf(OriginationTime)
-   then Move(Value[1], OriginationTime, Length(Value))
-   else Move(Value[1], OriginationTime, SizeOf(OriginationTime));
+  with BextRecord do
+    if Length(Value) < SizeOf(OriginationTime) then
+      Move(Value[1], OriginationTime, Length(Value))
+    else
+      Move(Value[1], OriginationTime, SizeOf(OriginationTime));
 end;
 
 procedure TCustomBextChunk.SetOriginator(const Value: string);
 begin
- with BextRecord do
-  if Length(Value) < SizeOf(Originator)
-   then Move(Value[1], Originator, Length(Value))
-   else Move(Value[1], Originator, SizeOf(Originator));
+  with BextRecord do
+    if Length(Value) < SizeOf(Originator) then
+      Move(Value[1], Originator, Length(Value))
+    else
+      Move(Value[1], Originator, SizeOf(Originator));
 end;
 
 procedure TCustomBextChunk.SetOriginatorRef(const Value: string);
 begin
- with BextRecord do
-  if Length(Value) < SizeOf(OriginatorRef)
-   then Move(Value[1], OriginatorRef, Length(Value))
-   else Move(Value[1], OriginatorRef, SizeOf(OriginatorRef));
+  with BextRecord do
+    if Length(Value) < SizeOf(OriginatorRef) then
+      Move(Value[1], OriginatorRef, Length(Value))
+    else
+      Move(Value[1], OriginatorRef, SizeOf(OriginatorRef));
 end;
 
 { TBextChunk }
 
 class function TBextChunk.GetClassChunkName: TChunkName;
 begin
- Result := 'bext';
+  Result := 'bext';
 end;
 
 { TBextChunkOld }
 
 class function TBextChunkOld.GetClassChunkName: TChunkName;
 begin
- Result := 'BEXT';
+  Result := 'BEXT';
 end;
 
 procedure TBextChunkOld.SaveToStream(Stream: TStream);
 begin
- raise Exception.Create('the uppercase version of the bext chunk should not be written anymore!'#10#13'Please use the TBextChunk version');
+  raise Exception.Create
+    ('the uppercase version of the bext chunk should not be written anymore!'#10#13'Please use the TBextChunk version');
 end;
 
 { TCartChunkTag }
 
 constructor TCartChunk.Create;
 begin
- inherited;
- StartAddress := @CartRecord;
+  inherited;
+  StartAddress := @CartRecord;
 end;
 
 procedure TCartChunk.AssignTo(Dest: TPersistent);
 begin
- inherited;
- if Dest is TCartChunk
-  then TCartChunk(Dest).CartRecord := CartRecord;
+  inherited;
+  if Dest is TCartChunk then
+    TCartChunk(Dest).CartRecord := CartRecord;
 end;
 
 class function TCartChunk.GetClassChunkName: TChunkName;
 begin
- Result := 'cart';
+  Result := 'cart';
 end;
 
 class function TCartChunk.GetClassChunkSize: Integer;
 begin
- Result := SizeOf(TCartRecord);
+  Result := SizeOf(TCartRecord);
 end;
 
-// Some Wrapper Functions 
-function TCartChunk.GetArtist: string; begin Result := string(CartRecord.Artist); end;
-function TCartChunk.GetCategory: string; begin Result := string(CartRecord.Category); end;
-function TCartChunk.GetClassification: string; begin Result := string(CartRecord.Classification); end;
-function TCartChunk.GetClientID: string; begin Result := string(CartRecord.ClientID); end;
-function TCartChunk.GetCutID: string; begin Result := string(CartRecord.CutID); end;
-function TCartChunk.GetEndDate: string; begin Result := string(CartRecord.EndDate); end;
-function TCartChunk.GetEndTime: string; begin Result := string(CartRecord.EndTime); end;
-function TCartChunk.GetOutCue: string; begin Result := string(CartRecord.OutCue); end;
-function TCartChunk.GetProducerAppID: string; begin Result := string(CartRecord.ProducerAppID); end;
-function TCartChunk.GetProducerAppVersion: string; begin Result := string(CartRecord.ProducerAppVersion); end;
-function TCartChunk.GetStartDate: string; begin Result := string(CartRecord.StartDate); end;
-function TCartChunk.GetStartTime: string; begin Result := string(CartRecord.StartTime); end;
-function TCartChunk.GetTitle: string; begin Result := string(CartRecord.Title); end;
-function TCartChunk.GetUserDef: string; begin Result := string(CartRecord.UserDef); end;
+// Some Wrapper Functions
+function TCartChunk.GetArtist: string;
+begin
+  Result := string(CartRecord.Artist);
+end;
+
+function TCartChunk.GetCategory: string;
+begin
+  Result := string(CartRecord.Category);
+end;
+
+function TCartChunk.GetClassification: string;
+begin
+  Result := string(CartRecord.Classification);
+end;
+
+function TCartChunk.GetClientID: string;
+begin
+  Result := string(CartRecord.ClientID);
+end;
+
+function TCartChunk.GetCutID: string;
+begin
+  Result := string(CartRecord.CutID);
+end;
+
+function TCartChunk.GetEndDate: string;
+begin
+  Result := string(CartRecord.EndDate);
+end;
+
+function TCartChunk.GetEndTime: string;
+begin
+  Result := string(CartRecord.EndTime);
+end;
+
+function TCartChunk.GetOutCue: string;
+begin
+  Result := string(CartRecord.OutCue);
+end;
+
+function TCartChunk.GetProducerAppID: string;
+begin
+  Result := string(CartRecord.ProducerAppID);
+end;
+
+function TCartChunk.GetProducerAppVersion: string;
+begin
+  Result := string(CartRecord.ProducerAppVersion);
+end;
+
+function TCartChunk.GetStartDate: string;
+begin
+  Result := string(CartRecord.StartDate);
+end;
+
+function TCartChunk.GetStartTime: string;
+begin
+  Result := string(CartRecord.StartTime);
+end;
+
+function TCartChunk.GetTitle: string;
+begin
+  Result := string(CartRecord.Title);
+end;
+
+function TCartChunk.GetUserDef: string;
+begin
+  Result := string(CartRecord.UserDef);
+end;
 
 procedure TCartChunk.SetArtist(const Value: string);
 begin
- with CartRecord do
-  if Length(Value) < SizeOf(Artist)
-   then Move(Value[1], Artist, Length(Value))
-   else Move(Value[1], Artist, SizeOf(Artist));
+  with CartRecord do
+    if Length(Value) < SizeOf(Artist) then
+      Move(Value[1], Artist, Length(Value))
+    else
+      Move(Value[1], Artist, SizeOf(Artist));
 end;
 
 procedure TCartChunk.SetCategory(const Value: string);
 begin
- with CartRecord do
-  if Length(Value) < SizeOf(Category)
-   then Move(Value[1], Category, Length(Value))
-   else Move(Value[1], Category, SizeOf(Category));
+  with CartRecord do
+    if Length(Value) < SizeOf(Category) then
+      Move(Value[1], Category, Length(Value))
+    else
+      Move(Value[1], Category, SizeOf(Category));
 end;
 
 procedure TCartChunk.SetClassification(const Value: string);
 begin
- with CartRecord do
-  if Length(Value) < SizeOf(Classification)
-   then Move(Value[1], Classification, Length(Value))
-   else Move(Value[1], Classification, SizeOf(Classification));
+  with CartRecord do
+    if Length(Value) < SizeOf(Classification) then
+      Move(Value[1], Classification, Length(Value))
+    else
+      Move(Value[1], Classification, SizeOf(Classification));
 end;
 
 procedure TCartChunk.SetClientID(const Value: string);
 begin
- with CartRecord do
-  if Length(Value) < SizeOf(ClientID)
-   then Move(Value[1], ClientID, Length(Value))
-   else Move(Value[1], ClientID, SizeOf(ClientID));
+  with CartRecord do
+    if Length(Value) < SizeOf(ClientID) then
+      Move(Value[1], ClientID, Length(Value))
+    else
+      Move(Value[1], ClientID, SizeOf(ClientID));
 end;
 
 procedure TCartChunk.SetCutID(const Value: string);
 begin
- with CartRecord do
-  if Length(Value) < SizeOf(CutID)
-   then Move(Value[1], CutID, Length(Value))
-   else Move(Value[1], CutID, SizeOf(CutID));
+  with CartRecord do
+    if Length(Value) < SizeOf(CutID) then
+      Move(Value[1], CutID, Length(Value))
+    else
+      Move(Value[1], CutID, SizeOf(CutID));
 end;
 
 procedure TCartChunk.SetEndDate(const Value: string);
 begin
- with CartRecord do
-  if Length(Value) < SizeOf(EndDate)
-   then Move(Value[1], EndDate, Length(Value))
-   else Move(Value[1], EndDate, SizeOf(EndDate));
+  with CartRecord do
+    if Length(Value) < SizeOf(EndDate) then
+      Move(Value[1], EndDate, Length(Value))
+    else
+      Move(Value[1], EndDate, SizeOf(EndDate));
 end;
 
 procedure TCartChunk.SetEndTime(const Value: string);
 begin
- with CartRecord do
-  if Length(Value) < SizeOf(EndTime)
-   then Move(Value[1], EndTime, Length(Value))
-   else Move(Value[1], EndTime, SizeOf(EndTime));
+  with CartRecord do
+    if Length(Value) < SizeOf(EndTime) then
+      Move(Value[1], EndTime, Length(Value))
+    else
+      Move(Value[1], EndTime, SizeOf(EndTime));
 end;
 
 procedure TCartChunk.SetOutCue(const Value: string);
 begin
- with CartRecord do
-  if Length(Value) < SizeOf(OutCue)
-   then Move(Value[1], OutCue, Length(Value))
-   else Move(Value[1], OutCue, SizeOf(OutCue));
+  with CartRecord do
+    if Length(Value) < SizeOf(OutCue) then
+      Move(Value[1], OutCue, Length(Value))
+    else
+      Move(Value[1], OutCue, SizeOf(OutCue));
 end;
 
 procedure TCartChunk.SetProducerAppID(const Value: string);
 begin
- with CartRecord do
-  if Length(Value) < SizeOf(ProducerAppID)
-   then Move(Value[1], ProducerAppID, Length(Value))
-   else Move(Value[1], ProducerAppID, SizeOf(ProducerAppID));
+  with CartRecord do
+    if Length(Value) < SizeOf(ProducerAppID) then
+      Move(Value[1], ProducerAppID, Length(Value))
+    else
+      Move(Value[1], ProducerAppID, SizeOf(ProducerAppID));
 end;
 
 procedure TCartChunk.SetProducerAppVersion(const Value: string);
 begin
- with CartRecord do
-  if Length(Value) < SizeOf(ProducerAppVersion)
-   then Move(Value[1], ProducerAppVersion, Length(Value))
-   else Move(Value[1], ProducerAppVersion, SizeOf(ProducerAppVersion));
+  with CartRecord do
+    if Length(Value) < SizeOf(ProducerAppVersion) then
+      Move(Value[1], ProducerAppVersion, Length(Value))
+    else
+      Move(Value[1], ProducerAppVersion, SizeOf(ProducerAppVersion));
 end;
 
 procedure TCartChunk.SetStartDate(const Value: string);
 begin
- with CartRecord do
-  if Length(Value) < SizeOf(StartDate)
-   then Move(Value[1], StartDate, Length(Value))
-   else Move(Value[1], StartDate, SizeOf(StartDate));
+  with CartRecord do
+    if Length(Value) < SizeOf(StartDate) then
+      Move(Value[1], StartDate, Length(Value))
+    else
+      Move(Value[1], StartDate, SizeOf(StartDate));
 end;
 
 procedure TCartChunk.SetStartTime(const Value: string);
 begin
- with CartRecord do
-  if Length(Value) < SizeOf(StartTime)
-   then Move(Value[1], StartTime, Length(Value))
-   else Move(Value[1], StartTime, SizeOf(StartTime));
+  with CartRecord do
+    if Length(Value) < SizeOf(StartTime) then
+      Move(Value[1], StartTime, Length(Value))
+    else
+      Move(Value[1], StartTime, SizeOf(StartTime));
 end;
 
 procedure TCartChunk.SetTitle(const Value: string);
 begin
- with CartRecord do
-  if Length(Value) < SizeOf(Title)
-   then Move(Value[1], Title, Length(Value))
-   else Move(Value[1], Title, SizeOf(Title));
+  with CartRecord do
+    if Length(Value) < SizeOf(Title) then
+      Move(Value[1], Title, Length(Value))
+    else
+      Move(Value[1], Title, SizeOf(Title));
 end;
 
 procedure TCartChunk.SetUserDef(const Value: string);
 begin
- with CartRecord do
-  if Length(Value) < SizeOf(UserDef)
-   then Move(Value[1], UserDef, Length(Value))
-   else Move(Value[1], UserDef, SizeOf(UserDef));
+  with CartRecord do
+    if Length(Value) < SizeOf(UserDef) then
+      Move(Value[1], UserDef, Length(Value))
+    else
+      Move(Value[1], UserDef, SizeOf(UserDef));
 end;
 
-
 initialization
-  RegisterWaveChunks([TFormatChunk, TFactChunk, TQualityChunk, TLabelChunk,
-    TNoteChunk, TLabeledTextChunk, TCuedFileChunk, TPlaylistChunk,
-    TSilentChunk, TCueChunk, TAssociatedDataListChunk, TInfoSoftwareNameChunk,
+
+  RegisterWaveChunks([
+    TFormatChunk, TFactChunk, TQualityChunk, TLabelChunk, TNoteChunk,
+    TLabeledTextChunk, TCuedFileChunk, TPlaylistChunk, TSilentChunk,
+    TCueChunk, TAssociatedDataListChunk, TInfoSoftwareNameChunk,
     TInfoCommentChunk, TInfoCreationDateChunk, TInfoSubjectChunk,
     TInfoCopyrightChunk, TInfoArtistChunk, TInfoTitleChunk, TJunkChunk,
-    TPadChunk, TSamplerChunk, TInstrumentChunk, TBextChunk, TCartChunk])
+    TPadChunk, TSamplerChunk, TInstrumentChunk, TBextChunk, TCartChunk
+  ])
 
 end.

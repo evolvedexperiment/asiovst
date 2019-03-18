@@ -29,7 +29,7 @@ object FmStkReverb: TFmStkReverb
   object LbT60Value: TLabel
     Left = 247
     Top = 8
-    Width = 35
+    Width = 22
     Height = 13
     Anchors = [akRight]
     Caption = 'T60:'

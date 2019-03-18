@@ -152,6 +152,7 @@ object FmChorus: TFmChorus
     Width = 36
     Height = 36
     CurveMapping = -1.799999952316284000
+    DefaultValue = 0.009999999776482582
     Max = 10.000000000000000000
     Min = 0.009999999776482582
     ScrollRange = 400.000000000000000000
@@ -160,13 +161,13 @@ object FmChorus: TFmChorus
     Value = 0.200000002980232200
     WheelStep = 1.000000000000000000
     OnChange = DialSpeedChange
-    DefaultValue = 0.000000000000000000
   end
   object DialStages: TGuiStitchedDial
     Left = 76
     Top = 32
     Width = 36
     Height = 36
+    DefaultValue = 1.000000000000000000
     Max = 8.000000000000000000
     Min = 1.000000000000000000
     ScrollRange = 400.000000000000000000
@@ -175,7 +176,6 @@ object FmChorus: TFmChorus
     Value = 4.000000000000000000
     WheelStep = 1.000000000000000000
     OnChange = DialStagesChange
-    DefaultValue = 0.000000000000000000
   end
   object DialDepth: TGuiStitchedDial
     Tag = 5

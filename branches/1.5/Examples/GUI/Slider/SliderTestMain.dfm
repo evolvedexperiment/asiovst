@@ -38,6 +38,7 @@ object FmSliderTest: TFmSliderTest
     FontShadow.Visible = True
     Max = 20000.000000000000000000
     Min = 20.000000000000000000
+    ReadOnly = False
     ParentColor = False
     Value = 1000.000000000000000000
     ShowText = True
@@ -63,6 +64,7 @@ object FmSliderTest: TFmSliderTest
     FontShadow.Saturation = 4.000000000000000000
     FontShadow.Visible = True
     Max = 100.000000000000000000
+    ReadOnly = False
     ParentColor = False
     Value = 50.000000000000000000
     ShowText = True
@@ -91,6 +93,7 @@ object FmSliderTest: TFmSliderTest
     FontShadow.Visible = True
     Max = 20000.000000000000000000
     Min = 20.000000000000000000
+    ReadOnly = False
     ParentColor = False
     Value = 1000.000000000000000000
     ShowText = True
@@ -116,6 +119,7 @@ object FmSliderTest: TFmSliderTest
     FontShadow.Saturation = 4.000000000000000000
     FontShadow.Visible = True
     Max = 100.000000000000000000
+    ReadOnly = False
     ParentColor = False
     Value = 50.000000000000000000
     ShowText = True

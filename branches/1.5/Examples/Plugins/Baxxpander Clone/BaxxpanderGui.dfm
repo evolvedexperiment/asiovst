@@ -29,13 +29,13 @@ object FmBaxxpanderGui: TFmBaxxpanderGui
     Alpha = 222
     Anchors = [akLeft, akTop, akRight, akBottom]
     BorderColor = clBtnShadow
+    BorderRadius = 16.000000000000000000
     BorderWidth = 2.500000000000000000
     PanelColor = 1644825
     ParentColor = True
-    BorderRadius = 16.000000000000000000
     TabOrder = 0
-    UseDockManager = True
     Transparent = True
+    UseDockManager = True
     DesignSize = (
       434
       170)

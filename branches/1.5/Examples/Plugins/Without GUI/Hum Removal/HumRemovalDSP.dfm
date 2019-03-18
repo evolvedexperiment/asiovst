@@ -117,7 +117,7 @@ object HumRemovalModule: THumRemovalModule
       LargeStepFloat = 2.000000000000000000
       Max = 0.300000011920929000
       MaxInteger = 1
-      Min = 0.029999999329447750
+      Min = 0.029999999329447740
       ReportVST2Properties = True
       ShortLabel = 'BW'
       SmallStepFloat = 0.500000000000000000

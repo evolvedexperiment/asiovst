@@ -81,93 +81,91 @@ uses
 
 constructor TConfig.Create;
 begin
- FProjectPath  := GetCurrentDir;
- FProjectName  := GetUniqueProjectName;
- FCloneGui     := True;
- FSaveWhenDone := True;
- FVstHost      := TVstHost.Create(nil);
- FVSTHost.VstPlugIns.Add;
+  FProjectPath := GetCurrentDir;
+  FProjectName := GetUniqueProjectName;
+  FCloneGui := True;
+  FSaveWhenDone := True;
+  FVstHost := TVstHost.Create(nil);
+  FVstHost.VstPlugIns.Add;
 end;
 
 destructor TConfig.Destroy;
 begin
- FreeAndNil(FVstHost);
- inherited;
+  FreeAndNil(FVstHost);
+  inherited;
 end;
 
 function TConfig.GetClonedPlugin: TFileName;
 begin
- Result := FVSTHost[0].DLLFileName;
+  Result := FVstHost[0].DLLFileName;
 end;
 
 function TConfig.GetContainsGui: Boolean;
 begin
- Result := CloneGui and (effFlagsHasEditor in VSTPlugin.EffectOptions);
+  Result := CloneGui and (effFlagsHasEditor in VSTPlugin.EffectOptions);
 end;
 
 function TConfig.FormatToUnitName(Value: AnsiString): AnsiString;
 var
-  i : Integer;
+  i: Integer;
 begin
- Result := Value;
- i := 1;
- while i < Length(Result) do
-  if ((Result[i] in ['A'..'Z']) or
-      (Result[i] in ['a'..'z']) or
-      (Result[i] in ['0'..'9']))
-   then inc(i)
-   else Delete(Result, i, 1);
+  Result := Value;
+  i := 1;
+  while i < Length(Result) do
+    if ((Result[i] in ['A' .. 'Z', 'a' .. 'z', '0' .. '9'])) then
+      Inc(i)
+    else
+      Delete(Result, i, 1);
 end;
 
 function TConfig.GetPluginFormName: string;
 begin
- Result := string(FormatToUnitName(FVSTHost[0].EffectName)) + 'Module';
+  Result := string(FormatToUnitName(FVstHost[0].EffectName)) + 'Module';
 end;
 
 function TConfig.GetPluginUnitName: string;
 begin
- Result := string(FormatToUnitName(FVSTHost[0].EffectName));
+  Result := string(FormatToUnitName(FVstHost[0].EffectName));
 
- if (Result[1] in ['0'..'9'])
-  then Result := 'DAV' + Result;
- Result := Result + 'Module';
+  if (Result[1] in ['0' .. '9']) then
+    Result := 'DAV' + Result;
+  Result := Result + 'Module';
 end;
 
 function TConfig.GetEditorFormName: string;
 begin
- Result := string('Fm' + FormatToUnitName(FVSTHost[0].EffectName) + 'Gui');
+  Result := string('Fm' + FormatToUnitName(FVstHost[0].EffectName) + 'Gui');
 end;
 
 function TConfig.GetEditorUnitName: string;
 begin
- Result := string(FormatToUnitName(FVSTHost[0].EffectName));
+  Result := string(FormatToUnitName(FVstHost[0].EffectName));
 
- if (Result[1] in ['0'..'9'])
-  then Result := 'DAV' + Result;
- Result := Result + 'Gui';
+  if (Result[1] in ['0' .. '9']) then
+    Result := 'DAV' + Result;
+  Result := Result + 'Gui';
 end;
 
 function TConfig.GetVSTPlugin: TCustomVstPlugIn;
 begin
- Result := FVstHost[0];
+  Result := FVstHost[0];
 end;
 
 procedure TConfig.SetClonedPlugin(const Value: TFileName);
 begin
- if ClonedPlugin <> Value then
+  if ClonedPlugin <> Value then
   begin
-   if FVSTHost[0].CheckValidPlugin(Value) then
+    if FVstHost[0].CheckValidPlugin(Value) then
     begin
-     FVSTHost[0].LoadFromFile(Value);
-     FVSTHost[0].Open;
-    end else
-   if FVSTHost[0].Active then
+      FVstHost[0].LoadFromFile(Value);
+      FVstHost[0].Open;
+    end
+    else if FVstHost[0].Active then
     begin
-     FVSTHost[0].Close;
-     FVSTHost[0].UnLoad;
+      FVstHost[0].Close;
+      FVstHost[0].UnLoad;
     end;
   end;
 end;
 
 end.
-

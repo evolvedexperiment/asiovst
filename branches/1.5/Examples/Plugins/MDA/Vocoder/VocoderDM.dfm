@@ -6,9 +6,7 @@ object VocoderDataModule: TVocoderDataModule
   ProductName = 'DAV mda'
   VendorName = 'Delphi ASIO & VST Project / mda'
   PlugCategory = vpcEffect
-  CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Vocoder'
   IORatio = 1.000000000000000000
   UniqueID = 'mdav'
@@ -36,7 +34,6 @@ object VocoderDataModule: TVocoderDataModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Mod In'
       LargeStepFloat = 2.000000000000000000
@@ -49,7 +46,6 @@ object VocoderDataModule: TVocoderDataModule
       OnCustomParameterDisplay = ParameterModInDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Output'
       LargeStepFloat = 2.000000000000000000
@@ -62,7 +58,6 @@ object VocoderDataModule: TVocoderDataModule
       OnCustomParameterDisplay = ParamOutputDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Hi Thru'
       LargeStepFloat = 2.000000000000000000
@@ -74,7 +69,6 @@ object VocoderDataModule: TVocoderDataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Hi Band'
       LargeStepFloat = 2.000000000000000000
@@ -87,7 +81,6 @@ object VocoderDataModule: TVocoderDataModule
       OnParameterChange = ParameterHiBandChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Envelope'
       LargeStepFloat = 2.000000000000000000
@@ -100,7 +93,6 @@ object VocoderDataModule: TVocoderDataModule
       OnCustomParameterDisplay = ParamEnvelopeDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Filter Q'
       LargeStepFloat = 2.000000000000000000
@@ -112,7 +104,6 @@ object VocoderDataModule: TVocoderDataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Mid Freq'
       LargeStepFloat = 2.000000000000000000
@@ -125,7 +116,6 @@ object VocoderDataModule: TVocoderDataModule
       OnCustomParameterDisplay = ParamMidFreqDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Quality'
       LargeStepFloat = 2.000000000000000000
@@ -136,13 +126,12 @@ object VocoderDataModule: TVocoderDataModule
       VSTModule = Owner
       OnCustomParameterDisplay = ParamQualityDisplay
     end>
+  ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnProcess = VSTModuleProcess
   OnProcess32Replacing = VSTModuleProcess
   OnResume = VSTModuleResume
   OnSuspend = VSTModuleSuspend
-  Left = 188
-  Top = 77
   Height = 150
   Width = 215
 end

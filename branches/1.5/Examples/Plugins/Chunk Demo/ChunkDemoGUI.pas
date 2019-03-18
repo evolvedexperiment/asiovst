@@ -34,10 +34,11 @@ interface
 
 {$I DAV_Compiler.inc}
 
-uses 
+uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
   Forms, Controls, DAV_Types, DAV_VSTModule, DAV_GuiLabel, DAV_GuiPixelMap,
-  DAV_GuiStitchedControls, DAV_GuiStitchedPngList, DAV_GuiStitchedDial;
+  DAV_GuiStitchedControls, DAV_GuiStitchedPngList, DAV_GuiStitchedDial,
+  DAV_GuiImageControl, DAV_GuiCustomControl, DAV_GuiGraphicControl;
 
 type
   TFmChunkDemo = class(TForm)
@@ -77,89 +78,89 @@ uses
 
 procedure TFmChunkDemo.FormShow(Sender: TObject);
 begin
- UpdateAlpha;
- UpdateBeta;
- UpdateGamma;
- UpdateDelta;
+  UpdateAlpha;
+  UpdateBeta;
+  UpdateGamma;
+  UpdateDelta;
 end;
 
 procedure TFmChunkDemo.DialAlphaChange(Sender: TObject);
 begin
- with TChunkDemoDataModule(Owner) do
+  with TChunkDemoDataModule(Owner) do
   begin
-   Parameter[0] := DialAlpha.Value;
+    Parameter[0] := DialAlpha.Value;
   end;
 end;
 
 procedure TFmChunkDemo.DialBetaChange(Sender: TObject);
 begin
- with TChunkDemoDataModule(Owner) do
+  with TChunkDemoDataModule(Owner) do
   begin
-   Parameter[1] := DialBeta.Value;
+    Parameter[1] := DialBeta.Value;
   end;
 end;
 
 procedure TFmChunkDemo.DialGammaChange(Sender: TObject);
 begin
- with TChunkDemoDataModule(Owner) do
+  with TChunkDemoDataModule(Owner) do
   begin
-   Parameter[2] := DialGamma.Value;
+    Parameter[2] := DialGamma.Value;
   end;
 end;
 
 procedure TFmChunkDemo.DialDeltaChange(Sender: TObject);
 begin
- with TChunkDemoDataModule(Owner) do
+  with TChunkDemoDataModule(Owner) do
   begin
-   Parameter[3] := DialDelta.Value;
+    Parameter[3] := DialDelta.Value;
   end;
 end;
 
 procedure TFmChunkDemo.UpdateAlpha;
 var
-  Alpha : Single;
+  Alpha: Single;
 begin
- with TChunkDemoDataModule(Owner) do
+  with TChunkDemoDataModule(Owner) do
   begin
-   Alpha := Parameter[0];
-   if DialAlpha.Value <> Alpha
-    then DialAlpha.Value := Alpha;
+    Alpha := Parameter[0];
+    if DialAlpha.Value <> Alpha then
+      DialAlpha.Value := Alpha;
   end;
 end;
 
 procedure TFmChunkDemo.UpdateBeta;
 var
-  Beta : Single;
+  Beta: Single;
 begin
- with TChunkDemoDataModule(Owner) do
+  with TChunkDemoDataModule(Owner) do
   begin
-   Beta := Parameter[1];
-   if DialBeta.Value <> Beta
-    then DialBeta.Value := Beta;
+    Beta := Parameter[1];
+    if DialBeta.Value <> Beta then
+      DialBeta.Value := Beta;
   end;
 end;
 
 procedure TFmChunkDemo.UpdateDelta;
 var
-  Delta : Single;
+  Delta: Single;
 begin
- with TChunkDemoDataModule(Owner) do
+  with TChunkDemoDataModule(Owner) do
   begin
-   Delta := Parameter[2];
-   if DialGamma.Value <> Delta
-    then DialGamma.Value := Delta;
+    Delta := Parameter[2];
+    if DialGamma.Value <> Delta then
+      DialGamma.Value := Delta;
   end;
 end;
 
 procedure TFmChunkDemo.UpdateGamma;
 var
-  Gamma : Single;
+  Gamma: Single;
 begin
- with TChunkDemoDataModule(Owner) do
+  with TChunkDemoDataModule(Owner) do
   begin
-   Gamma := Parameter[3];
-   if DialDelta.Value <> Gamma
-    then DialDelta.Value := Gamma;
+    Gamma := Parameter[3];
+    if DialDelta.Value <> Gamma then
+      DialDelta.Value := Gamma;
   end;
 end;
 

@@ -197,6 +197,10 @@ object FmMegaDemo: TFmMegaDemo
     object TsGroupBox: TTabSheet
       Caption = 'Group Box'
       ImageIndex = 2
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object GbTypical: TGuiGroup
         Left = 3
         Top = 3

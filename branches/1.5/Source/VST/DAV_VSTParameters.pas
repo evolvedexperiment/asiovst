@@ -412,29 +412,30 @@ destructor TCustomVstParameterProperty.Destroy;
 var
   i: Integer;
 begin
- try
-  if VSTModule is TVSTModuleWithPrograms then
-   with TVSTModuleWithPrograms(FVSTModule) do
-    begin
-     if not (effFlagsProgramChunks in Effect^.EffectFlags) then
-      if Assigned(Programs) and (Programs.Count > 0) then
-       for i := 0 to Programs.Count - 1 do
-        if Assigned(Programs[i])
-         then Programs[i].SetParameterCount(Collection.Count - 1)
-      else SetParameterCount(Collection.Count - 1);
+  try
+    if VSTModule is TVSTModuleWithPrograms then
+      with TVSTModuleWithPrograms(FVSTModule) do
+      begin
+        if not(effFlagsProgramChunks in Effect^.EffectFlags) then
+          if Assigned(Programs) and (Programs.Count > 0) then
+            for i := 0 to Programs.Count - 1 do
+              if Assigned(Programs[i]) then
+                Programs[i].SetParameterCount(Collection.Count - 1)
+              else
+                SetParameterCount(Collection.Count - 1);
 
 (*
-     if (HostProduct <> 'Cubase VST') and
-        (HostProduct <> 'Unknown') and
-        (HostProduct <> '') then
+        if (HostProduct <> 'Cubase VST') and
+          (HostProduct <> 'Unknown') and
+          (HostProduct <> '') then
 
-     not necessary anymore ?!?
+        not necessary anymore ?!?
 *)
-     Effect^.numParams := Collection.Count - 1;
-    end;
- finally
-  inherited;
- end;
+        Effect^.numParams := Collection.Count - 1;
+      end;
+  finally
+    inherited;
+  end;
 end;
 
 procedure TCustomVstParameterProperty.DefineProperties(Filer: TFiler);
@@ -452,262 +453,276 @@ begin
     WriteLargeStepFloatProperty, LargeStepFloat = 0);
 end;
 
-function TCustomVstParameterProperty.VSTParameter2Parameter(const Value: Single): Single;
+function TCustomVstParameterProperty.VSTParameter2Parameter
+  (const Value: Single): Single;
 begin
- Result := Limit(Value, 0, 1);
- case Curve of
-  ctLogarithmic: Result := (Exp(Result * Ln(FCurveFactor + 1)) - 1) * FInvCurveFactor;
-  ctExponential: Result := Log2(FCurveFactor * Result + 1) / Log2(FCurveFactor + 1);
-  ctFrequencyScale: Result := (Exp(Result * Ln((Max / Min) + 1)) - 1) / (Max / Min);
- else
- end;
- Result := Smooth(Result * (Max - Min) + Min);
+  Result := Limit(Value, 0, 1);
+  case Curve of
+    ctLogarithmic:
+      Result := (Exp(Result * Ln(FCurveFactor + 1)) - 1) * FInvCurveFactor;
+    ctExponential:
+      Result := Log2(FCurveFactor * Result + 1) / Log2(FCurveFactor + 1);
+    ctFrequencyScale:
+      Result := (Exp(Result * Ln((Max / Min) + 1)) - 1) / (Max / Min);
+  else
+  end;
+  Result := Smooth(Result * (Max - Min) + Min);
 end;
 
 procedure TCustomVstParameterProperty.ReadCurveFactorProperty(Reader: TReader);
 begin
- FCurveFactor := Reader.ReadFloat;
+  FCurveFactor := Reader.ReadFloat;
 end;
 
-procedure TCustomVstParameterProperty.ReadLargeStepFloatProperty(
-  Reader: TReader);
+procedure TCustomVstParameterProperty.ReadLargeStepFloatProperty
+  (Reader: TReader);
 begin
- FStepFloat := Reader.ReadFloat;
+  FStepFloat := Reader.ReadFloat;
 end;
 
 procedure TCustomVstParameterProperty.ReadMaxProperty(Reader: TReader);
 begin
- FMax := Reader.ReadFloat;
+  FMax := Reader.ReadFloat;
 end;
 
-procedure TCustomVstParameterProperty.ReadSmallStepFloatProperty(
-  Reader: TReader);
+procedure TCustomVstParameterProperty.ReadSmallStepFloatProperty
+  (Reader: TReader);
 begin
- FSmallStepFloat := Reader.ReadFloat;
+  FSmallStepFloat := Reader.ReadFloat;
 end;
 
 procedure TCustomVstParameterProperty.ReadStepFloatProperty(Reader: TReader);
 begin
- FStepFloat := Reader.ReadFloat;
+  FStepFloat := Reader.ReadFloat;
 end;
 
 procedure TCustomVstParameterProperty.WriteCurveFactorProperty(Writer: TWriter);
 begin
- Writer.WriteFloat(FCurveFactor);
+  Writer.WriteFloat(FCurveFactor);
 end;
 
-procedure TCustomVstParameterProperty.WriteLargeStepFloatProperty(
-  Writer: TWriter);
+procedure TCustomVstParameterProperty.WriteLargeStepFloatProperty
+  (Writer: TWriter);
 begin
- Writer.WriteFloat(FLargeStepFloat);
+  Writer.WriteFloat(FLargeStepFloat);
 end;
 
 procedure TCustomVstParameterProperty.WriteMaxProperty(Writer: TWriter);
 begin
- Writer.WriteFloat(FMax);
+  Writer.WriteFloat(FMax);
 end;
 
-procedure TCustomVstParameterProperty.WriteSmallStepFloatProperty(
-  Writer: TWriter);
+procedure TCustomVstParameterProperty.WriteSmallStepFloatProperty
+  (Writer: TWriter);
 begin
- Writer.WriteFloat(FSmallStepFloat);
+  Writer.WriteFloat(FSmallStepFloat);
 end;
 
 procedure TCustomVstParameterProperty.WriteStepFloatProperty(Writer: TWriter);
 begin
- Writer.WriteFloat(FStepFloat);
+  Writer.WriteFloat(FStepFloat);
 end;
 
 function TCustomVstParameterProperty.Parameter2VSTParameter(const Value: Single): Single;
 begin
- Result := (Value - Min) / (Max - Min);
- case Curve of
-  ctLogarithmic:
-    begin
-     Assert(FCurveFactor * Result + 1 >= 0);
-     Result := Log2(FCurveFactor * Result + 1) / Log2(FCurveFactor + 1);
-    end;
-  ctExponential: Result := Exp(Result * Ln(FCurveFactor + 1)) - 1;
-  ctFrequencyScale: if Min <> 0
-                     then Result := Log2(Max / Min * Result + 1) / Log2(Max / Min)
-                     else Result := Log2(Max * Result + 1) / Log2(Max);
+  Result := (Value - Min) / (Max - Min);
+  case Curve of
+    ctLogarithmic:
+      begin
+        Assert(FCurveFactor * Result + 1 >= 0);
+        Result := Log2(FCurveFactor * Result + 1) / Log2(FCurveFactor + 1);
+      end;
+    ctExponential:
+      Result := Exp(Result * Ln(FCurveFactor + 1)) - 1;
+    ctFrequencyScale:
+      if Min <> 0 then
+        Result := Log2(Max / Min * Result + 1) / Log2(Max / Min)
+      else
+        Result := Log2(Max * Result + 1) / Log2(Max);
   else
- end;
- Result := Limit(Result, 0, 1);
+  end;
+  Result := Limit(Result, 0, 1);
 end;
 
 function TCustomVstParameterProperty.Smooth(const Value: Single): Single;
 begin
- // simple first order lowpass
- FSmoothStates[0] := Value + SmoothingFactor * (FSmoothStates[0] - Value);
- Result := FSmoothStates[0];
+  // simple first order lowpass
+  FSmoothStates[0] := Value + SmoothingFactor * (FSmoothStates[0] - Value);
+  Result := FSmoothStates[0];
 end;
 
 procedure TCustomVstParameterProperty.AssignTo(Dest: TPersistent);
 begin
- if Dest is TCustomVstParameterProperty then
-  with TCustomVstParameterProperty(Dest) do
-   try
-    CanBeAutomated       := Self.CanBeAutomated;
-    CC                   := Self.CC;
-    Curve                := Self.Curve;
-    CurveFactor          := Self.CurveFactor;
-    Flags                := Self.Flags;
-    FSmoothStates        := Self.FSmoothStates;
-    LargeStepFloat       := Self.LargeStepFloat;
-    LargeStepInteger     := Self.LargeStepInteger;
-    Max                  := Self.Max;
-    MaxInteger           := Self.MaxInteger;
-    Min                  := Self.Min;
-    MinInteger           := Self.MinInteger;
-    ReportVST2Properties := Self.ReportVST2Properties;
-    ShortLabel           := Self.ShortLabel;
-    SmallStepFloat       := Self.SmallStepFloat;
-    SmoothingFactor      := Self.SmoothingFactor;
-    StepFloat            := Self.StepFloat;
-    StepInteger          := Self.StepInteger;
-    Units                := Self.Units;
-    DisplayName          := Self.DisplayName;
-   except
+  if Dest is TCustomVstParameterProperty then
+    with TCustomVstParameterProperty(Dest) do
+      try
+        CanBeAutomated := Self.CanBeAutomated;
+        CC := Self.CC;
+        Curve := Self.Curve;
+        CurveFactor := Self.CurveFactor;
+        Flags := Self.Flags;
+        FSmoothStates := Self.FSmoothStates;
+        LargeStepFloat := Self.LargeStepFloat;
+        LargeStepInteger := Self.LargeStepInteger;
+        Max := Self.Max;
+        MaxInteger := Self.MaxInteger;
+        Min := Self.Min;
+        MinInteger := Self.MinInteger;
+        ReportVST2Properties := Self.ReportVST2Properties;
+        ShortLabel := Self.ShortLabel;
+        SmallStepFloat := Self.SmallStepFloat;
+        SmoothingFactor := Self.SmoothingFactor;
+        StepFloat := Self.StepFloat;
+        StepInteger := Self.StepInteger;
+        Units := Self.Units;
+        DisplayName := Self.DisplayName;
+      except
+        inherited;
+      end
+  else
     inherited;
-   end
-  else inherited;
 end;
 
 procedure TCustomVstParameterProperty.SetCategoryIndex(const Value: Integer);
 begin
- if VSTModule is TVSTModuleWithPrograms then
-  with TVSTModuleWithPrograms(VSTModule) do
-   if Assigned(ParameterCategories) then
-    if (Value > 0) and (Value <= ParameterCategories.Count)
-     then Category := AnsiString(ParameterCategories[Value - 1].DisplayName)
-     else Category := '';
+  if VSTModule is TVSTModuleWithPrograms then
+    with TVSTModuleWithPrograms(VSTModule) do
+      if Assigned(ParameterCategories) then
+        if (Value > 0) and (Value <= ParameterCategories.Count) then
+          Category := AnsiString(ParameterCategories[Value - 1].DisplayName)
+        else
+          Category := '';
 end;
 
-procedure TCustomVstParameterProperty.SetCategoryString(const Value: AnsiString);
+procedure TCustomVstParameterProperty.SetCategoryString
+  (const Value: AnsiString);
 var
-  catndx : Integer;
+  catndx: Integer;
 begin
- if Category <> Value then
-  if VSTModule is TVSTModuleWithPrograms then
-   with TVSTModuleWithPrograms(VSTModule) do
-    if Assigned(ParameterCategories) then
-     with ParameterCategories do
-      begin
-       if (Value = '') then
-        begin
-         catndx := CategoryIndex(FCategoryString);
-         if (catndx >= 0) and (catndx < Count - 1) then
+  if Category <> Value then
+    if VSTModule is TVSTModuleWithPrograms then
+      with TVSTModuleWithPrograms(VSTModule) do
+        if Assigned(ParameterCategories) then
+          with ParameterCategories do
           begin
-           Dec(Items[catndx].FParamsInCat);
-           Assert(Items[catndx].FParamsInCat >= 0);
-          end;
-         FCategoryString := Value;
-         CategoryStringChanged;
-        end
-       else
-        begin
-         FCategoryString := Value;
-         CategoryStringChanged;
+            if (Value = '') then
+            begin
+              catndx := CategoryIndex(FCategoryString);
+              if (catndx >= 0) and (catndx < Count - 1) then
+              begin
+                Dec(Items[catndx].FParamsInCat);
+                Assert(Items[catndx].FParamsInCat >= 0);
+              end;
+              FCategoryString := Value;
+              CategoryStringChanged;
+            end
+            else
+            begin
+              FCategoryString := Value;
+              CategoryStringChanged;
 
-         catndx := CategoryIndex(FCategoryString);
-         if catndx < 0 then
-          with Add do
-           begin
-            DisplayName := string(FCategoryString);
-            Inc(FParamsInCat);
-           end else
-         if (catndx >= 0) and (catndx < Count - 1)
-          then inc(Items[catndx].FParamsInCat);
-        end;
-      end;
+              catndx := CategoryIndex(FCategoryString);
+              if catndx < 0 then
+                with Add do
+                begin
+                  DisplayName := string(FCategoryString);
+                  Inc(FParamsInCat);
+                end
+              else if (catndx >= 0) and (catndx < Count - 1) then
+                Inc(Items[catndx].FParamsInCat);
+            end;
+          end;
 end;
 
 procedure TCustomVstParameterProperty.CategoryStringChanged;
 begin
- if Length(FCategoryString) > 23
-  then SetLength(FCategoryString, 23); 
+  if Length(FCategoryString) > 23 then
+    SetLength(FCategoryString, 23);
 end;
 
 procedure TCustomVstParameterProperty.SetCurve(const Value: TCurveType);
 begin
- if FCurve <> Value then
+  if FCurve <> Value then
   begin
-   FCurve := Value;
-   case FCurve of
-    ctLogarithmic : if FMin <> 0 then CurveFactor := FMax / FMin;
-   end;
+    FCurve := Value;
+    case FCurve of
+      ctLogarithmic:
+        if FMin <> 0 then
+          CurveFactor := FMax / FMin;
+    end;
   end;
 end;
 
 procedure TCustomVstParameterProperty.SetCurveFactor(const Value: Single);
 begin
- if FCurveFactor <> Value then
+  if FCurveFactor <> Value then
   begin
-   FCurveFactor := Value;
-   CurveFactorChanged;
+    FCurveFactor := Value;
+    CurveFactorChanged;
   end;
 end;
 
 procedure TCustomVstParameterProperty.CurveFactorChanged;
 begin
- CalculateCurveFactor;
+  CalculateCurveFactor;
 end;
 
 procedure TCustomVstParameterProperty.CalculateCurveFactor;
 begin
- FInvCurveFactor := 1 / FCurveFactor;
+  FInvCurveFactor := 1 / FCurveFactor;
 end;
 
 procedure TCustomVstParameterProperty.SetDisplayName(const AValue: string);
 var
-  NewDisplayName : string;
+  NewDisplayName: string;
 begin
- NewDisplayName := Copy(AValue, 1, Math.Min(64, Length(AValue)));
- if NewDisplayName <> FDisplayName then
+  NewDisplayName := Copy(AValue, 1, Math.Min(64, Length(AValue)));
+  if NewDisplayName <> FDisplayName then
   begin
-   if (ShortLabel = '') or (string(ShortLabel) = FDisplayName)
-    then ShortLabel := AnsiString(NewDisplayName);
-   FDisplayName := NewDisplayName;
+    if (ShortLabel = '') or (string(ShortLabel) = FDisplayName) then
+      ShortLabel := AnsiString(NewDisplayName);
+    FDisplayName := NewDisplayName;
   end;
 end;
 
 procedure TCustomVstParameterProperty.SetMax(const Value: Single);
 begin
- if FMax <> Value then
+  if FMax <> Value then
   begin
-   FMax := Value;
-   MaximumChanged;
+    FMax := Value;
+    MaximumChanged;
   end;
 end;
 
 procedure TCustomVstParameterProperty.MaximumChanged;
 begin
- // nothing todo yet;
+  // nothing todo yet;
 end;
 
 procedure TCustomVstParameterProperty.SetMin(const Value: Single);
 begin
- if FMin <> Value then
+  if FMin <> Value then
   begin
-   FMin := Value;
-   MinimumChanged;
+    FMin := Value;
+    MinimumChanged;
   end;
 end;
 
 procedure TCustomVstParameterProperty.MinimumChanged;
 begin
- // nothing todo yet;
+  // nothing todo yet;
 end;
 
 function TCustomVstParameterProperty.GetCategoryIndex: Integer;
 begin
- if VSTModule is TVSTModuleWithPrograms then
-  with TVSTModuleWithPrograms(VSTModule) do
-   if Assigned(ParameterCategories)
-    then Result := ParameterCategories.CategoryIndex(Category) + 1
-    else Result := 0
- else Result := 0;
+  if VSTModule is TVSTModuleWithPrograms then
+    with TVSTModuleWithPrograms(VSTModule) do
+      if Assigned(ParameterCategories) then
+        Result := ParameterCategories.CategoryIndex(Category) + 1
+      else
+        Result := 0
+  else
+    Result := 0;
 end;
 
 function TCustomVstParameterProperty.GetDisplayName: string;
@@ -717,50 +732,51 @@ end;
 
 procedure TCustomVstParameterProperty.SetUnits(AUnits: AnsiString);
 begin
- if FUnits <> AUnits then
+  if FUnits <> AUnits then
   begin
-   FUnits := AUnits;
-   UnitsChanged;
+    FUnits := AUnits;
+    UnitsChanged;
   end;
 end;
 
 procedure TCustomVstParameterProperty.UnitsChanged;
 begin
- // nothing todo yet;
+  // nothing todo yet;
 end;
 
 procedure TCustomVstParameterProperty.SetShortLabel(const Value: AnsiString);
 begin
- if FShortLabel <> Value then
+  if FShortLabel <> Value then
   begin
-   FShortLabel := Value;
-   ShortLabelChanged;
+    FShortLabel := Value;
+    ShortLabelChanged;
   end;
 end;
 
 procedure TCustomVstParameterProperty.SetSmoothingFactor(const Value: Single);
 begin
- // try..except will be removed soon, so please change all your projects
- // according to the new limits!
- try
-  if FSmoothingFactor < 0
-   then raise Exception.Create('SmoothingFactor needs to be above or equal zero');
-  if FSmoothingFactor >= 1
-   then raise Exception.Create('SmoothingFactor needs to be below one! (0 = no smoothing)');
+  // try..except will be removed soon, so please change all your projects
+  // according to the new limits!
+  try
+    if FSmoothingFactor < 0 then
+      raise Exception.Create('SmoothingFactor needs to be above or equal zero');
+    if FSmoothingFactor >= 1 then
+      raise Exception.Create
+        ('SmoothingFactor needs to be below one! (0 = no smoothing)');
 
-  if FSmoothingFactor <> Value then
-   begin
-    FSmoothingFactor := Value;
-   end;
- except
-  FSmoothingFactor := 0
- end;
+    if FSmoothingFactor <> Value then
+    begin
+      FSmoothingFactor := Value;
+    end;
+  except
+    FSmoothingFactor := 0
+  end;
 end;
 
 procedure TCustomVstParameterProperty.ShortLabelChanged;
 begin
- if Length(FShortLabel) > 7
-  then SetLength(FShortLabel, 7);
+  if Length(FShortLabel) > 7 then
+    SetLength(FShortLabel, 7);
 end;
 
 
@@ -782,23 +798,23 @@ procedure TCustomVstParameterProperties.WriteVSTXML;
 {$IFNDEF FMX}
 {$IFNDEF FPC}
 var
-  s : AnsiString;
-  b : PAnsiChar;
+  s: AnsiString;
+  b: PAnsiChar;
 {$ENDIF}
 {$ENDIF}
 begin
-  {$IFNDEF FMX}
-  {$IFNDEF FPC}
+{$IFNDEF FMX}
+{$IFNDEF FPC}
   GetMem(b, 255);
   try
-   GetModuleFileNameA(Application.Handle, b, 255);
-   s := b;
+    GetModuleFileNameA(Application.Handle, b, 255);
+    s := b;
   finally
-   FreeMem(b);
+    FreeMem(b);
   end;
   WriteVSTXML(Copy(string(s), 1, Pos('.dll', string(s)) - 1) + '.VSTXML');
-  {$ENDIF}
-  {$ENDIF}
+{$ENDIF}
+{$ENDIF}
 end;
 
 procedure TCustomVstParameterProperties.WriteVSTXML(FileName: TFileName);

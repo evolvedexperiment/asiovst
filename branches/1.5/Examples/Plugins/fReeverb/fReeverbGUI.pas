@@ -96,135 +96,135 @@ uses
 
 procedure TFmReverb.FormShow(Sender: TObject);
 var
-  i : Integer;
+  i: Integer;
 begin
- with TfReeverbVST(Owner) do
+  with TfReeverbVST(Owner) do
   begin
-   SBPreset.Items.Clear;
-   for i := 0 to numPrograms - 1
-    do SBPreset.Items.Add(Programs[i].DisplayName);
-   SBPreset.ItemIndex := CurrentProgram; 
+    SBPreset.Items.Clear;
+    for i := 0 to numPrograms - 1 do
+      SBPreset.Items.Add(Programs[i].DisplayName);
+    SBPreset.ItemIndex := CurrentProgram;
   end;
 end;
 
 procedure TFmReverb.SBPresetChange(Sender: TObject);
 begin
- with TfReeverbVST(Owner) do
+  with TfReeverbVST(Owner) do
   begin
-   CurrentProgram := SBPreset.ItemIndex;
-   UpdateDry;
-   UpdateWet;
-   UpdateWidth;
-   UpdateDamp;
-   UpdateSize;
-   UpdateStretch;
+    CurrentProgram := SBPreset.ItemIndex;
+    UpdateDry;
+    UpdateWet;
+    UpdateWidth;
+    UpdateDamp;
+    UpdateSize;
+    UpdateStretch;
   end;
 end;
 
 procedure TFmReverb.UpdateDamp;
 begin
- with TfReeverbVST(Owner) do
-  if DialDamp.Value <> Parameter[6]
-   then DialDamp.Value := Parameter[6];
+  with TfReeverbVST(Owner) do
+    if DialDamp.Value <> Parameter[6] then
+      DialDamp.Value := Parameter[6];
 end;
 
 procedure TFmReverb.UpdateDry;
 begin
- with TfReeverbVST(Owner) do
-  if DialDry.Value <> Parameter[0]
-   then DialDry.Value := Parameter[0];
+  with TfReeverbVST(Owner) do
+    if DialDry.Value <> Parameter[0] then
+      DialDry.Value := Parameter[0];
 end;
 
 procedure TFmReverb.UpdateSize;
 begin
- with TfReeverbVST(Owner) do
-  if DialRoomSize.Value <> Parameter[3]
-   then DialRoomSize.Value := Parameter[3];
+  with TfReeverbVST(Owner) do
+    if DialRoomSize.Value <> Parameter[3] then
+      DialRoomSize.Value := Parameter[3];
 end;
 
 procedure TFmReverb.UpdateStretch;
 begin
- with TfReeverbVST(Owner) do
-  if DialStretch.Value <> Parameter[5]
-   then DialStretch.Value := Parameter[5];
+  with TfReeverbVST(Owner) do
+    if DialStretch.Value <> Parameter[5] then
+      DialStretch.Value := Parameter[5];
 end;
 
 procedure TFmReverb.UpdateWet;
 begin
- with TfReeverbVST(Owner) do
-  if DialWet.Value <> Parameter[1]
-   then DialWet.Value := Parameter[1];
+  with TfReeverbVST(Owner) do
+    if DialWet.Value <> Parameter[1] then
+      DialWet.Value := Parameter[1];
 end;
 
 procedure TFmReverb.UpdateWidth;
 begin
- with TfReeverbVST(Owner) do
-  if DialWidth.Value <> Parameter[2]
-   then DialWidth.Value := Parameter[2];
+  with TfReeverbVST(Owner) do
+    if DialWidth.Value <> Parameter[2] then
+      DialWidth.Value := Parameter[2];
 end;
 
 procedure TFmReverb.DialDryChange(Sender: TObject);
 var
-  Value : Single;
+  Value: Single;
 begin
- with TfReeverbVST(Owner) do
+  with TfReeverbVST(Owner) do
   begin
-   Value := DialDry.Value;
-   if Parameter[0] <> Value
-    then Parameter[0] := Value;
+    Value := DialDry.Value;
+    if Parameter[0] <> Value then
+      Parameter[0] := Value;
   end;
 end;
 
 procedure TFmReverb.DialWetChange(Sender: TObject);
 var
-  Value : Single;
+  Value: Single;
 begin
- with TfReeverbVST(Owner) do
+  with TfReeverbVST(Owner) do
   begin
-   Value := DialWet.Value;
-   if Parameter[1] <> Value
-    then Parameter[1] := Value;
+    Value := DialWet.Value;
+    if Parameter[1] <> Value then
+      Parameter[1] := Value;
   end;
 end;
 
 procedure TFmReverb.DialWidthChange(Sender: TObject);
 begin
- with TfReeverbVST(Owner) do
-  if Parameter[2] <> DialWidth.Value
-   then Parameter[2] := DialWidth.Value;
+  with TfReeverbVST(Owner) do
+    if Parameter[2] <> DialWidth.Value then
+      Parameter[2] := DialWidth.Value;
 end;
 
 procedure TFmReverb.DialRoomSizeChange(Sender: TObject);
 begin
- with TfReeverbVST(Owner) do
-  if Parameter[3] <> DialRoomSize.Value
-   then Parameter[3] := DialRoomSize.Value;
+  with TfReeverbVST(Owner) do
+    if Parameter[3] <> DialRoomSize.Value then
+      Parameter[3] := DialRoomSize.Value;
 end;
 
 procedure TFmReverb.BtAboutClick(Sender: TObject);
 begin
- MessageDlg('fReeverb example plugin written by Christian Budde' + #13#10 +
-   'based on algorithm by Jezar at Dreampoint' + #13#10 +
-   'based on GUI by thcilnnahoj', mtInformation, [mbOK], 0);
+  MessageDlg('fReeverb example plugin written by Christian Budde' + #13#10 +
+    'based on algorithm by Jezar at Dreampoint' + #13#10 +
+    'based on GUI by thcilnnahoj', mtInformation, [mbOK], 0);
 end;
 
 procedure TFmReverb.CBFreezeClick(Sender: TObject);
 begin
- TfReeverbVST(Owner).Parameter[4] := Byte(CBFreeze.Checked);
+  TfReeverbVST(Owner).Parameter[4] := Byte(CBFreeze.Checked);
 end;
 
 procedure TFmReverb.DialStretchChange(Sender: TObject);
 begin
- with TfReeverbVST(Owner) do
-  if Parameter[5] <> DialStretch.Value
-   then Parameter[5] := DialStretch.Value;
+  with TfReeverbVST(Owner) do
+    if Parameter[5] <> DialStretch.Value then
+      Parameter[5] := DialStretch.Value;
 end;
 
 procedure TFmReverb.DialDampChange(Sender: TObject);
 begin
- with TfReeverbVST(Owner) do
-  if Parameter[6] <> DialDamp.Value
-   then Parameter[6] := DialDamp.Value;
+  with TfReeverbVST(Owner) do
+    if Parameter[6] <> DialDamp.Value then
+      Parameter[6] := DialDamp.Value;
 end;
 
 end.

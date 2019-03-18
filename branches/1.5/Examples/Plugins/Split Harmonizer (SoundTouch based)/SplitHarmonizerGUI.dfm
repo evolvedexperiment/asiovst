@@ -53,13 +53,13 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
     Width = 398
     Height = 107
     BorderColor = 15133420
+    BorderRadius = 7.000000000000000000
     BorderWidth = 2.000000000000000000
     Color = clBlack
     PanelColor = clBlack
-    BorderRadius = 7.000000000000000000
     TabOrder = 0
-    UseDockManager = True
     Transparent = True
+    UseDockManager = True
     object LbDetuneA: TGuiLabel
       Left = 16
       Top = 9
@@ -184,7 +184,8 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Top = 38
       Width = 36
       Height = 36
-      CurveMapping = -0.699999988079071000
+      CurveMapping = -0.699999988079071100
+      DefaultValue = 0.001000000047497451
       Max = 80.000000000000000000
       Min = 0.001000000047497451
       ScrollRange = 400.000000000000000000
@@ -193,7 +194,6 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Value = 10.000000000000000000
       WheelStep = 1.000000000000000000
       OnChange = DialDelayAChange
-      DefaultValue = 0.000000000000000000
     end
     object DialMixA: TGuiStitchedDial
       Left = 320
@@ -215,7 +215,8 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Top = 38
       Width = 36
       Height = 36
-      CurveMapping = -0.400000005960464500
+      CurveMapping = -0.400000005960464400
+      DefaultValue = 20.000000000000000000
       Max = 20000.000000000000000000
       Min = 20.000000000000000000
       ScrollRange = 400.000000000000000000
@@ -224,7 +225,6 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Value = 8000.000000000000000000
       WheelStep = 1.000000000000000000
       OnChange = DialLowpassAChange
-      DefaultValue = 0.000000000000000000
     end
   end
   object PnStageB: TGuiPanel
@@ -233,13 +233,13 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
     Width = 398
     Height = 107
     BorderColor = 15133420
+    BorderRadius = 7.000000000000000000
     BorderWidth = 2.000000000000000000
     Color = clBlack
     PanelColor = clBlack
-    BorderRadius = 7.000000000000000000
     TabOrder = 1
-    UseDockManager = True
     Transparent = True
+    UseDockManager = True
     object LbDetuneB: TGuiLabel
       Left = 20
       Top = 9
@@ -364,7 +364,8 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Top = 38
       Width = 36
       Height = 36
-      CurveMapping = -0.699999988079071000
+      CurveMapping = -0.699999988079071100
+      DefaultValue = 0.001000000047497451
       Max = 80.000000000000000000
       Min = 0.001000000047497451
       ScrollRange = 400.000000000000000000
@@ -373,7 +374,6 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Value = 10.000000000000000000
       WheelStep = 1.000000000000000000
       OnChange = DialDelayBChange
-      DefaultValue = 0.000000000000000000
     end
     object DialMixB: TGuiStitchedDial
       Left = 320
@@ -395,7 +395,8 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Top = 38
       Width = 36
       Height = 36
-      CurveMapping = -0.400000005960464500
+      CurveMapping = -0.400000005960464400
+      DefaultValue = 20.000000000000000000
       Max = 20000.000000000000000000
       Min = 20.000000000000000000
       ScrollRange = 400.000000000000000000
@@ -404,7 +405,6 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Value = 8000.000000000000000000
       WheelStep = 1.000000000000000000
       OnChange = DialLowpassBChange
-      DefaultValue = 0.000000000000000000
     end
   end
   object GSPL: TGuiStitchedPNGList

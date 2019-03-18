@@ -343,18 +343,6 @@ var
   DelayedSignal: TDAV4SingleArray;
   FeedbackInput: TDAV4SingleArray;
 begin
-  (*
-    FBuffer^[FBufferPos] := Input;
-
-    inc(FBufferPos);
-    if FBufferPos >= BufferSize - 1
-    then FBufferPos := 0;
-
-    Move(FIntBuffer[1], FIntBuffer[0], 2 * SizeOf(Single));
-    FIntBuffer[2] := FBuffer^[FBufferPos];
-    result := Hermite32_asm(FFractional, @FIntBuffer);
-  *)
-
   // Build Delay Vector
   DelayedSignal[0] := FDelayBuffers[0]^[FDelayPos[0]];
   DelayedSignal[1] := FDelayBuffers[1]^[FDelayPos[1]];

@@ -11455,6 +11455,7 @@ object PhaserForm: TPhaserForm
     BorderColor = clBlack
     BorderRadius = 4.000000000000000000
     BorderWidth = 1.500000000000000000
+    Caption = ''
     Color = 4887551
     DefaultValue = 50.000000000000000000
     Max = 1000.000000000000000000
@@ -11473,6 +11474,7 @@ object PhaserForm: TPhaserForm
     BorderColor = clBlack
     BorderRadius = 4.000000000000000000
     BorderWidth = 1.500000000000000000
+    Caption = ''
     Color = 4887551
     DefaultValue = 50.000000000000000000
     Max = 1000.000000000000000000
@@ -11491,6 +11493,7 @@ object PhaserForm: TPhaserForm
     BorderColor = clBlack
     BorderRadius = 4.000000000000000000
     BorderWidth = 1.500000000000000000
+    Caption = ''
     Color = 4887551
     DefaultValue = 50.000000000000000000
     Max = 1000.000000000000000000
@@ -11509,6 +11512,7 @@ object PhaserForm: TPhaserForm
     BorderColor = clBlack
     BorderRadius = 4.000000000000000000
     BorderWidth = 1.500000000000000000
+    Caption = ''
     Color = 4887551
     DefaultValue = 50.000000000000000000
     Max = 10000.000000000000000000
@@ -11527,6 +11531,7 @@ object PhaserForm: TPhaserForm
     BorderColor = clBlack
     BorderRadius = 4.000000000000000000
     BorderWidth = 1.500000000000000000
+    Caption = ''
     Color = 4887551
     DefaultValue = 50.000000000000000000
     Max = 1300.000000000000000000
@@ -11545,6 +11550,7 @@ object PhaserForm: TPhaserForm
     BorderColor = clBlack
     BorderRadius = 4.000000000000000000
     BorderWidth = 1.500000000000000000
+    Caption = ''
     Color = 4887551
     DefaultValue = 5.000000000000000000
     Max = 5.000000000000000000

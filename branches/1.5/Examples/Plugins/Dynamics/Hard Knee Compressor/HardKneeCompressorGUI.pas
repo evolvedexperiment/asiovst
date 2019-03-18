@@ -35,11 +35,11 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
-  Forms, Controls, StdCtrls, DAV_Types, DAV_VSTModule, DAV_GuiPng, 
-  DAV_GuiPixelMap, DAV_GuiLabel, DAV_GuiStitchedControls, 
-  DAV_GuiStitchedPngList, DAV_GuiStitchedDial, DAV_GuiCustomControl, 
-  DAV_GuiGraphicControl;
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
+  Forms, Controls, StdCtrls, DAV_Types, DAV_VSTModule, DAV_GuiPng,
+  DAV_GuiPixelMap, DAV_GuiLabel, DAV_GuiStitchedControls,
+  DAV_GuiStitchedPngList, DAV_GuiStitchedDial, DAV_GuiCustomControl,
+  DAV_GuiGraphicControl, DAV_GuiImageControl;
 
 type
   TFmHardKneeCompressor = class(TForm)
@@ -81,103 +81,104 @@ uses
 
 procedure TFmHardKneeCompressor.FormShow(Sender: TObject);
 begin
- UpdateAttack;
- UpdateRatio;
- UpdateThreshold;
- UpdateRelease;
+  UpdateAttack;
+  UpdateRatio;
+  UpdateThreshold;
+  UpdateRelease;
 end;
 
 procedure TFmHardKneeCompressor.UpdateThreshold;
 begin
- with THardKneeCompressorDataModule(Owner) do
+  with THardKneeCompressorDataModule(Owner) do
   begin
-   if Parameter[0] <> DialThreshold.Value
-    then DialThreshold.Value := Parameter[0];
-   LbThresholdValue.Caption := FloatToStrF(DialThreshold.Value, ffFixed, 3, 1) + ' dB';
+    if Parameter[0] <> DialThreshold.Value then
+      DialThreshold.Value := Parameter[0];
+    LbThresholdValue.Caption := FloatToStrF(DialThreshold.Value, ffFixed, 3,
+      1) + ' dB';
   end;
 end;
 
 procedure TFmHardKneeCompressor.UpdateAttack;
 var
-  AttackTemp : Single;
+  AttackTemp: Single;
 begin
- with THardKneeCompressorDataModule(Owner) do
+  with THardKneeCompressorDataModule(Owner) do
   begin
-   AttackTemp := 100 * Log10(Parameter[2]);
-   if DialAttack.Value <> AttackTemp
-    then DialAttack.Value := AttackTemp;
-   LbAttackValue.Caption := FloatToStrF(Parameter[2], ffGeneral, 4, 2) + ' ms';
+    AttackTemp := 100 * Log10(Parameter[2]);
+    if DialAttack.Value <> AttackTemp then
+      DialAttack.Value := AttackTemp;
+    LbAttackValue.Caption := FloatToStrF(Parameter[2], ffGeneral, 4, 2) + ' ms';
   end;
 end;
 
 procedure TFmHardKneeCompressor.UpdateRatio;
 var
-  RatioTemp : Single;
+  RatioTemp: Single;
 begin
- with THardKneeCompressorDataModule(Owner) do
+  with THardKneeCompressorDataModule(Owner) do
   begin
-   RatioTemp := 100 * Log10(Parameter[1]);
-   if DialRatio.Value <> RatioTemp
-    then DialRatio.Value := RatioTemp;
-   LbRatioValue.Caption := '1 : ' + FloatToStrF(Parameter[1], ffFixed, 3, 1);
+    RatioTemp := 100 * Log10(Parameter[1]);
+    if DialRatio.Value <> RatioTemp then
+      DialRatio.Value := RatioTemp;
+    LbRatioValue.Caption := '1 : ' + FloatToStrF(Parameter[1], ffFixed, 3, 1);
   end;
 end;
 
 procedure TFmHardKneeCompressor.UpdateRelease;
 var
-  ReleaseTemp : Single;
+  ReleaseTemp: Single;
 begin
- with THardKneeCompressorDataModule(Owner) do
+  with THardKneeCompressorDataModule(Owner) do
   begin
-   ReleaseTemp := 1000 * Log10(Parameter[3]);
-   if DialRelease.Value <> ReleaseTemp
-    then DialRelease.Value := ReleaseTemp;
-   LbReleaseValue.Caption := FloatToStrF(Parameter[3], ffGeneral, 4, 5) + ' ms';
+    ReleaseTemp := 1000 * Log10(Parameter[3]);
+    if DialRelease.Value <> ReleaseTemp then
+      DialRelease.Value := ReleaseTemp;
+    LbReleaseValue.Caption := FloatToStrF(Parameter[3], ffGeneral, 4, 5) + ' ms';
   end;
 end;
 
 procedure TFmHardKneeCompressor.DialThresholdChange(Sender: TObject);
 begin
- with THardKneeCompressorDataModule(Owner) do
+  with THardKneeCompressorDataModule(Owner) do
   begin
-   if Parameter[0] <> DialThreshold.Value
-    then Parameter[0] := DialThreshold.Value;
+    if Parameter[0] <> DialThreshold.Value then
+      Parameter[0] := DialThreshold.Value;
   end;
 end;
 
 procedure TFmHardKneeCompressor.DialRatioChange(Sender: TObject);
 var
-  TempRatio : Single;
+  TempRatio: Single;
 begin
- with THardKneeCompressorDataModule(Owner) do
+  with THardKneeCompressorDataModule(Owner) do
   begin
-   TempRatio := Power(10, 0.01 * DialRatio.Value);
-   if Parameter[1] <> TempRatio
-    then Parameter[1] := TempRatio;
+    TempRatio := Power(10, 0.01 * DialRatio.Value);
+    if Parameter[1] <> TempRatio then
+      Parameter[1] := TempRatio;
   end;
 end;
 
 procedure TFmHardKneeCompressor.DialAttackChange(Sender: TObject);
 var
-  TempAttack : Single;
+  TempAttack: Single;
 begin
- with THardKneeCompressorDataModule(Owner) do
+  with THardKneeCompressorDataModule(Owner) do
   begin
-   TempAttack := Power(10, 0.01 * DialAttack.Value);
-   if Parameter[2] <> TempAttack
-    then Parameter[2] := TempAttack;
+    TempAttack := Power(10, 0.01 * DialAttack.Value);
+    if Parameter[2] <> TempAttack then
+      Parameter[2] := TempAttack;
   end;
 end;
 
 procedure TFmHardKneeCompressor.DialReleaseChange(Sender: TObject);
 var
-  TempRelease : Single;
+  TempRelease: Single;
 begin
- with THardKneeCompressorDataModule(Owner) do
+  with THardKneeCompressorDataModule(Owner) do
   begin
-   TempRelease := Power(10, 0.001 * DialRelease.Value);
-   if Parameter[3] <> TempRelease
-    then Parameter[3] := TempRelease;
+    TempRelease := Power(10, 0.001 * DialRelease.Value);
+    if Parameter[3] <> TempRelease then
+      Parameter[3] := TempRelease;
   end;
 end;
 

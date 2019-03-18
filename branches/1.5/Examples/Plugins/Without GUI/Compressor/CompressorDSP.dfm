@@ -94,8 +94,6 @@ object CompressorDataModule: TCompressorDataModule
   OnProcess = VSTModuleProcess
   OnProcess32Replacing = VSTModuleProcess
   OnSampleRateChange = VSTModuleSampleRateChange
-  Left = 679
-  Top = 126
   Height = 150
   Width = 215
 end

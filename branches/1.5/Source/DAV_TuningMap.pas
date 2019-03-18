@@ -330,13 +330,15 @@ begin
       szCurr := szLine;
 
       // Skip empty lines
-      if (szCurr = #0) then continue;
+      if (szCurr = #0) then
+        continue;
 
       // Skip leading and trailing spaces/tabs
       szCurr := StripBlanks(szCurr);
 
       // Skip comment lines
-      if (szCurr[1] = ';') then Continue;
+      if (szCurr[1] = ';') then
+        Continue;
 
       // Check for new section
       if (szCurr[1] = '[') then

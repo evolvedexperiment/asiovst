@@ -52,10 +52,9 @@ type
     procedure ParameterShapeChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterOnOffChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
-    FButterworthSplitter : array of TButterworthSplitBandFilter;
-    FGains               : array [0..4] of Single;
+    FButterworthSplitter: array of TButterworthSplitBandFilter;
+    FGains: array [0 .. 4] of Single;
     procedure CalculateGains;
-  public
   end;
 
 implementation
@@ -71,147 +70,154 @@ uses
 
 procedure TBaxxpanderModule.VSTModuleOpen(Sender: TObject);
 var
-  Channel : Integer;
+  Channel: Integer;
 begin
- Assert(NumInputs = NumOutputs);
- SetLength(FButterworthSplitter,  numInputs);
+  Assert(NumInputs = NumOutputs);
+  SetLength(FButterworthSplitter, NumInputs);
 
- for Channel := 0 to Length(FButterworthSplitter) - 1 do
+  for Channel := 0 to Length(FButterworthSplitter) - 1 do
   begin
-   FButterworthSplitter[Channel] := TButterworthSplitBandFilter.Create(1);
-   with FButterworthSplitter[Channel] do
+    FButterworthSplitter[Channel] := TButterworthSplitBandFilter.Create(1);
+    with FButterworthSplitter[Channel] do
     begin
-     SampleRate := Self.SampleRate;
-     Frequency := 250;
+      SampleRate := Self.SampleRate;
+      Frequency := 250;
     end;
   end;
 
- // set editor form class
- EditorFormClass := TFmBaxxpanderGui;
+  // set editor form class
+  EditorFormClass := TFmBaxxpanderGui;
 
- // set default parameters
- Parameter[0] := 100;
- Parameter[1] := 100;
- Parameter[2] := 100;
- Parameter[3] := 1;
- Parameter[4] := 100;
+  // set default parameters
+  Parameter[0] := 100;
+  Parameter[1] := 100;
+  Parameter[2] := 100;
+  Parameter[3] := 1;
+  Parameter[4] := 100;
 end;
 
 procedure TBaxxpanderModule.VSTModuleClose(Sender: TObject);
 var
-  Channel : Integer;
+  Channel: Integer;
 begin
- for Channel := 0 to Length(FButterworthSplitter) - 1
-  do FreeAndNil(FButterworthSplitter[Channel]);
+  for Channel := 0 to Length(FButterworthSplitter) - 1 do
+    FreeAndNil(FButterworthSplitter[Channel]);
 end;
 
-procedure TBaxxpanderModule.ParameterDryWetChange(Sender: TObject; const Index: Integer; var Value: Single);
+procedure TBaxxpanderModule.ParameterDryWetChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
- CalculateGains;
+  CalculateGains;
 
- // update GUI
- if EditorForm is TFmBaxxpanderGui
-  then TFmBaxxpanderGui(EditorForm).UpdateDryWet;
+  // update GUI
+  if EditorForm is TFmBaxxpanderGui then
+    TFmBaxxpanderGui(EditorForm).UpdateDryWet;
 end;
 
-procedure TBaxxpanderModule.ParameterMixerChange(Sender: TObject; const Index: Integer; var Value: Single);
+procedure TBaxxpanderModule.ParameterMixerChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
- CalculateGains;
+  CalculateGains;
 
- // update GUI
- if EditorForm is TFmBaxxpanderGui
-  then TFmBaxxpanderGui(EditorForm).UpdateMixer;
+  // update GUI
+  if EditorForm is TFmBaxxpanderGui then
+    TFmBaxxpanderGui(EditorForm).UpdateMixer;
 end;
 
-procedure TBaxxpanderModule.ParameterLimitChange(Sender: TObject; const Index: Integer; var Value: Single);
+procedure TBaxxpanderModule.ParameterLimitChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
- CalculateGains;
+  CalculateGains;
 
- // update GUI
- if EditorForm is TFmBaxxpanderGui
-  then TFmBaxxpanderGui(EditorForm).UpdateLimit;
+  // update GUI
+  if EditorForm is TFmBaxxpanderGui then
+    TFmBaxxpanderGui(EditorForm).UpdateLimit;
 end;
 
-procedure TBaxxpanderModule.ParameterOnOffDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+procedure TBaxxpanderModule.ParameterOnOffDisplay(Sender: TObject;
+  const Index: Integer; var PreDefined: AnsiString);
 begin
- if Parameter[Index] > 0.5
-  then PreDefined := 'On'
-  else PreDefined := 'Off';
+  if Parameter[Index] > 0.5 then
+    PreDefined := 'On'
+  else
+    PreDefined := 'Off';
 end;
 
-procedure TBaxxpanderModule.ParameterShapeChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TBaxxpanderModule.ParameterShapeChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
- CalculateGains;
+  CalculateGains;
 
- // update GUI
- if EditorForm is TFmBaxxpanderGui
-  then TFmBaxxpanderGui(EditorForm).UpdateShape;
+  // update GUI
+  if EditorForm is TFmBaxxpanderGui then
+    TFmBaxxpanderGui(EditorForm).UpdateShape;
 end;
 
-procedure TBaxxpanderModule.ParameterOnOffChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TBaxxpanderModule.ParameterOnOffChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
- if Value > 0.5
-  then OnProcess := VSTModuleProcessSaturated
-  else OnProcess := VSTModuleProcessNormal;
+  if Value > 0.5 then
+    OnProcess := VSTModuleProcessSaturated
+  else
+    OnProcess := VSTModuleProcessNormal;
 
- OnProcess32Replacing := OnProcess;
+  OnProcess32Replacing := OnProcess;
 
- // update GUI
- if EditorForm is TFmBaxxpanderGui
-  then TFmBaxxpanderGui(EditorForm).UpdateShape;
+  // update GUI
+  if EditorForm is TFmBaxxpanderGui then
+    TFmBaxxpanderGui(EditorForm).UpdateShape;
 end;
 
 procedure TBaxxpanderModule.CalculateGains;
 begin
- FGains[0] := 1 - 0.002 * Parameter[0];
- FGains[1] := (1 + 0.0015 * Parameter[2]) * 12 * (1 - FGains[0]);
- FGains[2] := (0.5 + 0.005 * Parameter[2]) * 1 - FGains[0];
- FGains[4] := 0.01 * (0.25 + Parameter[4]);
- FGains[3] := 0.75 * FGains[1] * (0.005 * Parameter[1] / (0.01 + FGains[4]));
+  FGains[0] := 1 - 0.002 * Parameter[0];
+  FGains[1] := (1 + 0.0015 * Parameter[2]) * 12 * (1 - FGains[0]);
+  FGains[2] := (0.5 + 0.005 * Parameter[2]) * 1 - FGains[0];
+  FGains[4] := 0.01 * (0.25 + Parameter[4]);
+  FGains[3] := 0.75 * FGains[1] * (0.005 * Parameter[1] / (0.01 + FGains[4]));
 end;
 
 procedure TBaxxpanderModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 var
-  ChannelIndex : Integer;
+  ChannelIndex: Integer;
 begin
- if Abs(SampleRate) > 0 then
-  for ChannelIndex := 0 to Length(FButterworthSplitter) - 1 do
-   if Assigned(FButterworthSplitter[ChannelIndex])
-    then FButterworthSplitter[ChannelIndex].SampleRate := Abs(SampleRate);
+  if Abs(SampleRate) > 0 then
+    for ChannelIndex := 0 to Length(FButterworthSplitter) - 1 do
+      if Assigned(FButterworthSplitter[ChannelIndex]) then
+        FButterworthSplitter[ChannelIndex].SampleRate := Abs(SampleRate);
 end;
 
 procedure TBaxxpanderModule.VSTModuleProcessNormal(const Inputs,
   Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
-  Sample, Channel : Integer;
-  Low, High       : Single;
+  Sample, Channel: Integer;
+  Low, High: Single;
 begin
- for Channel := 0 to Length(FButterworthSplitter) - 1 do
-  for Sample := 0 to SampleFrames - 1 do
-   begin
-    FButterworthSplitter[Channel].ProcessSample32(Inputs[Channel, Sample], Low, High);
-    Outputs[Channel, Sample] := FGains[0] * Inputs[Channel, Sample] +
-                                FGains[1] * Low + FGains[2] * High;
-   end;
+  for Channel := 0 to Length(FButterworthSplitter) - 1 do
+    for Sample := 0 to SampleFrames - 1 do
+    begin
+      FButterworthSplitter[Channel].ProcessSample32(Inputs[Channel, Sample],
+        Low, High);
+      Outputs[Channel, Sample] := FGains[0] * Inputs[Channel, Sample] +
+        FGains[1] * Low + FGains[2] * High;
+    end;
 end;
 
 procedure TBaxxpanderModule.VSTModuleProcessSaturated(const Inputs,
   Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
-  Sample, Channel : Integer;
-  Low, High       : Single;
+  Sample, Channel: Integer;
+  Low, High: Single;
 begin
- for Channel := 0 to Length(FButterworthSplitter) - 1 do
-  for Sample := 0 to SampleFrames - 1 do
-   begin
-    FButterworthSplitter[Channel].ProcessSample32(Inputs[Channel, Sample], Low, High);
-    Outputs[Channel, Sample] := FGains[0] * Inputs[Channel, Sample] +
-                                FGains[3] * FastTanhContinousError5(FGains[4] * Low) + FGains[2] * High;
-   end;
+  for Channel := 0 to Length(FButterworthSplitter) - 1 do
+    for Sample := 0 to SampleFrames - 1 do
+    begin
+      FButterworthSplitter[Channel].ProcessSample32(Inputs[Channel, Sample],
+        Low, High);
+      Outputs[Channel, Sample] := FGains[0] * Inputs[Channel, Sample] +
+        FGains[3] * FastTanhContinousError5(FGains[4] * Low) + FGains[2] * High;
+    end;
 end;
 
 end.

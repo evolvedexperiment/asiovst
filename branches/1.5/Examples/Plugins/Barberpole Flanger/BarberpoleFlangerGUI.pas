@@ -85,113 +85,115 @@ uses
 
 procedure TFmBarberpoleFlanger.FormShow(Sender: TObject);
 begin
- UpdateAlgorithm;
- UpdateDepth;
- UpdateMix;
- UpdateSpeed;
- UpdateStages;
+  UpdateAlgorithm;
+  UpdateDepth;
+  UpdateMix;
+  UpdateSpeed;
+  UpdateStages;
 end;
 
 procedure TFmBarberpoleFlanger.SBAlgorithmChange(Sender: TObject);
 begin
- with TBarberpoleFlangerModule(Owner) do
+  with TBarberpoleFlangerModule(Owner) do
   begin
-   if Round(Parameter[4]) <> SBAlgorithm.ItemIndex
-    then Parameter[4] := SBAlgorithm.ItemIndex;
+    if Round(Parameter[4]) <> SBAlgorithm.ItemIndex then
+      Parameter[4] := SBAlgorithm.ItemIndex;
   end;
 end;
 
 procedure TFmBarberpoleFlanger.DialStagesChange(Sender: TObject);
 begin
- with TBarberpoleFlangerModule(Owner) do
+  with TBarberpoleFlangerModule(Owner) do
   begin
-   if Parameter[0] <> DialStages.Value
-    then Parameter[0] := DialStages.Value;
+    if Parameter[0] <> DialStages.Value then
+      Parameter[0] := DialStages.Value;
   end;
 end;
 
 procedure TFmBarberpoleFlanger.DialSpeedChange(Sender: TObject);
 begin
- with TBarberpoleFlangerModule(Owner) do
+  with TBarberpoleFlangerModule(Owner) do
   begin
-   if Parameter[1] <> DialSpeed.Value
-    then Parameter[1] := DialSpeed.Value;
+    if Parameter[1] <> DialSpeed.Value then
+      Parameter[1] := DialSpeed.Value;
   end;
 end;
 
 procedure TFmBarberpoleFlanger.DialDepthChange(Sender: TObject);
 begin
- with TBarberpoleFlangerModule(Owner) do
+  with TBarberpoleFlangerModule(Owner) do
   begin
-   if Parameter[2] <> DialDepth.Value
-    then Parameter[2] := DialDepth.Value;
+    if Parameter[2] <> DialDepth.Value then
+      Parameter[2] := DialDepth.Value;
   end;
 end;
 
 procedure TFmBarberpoleFlanger.DialMixChange(Sender: TObject);
 begin
- with TBarberpoleFlangerModule(Owner) do
+  with TBarberpoleFlangerModule(Owner) do
   begin
-   if Parameter[3] <> DialMix.Value
-    then Parameter[3] := DialMix.Value;
+    if Parameter[3] <> DialMix.Value then
+      Parameter[3] := DialMix.Value;
   end;
 end;
 
 procedure TFmBarberpoleFlanger.UpdateDepth;
 var
-  Depth : Single;
+  Depth: Single;
 begin
- with TBarberpoleFlangerModule(Owner) do
+  with TBarberpoleFlangerModule(Owner) do
   begin
-   Depth := Parameter[2];
-   if DialDepth.Value <> Depth
-    then DialDepth.Value := Depth;
-   LbDepthValue.Caption := FloatToStrF(RoundTo(Depth, -1), ffGeneral, 3, 3) + ' %';
+    Depth := Parameter[2];
+    if DialDepth.Value <> Depth then
+      DialDepth.Value := Depth;
+    LbDepthValue.Caption := FloatToStrF(RoundTo(Depth, -1), ffGeneral, 3,
+      3) + ' %';
   end;
 end;
 
 procedure TFmBarberpoleFlanger.UpdateMix;
 var
-  Mix : Single;
+  Mix: Single;
 begin
- with TBarberpoleFlangerModule(Owner) do
+  with TBarberpoleFlangerModule(Owner) do
   begin
-   Mix := Parameter[3];
-   if DialMix.Value <> Mix
-    then DialMix.Value := Mix;
-   LbMixValue.Caption := FloatToStrF(RoundTo(Mix, -1), ffGeneral, 3, 3) + ' %';
+    Mix := Parameter[3];
+    if DialMix.Value <> Mix then
+      DialMix.Value := Mix;
+    LbMixValue.Caption := FloatToStrF(RoundTo(Mix, -1), ffGeneral, 3, 3) + ' %';
   end;
 end;
 
 procedure TFmBarberpoleFlanger.UpdateSpeed;
 var
-  Speed : Single;
+  Speed: Single;
 begin
- with TBarberpoleFlangerModule(Owner) do
+  with TBarberpoleFlangerModule(Owner) do
   begin
-   Speed := Parameter[1];
-   if DialSpeed.Value <> Speed
-    then DialSpeed.Value := Speed;
-   LbSpeedValue.Caption := FloatToStrF(RoundTo(Speed, -2), ffGeneral, 2, 2) + ' Hz';
+    Speed := Parameter[1];
+    if DialSpeed.Value <> Speed then
+      DialSpeed.Value := Speed;
+    LbSpeedValue.Caption := FloatToStrF(RoundTo(Speed, -2), ffGeneral, 2,
+      2) + ' Hz';
   end;
 end;
 
 procedure TFmBarberpoleFlanger.UpdateStages;
 begin
- with TBarberpoleFlangerModule(Owner) do
+  with TBarberpoleFlangerModule(Owner) do
   begin
-   if DialStages.Value <> Parameter[0]
-    then DialStages.Value := Parameter[0];
-   LbStagesValue.Caption := IntToStr(Round(Parameter[0]));
+    if DialStages.Value <> Parameter[0] then
+      DialStages.Value := Parameter[0];
+    LbStagesValue.Caption := IntToStr(Round(Parameter[0]));
   end;
 end;
 
 procedure TFmBarberpoleFlanger.UpdateAlgorithm;
 begin
- with TBarberpoleFlangerModule(Owner) do
+  with TBarberpoleFlangerModule(Owner) do
   begin
-   if SBAlgorithm.ItemIndex <> Round(Parameter[4])
-    then SBAlgorithm.ItemIndex := Round(Parameter[4]);
+    if SBAlgorithm.ItemIndex <> Round(Parameter[4]) then
+      SBAlgorithm.ItemIndex := Round(Parameter[4]);
   end;
 end;
 

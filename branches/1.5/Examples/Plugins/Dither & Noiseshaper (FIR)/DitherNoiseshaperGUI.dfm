@@ -78,7 +78,6 @@ object FmDitherNoiseshaper: TFmDitherNoiseshaper
     Width = 145
     Height = 21
     Style = csDropDownList
-    ItemHeight = 13
     ItemIndex = 2
     TabOrder = 0
     Text = 'Simple Highpass (2nd Order)'
@@ -127,7 +126,6 @@ object FmDitherNoiseshaper: TFmDitherNoiseshaper
     Width = 99
     Height = 21
     Style = csDropDownList
-    ItemHeight = 13
     ItemIndex = 4
     TabOrder = 3
     Text = 'Fast Gauss'

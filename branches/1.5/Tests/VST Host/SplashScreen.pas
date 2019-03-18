@@ -55,7 +55,7 @@ type
     procedure FormShow(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
   private
-    FPixelMap : TGuiCustomPixelMap;
+    FPixelMap: TGuiCustomPixelMap;
   end;
 
 implementation
@@ -71,51 +71,51 @@ uses
 
 procedure TFmSplashScreen.FormCreate(Sender: TObject);
 begin
- FPixelMap := TGuiPixelMapMemory.Create;
+  FPixelMap := TGuiPixelMapMemory.Create;
 end;
 
 procedure TFmSplashScreen.FormShow(Sender: TObject);
 begin
- LbTitle.Width := LbTitle.Width + 1;
- FormResize(Sender);
+  LbTitle.Width := LbTitle.Width + 1;
+  FormResize(Sender);
 end;
 
 procedure TFmSplashScreen.FormDestroy(Sender: TObject);
 begin
- FreeAndNil(FPixelMap);
+  FreeAndNil(FPixelMap);
 end;
 
 procedure TFmSplashScreen.FormPaint(Sender: TObject);
 begin
- if Assigned(FPixelMap)
-  then FPixelMap.PaintTo(Canvas);
+  if Assigned(FPixelMap) then
+    FPixelMap.PaintTo(Canvas);
 end;
 
 procedure TFmSplashScreen.FormResize(Sender: TObject);
 var
-  Filter : array [0..1] of Single;
-  hr, h  : Single;
-  x, y   : Integer;
-  ScnLn  : PPixel32Array;
+  Filter: array [0 .. 1] of Single;
+  hr, h: Single;
+  x, y: Integer;
+  ScnLn: PPixel32Array;
 begin
- with FPixelMap do
+  with FPixelMap do
   begin
-   SetSize(ClientWidth, ClientHeight);
-   Filter[0] := 0;
-   Filter[1] := 0;
-   hr := 1 / Height;
-   for y := 0 to Height - 1 do
+    SetSize(ClientWidth, ClientHeight);
+    Filter[0] := 0;
+    Filter[1] := 0;
+    hr := 1 / Height;
+    for y := 0 to Height - 1 do
     begin
-     ScnLn := Scanline[y];
-     h := 0.3 * (1 - Sqr(2 * (y - Height div 2) * hr));
-     for x := 0 to Width - 1 do
+      ScnLn := Scanline[y];
+      h := 0.3 * (1 - Sqr(2 * (y - Height div 2) * hr));
+      for x := 0 to Width - 1 do
       begin
-       Filter[1] := 0.97 * Filter[0] + 0.03 * Random;
-       Filter[0] := Filter[1];
+        Filter[1] := 0.97 * Filter[0] + 0.03 * Random;
+        Filter[0] := Filter[1];
 
-       ScnLn[x].B := Round(255 - $1F * (Filter[1] - h));
-       ScnLn[x].G := ScnLn[x].B;
-       ScnLn[x].R := ScnLn[x].B;
+        ScnLn[x].B := Round(255 - $1F * (Filter[1] - h));
+        ScnLn[x].G := ScnLn[x].B;
+        ScnLn[x].R := ScnLn[x].B;
       end;
     end;
   end;

@@ -31,7 +31,6 @@ object FmChunkDemo: TFmChunkDemo
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object LbBeta: TGuiLabel
     Left = 79
@@ -48,7 +47,6 @@ object FmChunkDemo: TFmChunkDemo
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object LbGamma: TGuiLabel
     Left = 150
@@ -65,7 +63,6 @@ object FmChunkDemo: TFmChunkDemo
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object LbDelta: TGuiLabel
     Left = 221
@@ -82,7 +79,6 @@ object FmChunkDemo: TFmChunkDemo
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object DialAlpha: TGuiStitchedDial
     Left = 8
@@ -90,11 +86,13 @@ object FmChunkDemo: TFmChunkDemo
     Width = 56
     Height = 56
     Max = 100.000000000000000000
-    OnChange = DialAlphaChange
+    ScrollRange = 400.000000000000000000
     ImageList = GSPL
     ImageIndex = 0
     Value = 50.000000000000000000
     WheelStep = 1.000000000000000000
+    OnChange = DialAlphaChange
+    DefaultValue = 0.000000000000000000
   end
   object DialBeta: TGuiStitchedDial
     Left = 79
@@ -102,11 +100,13 @@ object FmChunkDemo: TFmChunkDemo
     Width = 56
     Height = 56
     Max = 100.000000000000000000
-    OnChange = DialBetaChange
+    ScrollRange = 400.000000000000000000
     ImageList = GSPL
     ImageIndex = 0
     Value = 50.000000000000000000
     WheelStep = 1.000000000000000000
+    OnChange = DialBetaChange
+    DefaultValue = 0.000000000000000000
   end
   object DialGamma: TGuiStitchedDial
     Left = 150
@@ -114,11 +114,13 @@ object FmChunkDemo: TFmChunkDemo
     Width = 56
     Height = 56
     Max = 100.000000000000000000
-    OnChange = DialGammaChange
+    ScrollRange = 400.000000000000000000
     ImageList = GSPL
     ImageIndex = 0
     Value = 50.000000000000000000
     WheelStep = 1.000000000000000000
+    OnChange = DialGammaChange
+    DefaultValue = 0.000000000000000000
   end
   object DialDelta: TGuiStitchedDial
     Left = 221
@@ -126,11 +128,13 @@ object FmChunkDemo: TFmChunkDemo
     Width = 56
     Height = 56
     Max = 100.000000000000000000
-    OnChange = DialDeltaChange
+    ScrollRange = 400.000000000000000000
     ImageList = GSPL
     ImageIndex = 0
     Value = 50.000000000000000000
     WheelStep = 1.000000000000000000
+    OnChange = DialDeltaChange
+    DefaultValue = 0.000000000000000000
   end
   object GSPL: TGuiStitchedPNGList
     StitchedPNGs = <
@@ -8063,7 +8067,6 @@ object FmChunkDemo: TFmChunkDemo
           3E6FDB9E233D440000000049454E44AE426082}
         DisplayName = 'Knob'
         GlyphCount = 65
-        StitchKind = skHorizontal
         Height = 56
         Width = 3640
       end>

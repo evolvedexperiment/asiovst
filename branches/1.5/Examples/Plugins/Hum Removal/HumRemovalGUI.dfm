@@ -328,13 +328,13 @@ object FmHumRemoval: TFmHumRemoval
       Width = 36
       Height = 36
       CurveMapping = -1.200000047683716000
-      DefaultValue = 0.029999999329447750
+      DefaultValue = 0.029999999329447740
       Max = 0.300000011920929000
-      Min = 0.029999999329447750
+      Min = 0.029999999329447740
       ScrollRange = 400.000000000000000000
       ImageList = GSPL
       ImageIndex = 0
-      Value = 0.029999999329447750
+      Value = 0.029999999329447740
       WheelStep = 1.000000000000000000
       OnChange = DialNotchBandwidthChange
     end

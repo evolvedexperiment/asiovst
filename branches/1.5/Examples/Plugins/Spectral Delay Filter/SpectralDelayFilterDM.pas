@@ -35,7 +35,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
   Forms, SyncObjs, DAV_Types, DAV_DspFilterSpectralDelay, DAV_VSTModule;
 
 type
@@ -48,9 +48,8 @@ type
     procedure ParameterOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleCreate(Sender: TObject);
   private
-    FCriticalSection      : TCriticalSection;
-    FSpectralDelayFilters : array of TSpectralDelayFilter;
-  public
+    FCriticalSection: TCriticalSection;
+    FSpectralDelayFilters: array of TSpectralDelayFilter;
   end;
 
 implementation
@@ -66,84 +65,86 @@ uses
 
 procedure TSpectralDelayFilterModule.VSTModuleOpen(Sender: TObject);
 var
-  Channel : Integer;
+  Channel: Integer;
 begin
- Assert(numInputs = numOutputs);
- SetLength(FSpectralDelayFilters, numOutputs);
+  Assert(numInputs = numOutputs);
+  SetLength(FSpectralDelayFilters, numOutputs);
 
- for Channel := 0 to Length(FSpectralDelayFilters) - 1
-  do FSpectralDelayFilters[Channel] := TSpectralDelayFilter.Create;
+  for Channel := 0 to Length(FSpectralDelayFilters) - 1 do
+    FSpectralDelayFilters[Channel] := TSpectralDelayFilter.Create;
 
- // initialize parameters
- Parameter[0] := 0.9;
- Parameter[1] := 16;
+  // initialize parameters
+  Parameter[0] := 0.9;
+  Parameter[1] := 16;
 
- // set editor form class
- EditorFormClass := TFmSpectralDelayFilter;
+  // set editor form class
+  EditorFormClass := TFmSpectralDelayFilter;
 end;
 
 procedure TSpectralDelayFilterModule.VSTModuleClose(Sender: TObject);
 var
-  Channel : Integer;
+  Channel: Integer;
 begin
- for Channel := 0 to Length(FSpectralDelayFilters) - 1 do
-  if Assigned(FSpectralDelayFilters[Channel])
-   then FreeAndNil(FSpectralDelayFilters[Channel]);
+  for Channel := 0 to Length(FSpectralDelayFilters) - 1 do
+    if Assigned(FSpectralDelayFilters[Channel]) then
+      FreeAndNil(FSpectralDelayFilters[Channel]);
 end;
 
 procedure TSpectralDelayFilterModule.VSTModuleCreate(Sender: TObject);
 begin
- FCriticalSection := TCriticalSection.Create;
+  FCriticalSection := TCriticalSection.Create;
 end;
 
-procedure TSpectralDelayFilterModule.ParameterTuneChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TSpectralDelayFilterModule.ParameterTuneChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 var
-  Channel : Integer;
+  Channel: Integer;
 begin
- for Channel := 0 to Length(FSpectralDelayFilters) - 1 do
-  if Assigned(FSpectralDelayFilters[Channel])
-   then FSpectralDelayFilters[Channel].Frequency := Sqrt(Value); // * 0.5 * SampleRate;
-end;
-
-procedure TSpectralDelayFilterModule.ParameterOrderChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
-var
-  Channel : Integer;
-begin
- FCriticalSection.Enter;
- try
   for Channel := 0 to Length(FSpectralDelayFilters) - 1 do
-   if Assigned(FSpectralDelayFilters[Channel])
-    then FSpectralDelayFilters[Channel].FilterCount := Round(Value);
- finally
-  FCriticalSection.Leave;
- end;
+    if Assigned(FSpectralDelayFilters[Channel]) then
+      FSpectralDelayFilters[Channel].Frequency := Sqrt(Value);
+  // * 0.5 * SampleRate;
+end;
+
+procedure TSpectralDelayFilterModule.ParameterOrderChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
+var
+  Channel: Integer;
+begin
+  FCriticalSection.Enter;
+  try
+    for Channel := 0 to Length(FSpectralDelayFilters) - 1 do
+      if Assigned(FSpectralDelayFilters[Channel]) then
+        FSpectralDelayFilters[Channel].FilterCount := Round(Value);
+  finally
+    FCriticalSection.Leave;
+  end;
 end;
 
 procedure TSpectralDelayFilterModule.VSTModuleProcess(const Inputs,
   Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
-  Sample, Channel : Integer;
+  Sample, Channel: Integer;
 begin
- FCriticalSection.Enter;
- try
-  for Channel := 0 to Length(FSpectralDelayFilters) - 1 do
-   for Sample := 0 to SampleFrames - 1
-    do Outputs[Channel, Sample] := FSpectralDelayFilters[Channel].ProcessSample64(Inputs[Channel, Sample]);
- finally
-  FCriticalSection.Leave;
- end;
+  FCriticalSection.Enter;
+  try
+    for Channel := 0 to Length(FSpectralDelayFilters) - 1 do
+      for Sample := 0 to SampleFrames - 1 do
+        Outputs[Channel, Sample] := FSpectralDelayFilters[Channel]
+          .ProcessSample64(Inputs[Channel, Sample]);
+  finally
+    FCriticalSection.Leave;
+  end;
 end;
 
 procedure TSpectralDelayFilterModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 var
-  Channel : Integer;
+  Channel: Integer;
 begin
- for Channel := 0 to Length(FSpectralDelayFilters) - 1 do
-  if Assigned(FSpectralDelayFilters[Channel])
-   then FSpectralDelayFilters[Channel].SampleRate := SampleRate;
+  for Channel := 0 to Length(FSpectralDelayFilters) - 1 do
+    if Assigned(FSpectralDelayFilters[Channel]) then
+      FSpectralDelayFilters[Channel].SampleRate := SampleRate;
 end;
 
 end.

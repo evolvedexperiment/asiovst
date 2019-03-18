@@ -139,18 +139,18 @@ type
     procedure BtDiminished7thClick(Sender: TObject);
     procedure BtHalfDiminishedClick(Sender: TObject);
   private
-    FIfchck, FOlriat : Boolean;
-    FSecs, FMins     : Byte;
-    FCnt, FDura      : Byte;
-    FCType, FOrde    : Byte;
-    FDuration        : Byte;
-    FTestkind        : TTestkind;
-    FNote            : array[1..5] of Byte;
-    FNoter           : array[1..5] of Boolean;
+    FIfchck, FOlriat: Boolean;
+    FSecs, FMins: Byte;
+    FCnt, FDura: Byte;
+    FCType, FOrde: Byte;
+    FDuration: Byte;
+    FTestkind: TTestkind;
+    FNote: array [1 .. 5] of Byte;
+    FNoter: array [1 .. 5] of Boolean;
 
-    FInstrument      : Integer;
-    FChannel         : Integer;
-    FMidiOutput      : TMidiOutput;
+    FInstrument: Integer;
+    FChannel: Integer;
+    FMidiOutput: TMidiOutput;
     procedure Notemark(ntvyl: Byte);
     procedure DeMark;
     procedure ItClick(Nval: Byte);
@@ -189,19 +189,19 @@ uses
 
 procedure TFmWinEar.FormCreate(Sender: TObject);
 begin
- FIfchck := False;
- Randomize;
- FTestkind := tkMelodicIntervals;
+  FIfchck := False;
+  Randomize;
+  FTestkind := tkMelodicIntervals;
 
- FMidiOutput := TMidiOutput.Create;
- FMidiOutput.Open(0);
- FInstrument := 0;
- FChannel := 1;
+  FMidiOutput := TMidiOutput.Create;
+  FMidiOutput.Open(0);
+  FInstrument := 0;
+  FChannel := 1;
 end;
 
 procedure TFmWinEar.FormDestroy(Sender: TObject);
 begin
- FreeAndNil(FMidiOutput);
+  FreeAndNil(FMidiOutput);
 end;
 
 procedure TFmWinEar.Notemark(ntvyl: Byte);
@@ -209,35 +209,60 @@ var
   Leftpos: Integer;
 begin
   case ntvyl of
-    0 : Leftpos := 16;
-    1 : Leftpos := 32;
-    2 : Leftpos := 48;
-    3 : Leftpos := 65;
-    4 : Leftpos := 80;
-    5 : Leftpos := 101;
-    6 : Leftpos := 112;
-    7 : Leftpos := 144;
-    8 : Leftpos := 162;
-    9 : Leftpos := 176;
-    10 : Leftpos := 195;
-    11 : Leftpos := 208;
-    12 : Leftpos := 240;
-    13 : Leftpos := 253;
-    14 : Leftpos := 272;
-    15 : Leftpos := 287;
-    16 : Leftpos := 304;
-    17 : Leftpos := 323;
-    18 : Leftpos := 336;
-    19 : Leftpos := 368;
-    20 : Leftpos := 384;
-    21 : Leftpos := 400;
-    22 : Leftpos := 420;
-    23 : Leftpos := 432;
-    24 : Leftpos := 464;
-   end;
+    0:
+      Leftpos := 16;
+    1:
+      Leftpos := 32;
+    2:
+      Leftpos := 48;
+    3:
+      Leftpos := 65;
+    4:
+      Leftpos := 80;
+    5:
+      Leftpos := 101;
+    6:
+      Leftpos := 112;
+    7:
+      Leftpos := 144;
+    8:
+      Leftpos := 162;
+    9:
+      Leftpos := 176;
+    10:
+      Leftpos := 195;
+    11:
+      Leftpos := 208;
+    12:
+      Leftpos := 240;
+    13:
+      Leftpos := 253;
+    14:
+      Leftpos := 272;
+    15:
+      Leftpos := 287;
+    16:
+      Leftpos := 304;
+    17:
+      Leftpos := 323;
+    18:
+      Leftpos := 336;
+    19:
+      Leftpos := 368;
+    20:
+      Leftpos := 384;
+    21:
+      Leftpos := 400;
+    22:
+      Leftpos := 420;
+    23:
+      Leftpos := 432;
+    24:
+      Leftpos := 464;
+  end;
   Leftpos := Leftpos + 50;
   case ntvyl of
-    1, 3, 5, 8, 10, 13, 15, 17, 20, 22 :
+    1, 3, 5, 8, 10, 13, 15, 17, 20, 22:
       if ImMarkRed1.Left = -20 then
         ImMarkRed1.Left := Leftpos
       else if ImMarkRed2.Left = -20 then
@@ -246,7 +271,7 @@ begin
         ImMarkRed3.Left := Leftpos
       else if ImMarkRed4.Left = -20 then
         ImMarkRed4.Left := Leftpos;
-    0, 2, 4, 6, 7, 9, 11, 12, 14, 16, 18, 19, 21, 23, 24 :
+    0, 2, 4, 6, 7, 9, 11, 12, 14, 16, 18, 19, 21, 23, 24:
       if ImMark1.Left = -20 then
         ImMark1.Left := Leftpos
       else if ImMark2.Left = -20 then
@@ -255,7 +280,7 @@ begin
         ImMark3.Left := Leftpos
       else if ImMark4.Left = -20 then
         ImMark4.Left := Leftpos;
-   end;
+  end;
   update;
 end;
 
@@ -278,29 +303,29 @@ end;
 
 procedure TFmWinEar.MiHelpClick(Sender: TObject);
 begin
- with TFmAbout.Create(Self) do
-  try
-   ShowModal;
-  finally
-   Free;
-  end;
+  with TFmAbout.Create(Self) do
+    try
+      ShowModal;
+    finally
+      Free;
+    end;
 end;
 
 procedure TFmWinEar.NextStep;
 begin
   Notemark(FNote[FOrde] - 53);
   if FMins < 2 then
-   begin
+  begin
     sleep(880);
     OwlReIt;
-   end
+  end
   else
-   begin
+  begin
     FmEndOfTest.Show;
     StopWatch.Enabled := False;
     LbTime.Visible := False;
     DeMark;
-   end;
+  end;
 end;
 
 procedure TFmWinEar.OwlReIt;
@@ -315,11 +340,11 @@ begin
     else
       MelodyTest;
   if FTestkind = tkThreeNoteChords then
-   begin
+  begin
     FNoter[2] := False;
     FNoter[3] := False;
     FochoTest(False);
-   end;
+  end;
   if FTestkind = tkFourNoteChords then
     FochoTest(True);
 end;
@@ -327,88 +352,95 @@ end;
 procedure TFmWinEar.ImNoteF3MouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
- if Sender is TComponent
-  then ItClick(TComponent(Sender).Tag);
+  if Sender is TComponent then
+    ItClick(TComponent(Sender).Tag);
 end;
 
 procedure TFmWinEar.ImNoteF3MouseUp(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
- if Sender is TComponent
-  then FMidiOutput.Send(0, CMIDIMsgNoteOff, TComponent(Sender).Tag, SbVelocity.Position);
+  if Sender is TComponent then
+    FMidiOutput.Send(0, CMIDIMsgNoteOff, TComponent(Sender).Tag,
+      SbVelocity.Position);
 end;
 
 procedure TFmWinEar.DelayedMidiNoteOff(Duration, Note, Velocity: Byte);
 begin
- sleep(4 * Duration);
- MidiNoteOff(Note, Velocity);
+  sleep(4 * Duration);
+  MidiNoteOff(Note, Velocity);
 end;
 
 procedure TFmWinEar.MidiNoteOff(Note, Velocity: Byte);
 begin
- FMidiOutput.Send(0, CMIDIMsgNoteOff, Note, Velocity);
+  FMidiOutput.Send(0, CMIDIMsgNoteOff, Note, Velocity);
 end;
 
 procedure TFmWinEar.ItClick(Nval: Byte);
 begin
   if FIfchck then
-   begin
-    if (FTestkind = tkMelodicIntervals) OR (FTestkind = tkHarmonicIntervals) OR (FTestkind = tkMelody) then
+  begin
+    if (FTestkind = tkMelodicIntervals) OR (FTestkind = tkHarmonicIntervals) OR
+      (FTestkind = tkMelody) then
       if (Nval = FNote[FOrde]) then
         NextStep
-      else Retry;
+      else
+        Retry;
     if FTestkind = tkThreeNoteChords then
-     begin
-      if (nval <> FNote[2]) OR (nval <> FNote[3]) then Retry;
-      if (nval = FNote[2]) AND (FNoter[2] = False) then
-       begin
+    begin
+      if (Nval <> FNote[2]) OR (Nval <> FNote[3]) then
+        Retry;
+      if (Nval = FNote[2]) AND (FNoter[2] = False) then
+      begin
         FNoter[2] := True;
         Notemark(FNote[2] - 53);
-       end;
-      if (nval = FNote[3]) AND (FNoter[3] = False) then
-       begin
+      end;
+      if (Nval = FNote[3]) AND (FNoter[3] = False) then
+      begin
         FNoter[3] := True;
         Notemark(FNote[3] - 53);
-       end;
+      end;
       if FNoter[2] AND FNoter[3] then
         if FMins < 2 then
-         begin
+        begin
           sleep(880);
           OwlReIt;
-         end
+        end
         else
-         begin
+        begin
           FmEndOfTest.Show;
           StopWatch.Enabled := False;
           LbTime.Visible := False;
           DeMark;
-         end;
-     end;
-   end
-  else FMidiOutput.Send(0, CMIDIMsgNoteOn, Nval, SbVelocity.Position);
+        end;
+    end;
+  end
+  else
+    FMidiOutput.Send(0, CMIDIMsgNoteOn, Nval, SbVelocity.Position);
 end;
 
 procedure TFmWinEar.Retry;
 begin
- case FmRetry.ShowModal of
-  mrOk    : OwlReIt;
-  mrRetry : RepeatIt;
- end;
+  case FmRetry.ShowModal of
+    mrOk:
+      OwlReIt;
+    mrRetry:
+      RepeatIt;
+  end;
 end;
 
 procedure TFmWinEar.MidiReset;
 begin
- FMidiOutput.Send(0, CMIDIMsgControlChange, CMIDICCAllNotesOff, 0);
+  FMidiOutput.Send(0, CMIDIMsgControlChange, CMIDICCAllNotesOff, 0);
 end;
 
-procedure TFmWinEar.Notefinder(moore: Boolean);
+procedure TFmWinEar.Notefinder(Moore: Boolean);
 begin
   FNote[1] := random(76 - 53) + 53;
   repeat
     FNote[2] := random(76 - 53) + 53;
   until FNote[2] <> FNote[1];
-  if MOORE then
-   begin
+  if Moore then
+  begin
     repeat
       FNote[3] := random(76 - 53) + 53;
     until FNote[3] <> FNote[2];
@@ -418,202 +450,202 @@ begin
     repeat
       FNote[5] := random(76 - 53) + 53;
     until FNote[5] <> FNote[4];
-   end;
+  end;
 end;
 
 procedure TFmWinEar.Chordfinder(thre: Boolean);
 begin
   if thre then
-   begin
+  begin
     FCType := random(10) + 1;
     case FCType of
-      1 :
-       begin // Major
-        FNote[1] := random(69 - 53) + 53;
-        FNote[2] := FNote[1] + 4;
-        FNote[3] := FNote[1] + 7;
-       end;
-      2 :
-       begin // Major 6
-        FNote[1] := random(68 - 53) + 53;
-        FNote[2] := FNote[1] + 3;
-        FNote[3] := FNote[1] + 8;
-       end;
-      3 :
-       begin // Major 4 6
-        FNote[1] := random(67 - 53) + 53;
-        FNote[2] := FNote[1] + 5;
-        FNote[3] := FNote[1] + 9;
-       end;
-      4 :
-       begin // Minor
-        FNote[1] := random(69 - 53) + 53;
-        FNote[2] := FNote[1] + 3;
-        FNote[3] := FNote[1] + 7;
-       end;
-      5 :
-       begin // Minor 6
-        FNote[1] := random(67 - 53) + 53;
-        FNote[2] := FNote[1] + 4;
-        FNote[3] := FNote[1] + 9;
-       end;
-      6 :
-       begin // Minor 4 6
-        FNote[1] := random(68 - 53) + 53;
-        FNote[2] := FNote[1] + 5;
-        FNote[3] := FNote[1] + 8;
-       end;
-      7 :
-       begin // Dim
-        FNote[1] := random(70 - 53) + 53;
-        FNote[2] := FNote[1] + 3;
-        FNote[3] := FNote[1] + 6;
-       end;
-      8 :
-       begin // Dim 6
-        FNote[1] := random(67 - 53) + 53;
-        FNote[2] := FNote[1] + 3;
-        FNote[3] := FNote[1] + 9;
-       end;
-      9 :
-       begin // Dim 4 6
-        FNote[1] := random(67 - 53) + 53;
-        FNote[2] := FNote[1] + 6;
-        FNote[3] := FNote[1] + 9;
-       end;
-      10 :
-       begin // Augmented
-        FNote[1] := random(68 - 53) + 53;
-        FNote[2] := FNote[1] + 4;
-        FNote[3] := FNote[1] + 8;
-       end;
-     end;
-   end
+      1:
+        begin // Major
+          FNote[1] := random(69 - 53) + 53;
+          FNote[2] := FNote[1] + 4;
+          FNote[3] := FNote[1] + 7;
+        end;
+      2:
+        begin // Major 6
+          FNote[1] := random(68 - 53) + 53;
+          FNote[2] := FNote[1] + 3;
+          FNote[3] := FNote[1] + 8;
+        end;
+      3:
+        begin // Major 4 6
+          FNote[1] := random(67 - 53) + 53;
+          FNote[2] := FNote[1] + 5;
+          FNote[3] := FNote[1] + 9;
+        end;
+      4:
+        begin // Minor
+          FNote[1] := random(69 - 53) + 53;
+          FNote[2] := FNote[1] + 3;
+          FNote[3] := FNote[1] + 7;
+        end;
+      5:
+        begin // Minor 6
+          FNote[1] := random(67 - 53) + 53;
+          FNote[2] := FNote[1] + 4;
+          FNote[3] := FNote[1] + 9;
+        end;
+      6:
+        begin // Minor 4 6
+          FNote[1] := random(68 - 53) + 53;
+          FNote[2] := FNote[1] + 5;
+          FNote[3] := FNote[1] + 8;
+        end;
+      7:
+        begin // Dim
+          FNote[1] := random(70 - 53) + 53;
+          FNote[2] := FNote[1] + 3;
+          FNote[3] := FNote[1] + 6;
+        end;
+      8:
+        begin // Dim 6
+          FNote[1] := random(67 - 53) + 53;
+          FNote[2] := FNote[1] + 3;
+          FNote[3] := FNote[1] + 9;
+        end;
+      9:
+        begin // Dim 4 6
+          FNote[1] := random(67 - 53) + 53;
+          FNote[2] := FNote[1] + 6;
+          FNote[3] := FNote[1] + 9;
+        end;
+      10:
+        begin // Augmented
+          FNote[1] := random(68 - 53) + 53;
+          FNote[2] := FNote[1] + 4;
+          FNote[3] := FNote[1] + 8;
+        end;
+    end;
+  end
   else
-   begin
+  begin
     FCType := random(17) + 1;
     case FCType of
-      1 :
-       begin // Major 7th
-        FNote[1] := random(69 - 53) + 53;
-        FNote[2] := FNote[1] + 4;
-        FNote[3] := FNote[1] + 7;
-        FNote[4] := FNote[1] + 10;
-       end;
-      2 :
-       begin // Major 7th 6}
-        FNote[1] := random(68 - 53) + 53;
-        FNote[2] := FNote[1] + 3;
-        FNote[3] := FNote[1] + 8;
-        FNote[4] := FNote[1] + 6;
-       end;
-      3 :
-       begin // Major 7th 4 6}
-        FNote[1] := random(67 - 53) + 53;
-        FNote[2] := FNote[1] + 5;
-        FNote[3] := FNote[1] + 9;
-        FNote[4] := FNote[1] + 3;
-       end;
-      4 :
-       begin  // Major 7th 7
-        FNote[1] := random(67 - 53) + 53;
-        FNote[2] := FNote[1] + 2;
-        FNote[3] := FNote[1] + 6;
-        FNote[4] := FNote[1] + 9;
-       end;
-      5 :
-       begin // Major maj7th
-        FNote[1] := random(69 - 53) + 53;
-        FNote[2] := FNote[1] + 4;
-        FNote[3] := FNote[1] + 7;
-        FNote[4] := FNote[1] + 11;
-       end;
-      6 :
-       begin // Major maj7th 6
-        FNote[1] := random(68 - 53) + 53;
-        FNote[2] := FNote[1] + 3;
-        FNote[3] := FNote[1] + 8;
-        FNote[4] := FNote[1] + 7;
-       end;
-      7 :
-       begin // Major maj7th 4 6
-        FNote[1] := random(67 - 53) + 53;
-        FNote[2] := FNote[1] + 5;
-        FNote[3] := FNote[1] + 9;
-        FNote[4] := FNote[1] + 4;
-       end;
-      8 :
-       begin  // Major maj7th 7
-        FNote[1] := random(68 - 53) + 53;
-        FNote[2] := FNote[1] + 1;
-        FNote[3] := FNote[1] + 5;
-        FNote[4] := FNote[1] + 8;
-       end;
-      9 :
-       begin // Minor 7th
-        FNote[1] := random(69 - 53) + 53;
-        FNote[2] := FNote[1] + 3;
-        FNote[3] := FNote[1] + 7;
-        FNote[4] := FNote[1] + 10;
-       end;
-      10 :
-       begin // Minor 7th 6
-        FNote[1] := random(67 - 53) + 53;
-        FNote[2] := FNote[1] + 4;
-        FNote[3] := FNote[1] + 9;
-        FNote[4] := FNote[1] + 7;
-       end;
-      11 :
-       begin // Minor 7th 4 6
-        FNote[1] := random(67 - 53) + 53;
-        FNote[2] := FNote[1] + 5;
-        FNote[3] := FNote[1] + 8;
-        FNote[4] := FNote[1] + 3;
-       end;
-      12 :
-       begin // Minor 7th 7
-        FNote[1] := random(67 - 53) + 53;
-        FNote[2] := FNote[1] + 2;
-        FNote[3] := FNote[1] + 5;
-        FNote[4] := FNote[1] + 9;
-       end;
-      13 :
-       begin // Diminished 7th
-        FNote[1] := random(69 - 53) + 53;
-        FNote[2] := FNote[1] + 3;
-        FNote[3] := FNote[1] + 6;
-        FNote[4] := FNote[1] + 9;
-       end;
-      14 :
-       begin // Minor 7th
-        FNote[1] := random(69 - 53) + 53;
-        FNote[2] := FNote[1] + 3;
-        FNote[3] := FNote[1] + 6;
-        FNote[4] := FNote[1] + 10;
-       end;
-      15 :
-       begin // Minor 7th 6
-        FNote[1] := random(67 - 53) + 53;
-        FNote[2] := FNote[1] + 3;
-        FNote[3] := FNote[1] + 9;
-        FNote[4] := FNote[1] + 7;
-       end;
-      16 :
-       begin // Minor 7th 4 6
-        FNote[1] := random(67 - 53) + 53;
-        FNote[2] := FNote[1] + 6;
-        FNote[3] := FNote[1] + 9;
-        FNote[4] := FNote[1] + 4;
-       end;
-      17 :
-       begin // Minor 7th 7
-        FNote[1] := random(67 - 53) + 53;
-        FNote[2] := FNote[1] + 2;
-        FNote[3] := FNote[1] + 5;
-        FNote[4] := FNote[1] + 8;
-       end;
-     end;
-   end;
+      1:
+        begin // Major 7th
+          FNote[1] := random(69 - 53) + 53;
+          FNote[2] := FNote[1] + 4;
+          FNote[3] := FNote[1] + 7;
+          FNote[4] := FNote[1] + 10;
+        end;
+      2:
+        begin // Major 7th 6}
+          FNote[1] := random(68 - 53) + 53;
+          FNote[2] := FNote[1] + 3;
+          FNote[3] := FNote[1] + 8;
+          FNote[4] := FNote[1] + 6;
+        end;
+      3:
+        begin // Major 7th 4 6}
+          FNote[1] := random(67 - 53) + 53;
+          FNote[2] := FNote[1] + 5;
+          FNote[3] := FNote[1] + 9;
+          FNote[4] := FNote[1] + 3;
+        end;
+      4:
+        begin // Major 7th 7
+          FNote[1] := random(67 - 53) + 53;
+          FNote[2] := FNote[1] + 2;
+          FNote[3] := FNote[1] + 6;
+          FNote[4] := FNote[1] + 9;
+        end;
+      5:
+        begin // Major maj7th
+          FNote[1] := random(69 - 53) + 53;
+          FNote[2] := FNote[1] + 4;
+          FNote[3] := FNote[1] + 7;
+          FNote[4] := FNote[1] + 11;
+        end;
+      6:
+        begin // Major maj7th 6
+          FNote[1] := random(68 - 53) + 53;
+          FNote[2] := FNote[1] + 3;
+          FNote[3] := FNote[1] + 8;
+          FNote[4] := FNote[1] + 7;
+        end;
+      7:
+        begin // Major maj7th 4 6
+          FNote[1] := random(67 - 53) + 53;
+          FNote[2] := FNote[1] + 5;
+          FNote[3] := FNote[1] + 9;
+          FNote[4] := FNote[1] + 4;
+        end;
+      8:
+        begin // Major maj7th 7
+          FNote[1] := random(68 - 53) + 53;
+          FNote[2] := FNote[1] + 1;
+          FNote[3] := FNote[1] + 5;
+          FNote[4] := FNote[1] + 8;
+        end;
+      9:
+        begin // Minor 7th
+          FNote[1] := random(69 - 53) + 53;
+          FNote[2] := FNote[1] + 3;
+          FNote[3] := FNote[1] + 7;
+          FNote[4] := FNote[1] + 10;
+        end;
+      10:
+        begin // Minor 7th 6
+          FNote[1] := random(67 - 53) + 53;
+          FNote[2] := FNote[1] + 4;
+          FNote[3] := FNote[1] + 9;
+          FNote[4] := FNote[1] + 7;
+        end;
+      11:
+        begin // Minor 7th 4 6
+          FNote[1] := random(67 - 53) + 53;
+          FNote[2] := FNote[1] + 5;
+          FNote[3] := FNote[1] + 8;
+          FNote[4] := FNote[1] + 3;
+        end;
+      12:
+        begin // Minor 7th 7
+          FNote[1] := random(67 - 53) + 53;
+          FNote[2] := FNote[1] + 2;
+          FNote[3] := FNote[1] + 5;
+          FNote[4] := FNote[1] + 9;
+        end;
+      13:
+        begin // Diminished 7th
+          FNote[1] := random(69 - 53) + 53;
+          FNote[2] := FNote[1] + 3;
+          FNote[3] := FNote[1] + 6;
+          FNote[4] := FNote[1] + 9;
+        end;
+      14:
+        begin // Minor 7th
+          FNote[1] := random(69 - 53) + 53;
+          FNote[2] := FNote[1] + 3;
+          FNote[3] := FNote[1] + 6;
+          FNote[4] := FNote[1] + 10;
+        end;
+      15:
+        begin // Minor 7th 6
+          FNote[1] := random(67 - 53) + 53;
+          FNote[2] := FNote[1] + 3;
+          FNote[3] := FNote[1] + 9;
+          FNote[4] := FNote[1] + 7;
+        end;
+      16:
+        begin // Minor 7th 4 6
+          FNote[1] := random(67 - 53) + 53;
+          FNote[2] := FNote[1] + 6;
+          FNote[3] := FNote[1] + 9;
+          FNote[4] := FNote[1] + 4;
+        end;
+      17:
+        begin // Minor 7th 7
+          FNote[1] := random(67 - 53) + 53;
+          FNote[2] := FNote[1] + 2;
+          FNote[3] := FNote[1] + 5;
+          FNote[4] := FNote[1] + 8;
+        end;
+    end;
+  end;
 end;
 
 procedure TFmWinEar.NewButtons;
@@ -629,7 +661,7 @@ end;
 
 procedure TFmWinEar.NewButtons2;
 begin
- PnChords.Visible := True;
+  PnChords.Visible := True;
 end;
 
 procedure TFmWinEar.OldButtons;
@@ -646,7 +678,7 @@ end;
 
 procedure TFmWinEar.OldButtons2;
 begin
- PnChords.Visible := False;
+  PnChords.Visible := False;
 end;
 
 procedure TFmWinEar.BtMelodicIntervalsClick(Sender: TObject);
@@ -694,11 +726,11 @@ begin
   DeMark;
   Notefinder(False);
   if FNote[2] < FNote[1] then
-   begin
+  begin
     FNote[3] := FNote[1];
     FNote[1] := FNote[2];
     FNote[2] := FNote[3];
-   end;
+  end;
   Notemark(FNote[1] - 53);
   ItClick(FNote[1]);
   ItClick(FNote[2]);
@@ -777,8 +809,8 @@ end;
 procedure TFmWinEar.BtEndClick(Sender: TObject);
 begin
   OldButtons;
-  if FTestkind = tkFourNoteChords
-   then OldButtons2;
+  if FTestkind = tkFourNoteChords then
+    OldButtons2;
   StopWatch.Enabled := False;
   LbTime.Visible := False;
   DeMark;
@@ -800,70 +832,70 @@ end;
 
 procedure TFmWinEar.RepeatIt;
 begin
- FIfchck := False;
- case FTestkind of
-  tkMelodicIntervals :
-   begin
-    ItClick(FNote[1]);
-    DelayedMidiNoteOff(140, FNote[1], SbVelocity.Position);
-    ItClick(FNote[2]);
-    DelayedMidiNoteOff(140, FNote[2], SbVelocity.Position)
-   end;
-  tkHarmonicIntervals :
-   begin
-    ItClick(FNote[1]);
-    ItClick(FNote[2]);
-    DelayedMidiNoteOff(140, FNote[1], SbVelocity.Position);
-    DelayedMidiNoteOff(0, FNote[2], SbVelocity.Position);
-   end;
-  tkMelody :
-   begin
-    ItClick(FNote[1]);
-    DelayedMidiNoteOff(140, FNote[1], SbVelocity.Position);
-    ItClick(FNote[2]);
-    DelayedMidiNoteOff(140, FNote[2], SbVelocity.Position);
-    ItClick(FNote[3]);
-    DelayedMidiNoteOff(140, FNote[3], SbVelocity.Position);
-    ItClick(FNote[4]);
-    DelayedMidiNoteOff(140, FNote[4], SbVelocity.Position);
-    ItClick(FNote[5]);
-    DelayedMidiNoteOff(140, FNote[5], SbVelocity.Position);
-   end;
-  tkThreeNoteChords :
-   begin
-    ItClick(FNote[1]);
-    ItClick(FNote[2]);
-    ItClick(FNote[3]);
-    DelayedMidiNoteOff(140, FNote[1], SbVelocity.Position);
-    DelayedMidiNoteOff(0, FNote[2], SbVelocity.Position);
-    DelayedMidiNoteOff(0, FNote[3], SbVelocity.Position);
-   end;
-  tkFourNoteChords :
-   begin
-    ItClick(FNote[1]);
-    ItClick(FNote[2]);
-    ItClick(FNote[3]);
-    ItClick(FNote[4]);
-    DelayedMidiNoteOff(140, FNote[1], SbVelocity.Position);
-    DelayedMidiNoteOff(0, FNote[2], SbVelocity.Position);
-    DelayedMidiNoteOff(0, FNote[3], SbVelocity.Position);
-    DelayedMidiNoteOff(0, FNote[4], SbVelocity.Position);
-   end;
- end;
- FIfchck := True;
+  FIfchck := False;
+  case FTestkind of
+    tkMelodicIntervals:
+      begin
+        ItClick(FNote[1]);
+        DelayedMidiNoteOff(140, FNote[1], SbVelocity.Position);
+        ItClick(FNote[2]);
+        DelayedMidiNoteOff(140, FNote[2], SbVelocity.Position)
+      end;
+    tkHarmonicIntervals:
+      begin
+        ItClick(FNote[1]);
+        ItClick(FNote[2]);
+        DelayedMidiNoteOff(140, FNote[1], SbVelocity.Position);
+        DelayedMidiNoteOff(0, FNote[2], SbVelocity.Position);
+      end;
+    tkMelody:
+      begin
+        ItClick(FNote[1]);
+        DelayedMidiNoteOff(140, FNote[1], SbVelocity.Position);
+        ItClick(FNote[2]);
+        DelayedMidiNoteOff(140, FNote[2], SbVelocity.Position);
+        ItClick(FNote[3]);
+        DelayedMidiNoteOff(140, FNote[3], SbVelocity.Position);
+        ItClick(FNote[4]);
+        DelayedMidiNoteOff(140, FNote[4], SbVelocity.Position);
+        ItClick(FNote[5]);
+        DelayedMidiNoteOff(140, FNote[5], SbVelocity.Position);
+      end;
+    tkThreeNoteChords:
+      begin
+        ItClick(FNote[1]);
+        ItClick(FNote[2]);
+        ItClick(FNote[3]);
+        DelayedMidiNoteOff(140, FNote[1], SbVelocity.Position);
+        DelayedMidiNoteOff(0, FNote[2], SbVelocity.Position);
+        DelayedMidiNoteOff(0, FNote[3], SbVelocity.Position);
+      end;
+    tkFourNoteChords:
+      begin
+        ItClick(FNote[1]);
+        ItClick(FNote[2]);
+        ItClick(FNote[3]);
+        ItClick(FNote[4]);
+        DelayedMidiNoteOff(140, FNote[1], SbVelocity.Position);
+        DelayedMidiNoteOff(0, FNote[2], SbVelocity.Position);
+        DelayedMidiNoteOff(0, FNote[3], SbVelocity.Position);
+        DelayedMidiNoteOff(0, FNote[4], SbVelocity.Position);
+      end;
+  end;
+  FIfchck := True;
 end;
 
 procedure TFmWinEar.StopWatchTimer(Sender: TObject);
 var
-  times    : String[5];
-  sec, min : String[2];
+  times: String[5];
+  sec, min: String[2];
 begin
   FSecs := FSecs + 1;
   if FSecs >= 60 then
-   begin
+  begin
     FMins := FMins + 1;
     FSecs := 0;
-   end;
+  end;
   Str(FSecs, sec);
   Str(FMins, min);
   if FSecs < 10 then
@@ -879,9 +911,10 @@ end;
 
 procedure TFmWinEar.BtMidiThroughClick(Sender: TObject);
 begin
- if BtMidiThrough.Caption = 'Midi Thru: OFF'
-   then BtMidiThrough.Caption := 'Midi Thru: ON '
-   else BtMidiThrough.Caption := 'Midi Thru: OFF';
+  if BtMidiThrough.Caption = 'Midi Thru: OFF' then
+    BtMidiThrough.Caption := 'Midi Thru: ON '
+  else
+    BtMidiThrough.Caption := 'Midi Thru: OFF';
 end;
 
 procedure TFmWinEar.BtRepeatClick(Sender: TObject);
@@ -891,42 +924,52 @@ end;
 
 procedure TFmWinEar.BtDominant7thClick(Sender: TObject);
 begin
- case FCType of
-  1, 2, 3, 4 : FochoTest(True);
-  else Retry;
- end;
+  case FCType of
+    1, 2, 3, 4:
+      FochoTest(True);
+  else
+    Retry;
+  end;
 end;
 
 procedure TFmWinEar.BtMajor7thClick(Sender: TObject);
 begin
- case FCType of
-  5, 6, 7, 8 : FochoTest(True);
-  else Retry;
- end;
+  case FCType of
+    5, 6, 7, 8:
+      FochoTest(True);
+  else
+    Retry;
+  end;
 end;
 
 procedure TFmWinEar.BtMinor7thClick(Sender: TObject);
 begin
- case FCType of
-  9, 10, 11, 12 : FochoTest(True);
-  else Retry;
- end;
+  case FCType of
+    9, 10, 11, 12:
+      FochoTest(True);
+  else
+    Retry;
+  end;
 end;
 
 procedure TFmWinEar.BtDiminished7thClick(Sender: TObject);
 begin
- case FCType of
-  13 : FochoTest(True);
-  else Retry;
- end;
+  case FCType of
+    13:
+      FochoTest(True);
+  else
+    Retry;
+  end;
 end;
 
 procedure TFmWinEar.BtHalfDiminishedClick(Sender: TObject);
 begin
- case FCType of
-  14, 15, 16, 17 : FochoTest(True);
-  else Retry;
- end;
+  case FCType of
+    14, 15, 16, 17:
+      FochoTest(True);
+  else
+    Retry;
+  end;
 end;
 
 end.

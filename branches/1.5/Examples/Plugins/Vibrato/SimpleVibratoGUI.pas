@@ -38,7 +38,8 @@ uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows,{$ENDIF}
   Messages, SysUtils, Classes, Forms, Controls, DAV_Types, DAV_VSTModule,
   DAV_GuiBaseControl, DAV_GuiPng, DAV_GuiLabel,
-  DAV_GuiStitchedControls, DAV_GuiStitchedDial, DAV_GuiStitchedPngList;
+  DAV_GuiStitchedControls, DAV_GuiStitchedDial, DAV_GuiStitchedPngList,
+  DAV_GuiImageControl, DAV_GuiCustomControl, DAV_GuiGraphicControl;
 
 type
   TFmSimpleVibrato = class(TForm)
@@ -70,51 +71,51 @@ uses
 
 procedure TFmSimpleVibrato.FormShow(Sender: TObject);
 begin
- UpdateDepth;
- UpdateSpeed;
+  UpdateDepth;
+  UpdateSpeed;
 end;
 
 procedure TFmSimpleVibrato.DialDepthChange(Sender: TObject);
 begin
- with TSimpleVibratoModule(Owner) do
+  with TSimpleVibratoModule(Owner) do
   begin
-   if Parameter[1] <> DialDepth.Value
-    then Parameter[1] := DialDepth.Value;
+    if Parameter[1] <> DialDepth.Value then
+      Parameter[1] := DialDepth.Value;
   end;
 end;
 
 procedure TFmSimpleVibrato.DialSpeedChange(Sender: TObject);
 begin
- with TSimpleVibratoModule(Owner) do
+  with TSimpleVibratoModule(Owner) do
   begin
-   if Parameter[0] <> DialSpeed.Value
-    then Parameter[0] := DialSpeed.Value;
+    if Parameter[0] <> DialSpeed.Value then
+      Parameter[0] := DialSpeed.Value;
   end;
 end;
 
 procedure TFmSimpleVibrato.UpdateDepth;
 var
-  Depth : Single;
+  Depth: Single;
 begin
- with TSimpleVibratoModule(Owner) do
+  with TSimpleVibratoModule(Owner) do
   begin
-   Depth := Parameter[1];
-   if DialDepth.Value <> Depth
-    then DialDepth.Value := Depth;
-   LbDepthValue.Caption := FloatToStrF(RoundTo(Depth, -1), ffGeneral, 3, 3) + ' %';
+    Depth := Parameter[1];
+    if DialDepth.Value <> Depth then
+      DialDepth.Value := Depth;
+    LbDepthValue.Caption := FloatToStrF(RoundTo(Depth, -1), ffGeneral, 3, 3) + ' %';
   end;
 end;
 
 procedure TFmSimpleVibrato.UpdateSpeed;
 var
-  Speed : Single;
+  Speed: Single;
 begin
- with TSimpleVibratoModule(Owner) do
+  with TSimpleVibratoModule(Owner) do
   begin
-   Speed := Parameter[0];
-   if DialSpeed.Value <> Speed
-    then DialSpeed.Value := Speed;
-   LbSpeedValue.Caption := FloatToStrF(RoundTo(Speed, -2), ffGeneral, 2, 2) + ' Hz';
+    Speed := Parameter[0];
+    if DialSpeed.Value <> Speed then
+      DialSpeed.Value := Speed;
+    LbSpeedValue.Caption := FloatToStrF(RoundTo(Speed, -2), ffGeneral, 2, 2) + ' Hz';
   end;
 end;
 

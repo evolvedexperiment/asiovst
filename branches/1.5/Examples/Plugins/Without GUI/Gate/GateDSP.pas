@@ -34,8 +34,8 @@ interface
 
 {$I DAV_Compiler.inc}
 
-uses 
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
+uses
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
   Forms, SyncObjs, DAV_Types, DAV_VSTModule, DAV_DspDynamics;
 
 type
@@ -48,8 +48,8 @@ type
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleDestroy(Sender: TObject);
   private
-    FCriticalSection : TCriticalSection;
-    FGates           : array [0..1] of TClassicGate;
+    FCriticalSection: TCriticalSection;
+    FGates: array [0 .. 1] of TClassicGate;
   public
   end;
 
@@ -63,81 +63,81 @@ implementation
 
 procedure TGateDataModule.VSTModuleCreate(Sender: TObject);
 begin
- FCriticalSection := TCriticalSection.Create;
+  FCriticalSection := TCriticalSection.Create;
 end;
 
 procedure TGateDataModule.VSTModuleDestroy(Sender: TObject);
 begin
- FreeAndNil(FCriticalSection);
+  FreeAndNil(FCriticalSection);
 end;
 
 procedure TGateDataModule.VSTModuleOpen(Sender: TObject);
 var
-  ChannelIndex : Integer;
+  ChannelIndex: Integer;
 begin
- for ChannelIndex := 0 to Length(FGates) - 1 do
+  for ChannelIndex := 0 to Length(FGates) - 1 do
   begin
-   FGates[ChannelIndex] := TClassicGate.Create;
-   if Abs(SampleRate) > 0
-    then FGates[ChannelIndex].SampleRate := Abs(SampleRate);
+    FGates[ChannelIndex] := TClassicGate.Create;
+    if Abs(SampleRate) > 0 then
+      FGates[ChannelIndex].SampleRate := Abs(SampleRate);
   end;
 
- Parameter[0] := -10;
+  Parameter[0] := -10;
 end;
 
 procedure TGateDataModule.VSTModuleClose(Sender: TObject);
 var
-  ChannelIndex : Integer;
+  ChannelIndex: Integer;
 begin
- for ChannelIndex := 0 to Length(FGates) - 1
-  do FreeAndNil(FGates[ChannelIndex]);
+  for ChannelIndex := 0 to Length(FGates) - 1 do
+    FreeAndNil(FGates[ChannelIndex]);
 end;
 
-procedure TGateDataModule.SGDMThresholdChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TGateDataModule.SGDMThresholdChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 var
-  ChannelIndex : Integer;
+  ChannelIndex: Integer;
 begin
- FCriticalSection.Enter;
- try
-  for ChannelIndex := 0 to Length(FGates) - 1 do
-   if Assigned(FGates[ChannelIndex])
-    then FGates[ChannelIndex].Threshold_dB := Value;
- finally
-  FCriticalSection.Leave;
- end;
+  FCriticalSection.Enter;
+  try
+    for ChannelIndex := 0 to Length(FGates) - 1 do
+      if Assigned(FGates[ChannelIndex]) then
+        FGates[ChannelIndex].Threshold_dB := Value;
+  finally
+    FCriticalSection.Leave;
+  end;
 end;
 
 procedure TGateDataModule.VSTModuleProcess(const Inputs,
   Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
-  SampleIndex  : Integer;
-  ChannelIndex : Integer;
+  SampleIndex: Integer;
+  ChannelIndex: Integer;
 begin
- FCriticalSection.Enter;
- try
-  for SampleIndex := 0 to SampleFrames - 1 do
-   for ChannelIndex := 0 to Length(FGates) - 1
-    do Outputs[ChannelIndex, SampleIndex] := FGates[ChannelIndex].ProcessSample64(Inputs[ChannelIndex, SampleIndex]);
- finally
-  FCriticalSection.Leave;
- end;
+  FCriticalSection.Enter;
+  try
+    for SampleIndex := 0 to SampleFrames - 1 do
+      for ChannelIndex := 0 to Length(FGates) - 1 do
+        Outputs[ChannelIndex, SampleIndex] := FGates[ChannelIndex].ProcessSample64(Inputs[ChannelIndex, SampleIndex]);
+  finally
+    FCriticalSection.Leave;
+  end;
 end;
 
 procedure TGateDataModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 var
-  ChannelIndex : Integer;
+  ChannelIndex: Integer;
 begin
- FCriticalSection.Enter;
- try
-  if Abs(SampleRate) > 0 then
-   for ChannelIndex := 0 to Length(FGates) - 1 do
-    if Assigned(FGates[ChannelIndex])
-     then FGates[ChannelIndex].SampleRate := Abs(SampleRate);
- finally
-  FCriticalSection.Leave;
- end;
+  FCriticalSection.Enter;
+  try
+    if Abs(SampleRate) > 0 then
+      for ChannelIndex := 0 to Length(FGates) - 1 do
+        if Assigned(FGates[ChannelIndex]) then
+          FGates[ChannelIndex].SampleRate := Abs(SampleRate);
+  finally
+    FCriticalSection.Leave;
+  end;
 end;
 
 end.

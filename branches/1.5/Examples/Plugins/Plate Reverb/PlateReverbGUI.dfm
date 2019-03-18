@@ -26,8 +26,8 @@ object FmPlateReverb: TFmPlateReverb
     PanelColor = clWhite
     ParentColor = True
     TabOrder = 2
-    UseDockManager = True
     Transparent = True
+    UseDockManager = True
     object LbDry: TGuiLabel
       Left = 6
       Top = 3
@@ -211,6 +211,8 @@ object FmPlateReverb: TFmPlateReverb
       Top = 2
       Width = 156
       Height = 19
+      Items.Strings = (
+        'Random 23')
       Alignment = taLeftJustify
       ArrowColor = 5855577
       BorderColor = 5855577
@@ -222,9 +224,6 @@ object FmPlateReverb: TFmPlateReverb
       Font.Height = -13
       Font.Name = 'Tahoma'
       Font.Style = []
-      ItemIndex = -1
-      Items.Strings = (
-        'Random 23')
       ParentFont = False
       SelectBoxColor = 2960685
       OnChange = SBPresetChange
@@ -319,6 +318,7 @@ object FmPlateReverb: TFmPlateReverb
     Width = 48
     Height = 48
     CurveMapping = -2.000000000000000000
+    DefaultValue = 135.000000000000000000
     Max = 13500.000000000000000000
     Min = 135.000000000000000000
     ScrollRange = 400.000000000000000000
@@ -327,7 +327,6 @@ object FmPlateReverb: TFmPlateReverb
     Value = 135.000000000000000000
     WheelStep = 1.000000000000000000
     OnChange = DialDampingFrequencyChange
-    DefaultValue = 0.000000000000000000
   end
   object DialInputDiffusion: TGuiStitchedDial
     Left = 286

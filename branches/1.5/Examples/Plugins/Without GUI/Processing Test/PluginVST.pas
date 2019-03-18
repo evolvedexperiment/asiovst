@@ -49,15 +49,15 @@ type
     procedure ParameterFreq32Change(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterFreq64Change(Sender: TObject; const Index: Integer; var Value: Single);
   private
-    FOsc32 : TSimpleOscillator32;
-    FOsc64 : TSimpleOscillator64;
+    FOsc32: TSimpleOscillator32;
+    FOsc64: TSimpleOscillator64;
   public
   end;
 
 implementation
 
 uses
-  {$IFDEF HAS_UNIT_ANSISTRINGS} AnsiStrings, {$ENDIF} Math;
+{$IFDEF HAS_UNIT_ANSISTRINGS} AnsiStrings, {$ENDIF} Math;
 
 {$IFDEF FPC}
 {$R *.lfm}
@@ -79,78 +79,81 @@ end;
 
 procedure TProcessingTestModule.VSTModuleClose(Sender: TObject);
 begin
- FreeAndNil(FOsc32);
- FreeAndNil(FOsc64);
+  FreeAndNil(FOsc32);
+  FreeAndNil(FOsc64);
 end;
 
-procedure TProcessingTestModule.ParameterFreqDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+procedure TProcessingTestModule.ParameterFreqDisplay(Sender: TObject;
+  const Index: Integer; var PreDefined: AnsiString);
 var
-  Value : Single;
+  Value: Single;
 begin
- Value := Parameter[Index];
- if Value < 1000
-  then PreDefined := AnsiString(FloatToStrF(RoundTo(Value, -3), ffGeneral, 3, 3))
-  else PreDefined := AnsiString(FloatToStrF(RoundTo(1E-3 * Value, -3), ffGeneral, 3, 3));
+  Value := Parameter[Index];
+  if Value < 1000 then
+    PreDefined := AnsiString(FloatToStrF(RoundTo(Value, -3), ffGeneral, 3, 3))
+  else
+    PreDefined := AnsiString(FloatToStrF(RoundTo(1E-3 * Value, -3),
+      ffGeneral, 3, 3));
 end;
 
-procedure TProcessingTestModule.ParameterFreqLabel(
-  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+procedure TProcessingTestModule.ParameterFreqLabel(Sender: TObject;
+  const Index: Integer; var PreDefined: AnsiString);
 begin
- if Parameter[Index] < 1000
-  then PreDefined := 'Hz'
-  else PreDefined := 'kHz'
+  if Parameter[Index] < 1000 then
+    PreDefined := 'Hz'
+  else
+    PreDefined := 'kHz'
 end;
 
-procedure TProcessingTestModule.ParameterFreq64Change(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TProcessingTestModule.ParameterFreq64Change(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
- if Assigned(FOsc64)
-  then FOsc64.Frequency := Value;
+  if Assigned(FOsc64) then
+    FOsc64.Frequency := Value;
 end;
 
-procedure TProcessingTestModule.ParameterFreq32Change(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TProcessingTestModule.ParameterFreq32Change(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
- if Assigned(FOsc32)
-  then FOsc32.Frequency := Value;
+  if Assigned(FOsc32) then
+    FOsc32.Frequency := Value;
 end;
 
 procedure TProcessingTestModule.VSTModuleProcess32Replacing(const Inputs,
   Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
-  SampleIndex : Integer;
+  SampleIndex: Integer;
 begin
- if Assigned(FOsc32) then
-  for SampleIndex := 0 to SampleFrames - 1 do
-   begin
-    FOsc32.CalculateNextSample;
-    Outputs[0, SampleIndex] := FOsc32.Sine;
-   end;
+  if Assigned(FOsc32) then
+    for SampleIndex := 0 to SampleFrames - 1 do
+    begin
+      FOsc32.CalculateNextSample;
+      Outputs[0, SampleIndex] := FOsc32.Sine;
+    end;
 end;
 
 procedure TProcessingTestModule.VSTModuleProcess64Replacing(const Inputs,
   Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
 var
-  SampleIndex : Integer;
+  SampleIndex: Integer;
 begin
- if Assigned(FOsc64) then
-  for SampleIndex := 0 to SampleFrames - 1 do
-   begin
-    FOsc64.CalculateNextSample;
-    Outputs[0, SampleIndex] := FOsc64.Sine;
-   end;
+  if Assigned(FOsc64) then
+    for SampleIndex := 0 to SampleFrames - 1 do
+    begin
+      FOsc64.CalculateNextSample;
+      Outputs[0, SampleIndex] := FOsc64.Sine;
+    end;
 end;
 
 procedure TProcessingTestModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 begin
- if Abs(SampleRate) > 0 then
+  if Abs(SampleRate) > 0 then
   begin
-   if Assigned(FOsc32)
-    then FOsc32.SampleRate := SampleRate;
-   if Assigned(FOsc64)
-    then FOsc64.SampleRate := SampleRate;
+    if Assigned(FOsc32) then
+      FOsc32.SampleRate := SampleRate;
+    if Assigned(FOsc64) then
+      FOsc64.SampleRate := SampleRate;
   end;
 end;
 

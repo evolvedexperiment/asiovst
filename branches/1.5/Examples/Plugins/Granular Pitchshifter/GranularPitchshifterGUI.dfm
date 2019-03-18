@@ -32,6 +32,7 @@ object FmGranularPitchShifter: TFmGranularPitchShifter
     Width = 60
     Height = 20
     Alignment = taCenter
+    Caption = ''
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -16
@@ -57,6 +58,7 @@ object FmGranularPitchShifter: TFmGranularPitchShifter
     Width = 91
     Height = 20
     Alignment = taCenter
+    Caption = ''
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -16
@@ -82,6 +84,7 @@ object FmGranularPitchShifter: TFmGranularPitchShifter
     Width = 76
     Height = 20
     Alignment = taCenter
+    Caption = ''
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -16
@@ -96,14 +99,15 @@ object FmGranularPitchShifter: TFmGranularPitchShifter
     Top = 31
     Width = 36
     Height = 36
+    DefaultValue = 2.000000000000000000
     Max = 16.000000000000000000
     Min = 2.000000000000000000
+    ScrollRange = 400.000000000000000000
     ImageList = GSPL
     ImageIndex = 0
     Value = 2.000000000000000000
     WheelStep = 1.000000000000000000
     OnChange = DialStagesChange
-    DefaultValue = 0.000000000000000000
   end
   object DialSemitones: TGuiStitchedDial
     Left = 32
@@ -112,6 +116,7 @@ object FmGranularPitchShifter: TFmGranularPitchShifter
     Height = 36
     Max = 12.000000000000000000
     Min = -12.000000000000000000
+    ScrollRange = 400.000000000000000000
     ImageList = GSPL
     ImageIndex = 0
     Value = 0.009999999776482582
@@ -125,14 +130,15 @@ object FmGranularPitchShifter: TFmGranularPitchShifter
     Width = 36
     Height = 36
     CurveMapping = -1.500000000000000000
+    DefaultValue = 1.000000000000000000
     Max = 1000.000000000000000000
     Min = 1.000000000000000000
+    ScrollRange = 400.000000000000000000
     ImageList = GSPL
     ImageIndex = 0
     Value = 100.000000000000000000
     WheelStep = 1.000000000000000000
     OnChange = DialGranularityChange
-    DefaultValue = 0.000000000000000000
   end
   object GSPL: TGuiStitchedPNGList
     StitchedPNGs = <
@@ -1224,7 +1230,6 @@ object FmGranularPitchShifter: TFmGranularPitchShifter
           9BA0C66898C64E7D0000000049454E44AE426082}
         DisplayName = 'Knob'
         GlyphCount = 65
-        StitchKind = skHorizontal
         Height = 36
         Width = 2340
       end>

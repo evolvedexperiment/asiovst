@@ -180,7 +180,10 @@ begin
     tymed    := TYMED_HGLOBAL;
   end;
 
-  Result := lpdobj.GetData(FormatEtc, StgMedium); if Failed(Result) then Exit;
+  Result := lpdobj.GetData(FormatEtc, StgMedium);
+  if Failed(Result) then
+    Exit;
+
   if DragQueryFile(StgMedium.hGlobal, $FFFFFFFF, nil, 0) = 1 then
   begin
     if FFileName <> nil then

@@ -151,7 +151,9 @@ begin
     FreeAndNil(FPageForm);
 
   Result := E_INVALIDARG;
-  if(lpdobj = nil) then exit;
+  if (lpdobj = nil) then
+    Exit;
+
   with FormatEtc do
   begin
     cfFormat := CF_HDROP;
