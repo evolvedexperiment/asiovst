@@ -13,8 +13,7 @@ uses
   DAV_WinAmp,
   DAV_VSTEffect,
   DAV_VSTBasicModule,
-  TransientDM in 'TransientDM.pas' {TransientDataModule: TVSTModule},
-  DAV_DspTransientProcessor in '..\..\..\..\Source\DSP\DAV_DspTransientProcessor.pas';
+  TransientDM in 'TransientDM.pas' {TransientDataModule: TVSTModule};
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
@@ -26,7 +25,7 @@ begin
   Result := WinampDSPModuleHeader(TTransientDataModule);
 end;
 
-exports 
+exports
   VstPluginMain name 'main',
   VstPluginMain name 'VSTPluginMain',
   WinampDSPGetHeader name 'winampDSPGetHeader2';

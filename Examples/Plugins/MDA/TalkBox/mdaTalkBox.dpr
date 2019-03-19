@@ -2,7 +2,12 @@
 library mdaTalkBox;
 
 uses
-  Forms,
+  FastMM4,
+  FastMove,
+  {$IFDEF UseMadExcept}
+  madExcept, // either download madExcept or remove mad* if there is an error here
+  madLinkDisAsm,
+  {$ENDIF}
   DAV_WinAmp,
   DAV_VSTEffect,
   DAV_VSTBasicModule,
