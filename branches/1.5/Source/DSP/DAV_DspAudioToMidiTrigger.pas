@@ -133,7 +133,7 @@ end;
 procedure TCustomAudio2MidiTrigger.AddFilter(const Filter: TCustomFilter);
 begin
   // make sure a filter is passed
-  assert(Filter <> nil);
+  Assert(Filter <> nil);
 
   // increase size of filter array
   SetLength(FFilter, Length(FFilter) + 1);
@@ -147,7 +147,7 @@ var
   Index: Integer;
 begin
   // make sure a filter is passed
-  assert(Filter <> nil);
+  Assert(Filter <> nil);
 
   Index := 0;
   while Index < Length(FFilter) do
@@ -173,7 +173,7 @@ begin
     SetLength(FFilter, Length(FFilter) - 1);
   end
   else
-    raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
+    raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
 end;
 
 procedure TCustomAudio2MidiTrigger.CalculateReciprocalSamplerate;
@@ -220,7 +220,7 @@ begin
   if (Index >= 0) and (Index < Length(FFilter)) then
     Result := Filter[Index]
   else
-    raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
+    raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
 end;
 
 function TCustomAudio2MidiTrigger.GetFilterCount: Integer;
@@ -230,7 +230,7 @@ end;
 
 procedure TCustomAudio2MidiTrigger.IntervalChanged;
 begin
-  FSampleInterval := round(Interval * SampleRate);
+  FSampleInterval := Round(Interval * SampleRate);
   Changed;
 end;
 

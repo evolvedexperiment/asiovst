@@ -34,9 +34,9 @@ interface
 
 {$I DAV_Compiler.inc}
 
-uses 
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
-  Forms, Controls, Graphics, ExtCtrls, DAV_Types, DAV_VSTModule, DAV_GuiLabel, 
+uses
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
+  Forms, Controls, Graphics, ExtCtrls, DAV_Types, DAV_VSTModule, DAV_GuiLabel,
   DAV_GuiCommon, DAV_GuiPixelMap, DAV_GuiGraphicControl;
 
 type
@@ -59,8 +59,8 @@ type
     procedure FormShow(Sender: TObject);
     procedure FormResize(Sender: TObject);
   private
-    FBackground : TGuiCustomPixelMap;
-    FMouseEdit  : TMouseEdit;
+    FBackground: TGuiCustomPixelMap;
+    FMouseEdit: TMouseEdit;
   public
     procedure UpdateFrequencyBar;
   end;
@@ -78,50 +78,50 @@ uses
 
 procedure TFmBugpassLite.FormCreate(Sender: TObject);
 begin
- // Create Background Image
- FBackground := TGuiPixelMapMemory.Create;
- FrequencyBar.ControlStyle := FrequencyBar.ControlStyle + [csOpaque];
+  // Create Background Image
+  FBackground := TGuiPixelMapMemory.Create;
+  FrequencyBar.ControlStyle := FrequencyBar.ControlStyle + [csOpaque];
 end;
 
 procedure TFmBugpassLite.FormDestroy(Sender: TObject);
 begin
- FreeAndNil(FBackground);
+  FreeAndNil(FBackground);
 end;
 
 procedure TFmBugpassLite.FormShow(Sender: TObject);
 begin
- UpdateFrequencyBar;
+  UpdateFrequencyBar;
 end;
 
 procedure TFmBugpassLite.FormPaint(Sender: TObject);
 begin
- if Assigned(FBackground)
-  then FBackground.PaintTo(Canvas);
+  if Assigned(FBackground) then
+    FBackground.PaintTo(Canvas);
 end;
 
 procedure TFmBugpassLite.FormResize(Sender: TObject);
 var
-  x, y   : Integer;
-  Filter : array [0..1] of Single;
-  amt    : Shortint;
-  ScnLn  : PPixel32Array;
+  X, Y: Integer;
+  Filter: array [0 .. 1] of Single;
+  amt: Shortint;
+  ScnLn: PPixel32Array;
 begin
- with FBackground do
+  with FBackground do
   begin
-   SetSize(ClientWidth, ClientHeight);
-   Filter[0] := 0;
-   Filter[1] := 0;
-   for y := 0 to Height - 1 do
+    SetSize(ClientWidth, ClientHeight);
+    Filter[0] := 0;
+    Filter[1] := 0;
+    for Y := 0 to Height - 1 do
     begin
-     ScnLn := Scanline[y];
-     for x := 0 to Width - 1 do
+      ScnLn := Scanline[Y];
+      for X := 0 to Width - 1 do
       begin
-       Filter[1] := 0.9 * Filter[0] + 0.1 * Random;
-       amt := Round($E * (2 * Filter[1] - 1));
-       ScnLn[x].B := $E0 + amt;
-       ScnLn[x].G := $D0 + amt;
-       ScnLn[x].R := $B6 + amt;
-       Filter[0] := Filter[1];
+        Filter[1] := 0.9 * Filter[0] + 0.1 * Random;
+        amt := Round($E * (2 * Filter[1] - 1));
+        ScnLn[X].B := $E0 + amt;
+        ScnLn[X].G := $D0 + amt;
+        ScnLn[X].R := $B6 + amt;
+        Filter[0] := Filter[1];
       end;
     end;
   end;
@@ -130,48 +130,52 @@ end;
 procedure TFmBugpassLite.FrequencyBarMouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
- with TBugpassLiteDataModule(Owner), FrequencyBar do
-  if abs(X - FreqLogToLinear(Parameter[0]) * Width) < 5
-   then FMouseEdit := meLow else
-  if abs(X - FreqLogToLinear(Parameter[1]) * Width) < 5
-   then FMouseEdit := meHigh
-   else FMouseEdit := meNone;
+  with TBugpassLiteDataModule(Owner), FrequencyBar do
+    if abs(X - FreqLogToLinear(Parameter[0]) * Width) < 5 then
+      FMouseEdit := meLow
+    else if abs(X - FreqLogToLinear(Parameter[1]) * Width) < 5 then
+      FMouseEdit := meHigh
+    else
+      FMouseEdit := meNone;
 end;
 
 procedure TFmBugpassLite.FrequencyBarMouseMove(Sender: TObject;
   Shift: TShiftState; X, Y: Integer);
 begin
- if ssLeft in Shift then
-  with TBugpassLiteDataModule(Owner), FrequencyBar do
-   case FMouseEdit of
-    meLow  : Parameter[0] := Limit(FreqLinearToLog(Limit(X / Width, 0, Width)), 20, 20000);
-    meHigh : Parameter[1] := Limit(FreqLinearToLog(Limit(X / Width, 0, Width)), 20, 20000);
-   end;
+  if ssLeft in Shift then
+    with TBugpassLiteDataModule(Owner), FrequencyBar do
+      case FMouseEdit of
+        meLow:
+          Parameter[0] := Limit(FreqLinearToLog(Limit(X / Width, 0, Width)), 20, 20000);
+        meHigh:
+          Parameter[1] := Limit(FreqLinearToLog(Limit(X / Width, 0, Width)), 20, 20000);
+      end;
 end;
 
 procedure TFmBugpassLite.FrequencyBarMouseUp(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
- FMouseEdit := meNone;
+  FMouseEdit := meNone;
 end;
 
 procedure TFmBugpassLite.PaintBoxPaint(Sender: TObject);
 begin
- with TBugpassLiteDataModule(Owner), FrequencyBar, Canvas do
+  with TBugpassLiteDataModule(Owner), FrequencyBar, Canvas do
   begin
-   Brush.Color := $00C1AE9B;
-   FillRect(Rect(0, 0, Round(FreqLogToLinear(Parameter[0]) * Width), Height));
-   FillRect(Rect(Round(FreqLogToLinear(Parameter[1]) * Width), 0, Width, Height));
+    Brush.Color := $00C1AE9B;
+    FillRect(Rect(0, 0, Round(FreqLogToLinear(Parameter[0]) * Width), Height));
+    FillRect(Rect(Round(FreqLogToLinear(Parameter[1]) * Width), 0,
+      Width, Height));
 
-   Brush.Color := $00372D22;
-   FillRect(Rect(Round(FreqLogToLinear(Parameter[0]) * Width), 0,
-                 Round(FreqLogToLinear(Parameter[1]) * Width), Height));
+    Brush.Color := $00372D22;
+    FillRect(Rect(Round(FreqLogToLinear(Parameter[0]) * Width), 0,
+      Round(FreqLogToLinear(Parameter[1]) * Width), Height));
   end;
 end;
 
 procedure TFmBugpassLite.DialFrequencyChange(Sender: TObject);
 begin
- with TBugpassLiteDataModule(Owner) do
+  with TBugpassLiteDataModule(Owner) do
   begin
 
   end;
@@ -179,21 +183,23 @@ end;
 
 procedure TFmBugpassLite.UpdateFrequencyBar;
 var
-  Freq : array [0..1] of Single;
+  Freq: array [0 .. 1] of Single;
 begin
- with TBugpassLiteDataModule(Owner) do
+  with TBugpassLiteDataModule(Owner) do
   begin
-   Freq[0] := Parameter[0];
-   Freq[1] := Parameter[1];
+    Freq[0] := Parameter[0];
+    Freq[1] := Parameter[1];
 
-   FrequencyBar.Invalidate;
+    FrequencyBar.Invalidate;
 
-   if Freq[0] < 1000
-    then LbFreqLowValue.Caption := FloatToStrF(Freq[0], ffGeneral, 3, 3) + ' Hz'
-    else LbFreqLowValue.Caption := FloatToStrF(1E-3 * Freq[0], ffGeneral, 3, 3) + ' kHz';
-   if Freq[1] < 1000
-    then LbFreqHighValue.Caption := FloatToStrF(Freq[1], ffGeneral, 3, 3) + ' Hz'
-    else LbFreqHighValue.Caption := FloatToStrF(1E-3 * Freq[1], ffGeneral, 3, 3) + ' kHz';
+    if Freq[0] < 1000 then
+      LbFreqLowValue.Caption := FloatToStrF(Freq[0], ffGeneral, 3, 3) + ' Hz'
+    else
+      LbFreqLowValue.Caption := FloatToStrF(1E-3 * Freq[0], ffGeneral, 3, 3) + ' kHz';
+    if Freq[1] < 1000 then
+      LbFreqHighValue.Caption := FloatToStrF(Freq[1], ffGeneral, 3, 3) + ' Hz'
+    else
+      LbFreqHighValue.Caption := FloatToStrF(1E-3 * Freq[1], ffGeneral, 3, 3) + ' kHz';
   end;
 end;
 

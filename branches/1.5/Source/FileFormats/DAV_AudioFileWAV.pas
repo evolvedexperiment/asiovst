@@ -312,7 +312,7 @@ begin
   if (Index >= 0) and (Index < FChunkList.Count) then
     FChunkList.Delete(Index)
   else
-    raise EWavError.CreateFmt(RCStrIndexOutOfBounds, [Index]);
+    raise EWavError.CreateFmt(RStrIndexOutOfBounds, [Index]);
 end;
 
 class function TCustomAudioFileWAV.Description: string;
@@ -449,7 +449,7 @@ begin
   if (Index >= 0) and (Index < FChunkList.Count) then
     Result := FChunkList[Index]
   else
-    raise EWavError.CreateFmt(RCStrIndexOutOfBounds, [Index]);
+    raise EWavError.CreateFmt(RStrIndexOutOfBounds, [Index]);
 end;
 
 function TCustomAudioFileWAV.GetSubChunkCount: Cardinal;

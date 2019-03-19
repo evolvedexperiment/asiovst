@@ -555,7 +555,7 @@ begin
   AddLogMessage('TVSTModuleWithPrograms.StringToParameter');
 {$ENDIF}
   if (Index < 0) or (Index >= numParams) then
-    raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
+    raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
 
   with ParameterProperties[Index] do
   begin
@@ -1153,7 +1153,7 @@ begin
   // check parameter index is valid
   if not(Assigned(FParameterProperties) and (Index >= 0) and
     (Index < FParameterProperties.Count)) then
-    raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
+    raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
 
   if (effFlagsProgramChunks in FEffect.EffectFlags) then
   begin

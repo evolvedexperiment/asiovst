@@ -56,7 +56,7 @@ type
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure VSTModuleStartProcess(Sender: TObject);
     procedure VSTModuleStopProcess(Sender: TObject);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
+    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: NativeUInt);
     procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
     procedure CustomParameterDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure CustomParameterLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
@@ -231,7 +231,7 @@ begin
 end;
 
 procedure TWrapperDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
-  ParentWindow: Cardinal);
+  ParentWindow: NativeUInt);
 begin
   GUI := TForm.Create(Self);
   VstHost[0].ShowEdit(GUI);

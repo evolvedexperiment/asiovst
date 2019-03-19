@@ -153,7 +153,7 @@ end;
 constructor TCustomVstShellPlugins.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner, TCustomVstShellPlugin);
-  assert(AOwner is TBasicVSTModule);
+  Assert(AOwner is TBasicVSTModule);
   FVSTModule := TBasicVSTModule(AOwner);
 end;
 

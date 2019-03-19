@@ -929,8 +929,8 @@ var
   notenum: Integer;
 begin
   // Yep ... pretty kludgey, but it works!
-  // noteNum:=round((12*log10(frequency/220)/log10(2)) + 57.01) mod 32;
-  notenum := round(Frequency) mod 23;
+  // noteNum := Round((12*log10(frequency/220)/log10(2)) + 57.01) mod 32;
+  notenum := Round(Frequency) mod 23;
   // if (FInstType <>  noteNum) then
   FInstType := SetupNum(notenum);
   FShakeEnergy := FShakeEnergy + Amplitude * CMaxShake * 0.1;
@@ -1045,9 +1045,9 @@ begin
       FShakeEnergy := CMaxShake;
     if ((FInstType = 10) or (FInstType = 3)) then
     begin
-      FRatchetPos := round(abs(Value - FLastRatchetPos));
+      FRatchetPos := Round(Abs(Value - FLastRatchetPos));
       FRatchetDelta := 0.0002 * FRatchetPos;
-      FLastRatchetPos := round(Value);
+      FLastRatchetPos := Round(Value);
     end;
   end
   else if (Number = CMidiModFrequency) then
@@ -1132,14 +1132,14 @@ begin
       FShakeEnergy := CMaxShake;
     if ((FInstType = 10) or (FInstType = 3)) then
     begin
-      FRatchetPos := round(abs(Value - FLastRatchetPos));
+      FRatchetPos := Round(Abs(Value - FLastRatchetPos));
       FRatchetDelta := 0.0002 * FRatchetPos;
-      FLastRatchetPos := round(Value);
+      FLastRatchetPos := Round(Value);
     end;
   end
   else if (Number = CMidiShakerInst) then
   begin // 1071
-    FInstType := round(norm * 22); // Just to be safe
+    FInstType := Round(norm * 22); // Just to be safe
     SetupNum(FInstType);
   end;
 end;
@@ -1160,17 +1160,17 @@ begin
     if (j = 0) then
     begin
       FCenterFreqs[0] := CWaterDropsCenterFreq1 * (0.75 + (0.25 * NoiseTick));
-      FGains[0] := abs(NoiseTick);
+      FGains[0] := Abs(NoiseTick);
     end
     else if (j = 1) then
     begin
       FCenterFreqs[1] := CWaterDropsCenterFreq1 * (1.0 + (0.25 * NoiseTick));
-      FGains[1] := abs(NoiseTick);
+      FGains[1] := Abs(NoiseTick);
     end
     else
     begin
       FCenterFreqs[2] := CWaterDropsCenterFreq1 * (1.25 + (0.25 * NoiseTick));
-      FGains[2] := abs(NoiseTick);
+      FGains[2] := Abs(NoiseTick);
     end;
   end;
 

@@ -1923,13 +1923,13 @@ begin
     Flags := Flags + [vtiPpqPosValid];
 
     // BarStartPos
-    BarStartPos := TimeSigDenominator* (round(PpqPos) div TimeSigDenominator);
+    BarStartPos := TimeSigDenominator* (Round(PpqPos) div TimeSigDenominator);
     Flags := Flags + [vtiBarsValid];
 
     //SamplesToNextClock
     SingleSampleClock := (60 * SampleRate) / (Tempo*24.0);
-    SamplesToNextClock := round(SingleSampleClock
-         * (round(SamplePos) div round(SingleSampleclock) + 1));
+    SamplesToNextClock := Round(SingleSampleClock
+         * (Round(SamplePos) div Round(SingleSampleclock) + 1));
     Flags := Flags + [vtiClockValid];
 
 (*
@@ -1943,7 +1943,7 @@ begin
 *)
 
     // SmpteOffset
-    OffsetInSecond := Seconds - round(Seconds - CHalf32);
+    OffsetInSecond := Seconds - Round(Seconds - CHalf32);
     case SmpteFrameRate of
         0 : SmpteDiv := 24;
         1 : SmpteDiv := 25;

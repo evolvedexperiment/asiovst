@@ -235,7 +235,7 @@ begin
   if FDownsamplePow <> Value then
   begin
     FDownsamplePow := Value;
-    FDownsampleFak := round(IntPower(2, FDownsamplePow));
+    FDownsampleFak := Round(IntPower(2, FDownsamplePow));
     CalculateW0;
   end;
 end;

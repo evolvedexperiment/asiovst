@@ -184,7 +184,7 @@ begin
   else if q < 0 then
     q := 0;
   q := q * FSize;
-  x := round(q);
+  x := Round(q);
   q := q - x;
   s1 := PSingle(Longint(FSampleData) + 4 * x);
   y := x + 1;

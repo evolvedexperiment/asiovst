@@ -40,7 +40,7 @@ uses
 type
   TWavedisplayModule = class(TVSTModule)
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
+    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: NativeUInt);
   private
   public
   end;
@@ -57,7 +57,7 @@ uses
   WavedisplayGUI;
 
 procedure TWavedisplayModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
-  ParentWindow: Cardinal);
+  ParentWindow: NativeUInt);
 begin
  GUI := TWavedisplayGUI.Create(Self);
 end;

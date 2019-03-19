@@ -492,7 +492,7 @@ begin
     // reset current data positions
     FAudioDataPosition := 0;
 
-    assert(Position = 12);
+    Assert(Position = 12);
     ChunkEnd := Position + FChunkSize - 4;
 
     // start parsing here
@@ -532,7 +532,7 @@ begin
         ReadUnknownChunk(Stream);
     end;
 
-    assert(Position = ChunkEnd);
+    Assert(Position = ChunkEnd);
 
     if (FCommonChunk.SampleFrames > 0) then
       if (FAudioDataPosition = 0) then
@@ -865,7 +865,7 @@ begin
 
   with FStream do
   begin
-    assert(FAudioDataPosition > 0);
+    Assert(FAudioDataPosition > 0);
     Position := FAudioDataPosition + 8 + SamplePosition;
 
     DataDecoder := CreateDataCoder;
@@ -1102,7 +1102,7 @@ begin
         FreeAndNil(DataEncoder);
       end;
 
-    assert(Position = ChunkEnd);
+    Assert(Position = ChunkEnd);
     Position := ChunkEnd;
   end;
 end;

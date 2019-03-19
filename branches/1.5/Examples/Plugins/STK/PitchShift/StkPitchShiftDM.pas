@@ -104,7 +104,7 @@ begin
       Outputs[1, Sample] := FPitchShift[1].Tick(Inputs[1, Sample]);
     end;
   finally
-    dec(FSemaphore);
+    Dec(FSemaphore);
   end;
 end;
 
@@ -122,7 +122,7 @@ begin
       Outputs[1, Sample] := FPitchShift[1].Tick(Inputs[1, Sample]);
     end;
   finally
-    dec(FSemaphore);
+    Dec(FSemaphore);
   end;
 end;
 
@@ -136,7 +136,7 @@ begin
     FPitchShift[0].Shift := Power(2, Value / 12);
     FPitchShift[1].Shift := FPitchShift[0].Shift;
   finally
-    dec(FSemaphore);
+    Dec(FSemaphore);
   end;
   if EditorForm is TFmStkPitchShift then
     TFmStkPitchShift(EditorForm).UpdateDelay;

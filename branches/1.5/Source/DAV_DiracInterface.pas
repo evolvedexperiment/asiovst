@@ -182,7 +182,7 @@ end;
 
 function TDiracLE.GetCacheGranularity: Integer;
 begin
-  Result := round(DiracGetProperty(Integer(dpCacheGranularity), FDiracHandle));
+  Result := Round(DiracGetProperty(Integer(dpCacheGranularity), FDiracHandle));
 end;
 
 function TDiracLE.GetCompactSupport: Boolean;

@@ -164,7 +164,7 @@ begin
     if ph > 1
      then ph := ph - 2;
 
-    dec(bp);
+    Dec(bp);
     bp := bp and cBUFMAX;
     FBuffer[0, bp] := a + f * f1;
     FBuffer[1, bp] := b + f * f2;

@@ -1069,7 +1069,7 @@ begin
     1:
       FSubjectRecord.Desc := ShortString(Value);
   else
-    raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
+    raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
   end;
 end;
 
@@ -1270,7 +1270,7 @@ begin
     2:
       FMicrophoneRecord.Notes := ShortString(Value);
   else
-    raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
+    raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
   end;
 end;
 
@@ -1381,7 +1381,7 @@ begin
       3:
         Loudspeaker := ShortString(Value);
     else
-      raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
+      raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
     end;
 end;
 
@@ -1577,7 +1577,7 @@ begin
     1:
       FMeasurementRecord.ExcitationType := ShortString(Value);
   else
-    raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
+    raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
   end;
 end;
 
@@ -1867,7 +1867,7 @@ begin
         4:
           Notes := Value;
       else
-        raise Exception.CreateFmt(RCStrIndexOutOfBounds, [index]);
+        raise Exception.CreateFmt(RStrIndexOutOfBounds, [index]);
       end;
 end;
 
@@ -1899,7 +1899,7 @@ begin
         1:
           ExcitationType := Value;
       else
-        raise Exception.CreateFmt(RCStrIndexOutOfBounds, [index]);
+        raise Exception.CreateFmt(RStrIndexOutOfBounds, [index]);
       end;
 end;
 
@@ -1922,7 +1922,7 @@ begin
         2:
           Notes := Value;
       else
-        raise Exception.CreateFmt(RCStrIndexOutOfBounds, [index]);
+        raise Exception.CreateFmt(RStrIndexOutOfBounds, [index]);
       end;
 end;
 
@@ -1948,7 +1948,7 @@ begin
         3:
           Loudspeaker := Value;
       else
-        raise Exception.CreateFmt(RCStrIndexOutOfBounds, [index]);
+        raise Exception.CreateFmt(RStrIndexOutOfBounds, [index]);
       end;
 end;
 
@@ -1971,7 +1971,7 @@ begin
       2:
         Z := Value;
     else
-      raise Exception.CreateFmt(RCStrIndexOutOfBounds, [index]);
+      raise Exception.CreateFmt(RStrIndexOutOfBounds, [index]);
     end;
 end;
 
@@ -2017,7 +2017,7 @@ begin
         1:
           Description := Value;
       else
-        raise Exception.CreateFmt(RCStrIndexOutOfBounds, [index]);
+        raise Exception.CreateFmt(RStrIndexOutOfBounds, [index]);
       end;
 end;
 

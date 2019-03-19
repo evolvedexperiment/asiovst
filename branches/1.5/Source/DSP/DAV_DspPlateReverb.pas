@@ -217,7 +217,7 @@ var
   Pos: Integer;
 begin
   if (Index < 0) or (Index >= FInternalBufferSize) then
-    raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
+    raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
 
   Pos := FBufferPos - Index;
   if Pos < 0 then
@@ -365,7 +365,7 @@ var
   Pos: Integer;
 begin
   if (Index < 0) or (Index >= FInternalBufferSize) then
-    raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
+    raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
 
   Pos := FBufferInPos - Index;
   if Pos < 0 then
@@ -449,14 +449,14 @@ begin
   if FBufferInPos >= FInternalBufferSize then
     FBufferInPos := FBufferInPos - FInternalBufferSize;
   SPos := Excursion * FLFO.Sine;
-  Pos := round(SPos);
+  Pos := Round(SPos);
 
   // @CWB: there is no TFirstOrderAllpassFilter.Frequency
   // FAllpass.Frequency := Pos - SPos;
-  // assert(abs(FAllpass.Frequency) < 1);
+  // Assert(abs(FAllpass.Frequency) < 1);
 
   FAllpass.FractionalDelay := Pos - SPos;
-  assert(abs(FAllpass.FractionalDelay) < 1);
+  Assert(abs(FAllpass.FractionalDelay) < 1);
 
   Pos := FBufferInPos + Pos;
 
@@ -652,7 +652,7 @@ end;
 
 procedure TPlateReverb.ResizePreDelayBuffer;
 begin
-  FPreDelayBufferSize := round(FPreDelay * SampleRate);
+  FPreDelayBufferSize := Round(FPreDelay * SampleRate);
   if FPreDelayBufferPos > FPreDelayBufferSize then
     FPreDelayBufferPos := 0;
   FInternalPDBufSize := 3 + FPreDelayBufferSize;

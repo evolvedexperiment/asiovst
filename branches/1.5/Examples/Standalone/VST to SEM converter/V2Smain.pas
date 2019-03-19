@@ -209,7 +209,7 @@ var
   RM: TPEResourceModule;
   RD: TResourceDetails;
 begin
-  assert(FileExists(FVSTPluginDLL));
+  Assert(FileExists(FVSTPluginDLL));
 
   RM := TPEResourceModule.Create;
   with RM do

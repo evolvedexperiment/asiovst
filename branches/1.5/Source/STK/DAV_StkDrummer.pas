@@ -155,7 +155,7 @@ begin
 
   // Yes, this is tres kludgey.
   // int noteNum:=(int) ((12 * log(instrument / 220.0) / log(2.0)) + 57.01);
-  notenum := round(Instrument);
+  notenum := Round(Instrument);
 
   // Check first to see if there's already one like this sounding.
   waveindex := -1;

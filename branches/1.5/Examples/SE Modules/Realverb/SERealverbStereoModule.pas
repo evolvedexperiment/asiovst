@@ -169,7 +169,7 @@ begin
       (PDAVSingleFixedArray(@FInputBuffer[1][BufferOffset]),
       PDAVSingleFixedArray(@FOutputBuffer[1][BufferOffset]), SampleFrames);
   finally
-    dec(FSemaphore);
+    Dec(FSemaphore);
   end;
 end;
 
@@ -306,7 +306,7 @@ begin
           FConvolver[0].MaximumIRBlockOrder := FMaxIRBlockOrder;
           FConvolver[1].MaximumIRBlockOrder := FMaxIRBlockOrder;
         finally
-          dec(FSemaphore);
+          Dec(FSemaphore);
         end;
       end;
     pinDesiredLatency:
@@ -318,7 +318,7 @@ begin
           FConvolver[1].MinimumIRBlockOrder := 5 + FDesiredLatencyIndex;
           FRealLatency := FConvolver[0].Latency;
         finally
-          dec(FSemaphore);
+          Dec(FSemaphore);
         end;
       end;
   end;

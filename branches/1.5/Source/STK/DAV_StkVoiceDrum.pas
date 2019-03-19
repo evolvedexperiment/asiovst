@@ -141,7 +141,7 @@ begin
     gain := 1.0
   else if (Amplitude < 0.0) then
     gain := 0;
-  notenum := round(Instrument) mod 11;
+  notenum := Round(Instrument) mod 11;
   // Check first to see if there's already one like this sounding.
   waveindex := -1;
   for i := 0 to CVoicePolyphony - 1 do

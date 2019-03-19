@@ -222,8 +222,8 @@ begin
 
     BufferPosition := to_do + BufferPosition;
 
-    assert(FpulseCountInt = 0);
-    assert(FpulseCount <= 0);
+    Assert(FpulseCountInt = 0);
+    Assert(FpulseCount <= 0);
 
     begin
       SamplesAlreadyProcessed := SampleFrames - SamplesRemain;

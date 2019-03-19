@@ -878,7 +878,7 @@ begin
       li := LongInt((@x)^);
      end
     else
-      li := round(ps^ * (1 shl (Format.wBitsPerSample - 1)));
+      li := Round(ps^ * (1 shl (Format.wBitsPerSample - 1)));
     stream.Write(li, 1);
     Inc(ps);
    end;
@@ -901,7 +901,7 @@ begin
       li := LongInt((@x)^);
      end
     else
-      li := round(ps^ * (1 shl (Format.wBitsPerSample - 1)));
+      li := Round(ps^ * (1 shl (Format.wBitsPerSample - 1)));
     stream.Write(li, 1);
     Inc(ps);
     if Format.wBitsPerSample = 32 then
@@ -910,7 +910,7 @@ begin
       li := LongInt((@x)^);
      end
     else
-      li := round(ps2^ * (1 shl (Format.wBitsPerSample - 1)));
+      li := Round(ps2^ * (1 shl (Format.wBitsPerSample - 1)));
     stream.Write(li, 1);
     Inc(ps2);
    end;
@@ -1015,7 +1015,7 @@ begin
       li := LongInt((@x)^);
     end
     else
-      li := round(ps^ * (1 shl (bits - 1)));
+      li := Round(ps^ * (1 shl (bits - 1)));
     w.Write(li, 1);
     Inc(ps);
   end;
@@ -1071,7 +1071,7 @@ begin
       li := LongInt((@x)^);
     end
     else
-      li := round(ps^ * (1 shl (bits - 1)));
+      li := Round(ps^ * (1 shl (bits - 1)));
     w.Write(li, 1);
     Inc(ps);
     if t.wBitsPerSample = 32 then
@@ -1080,7 +1080,7 @@ begin
       li := LongInt((@x)^);
     end
     else
-      li := round(ps2^ * (1 shl (bits - 1)));
+      li := Round(ps2^ * (1 shl (bits - 1)));
     w.Write(li, 1);
     Inc(ps2);
   end;

@@ -819,13 +819,13 @@ end;
 
 function TCustomSEHost.GetItem(Index: Integer): TCustomSEHostedModule;
 begin
-  assert(Assigned(FSEHostedModules));
+  Assert(Assigned(FSEHostedModules));
   Result := FSEHostedModules[Index];
 end;
 
 procedure TCustomSEHost.SetHostedModules(const Value: TSEHostedModules);
 begin
-  assert(Assigned(FSEHostedModules));
+  Assert(Assigned(FSEHostedModules));
   FSEHostedModules.Assign(Value);
 end;
 

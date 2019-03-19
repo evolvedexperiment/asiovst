@@ -785,9 +785,9 @@ const
     (2.61, 3.78, 5.1), (4/3, 5/6, 2), (4/3, 8/5, 2), (4/3, 2, 4),
     (2, 4, 8), (3/2, 2, 3), (1.0001, 1.0030, 1.0031));
 begin
-  if round(FBaseDelay * SampleRate) <= 0 then
+  if Round(FBaseDelay * SampleRate) <= 0 then
     exit;
-  FFeedbackDelayNetwork.DelaySamples[0] := round(FBaseDelay * SampleRate);
+  FFeedbackDelayNetwork.DelaySamples[0] := Round(FBaseDelay * SampleRate);
   case FGeometry of
     rgSphere:
       with FFeedbackDelayNetwork do
@@ -799,9 +799,9 @@ begin
   else
     with FFeedbackDelayNetwork do
     begin
-      DelaySamples[1] := round(CGeometryTimeScales[Integer(FGeometry), 0] * FBaseDelay * SampleRate);
-      DelaySamples[2] := round(CGeometryTimeScales[Integer(FGeometry), 1] * FBaseDelay * SampleRate);
-      DelaySamples[3] := round(CGeometryTimeScales[Integer(FGeometry), 2] * FBaseDelay * SampleRate);
+      DelaySamples[1] := Round(CGeometryTimeScales[Integer(FGeometry), 0] * FBaseDelay * SampleRate);
+      DelaySamples[2] := Round(CGeometryTimeScales[Integer(FGeometry), 1] * FBaseDelay * SampleRate);
+      DelaySamples[3] := Round(CGeometryTimeScales[Integer(FGeometry), 2] * FBaseDelay * SampleRate);
     end;
   end;
 end;

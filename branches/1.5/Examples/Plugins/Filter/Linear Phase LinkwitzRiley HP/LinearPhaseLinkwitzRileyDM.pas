@@ -44,7 +44,7 @@ type
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
+    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: NativeUInt);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure ParamFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -103,7 +103,7 @@ begin
  FreeAndNil(FDownsampler);
 end;
 
-procedure TLinearPhaseLinkwitzRileyDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
+procedure TLinearPhaseLinkwitzRileyDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: NativeUInt);
 begin
  GUI := TFmLinearPhaseLinkwitzRiley.Create(Self);
 end;

@@ -252,7 +252,7 @@ begin
        VOICE *V = voice;
        o := 0.0;
 
-       dec(k);
+       Dec(k);
        if (k < 0) then
         begin
          FLFO[0] := FLFO[0] + FDeltaLFO * FLFO[1]; //sine LFO

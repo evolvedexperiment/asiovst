@@ -147,7 +147,7 @@ begin
     FPluckAmplitude := 1.0;
   // Set the pick APosition, which puts zeroes at APosition * length.
   FCombDelay.Delay := (0.5 * FPluckPosition * FLastLength);
-  FDampTime := round(FLastLength); // See Tick method below.
+  FDampTime := Round(FLastLength); // See Tick method below.
 end;
 
 procedure TStkMandolin.Pluck(const Amplitude, Position: Single);
@@ -238,7 +238,7 @@ begin
   else if (Number = CMidiStringDetune) then // 1
     Detune := 1.0 - (norm * 0.1)
   else if (Number = CMidiAfterTouchCont) then // 128
-    FMic := round(norm * 11.0);
+    FMic := Round(norm * 11.0);
 end;
 
 end.

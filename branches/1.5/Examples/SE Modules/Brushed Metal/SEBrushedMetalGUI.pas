@@ -141,7 +141,7 @@ var
       V := M1 + (M2 - M1) * (4 - 6 * Hue)
     else
       V := M1;
-    Result := round(255 * V)
+    Result := Round(255 * V)
   end;
 
 var
@@ -149,7 +149,7 @@ var
 begin
   if S = 0 then
   begin
-    R := round(MaxLum * L);
+    R := Round(MaxLum * L);
     G := R;
     B := R
   end
@@ -181,7 +181,7 @@ begin
       end;
     3:
       NewColor := (FColor and $FFFFFF) or
-        ((round(255 * CurrentPin.ValueAsSingle) shl 24) and $FF000000);
+        ((Round(255 * CurrentPin.ValueAsSingle) shl 24) and $FF000000);
     4:
       begin
         FGradient := CurrentPin.ValueAsSingle;
@@ -201,7 +201,7 @@ end;
 procedure TSEBrushedMetalGui.GuiWindowOpen(wi: PSEWndInfo);
 begin
   inherited;
-  FColor := (round(255 * Pin[3].ValueAsSingle) shl 24 and $FF000000) or
+  FColor := (Round(255 * Pin[3].ValueAsSingle) shl 24 and $FF000000) or
     (HSLtoRGB(Pin[0].ValueAsSingle, Pin[1].ValueAsSingle, Pin[2].ValueAsSingle)
     and $FFFFFF);
   FGradient := Pin[4].ValueAsSingle;
@@ -229,7 +229,7 @@ begin
       S[0] := S[1];
 
       // blue
-      V := round(TRGB32(FColor).B + TRGB32(FColor).A * (H + S[1]));
+      V := Round(TRGB32(FColor).B + TRGB32(FColor).A * (H + S[1]));
       if V < 0 then
         Line[x].B := 0
       else if V > 255 then
@@ -238,7 +238,7 @@ begin
         Line[x].B := V;
 
       // green
-      V := round(TRGB32(FColor).G + TRGB32(FColor).A * (H + S[1]));
+      V := Round(TRGB32(FColor).G + TRGB32(FColor).A * (H + S[1]));
       if V < 0 then
         Line[x].G := 0
       else if V > 255 then
@@ -247,7 +247,7 @@ begin
         Line[x].G := V;
 
       // red
-      V := round(TRGB32(FColor).R + TRGB32(FColor).A * (H + S[1]));
+      V := Round(TRGB32(FColor).R + TRGB32(FColor).A * (H + S[1]));
       if V < 0 then
         Line[x].R := 0
       else if V > 255 then

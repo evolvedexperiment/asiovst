@@ -165,7 +165,7 @@ begin
   if (Index >= 0) and (Index < FStitchedCollection.Count) then
     Result := TGuiStitchedPNGCollectionItem(FStitchedCollection[Index])
   else
-    raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
+    raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
 end;
 
 procedure TGuiStitchedPNGList.Loaded;

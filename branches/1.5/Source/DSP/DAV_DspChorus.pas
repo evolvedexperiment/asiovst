@@ -253,7 +253,7 @@ end;
 procedure TCustomDspChorus.UpdateBuffer;
 begin
   // determine buffer size
-  FBufferSize := round(sqr(Depth) * 0.25 * SampleRate); // quarter second
+  FBufferSize := Round(Sqr(Depth) * 0.25 * SampleRate); // quarter second
   FRealBufSize := FBufferSize + 8;
 
   // check and reset buffer position
@@ -379,14 +379,14 @@ begin
     with TDspChorus32(Dest) do
     begin
       inherited;
-      assert(FRealBufSize = Self.FRealBufSize);
+      Assert(FRealBufSize = Self.FRealBufSize);
       Move(Self.FBuffer32^, FBuffer32^, FRealBufSize * SizeOf(Single));
     end
   else if Dest is TDspChorus64 then
     with TDspChorus64(Dest) do
     begin
       inherited;
-      assert(FRealBufSize = Self.FRealBufSize);
+      Assert(FRealBufSize = Self.FRealBufSize);
       for Sample := 0 to FRealBufSize - 1 do
         Self.FBuffer32^[Sample] := FBuffer64^[Sample];
     end
@@ -430,7 +430,7 @@ begin
   inherited;
 
   // make sure the buffer has been allocated (e.g. not nil)
-  assert(FBuffer32 <> nil);
+  Assert(FBuffer32 <> nil);
 
   // get delayed dry output
   Result := (1 - FMix) * FBuffer32[FBufferOutPos];
@@ -448,7 +448,7 @@ begin
     d := 4 + FBufferSize * 0.5 * (1 - FLFOs[i].Sine);
 
     // calculate absolute sample position
-    p := round(d - 0.5);
+    p := Round(d - 0.5);
     d := d - p;
     p := FBufferInPos + p;
     if p >= FRealBufSize then
@@ -492,7 +492,7 @@ begin
     with TDspChorus32(Dest) do
     begin
       inherited;
-      assert(FRealBufSize = Self.FRealBufSize);
+      Assert(FRealBufSize = Self.FRealBufSize);
       for Sample := 0 to FRealBufSize - 1 do
         Self.FBuffer64^[Sample] := FBuffer32^[Sample];
     end
@@ -500,7 +500,7 @@ begin
     with TDspChorus64(Dest) do
     begin
       inherited;
-      assert(FRealBufSize = Self.FRealBufSize);
+      Assert(FRealBufSize = Self.FRealBufSize);
       Move(Self.FBuffer64^, FBuffer64^, FRealBufSize * SizeOf(Double));
     end
   else
@@ -543,7 +543,7 @@ begin
   inherited;
 
   // make sure the buffer has been allocated (e.g. not nil)
-  assert(FBuffer64 <> nil);
+  Assert(FBuffer64 <> nil);
 
   // get delayed dry output
   Result := (1 - FMix) * FBuffer64[FBufferOutPos];
@@ -561,7 +561,7 @@ begin
     d := 4 + FBufferSize * 0.5 * (1 - FLFOs[i].Sine);
 
     // calculate absolute sample position
-    p := round(d - 0.5);
+    p := Round(d - 0.5);
     d := d - p;
     p := FBufferInPos + p;
     if p >= FRealBufSize then
@@ -607,7 +607,7 @@ begin
     with TDspChorus32(Dest) do
     begin
     inherited;
-    assert(FRealBufSize = Self.FRealBufSize);
+    Assert(FRealBufSize = Self.FRealBufSize);
     Move(Self.FBuffer32^, FBuffer32^, FRealBufSize * SizeOf(Single));
     end else
     if Dest is TDspChorus64 then
@@ -649,7 +649,7 @@ begin
   inherited;
 
   // make sure the buffer has been allocated (e.g. not nil)
-  assert(FBuffer <> nil);
+  Assert(FBuffer <> nil);
 
   // get delayed dry output
   case FBufferPrecision of
@@ -676,7 +676,7 @@ begin
     d := 4 + FBufferSize * 0.5 * (1 - FLFOs[i].Sine);
 
     // calculate absolute sample position
-    p := round(d - 0.5);
+    p := Round(d - 0.5);
     d := d - p;
     p := FBufferInPos + p;
     if p >= FRealBufSize then
@@ -735,7 +735,7 @@ begin
   inherited;
 
   // make sure the buffer has been allocated (e.g. not nil)
-  assert(FBuffer <> nil);
+  Assert(FBuffer <> nil);
 
   // get delayed dry output
   case FBufferPrecision of
@@ -762,7 +762,7 @@ begin
     d := 4 + FBufferSize * 0.5 * (1 - FLFOs[i].Sine);
 
     // calculate absolute sample position
-    p := round(d - 0.5);
+    p := Round(d - 0.5);
     d := d - p;
     p := FBufferInPos + p;
     if p >= FRealBufSize then

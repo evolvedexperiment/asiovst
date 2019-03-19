@@ -203,7 +203,7 @@ end;
 procedure TCustomModDelay.UpdateBuffer;
 begin
   // calculate buffer size in samples
-  FBufferSize := round(0.001 * FDelay * abs(SampleRate));
+  FBufferSize := Round(0.001 * FDelay * abs(SampleRate));
   FRealBufSize := FBufferSize + 8;
 
   // check and reset buffer position
@@ -320,14 +320,14 @@ begin
     with TCustomModDelay32(Dest) do
     begin
       inherited;
-      assert(FRealBufSize = Self.FRealBufSize);
+      Assert(FRealBufSize = Self.FRealBufSize);
       Move(Self.FBuffer32^, FBuffer32^, FRealBufSize * SizeOf(Single));
     end
   else if Dest is TCustomModDelay64 then
     with TCustomModDelay64(Dest) do
     begin
       inherited;
-      assert(FRealBufSize = Self.FRealBufSize);
+      Assert(FRealBufSize = Self.FRealBufSize);
       for Sample := 0 to FRealBufSize - 1 do
         FBuffer64^[Sample] := Self.FBuffer32^[Sample];
     end
@@ -381,7 +381,7 @@ begin
   d := 4 + FBufferSize * 0.5 * (1 - FLFO.Sine);
 
   // calculate absolute sample position
-  p := round(d - 0.5);
+  p := Round(d - 0.5);
   d := d - p;
   p := FBufferPos + p;
   if p >= FRealBufSize then
@@ -417,7 +417,7 @@ begin
     with TCustomModDelay32(Dest) do
     begin
       inherited;
-      assert(FRealBufSize = Self.FRealBufSize);
+      Assert(FRealBufSize = Self.FRealBufSize);
       for Sample := 0 to FRealBufSize - 1 do
         FBuffer32^[Sample] := Self.FBuffer64^[Sample];
     end
@@ -425,7 +425,7 @@ begin
     with TCustomModDelay64(Dest) do
     begin
       inherited;
-      assert(FRealBufSize = Self.FRealBufSize);
+      Assert(FRealBufSize = Self.FRealBufSize);
       Move(Self.FBuffer64^, FBuffer64^, FRealBufSize * SizeOf(Double));
     end
   else
@@ -478,7 +478,7 @@ begin
   d := 4 + FBufferSize * 0.5 * (1 - FLFO.Sine);
 
   // calculate absolute sample position
-  p := round(d - 0.5);
+  p := Round(d - 0.5);
   d := d - p;
   p := FBufferPos + p;
   if p >= FRealBufSize then

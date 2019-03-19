@@ -129,7 +129,7 @@ uses
 constructor TStkSaxofony.Create;
 begin
   inherited Create(SampleRate);
-  FLength := round(SampleRate / LowestFrequency + 1);
+  FLength := Round(SampleRate / LowestFrequency + 1);
   // Initialize blowing FPosition to 0.2 of FLength / 2.
   FPosition := 0.2;
   FDelays[0] := TStkDelayL.Create(SampleRate, (1.0 - FPosition) *

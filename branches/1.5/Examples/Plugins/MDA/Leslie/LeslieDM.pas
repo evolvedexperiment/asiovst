@@ -434,7 +434,7 @@ begin
     a := Inputs[0, Sample] + Inputs[1, Sample]; // mono input
 
     //linear piecewise approx to LFO waveforms
-    if k > 0 then dec(k) else
+    if k > 0 then Dec(k) else
     begin
       ls := (lm * ls) + lt; //tend to required speed
       hs := (hm * hs) + ht;
@@ -460,7 +460,7 @@ begin
 
     // delay input pos
     if hps > 0 then
-      dec(hps)
+      Dec(hps)
     else
       hps := 200;
 

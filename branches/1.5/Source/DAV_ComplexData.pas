@@ -208,8 +208,8 @@ end;
 
 function TCustomComplexChannel.GetComplexData: TCustomComplexData;
 begin
-  assert(Collection is TCustomComplexChannels);
-  assert(TCustomComplexChannels(Collection).GetOwner is TCustomComplexData);
+  Assert(Collection is TCustomComplexChannels);
+  Assert(TCustomComplexChannels(Collection).GetOwner is TCustomComplexData);
   Result := TCustomComplexData(TCustomComplexChannels(GetOwner).GetOwner);
 end;
 
@@ -446,7 +446,7 @@ var
 begin
   for ch := 0 to FChannels.Count - 1 do
   begin
-    assert(FChannels.Items[ch] is TCustomComplexChannel);
+    Assert(FChannels.Items[ch] is TCustomComplexChannel);
     if TCustomComplexChannel(FChannels.Items[ch]).BinCount <> FBinCount then
       TCustomComplexChannel(FChannels.Items[ch]).BinCountChanged;
   end;

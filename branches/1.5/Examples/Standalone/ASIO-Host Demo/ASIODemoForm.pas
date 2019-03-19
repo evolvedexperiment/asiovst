@@ -265,7 +265,7 @@ begin
   if FPan = 0.5 then
     LabelPanorama.Caption := 'Panorama: C'
   else
-    LabelPanorama.Caption := 'Panorama: ' + IntToStr(round(100 * (FPan * 2 - 1)));
+    LabelPanorama.Caption := 'Panorama: ' + IntToStr(Round(100 * (FPan * 2 - 1)));
 end;
 
 procedure TFormASIO.ASIOHostSampleRateChanged(Sender: TObject);

@@ -102,7 +102,7 @@ end;
 constructor TStkDelayL.Create(const SampleRate, ADelay: Single;
   const AMaxDelay: Integer);
 begin
-  inherited Create(SampleRate, round(ADelay + CHalf32), AMaxDelay);
+  inherited Create(SampleRate, Round(ADelay + CHalf32), AMaxDelay);
   FLength := AMaxDelay + 1;
   (*
     if (FLength > 4096) then
@@ -161,7 +161,7 @@ begin
   while (OutPointer < 0) do
     OutPointer := OutPointer + length; // modulo maximum length
 
-  FOutPoint := round(OutPointer); // integer part
+  FOutPoint := Round(OutPointer); // integer part
   FAlpha := OutPointer - FOutPoint; // fractional part
   FOmAlpha := 1 - FAlpha;
 end;

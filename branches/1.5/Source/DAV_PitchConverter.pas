@@ -126,7 +126,7 @@ function TPitchConverter.CyclesPerSampleToMidi(Value: Double): Integer;
 begin
   if Value < 0 then
     Value := 0;
-  Result := abs(round(12 * log2(Value / FGlobalTuneA4) + 69));
+  Result := abs(Round(12 * log2(Value / FGlobalTuneA4) + 69));
   if Result > 127 then
     Result := -1;
 end;
@@ -145,7 +145,7 @@ begin
   if Value < 0 then
     Value := 0;
   k := log2(Value / FGlobalTuneA4) + 8.75;
-  z := round(12 * frac(k));
+  z := Round(12 * frac(k));
   Result := int(k) + z * 1E-2;
 end;
 
@@ -179,7 +179,7 @@ var
 begin
   if (Value >= 0) and (Value <= 127) then
   begin
-    Value := round(Value);
+    Value := Round(Value);
     k := (Value + 36) / 12;
     Result := int(k) + 12 * frac(k) * 1E-2;
   end
@@ -199,7 +199,7 @@ begin
   if (Value <= 3) then
     Result := -1
   else
-    Result := round(12 * (Value - 3));
+    Result := Round(12 * (Value - 3));
   if Result > 127 then
     Result := -1;
 end;
@@ -210,7 +210,7 @@ var
 begin
   if Value < 0 then
     Value := 0;
-  z := round(frac(Value) * 12);
+  z := Round(frac(Value) * 12);
   Result := int(Value) + z * 1E-2;
 end;
 
@@ -220,7 +220,7 @@ var
 begin
   if Value < 0 then
     Value := 0;
-  z := round(frac(Value) * 100);
+  z := Round(frac(Value) * 100);
   if (z < 0) or (z > 11) then
     z := 0;
   Result := FGlobalTuneA4 * power(2, Value + z / 12 - 8.75);
@@ -234,10 +234,10 @@ begin
     Result := -1
   else
   begin
-    z := round(100 * frac(Value)) * 1E-2;
+    z := Round(100 * frac(Value)) * 1E-2;
     if (z < 0) or (z > 0.11) then
       z := 0;
-    Result := round(100 * z + 12 * (Value - 3));
+    Result := Round(100 * z + 12 * (Value - 3));
   end;
   if Result > 127 then
     Result := -1;
@@ -249,7 +249,7 @@ var
 begin
   if Value < 0 then
     Value := 0;
-  z := round(frac(Value) * 100) * 1E-2;
+  z := Round(frac(Value) * 100) * 1E-2;
   if (z < 0) or (z > 0.11) then
     z := 0;
   Result := int(Value) + 100 * z / 12;

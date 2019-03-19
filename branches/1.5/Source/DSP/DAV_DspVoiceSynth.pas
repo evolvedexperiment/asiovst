@@ -204,9 +204,8 @@ begin
     FCurrentFreq := FFrequencyFactor * SampleRate /
       (DownSampleFilterOrder * FAverageSamples);
     if FQuantizeToNotes then
-      FCurrentFreq := 440 * FastPower2ContinousError3
-        (round(12 * FastLog2ContinousError3(FCurrentFreq / 440)) *
-        COneTwelfth32);
+      FCurrentFreq := 440 * FastPower2ContinousError3(
+        Round(12 * FastLog2ContinousError3(FCurrentFreq / 440)) * COneTwelfth32);
 
     GetSinCos(2 * Pi * FCurrentFreq * FSampleRateReciprocal, FComplexAngle.Im,
       FComplexAngle.Re);

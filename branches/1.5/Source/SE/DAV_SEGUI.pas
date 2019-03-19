@@ -296,7 +296,7 @@ function DispatchEffectClass(Effect: PSEGUIStructBase; Opcode: Integer;
 begin
   if Assigned(Effect) then
   begin
-    assert(assigned(Effect.SEGUIBase));
+    Assert(Assigned(Effect.SEGUIBase));
     Result := Effect.SEGUIBase.Dispatcher(TSEGuiPluginOpcodes(Opcode), Index,
       Value, Ptr, Opt);
   end
@@ -380,7 +380,7 @@ end;
 function TSEGUIBase.CallHost(Opcode: TSEGuiHostOpcodes; Index, Value: Integer;
   Ptr: Pointer; Opt: Single): Integer;
 begin
-  assert(assigned(FAudioMaster));
+  Assert(Assigned(FAudioMaster));
   Result := FAudioMaster(@FStructBase, Opcode, Index, Value, Ptr, Opt);
 end;
 

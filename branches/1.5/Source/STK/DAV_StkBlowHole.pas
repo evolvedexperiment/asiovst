@@ -140,7 +140,7 @@ var
   te: Single;
 begin
   inherited Create(SampleRate);
-  FLength := round(SampleRate / LowestFrequency + 1);
+  FLength := Round(SampleRate / LowestFrequency + 1);
   // FDelays[0] is the delay line between the reed and the register FVent.
   FDelays[0] := TStkDelayL.Create(SampleRate, 5.0 * SampleRate / 22050.0, 100);
   // FDelays[1] is the delay line between the register FVent and the FTonehole.

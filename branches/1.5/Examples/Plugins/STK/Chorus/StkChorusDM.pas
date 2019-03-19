@@ -132,7 +132,7 @@ begin
       Outputs[1, Sample] := CFixMix[0] * Inputs[1, Sample] + CFixMix[1] * FChorus.LastOutputRight;
     end;
   finally
-    dec(FSemaphore);
+    Dec(FSemaphore);
   end;
 end;
 
@@ -151,7 +151,7 @@ begin
       Outputs[1, Sample] := CFixMix[0] * Inputs[1, Sample] + CFixMix[1] * FChorus.LastOutputRight;
     end;
   finally
-    dec(FSemaphore);
+    Dec(FSemaphore);
   end;
 end;
 
@@ -164,7 +164,7 @@ begin
   try
     FChorus.ModDepth := 0.001 * Value;
   finally
-    dec(FSemaphore);
+    Dec(FSemaphore);
   end;
 
   // update GUI
@@ -181,7 +181,7 @@ begin
   try
     FChorus.ModFrequency := 0.001 * Value;
   finally
-    dec(FSemaphore);
+    Dec(FSemaphore);
   end;
 
   // update GUI

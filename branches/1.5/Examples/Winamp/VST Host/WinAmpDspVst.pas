@@ -748,7 +748,7 @@ begin
   for Channel := 0 to min(Length(FOutputBuffer), ChannelCount) - 1 do
     for Sample := 0 to SampleFrames - 1 do
       I8^[Sample * ChannelCount + Channel] :=
-        round(FOutputBuffer[Channel]^[Sample] * MulFakDith8 + random - random);
+        Round(FOutputBuffer[Channel]^[Sample] * MulFakDith8 + random - random);
 end;
 
 procedure TWinAmpObject.ConvertFloatToInterleaved8bitOversampled
@@ -762,7 +762,7 @@ begin
   for Channel := 0 to min(Length(FOutputBuffer), ChannelCount) - 1 do
     for Sample := 0 to SampleFrames - 1 do
       I8^[Sample * ChannelCount + Channel] :=
-        round(Limit(FDownsampler[Channel].ProcessSample
+        Round(Limit(FDownsampler[Channel].ProcessSample
         (PDAV2SingleArray(@FOutputBuffer[Channel]^[2 * Sample])^)) * MulFakDith8
         + random - random);
 end;
@@ -778,7 +778,7 @@ begin
   for Channel := 0 to min(Length(FOutputBuffer), ChannelCount) - 1 do
     for Sample := 0 to SampleFrames - 1 do
       I16^[Sample * ChannelCount + Channel] :=
-        round(Limit(FOutputBuffer[Channel]^[Sample]) * MulFakDith16 + random
+        Round(Limit(FOutputBuffer[Channel]^[Sample]) * MulFakDith16 + random
         - random);
 end;
 
@@ -793,7 +793,7 @@ begin
   for Channel := 0 to min(Length(FOutputBuffer), ChannelCount) - 1 do
     for Sample := 0 to SampleFrames - 1 do
       I16^[Sample * ChannelCount + Channel] :=
-        round(Limit(FDownsampler[Channel].ProcessSample
+        Round(Limit(FDownsampler[Channel].ProcessSample
         (PDAV2SingleArray(@FOutputBuffer[Channel]^[2 * Sample])^)) *
         MulFakDith16 + random - random);
 end;
@@ -811,7 +811,7 @@ begin
   for Channel := 0 to min(Length(FOutputBuffer), ChannelCount) - 1 do
     for Sample := 0 to SampleFrames - 1 do
     begin
-      TempData := round(Limit(FOutputBuffer[Channel]^[Sample]) * MulFakDith24 +
+      TempData := Round(Limit(FOutputBuffer[Channel]^[Sample]) * MulFakDith24 +
         random - random);
       Move(TempDataBytes[0], I24^[Sample * ChannelCount + Channel], 3);
     end;
@@ -831,7 +831,7 @@ begin
     for Sample := 0 to SampleFrames - 1 do
     begin
       TempData :=
-        round(Limit(FDownsampler[Channel].ProcessSample
+        Round(Limit(FDownsampler[Channel].ProcessSample
         (PDAV2SingleArray(@FOutputBuffer[Channel]^[2 * Sample])^)) *
         MulFakDith24 + random - random);
       Move(TempDataBytes[0], I24^[Sample * ChannelCount + Channel], 3);
@@ -849,7 +849,7 @@ begin
   for Channel := 0 to min(Length(FOutputBuffer), ChannelCount) - 1 do
     for Sample := 0 to SampleFrames - 1 do
       I32^[Sample * ChannelCount + Channel] :=
-        round(Limit(FOutputBuffer[Channel]^[Sample]) * MulFakDith32 + random
+        Round(Limit(FOutputBuffer[Channel]^[Sample]) * MulFakDith32 + random
         - random);
 end;
 
@@ -864,7 +864,7 @@ begin
   for Channel := 0 to min(Length(FOutputBuffer), ChannelCount) - 1 do
     for Sample := 0 to SampleFrames - 1 do
       I32^[Sample * ChannelCount + Channel] :=
-        round(Limit(FDownsampler[Channel].ProcessSample
+        Round(Limit(FDownsampler[Channel].ProcessSample
         (PDAV2SingleArray(@FOutputBuffer[Channel]^[2 * Sample])^)) *
         MulFakDith32 + random - random);
 end;

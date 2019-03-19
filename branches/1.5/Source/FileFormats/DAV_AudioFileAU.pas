@@ -273,7 +273,7 @@ begin
     if Value <> SampleRate then
     begin
       inherited;
-      SampleRate := round(Value);
+      SampleRate := Round(Value);
     end;
 end;
 
@@ -382,8 +382,8 @@ begin
       Flip32(Channels);
 
       // some checks
-      assert(SampleRate > 0);
-      assert(Channels > 0);
+      Assert(SampleRate > 0);
+      Assert(Channels > 0);
 
       if (DataSize > Size - Position) then
         raise EAUError.Create(RCStrDatasizeTooLarge);
@@ -538,7 +538,7 @@ begin
           FreeAndNil(DataDecoder);
         end;
 
-      assert(Stream.Position = ChunkEnd);
+      Assert(Stream.Position = ChunkEnd);
       Position := ChunkEnd;
     end;
 end;

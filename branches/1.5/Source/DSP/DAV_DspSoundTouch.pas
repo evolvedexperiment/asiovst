@@ -180,7 +180,7 @@ end;
 
 procedure TDspSoundTouch.ChannelsChanged;
 begin
-  assert(FChannels in [1, 2]);
+  Assert(FChannels in [1, 2]);
   SoundTouchSetChannels(FHandle, FChannels);
 end;
 
@@ -236,7 +236,7 @@ end;
 
 procedure TDspSoundTouch.SampleRateChanged;
 begin
-  assert(SampleRate > 0);
+  Assert(SampleRate > 0);
   SoundTouchsetSampleRate(FHandle, Round(SampleRate));
 end;
 

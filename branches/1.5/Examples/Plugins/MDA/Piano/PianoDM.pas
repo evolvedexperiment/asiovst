@@ -429,7 +429,7 @@ end;
  for v := 0 to FActiveVoices - 1 do
   if FVoices[v].env < cSilence then
    begin
-    dec(FActiveVoices);
+    Dec(FActiveVoices);
     FVoices[v] := FVoices[FActiveVoices];
    end;
  FNotePos := 0;

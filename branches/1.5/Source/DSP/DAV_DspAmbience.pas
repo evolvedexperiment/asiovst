@@ -366,23 +366,23 @@ begin
   // decorrelation allpass delay filters
   t := FBuffers[0]^[FPos];
   r := r - CFeedback * t;
-  FBuffers[0]^[(FPos + round(107 * FRoomsize)) and 1023] := r; // Allpass
+  FBuffers[0]^[(FPos + Round(107 * FRoomsize)) and 1023] := r; // Allpass
   r := r + t;
 
   t := FBuffers[1]^[FPos];
   r := r - CFeedback * t;
-  FBuffers[1]^[(FPos + round(142 * FRoomsize)) and 1023] := r; // Allpass
+  FBuffers[1]^[(FPos + Round(142 * FRoomsize)) and 1023] := r; // Allpass
   r := r + t;
 
   t := FBuffers[2]^[FPos];
   r := r - CFeedback * t;
-  FBuffers[2]^[(FPos + round(277 * FRoomsize)) and 1023] := r; // Allpass
+  FBuffers[2]^[(FPos + Round(277 * FRoomsize)) and 1023] := r; // Allpass
   r := r + t;
   Result := FDry * Input + r - FHfDampState; // Left Output
 
   t := FBuffers[3]^[FPos];
   r := r - CFeedback * t;
-  FBuffers[3]^[(FPos + round(379 * FRoomsize)) and 1023] := r; // Allpass
+  FBuffers[3]^[(FPos + Round(379 * FRoomsize)) and 1023] := r; // Allpass
   r := r + t;
   Result := CHalf32 * (Result + (FDry * Input + r - FHfDampState));
   // Right Output
@@ -421,23 +421,23 @@ begin
   // decorrelation allpass delay filters
   t := FBuffers[0]^[FPos];
   r := r - CFeedback * t;
-  FBuffers[0]^[(FPos + round(107 * FRoomsize)) and 1023] := r; // Allpass
+  FBuffers[0]^[(FPos + Round(107 * FRoomsize)) and 1023] := r; // Allpass
   r := r + t;
 
   t := FBuffers[1]^[FPos];
   r := r - CFeedback * t;
-  FBuffers[1]^[(FPos + round(142 * FRoomsize)) and 1023] := r; // Allpass
+  FBuffers[1]^[(FPos + Round(142 * FRoomsize)) and 1023] := r; // Allpass
   r := r + t;
 
   t := FBuffers[2]^[FPos];
   r := r - CFeedback * t;
-  FBuffers[2]^[(FPos + round(277 * FRoomsize)) and 1023] := r; // Allpass
+  FBuffers[2]^[(FPos + Round(277 * FRoomsize)) and 1023] := r; // Allpass
   r := r + t;
   Result := FDry * Input + r - FHfDampState; // Left Output
 
   t := FBuffers[3]^[FPos];
   r := r - CFeedback * t;
-  FBuffers[3]^[(FPos + round(379 * FRoomsize)) and 1023] := r; // Allpass
+  FBuffers[3]^[(FPos + Round(379 * FRoomsize)) and 1023] := r; // Allpass
   r := r + t;
   Result := CHalf32 * (Result + (FDry * Input + r - FHfDampState));
   // Right Output
@@ -493,23 +493,23 @@ begin
   // decorrelation allpass delay filters
   t := FBuffers[0]^[FPos];
   r := r - CFeedback * t;
-  FBuffers[0]^[(FPos + round(107 * FRoomsize)) and 1023] := r; // Allpass
+  FBuffers[0]^[(FPos + Round(107 * FRoomsize)) and 1023] := r; // Allpass
   r := r + t;
 
   t := FBuffers[1]^[FPos];
   r := r - CFeedback * t;
-  FBuffers[1]^[(FPos + round(142 * FRoomsize)) and 1023] := r; // Allpass
+  FBuffers[1]^[(FPos + Round(142 * FRoomsize)) and 1023] := r; // Allpass
   r := r + t;
 
   t := FBuffers[2]^[FPos];
   r := r - CFeedback * t;
-  FBuffers[2]^[(FPos + round(277 * FRoomsize)) and 1023] := r; // Allpass
+  FBuffers[2]^[(FPos + Round(277 * FRoomsize)) and 1023] := r; // Allpass
   r := r + t;
   Left := FDry * Left + r - FHfDampState; // Left Output
 
   t := FBuffers[3]^[FPos];
   r := r - CFeedback * t;
-  FBuffers[3]^[(FPos + round(379 * FRoomsize)) and 1023] := r; // Allpass
+  FBuffers[3]^[(FPos + Round(379 * FRoomsize)) and 1023] := r; // Allpass
   r := r + t;
   Right := FDry * Right + r - FHfDampState; // Right Output
 

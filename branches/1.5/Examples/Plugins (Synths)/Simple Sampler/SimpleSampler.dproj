@@ -49,7 +49,7 @@
         <SanitizedProjectName>SimpleSampler</SanitizedProjectName>
         <DCC_DcuOutput>..\..\..\UnitCache\$(Platform)\$(Config)</DCC_DcuOutput>
         <DCC_E>false</DCC_E>
-        <DCC_ExeOutput>..\..\..\Bin\VST\$(Platform)</DCC_ExeOutput>
+        <DCC_ExeOutput>..\..\..\Bin\$(Platform)\VST</DCC_ExeOutput>
         <DCC_F>false</DCC_F>
         <DCC_ImageBase>00400000</DCC_ImageBase>
         <DCC_K>false</DCC_K>

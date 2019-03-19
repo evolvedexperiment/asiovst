@@ -296,7 +296,7 @@ end;
 
 procedure TCustomBufferThread.CalculateTimeOut;
 begin
-  FTimeOut := round(1000 * FStreamBufSize / FSampleRate);
+  FTimeOut := Round(1000 * FStreamBufSize / FSampleRate);
 end;
 
 procedure TCustomBufferThread.SampleRateChanged;
@@ -380,7 +380,7 @@ end;
 procedure TMonoBufferThread.EncodeHandler(Sender: TObject;
   const Coder: TCustomChannelDataCoder; var Position: Cardinal);
 begin
-  assert(Coder is TCustomChannel32DataCoder);
+  Assert(Coder is TCustomChannel32DataCoder);
   with TCustomChannel32DataCoder(Coder) do
   begin
     if ChannelCount = 0 then
@@ -483,7 +483,7 @@ end;
 procedure TStereoBufferThread.EncodeHandler(Sender: TObject;
   const Coder: TCustomChannelDataCoder; var Position: Cardinal);
 begin
-  assert(Coder is TCustomChannel32DataCoder);
+  Assert(Coder is TCustomChannel32DataCoder);
   with TCustomChannel32DataCoder(Coder) do
   begin
     if ChannelCount = 0 then
@@ -586,7 +586,7 @@ end;
 procedure TMultiBufferThread.EncodeHandler(Sender: TObject;
   const Coder: TCustomChannelDataCoder; var Position: Cardinal);
 begin
-  assert(Coder is TCustomChannel32DataCoder);
+  Assert(Coder is TCustomChannel32DataCoder);
   with TCustomChannel32DataCoder(Coder) do
   begin
     if ChannelCount = 0 then

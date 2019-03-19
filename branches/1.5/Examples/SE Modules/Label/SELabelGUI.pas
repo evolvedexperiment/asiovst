@@ -193,7 +193,7 @@ begin
   with Bitmap do
     for y := (Height div 4) - 1 downto 0 do
     begin
-      assert(PixelFormat = pf24bit);
+      Assert(PixelFormat = pf24bit);
 
       Line[0] := Scanline[y];
       Line[1] := Scanline[y * 4];

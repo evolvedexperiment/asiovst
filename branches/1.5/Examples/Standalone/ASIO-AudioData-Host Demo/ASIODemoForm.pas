@@ -234,7 +234,7 @@ begin
   if FPan = 0.5 then
     LabelPanorama.Caption := RCStrPanorama + ': C'
   else
-    LabelPanorama.Caption := RCStrPanorama + ': ' + IntToStr(round(100 * (FPan * 2 - 1)));
+    LabelPanorama.Caption := RCStrPanorama + ': ' + IntToStr(Round(100 * (FPan * 2 - 1)));
 end;
 
 {$IFDEF FPC}

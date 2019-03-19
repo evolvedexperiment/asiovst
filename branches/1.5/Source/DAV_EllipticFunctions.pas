@@ -1281,7 +1281,7 @@ begin
   begin
     Result := b / a;
     lphi := lphi + ArcTan(t * Result) + md * Pi;
-    md := round((lphi + PiO2) / Pi);
+    md := Round((lphi + PiO2) / Pi);
     t := t * (1 + Result) / (1 - Result * Sqr(t));
     c := (a - b) * 0.5;
     Result := Sqrt(a * b);
@@ -1409,7 +1409,7 @@ begin
   begin
     Result := b / a;
     Phi := Phi + ArcTan(t * Result) + md * Pi;
-    md := round((Phi + PiO2) / Pi);
+    md := Round((Phi + PiO2) / Pi);
     t := t * (1.0 + Result) / (1.0 - Result * Sqr(t));
     c := (a - b) * 0.5;
     Result := Sqrt(a * b);
@@ -1642,7 +1642,7 @@ done:
     t := c[i] * sin(Phi) / a[i];
     b := Phi;
     Phi := (arcsin(t) + Phi) * 0.5;
-    dec(i);
+    Dec(i);
   end;
 
   Sn := sin(Phi);
@@ -1749,7 +1749,7 @@ begin
   Result := CompleteEllipticIntegral1stKind(Sqrt(m)) - Result;
 
   (*
-    assert(abs(m) < 1);
+    Assert(abs(m) < 1);
     Result := 0;
     for i := 0 to Steps - 1 do
     begin

@@ -239,7 +239,7 @@ end;
 procedure TSEScopeGui.GuiModuleMsg(AUserMsgID, ALength: Integer;
   AData: Pointer);
 begin
-  assert(ALength = SizeOf(FValues));
+  Assert(ALength = SizeOf(FValues));
   Move(FValues[0, 0], AData^, ALength);
   InvalidateControl;
 end;

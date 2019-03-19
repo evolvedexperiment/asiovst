@@ -82,8 +82,6 @@ object ChebyshevHPModule: TChebyshevHPModule
   OnProcess32Replacing = VSTModuleProcess
   OnProcess64Replacing = VSTModuleProcessDoubleReplacing
   OnSampleRateChange = VSTModuleSampleRateChange
-  Left = 694
-  Top = 85
   Height = 150
   Width = 215
 end

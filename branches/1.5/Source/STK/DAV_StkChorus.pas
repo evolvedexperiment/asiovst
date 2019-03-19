@@ -82,10 +82,10 @@ uses
 constructor TStkChorus.Create(const SampleRate, BaseDelay: Single);
 begin
   inherited Create(SampleRate);
-  FDelayLine[0] := TStkDelayL.Create(SampleRate, round(BaseDelay),
-    round(BaseDelay * 1.414) + 2);
-  FDelayLine[1] := TStkDelayL.Create(SampleRate, round(BaseDelay),
-    round(BaseDelay) + 2);
+  FDelayLine[0] := TStkDelayL.Create(SampleRate, Round(BaseDelay),
+    Round(BaseDelay * 1.414) + 2);
+  FDelayLine[1] := TStkDelayL.Create(SampleRate, Round(BaseDelay),
+    Round(BaseDelay) + 2);
   FBaseLength := BaseDelay;
 
   FMods[0] := TStkLFO.Create(SampleRate);

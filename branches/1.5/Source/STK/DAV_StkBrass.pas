@@ -119,7 +119,7 @@ uses
 constructor TStkBrass.Create;
 begin
   inherited Create(SampleRate);
-  FLength := round(SampleRate / LowestFrequency + 1);
+  FLength := Round(SampleRate / LowestFrequency + 1);
   FDelayLine := TStkDelayA.Create(SampleRate, 0.5 * FLength, FLength);
 
   FLipFilter := TStkBiQuad.Create(SampleRate);

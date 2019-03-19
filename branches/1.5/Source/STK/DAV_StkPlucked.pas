@@ -99,7 +99,7 @@ uses
 constructor TStkPlucked.Create;
 begin
   inherited Create(SampleRate);
-  FLength := round(SampleRate / LowestFrequency + 1);
+  FLength := Round(SampleRate / LowestFrequency + 1);
   FLoopGain := 0.999;
   FDelayLine := TStkDelayA.Create(SampleRate, (FLength / 2.0), FLength);
   FLoopFilter := TStkOneZero.Create(SampleRate);

@@ -177,7 +177,7 @@ begin
   if (OutPointer < 0) then
     OutPointer := OutPointer + length; // modulo maximum length
 
-  FOutPoint := round(OutPointer); // integer part
+  FOutPoint := Round(OutPointer); // integer part
   FAlpha := 1.0 + FOutPoint - OutPointer; // fractional part
 
   if (FAlpha < 0.5) then

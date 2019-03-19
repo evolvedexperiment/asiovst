@@ -744,17 +744,17 @@ begin
       for Sample := 0 to FSampleFrames - 1 do
         for Channel := 0 to FChannelCount - 1 do
           PDAVByteArray(FBlockBuffer)^[Sample * FChannelCount + Channel] :=
-            127 + round(FChannelArray[Channel]^[Sample] * FScaleFactor[0]);
+            127 + Round(FChannelArray[Channel]^[Sample] * FScaleFactor[0]);
     2:
       for Sample := 0 to FSampleFrames - 1 do
         for Channel := 0 to FChannelCount - 1 do
           PDAVSmallIntArray(FBlockBuffer)^[Sample * FChannelCount + Channel] :=
-            round(FChannelArray[Channel]^[Sample] * FScaleFactor[0]);
+            Round(FChannelArray[Channel]^[Sample] * FScaleFactor[0]);
     3:
       for Channel := 0 to FChannelCount - 1 do
         for Sample := 0 to FSampleFrames - 1 do
         begin
-          DataInt := round(FChannelArray[Channel]^[Sample] * FScaleFactor[0]);
+          DataInt := Round(FChannelArray[Channel]^[Sample] * FScaleFactor[0]);
           // shl 8;
           Move(DataInt, PDAVByteArray(FBlockBuffer)
             ^[3 * (Sample * FChannelCount + Channel)], 3);
@@ -763,7 +763,7 @@ begin
       for Sample := 0 to FSampleFrames - 1 do
         for Channel := 0 to FChannelCount - 1 do
           PIntegerArray(FBlockBuffer)^[Sample * FChannelCount + Channel] :=
-            round(FChannelArray[Channel]^[Sample] * FScaleFactor[0]);
+            Round(FChannelArray[Channel]^[Sample] * FScaleFactor[0]);
   end;
 end;
 
@@ -833,7 +833,7 @@ begin
   if (Input > 1) then
     IntValue := $7FFF
   else
-    IntValue := round($7FFF * Input);
+    IntValue := Round($7FFF * Input);
 
   // Finding the "exponent"
   // Bits:
@@ -853,7 +853,7 @@ begin
   while ((IntValue and ExpMask) = 0) and (Exponent > 0) do
   begin
     ExpMask := ExpMask shr 1;
-    dec(Exponent);
+    Dec(Exponent);
   end;
 
   // The last part - the "mantissa"
@@ -1017,7 +1017,7 @@ var
   Exponent: Integer;
   Mantissa: Integer;
 begin
-  InputInt := round(Input * $7FFF);
+  InputInt := Round(Input * $7FFF);
   Sign := (InputInt shr 8) and $80;
   if Sign <> 0 then
     InputInt := -InputInt;
@@ -1934,17 +1934,17 @@ begin
       for Sample := 0 to FSampleFrames - 1 do
         for Channel := 0 to FChannelCount - 1 do
           PDAVByteArray(FBlockBuffer)^[Sample * FChannelCount + Channel] :=
-            127 + round(FChannelArray[Channel]^[Sample] * FScaleFactor[0]);
+            127 + Round(FChannelArray[Channel]^[Sample] * FScaleFactor[0]);
     2:
       for Sample := 0 to FSampleFrames - 1 do
         for Channel := 0 to FChannelCount - 1 do
           PDAVSmallIntArray(FBlockBuffer)^[Sample * FChannelCount + Channel] :=
-            round(FChannelArray[Channel]^[Sample] * FScaleFactor[0]);
+            Round(FChannelArray[Channel]^[Sample] * FScaleFactor[0]);
     3:
       for Channel := 0 to FChannelCount - 1 do
         for Sample := 0 to FSampleFrames - 1 do
         begin
-          DataInt := round(FChannelArray[Channel]^[Sample] * FScaleFactor[0]);
+          DataInt := Round(FChannelArray[Channel]^[Sample] * FScaleFactor[0]);
           // shl 8;
           Move(DataInt, PDAVByteArray(FBlockBuffer)
             ^[3 * (Sample * FChannelCount + Channel)], 3);
@@ -1953,7 +1953,7 @@ begin
       for Sample := 0 to FSampleFrames - 1 do
         for Channel := 0 to FChannelCount - 1 do
           PIntegerArray(FBlockBuffer)^[Sample * FChannelCount + Channel] :=
-            round(FChannelArray[Channel]^[Sample] * FScaleFactor[0]);
+            Round(FChannelArray[Channel]^[Sample] * FScaleFactor[0]);
   end;
 end;
 

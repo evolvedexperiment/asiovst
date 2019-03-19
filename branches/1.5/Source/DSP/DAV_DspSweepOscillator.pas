@@ -327,7 +327,7 @@ end;
 procedure TCustomRangeSweepOscillator64.CalculateSampleCount;
 begin
   FSampleCount := Round((FStopFreq - FStartFreq) / FModFreq);
-  assert(FSampleCount > 0);
+  Assert(FSampleCount > 0);
 end;
 
 procedure TCustomRangeSweepOscillator64.CalculateNextSample;

@@ -301,7 +301,7 @@ begin
   else if (Number = CMidiFootControl) then
   begin // 4
     temp := 0.0;
-    i := round(norm * 128);
+    i := Round(norm * 128);
     if (i < 32) then
       temp := 0.9
     else if (i < 64) then

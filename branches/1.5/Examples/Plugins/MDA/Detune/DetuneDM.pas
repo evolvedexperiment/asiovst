@@ -203,7 +203,7 @@ begin
     c := FDry * Inputs[0, Sample];
     d := FDry * Inputs[1, Sample];
 
-    dec(p0);
+    Dec(p0);
     p0 := p0 and l;
 
     FBuffer[p0] := w * (Inputs[0, Sample] + Inputs[1, Sample]); // input
