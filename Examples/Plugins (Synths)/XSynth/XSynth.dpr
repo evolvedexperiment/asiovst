@@ -19,7 +19,7 @@ uses
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
- Result := VstModuleMain(AudioMasterCallback, TVSTSSModule);
+  Result := VstModuleMain(AudioMasterCallback, TVSTSSModule);
 end;
 
 exports 
