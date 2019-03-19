@@ -69,10 +69,7 @@ implementation
 {$ENDIF}
 
 uses
-  Math, DAV_Approximations, SimpleFlangerGUI;
-
-resourcestring
-  RCStrIndexOutOfBounds = 'Index out of bounds (%d)';
+  Math, DAV_Strings, DAV_Approximations, SimpleFlangerGUI;
 
 procedure TSimpleFlangerModule.VSTModuleCreate(Sender: TObject);
 begin

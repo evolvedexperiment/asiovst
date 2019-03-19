@@ -369,7 +369,7 @@ type
 implementation
 
 uses
-  SysUtils;
+  SysUtils, DAV_Strings;
 
 
 { TCustomChannelDataCoder }
@@ -511,7 +511,7 @@ begin
   if (Index >= 0) and (Index < Length(FChannelArray)) then
     Result := FChannelArray[Index]
   else
-    raise Exception.CreateFmt('Index out of bounds (%d)', [Index]);
+    raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
 end;
 
 procedure TCustomChannel32DataCoder.ReallocateChannelMemory;
@@ -1702,7 +1702,7 @@ begin
   if (Index >= 0) and (Index < Length(FChannelArray)) then
     Result := FChannelArray[Index]
   else
-    raise Exception.CreateFmt('Index out of bounds (%d)', [Index]);
+    raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
 end;
 
 procedure TCustomChannel64DataCoder.ReallocateChannelMemory;

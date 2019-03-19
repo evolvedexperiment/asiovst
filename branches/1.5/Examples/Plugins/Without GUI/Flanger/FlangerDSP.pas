@@ -68,10 +68,7 @@ implementation
 {$ENDIF}
 
 uses
-  DAV_VSTCustomModule, DAV_Approximations;
-
-resourcestring
-  RCStrIndexOutOfBounds = 'Index out of bounds (%d)';
+  DAV_Strings, DAV_VSTCustomModule, DAV_Approximations;
 
 procedure TFlangerModule.VSTModuleCreate(Sender: TObject);
 begin

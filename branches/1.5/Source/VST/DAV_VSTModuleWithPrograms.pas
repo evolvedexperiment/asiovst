@@ -182,7 +182,7 @@ implementation
 
 uses
   {$IFDEF DELPHI14_UP}AnsiStrings, {$ENDIF} SysUtils, Math,
-  DAV_Common, DAV_VSTBasicModule;
+  DAV_Common, DAV_Strings, DAV_VSTBasicModule;
 
 resourcestring
   RStrUndefined = 'undefined';
@@ -190,7 +190,6 @@ resourcestring
   RStrUnknownParameterName = 'Unknown parameter name';
   RStrNoProgramAvailable = 'No program available!';
   RStrUnknownProgramName = 'Unknown program name';
-  RCStrIndexOutOfBounds = 'Index out of bounds (%d)';
   RCStrParameterMismatch = 'Parameter mismatch (%d)';
 
 constructor TVSTModuleWithPrograms.Create(AOwner: TComponent);

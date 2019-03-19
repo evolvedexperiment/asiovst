@@ -181,7 +181,7 @@ end;
 
 function TStkSingWave.GetVibratoRate: Single;
 begin
-  result := FModulator.VibratoRate;
+  Result := FModulator.VibratoRate;
 end;
 
 procedure TStkSingWave.SetVibratoGain(const Value: Single);
@@ -191,7 +191,7 @@ end;
 
 function TStkSingWave.GetVibratoGain: Single;
 begin
-  result := FModulator.VibratoGain
+  Result := FModulator.VibratoGain
 end;
 
 procedure TStkSingWave.SetRandomGain(const Value: Single);
@@ -201,7 +201,7 @@ end;
 
 function TStkSingWave.GetRandomGain: Single;
 begin
-  result := FModulator.RandomGain;
+  Result := FModulator.RandomGain;
 end;
 
 procedure TStkSingWave.SetSweepRate(const Value: Single);
@@ -216,7 +216,7 @@ end;
 
 function TStkSingWave.GetGainRate: Single;
 begin
-  result := FEnvelope.Rate;
+  Result := FEnvelope.Rate;
 end;
 
 procedure TStkSingWave.SetGainTarget(const Value: Single);
@@ -226,7 +226,7 @@ end;
 
 function TStkSingWave.GetGainTarget: Single;
 begin
-  result := FEnvelope.Target;
+  Result := FEnvelope.Target;
 end;
 
 procedure TStkSingWave.NoteOn;
@@ -249,12 +249,12 @@ begin
   FWave.Frequency := newrate;
   FLastOutput := FWave.Tick;
   FLastOutput := FLastOutput * FEnvelope.Tick;
-  result := FLastOutput;
+  Result := FLastOutput;
 end;
 
 function TStkSingWave.LastOut: Single;
 begin
-  result := FLastOutput;
+  Result := FLastOutput;
 end;
 
 end.

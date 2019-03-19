@@ -1,4 +1,4 @@
-unit LightweightMultibandCompressorDM;
+﻿unit LightweightMultibandCompressorDM;
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -92,7 +92,7 @@ implementation
 {$ENDIF}
 
 uses
-  Math, DAV_Common, DAV_Approximations, DAV_VSTModuleWithPrograms,
+  Math, DAV_Common, DAV_Strings, DAV_Approximations, DAV_VSTModuleWithPrograms,
   LightweightMultibandCompressorGUI;
 
 procedure TLightweightMultibandCompressorDataModule.VSTModuleOpen(Sender: TObject);
@@ -258,7 +258,7 @@ begin
       2: UpdateHighMidAutoMakeUpGain;
       3: UpdateHighAutoMakeUpGain;
      end;
-  end else raise Exception.CreateFmt('Index out of bounds (%d)', [Index]);
+  end else raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
 end;
 
 procedure TLightweightMultibandCompressorDataModule.ParameterTimeDisplay(
@@ -373,14 +373,14 @@ function TLightweightMultibandCompressorDataModule.GetAutoGain(
 begin
  if Index in [0..Length(FLightweightMultibandCompressor) - 1]
   then Result := FLightweightMultibandCompressor[Index].AutoMakeUp
-  else raise Exception.CreateFmt('Index out of bounds (%d)', [Index]);
+  else raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
 end;
 
 function TLightweightMultibandCompressorDataModule.GetLightweightMultibandCompressor(Index: Integer): TLightweightSoftKneeCompressor;
 begin
  if Index in [0..Length(FLightweightMultibandCompressor) - 1]
   then Result := FLightweightMultibandCompressor[Index]
-  else raise Exception.CreateFmt('Index out of bounds (%d)', [Index]);
+  else raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
 end;
 
 procedure TLightweightMultibandCompressorDataModule.ParameterAttackChange(

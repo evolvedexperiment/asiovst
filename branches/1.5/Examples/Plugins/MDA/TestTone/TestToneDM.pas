@@ -34,7 +34,7 @@ interface
 
 {$I DAV_Compiler.inc}
 
-uses 
+uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, DAV_Types, DAV_VSTModule;
 
 type
@@ -58,10 +58,7 @@ type
     FSwt       : Integer;
     FMode      : Integer;
     FPinkState : array [0..5] of Single;
-    function Midi2String(const n : Single): string;
-    function ISO2String(b: Single): string;
     procedure Update;
-  public
   end;
 
 implementation
@@ -75,47 +72,133 @@ implementation
 uses
   Math, DAV_Math;
 
-function TTestToneDataModule.Midi2String(const n: Single): string;
+function Midi2String(const n: Single): string;
 var
-  o, s : Integer;
+  o, s: Integer;
 begin
- result := '   ';
- o      := Round(n / 12);
- s      := Round(n - (12 * o));
- o      := o - 2;
+  Result := '   ';
+  o := Round(n / 12);
+  s := Round(n - (12 * o));
+  o := o - 2;
 
- case s of
-    0: result := result + 'C';
-    1: result := result + 'C#';
-    2: result := result + 'D';
-    3: result := result + 'Eb';
-    4: result := result + 'E';
-    5: result := result + 'F';
-    6: result := result + 'F#';
-    7: result := result + 'G';
-    8: result := result + 'G#';
-    9: result := result + 'A';
-   10: result := result + 'Bb';
-  else result := result + 'B';
- end;
+  case s of
+    0:
+      Result := Result + 'C';
+    1:
+      Result := Result + 'C#';
+    2:
+      Result := Result + 'D';
+    3:
+      Result := Result + 'Eb';
+    4:
+      Result := Result + 'E';
+    5:
+      Result := Result + 'F';
+    6:
+      Result := Result + 'F#';
+    7:
+      Result := Result + 'G';
+    8:
+      Result := Result + 'G#';
+    9:
+      Result := Result + 'A';
+    10:
+      Result := Result + 'Bb';
+  else
+    Result := Result + 'B';
+  end;
 
- result := result + ' ';
+  Result := Result + ' ';
 
- if (o < 0) then result := result + '-';
- result := result + char(48 + (abs(o) mod 10));
+  if (o < 0) then
+    Result := Result + '-';
+  Result := Result + Char(48 + (Abs(o) mod 10));
 end;
+
+function ISO2String(b : Single): string;
+begin
+  case Round(b) of
+    13:
+      Result := '20 Hz';
+    14:
+      Result := '25 Hz';
+    15:
+      Result := '31 Hz';
+    16:
+      Result := '40 Hz';
+    17:
+      Result := '50 Hz';
+    18:
+      Result := '63 Hz';
+    19:
+      Result := '80 Hz';
+    20:
+      Result := '100 Hz';
+    21:
+      Result := '125 Hz';
+    22:
+      Result := '160 Hz';
+    23:
+      Result := '200 Hz';
+    24:
+      Result := '250 Hz';
+    25:
+      Result := '310 Hz';
+    26:
+      Result := '400 Hz';
+    27:
+      Result := '500 Hz';
+    28:
+      Result := '630 Hz';
+    29:
+      Result := '800 Hz';
+    30:
+      Result := '1 kHz';
+    31:
+      Result := '1.25 kHz';
+    32:
+      Result := '1.6 kHz';
+    33:
+      Result := '2.0 kHz';
+    34:
+      Result := '2.5 kHz';
+    35:
+      Result := '3.1 kHz';
+    36:
+      Result := '4 kHz';
+    37:
+      Result := '5 kHz';
+    38:
+      Result := '6.3 kHz';
+    39:
+      Result := '8 kHz';
+    40:
+      Result := '10 kHz';
+    41:
+      Result := '12.5 kHz';
+    42:
+      Result := '16 kHz';
+    43:
+      Result := '20 kHz';
+  else
+    Result := '--';
+  end;
+end;
+
+
+{ TTestToneDataModule }
 
 procedure TTestToneDataModule.VSTModuleOpen(Sender: TObject);
 begin
- // Initial Parameters
- Parameter[0] := 0.47; //FMode
- Parameter[1] := 0.71; //level dB
- Parameter[2] := 0.50; //pan dB
- Parameter[3] := 0.57; //freq1 B
- Parameter[4] := 0.50; //freq2 Hz
- Parameter[5] := 0.00; //FThru dB
- Parameter[6] := 0.30; //sweep ms
- Parameter[7] := 1.00; //cal dBFS
+  // Initial Parameters
+  Parameter[0] := 0.47; // FMode
+  Parameter[1] := 0.71; // level dB
+  Parameter[2] := 0.50; // pan dB
+  Parameter[3] := 0.57; // freq1 B
+  Parameter[4] := 0.50; // freq2 Hz
+  Parameter[5] := 0.00; // FThru dB
+  Parameter[6] := 0.30; // sweep ms
+  Parameter[7] := 1.00; // cal dBFS
 
 (*
  updateTx := updateRx;
@@ -128,65 +211,39 @@ end;
 procedure TTestToneDataModule.ParameterModeDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- case Round(Parameter[Index]) of
-  0: PreDefined := 'MIDI #';
-  1: PreDefined := 'IMPULSE';
-  2: PreDefined := 'WHITE';
-  3: PreDefined := 'PINK';
-  4: PreDefined := '---';
-  5: PreDefined := 'SINE';
-  6: PreDefined := 'LOG SWP.';
-  7: PreDefined := 'LOG STEP';
-  8: PreDefined := 'LIN SWP.';
- end;
+  case Round(Parameter[Index]) of
+    0:
+      PreDefined := 'MIDI #';
+    1:
+      PreDefined := 'IMPULSE';
+    2:
+      PreDefined := 'WHITE';
+    3:
+      PreDefined := 'PINK';
+    4:
+      PreDefined := '---';
+    5:
+      PreDefined := 'SINE';
+    6:
+      PreDefined := 'LOG SWP.';
+    7:
+      PreDefined := 'LOG STEP';
+    8:
+      PreDefined := 'LIN SWP.';
+  end;
 end;
 
 procedure TTestToneDataModule.ParameterChannelDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- case Round(Parameter[2]) of
-  0 : PreDefined := 'LEFT';
-  1 : PreDefined := 'CENTRE';
-  2 : PreDefined := 'RIGHT';
- end;
-end;
-
-function TTestToneDataModule.ISO2String(b : Single): string;
-begin
- case Round(b) of
-   13: result := '20 Hz';
-   14: result := '25 Hz';
-   15: result := '31 Hz';
-   16: result := '40 Hz';
-   17: result := '50 Hz';
-   18: result := '63 Hz';
-   19: result := '80 Hz';
-   20: result := '100 Hz';
-   21: result := '125 Hz';
-   22: result := '160 Hz';
-   23: result := '200 Hz';
-   24: result := '250 Hz';
-   25: result := '310 Hz';
-   26: result := '400 Hz';
-   27: result := '500 Hz';
-   28: result := '630 Hz';
-   29: result := '800 Hz';
-   30: result := '1 kHz';
-   31: result := '1.25 kHz';
-   32: result := '1.6 kHz';
-   33: result := '2.0 kHz';
-   34: result := '2.5 kHz';
-   35: result := '3.1 kHz';
-   36: result := '4 kHz';
-   37: result := '5 kHz';
-   38: result := '6.3 kHz';
-   39: result := '8 kHz';
-   40: result := '10 kHz';
-   41: result := '12.5 kHz';
-   42: result := '16 kHz';
-   43: result := '20 kHz';
-  else result := '--';
- end;
+  case Round(Parameter[2]) of
+    0:
+      PreDefined := 'LEFT';
+    1:
+      PreDefined := 'CENTRE';
+    2:
+      PreDefined := 'RIGHT';
+  end;
 end;
 
 procedure TTestToneDataModule.VSTModuleProcess(const Inputs,
@@ -337,7 +394,7 @@ procedure TTestToneDataModule.Update;
 var
   f, df : Single;
 const
-  TwoPi : Single = 2 * Pi;  
+  TwoPi : Single = 2 * Pi;
 begin
 (*
  updateRx := updateTx;
@@ -363,7 +420,7 @@ begin
 
    calx   := Power(10, 0.05 * cal);
    FLeft  := FLeft * calx;
-   FRight := FRight * calx; 
+   FRight := FRight * calx;
    calx   := 0;
   end;
  else //output level calibrate
@@ -473,27 +530,27 @@ begin
   case 3:
   case 4: strcpy(disp1, "--");
           strcpy(disp2, "--"); break;
-  
+
   case 5: //sine
       f := 13. + Trunc(30.*Parameter[3]);
       iso2string(, disp1); //iso band freq
       f := Power(10.0, 0.1*(+df));
       float2strng(, disp2); //Hz
       break;
-  
-  case 6: //log sweep & step    
+
+  case 6: //log sweep & step
   case 7: FSw = 13. + Trunc(30.*Parameter[3]);
       FSwx = 13. + Trunc(30.*Parameter[4]);
       iso2string(FSw, disp1); //start freq
       iso2string(FSwx, disp2); //end freq
-      break; 
-  
+      break;
+
   case 8: //lin sweep
       FSw = 200. * Trunc(100.*Parameter[3]);
       FSwx = 200. * Trunc(100.*Parameter[4]);
       long2string((long)FSw, disp1); //start freq
       long2string((long)FSwx, disp2); //end freq
-      break; 
+      break;
  end;
 
  updateTx++;

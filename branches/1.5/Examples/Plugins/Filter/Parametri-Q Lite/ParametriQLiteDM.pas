@@ -85,10 +85,7 @@ implementation
 {$ENDIF}
 
 uses
-  ParametriQLiteGUI, DAV_Common, DAV_Approximations, DAV_VSTModuleWithPrograms;
-
-resourcestring
-  RCStrIndexOutOfBounds = 'Index out of bounds (%d)';
+  ParametriQLiteGUI, DAV_Strings, DAV_Common, DAV_Approximations, DAV_VSTModuleWithPrograms;
 
 procedure TParametriQLiteDataModule.VSTModuleOpen(Sender: TObject);
 var

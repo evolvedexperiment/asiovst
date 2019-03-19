@@ -26,13 +26,13 @@ object FmLA4029: TFmLA4029
     Width = 321
     Height = 170
     BorderColor = clGray
+    BorderRadius = 4.000000000000000000
     BorderWidth = 2.000000000000000000
     PanelColor = clBlack
     ParentColor = True
-    BorderRadius = 4.000000000000000000
     TabOrder = 0
-    UseDockManager = True
     Transparent = True
+    UseDockManager = True
     object LbRelease: TGuiLabel
       Left = 8
       Top = 142
@@ -224,6 +224,7 @@ object FmLA4029: TFmLA4029
       Alignment = taCenter
       BorderColor = 3355443
       BorderWidth = 2.000000000000000000
+      BorderRadius = 5.000000000000000000
       ButtonColor = 2105376
       Caption = 'In'
       Color = clBlack
@@ -233,7 +234,6 @@ object FmLA4029: TFmLA4029
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
       FontOversampling = fo4x
-      BorderRadius = 5.000000000000000000
       Shadow.Blur = 4.000000000000000000
       Transparent = False
       OnClick = BtInClick
@@ -246,6 +246,7 @@ object FmLA4029: TFmLA4029
       Alignment = taCenter
       BorderColor = 3355443
       BorderWidth = 2.000000000000000000
+      BorderRadius = 5.000000000000000000
       ButtonColor = clBlack
       Caption = 'GR'
       Color = clBlack
@@ -255,7 +256,6 @@ object FmLA4029: TFmLA4029
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
       FontOversampling = fo4x
-      BorderRadius = 5.000000000000000000
       Shadow.Blur = 4.000000000000000000
       Transparent = False
       OnClick = BtGRClick
@@ -268,6 +268,7 @@ object FmLA4029: TFmLA4029
       Alignment = taCenter
       BorderColor = 3355443
       BorderWidth = 2.000000000000000000
+      BorderRadius = 5.000000000000000000
       ButtonColor = clBlack
       Caption = 'Out'
       Color = clBlack
@@ -277,7 +278,6 @@ object FmLA4029: TFmLA4029
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
       FontOversampling = fo4x
-      BorderRadius = 5.000000000000000000
       Shadow.Blur = 4.000000000000000000
       Transparent = False
       OnClick = BtOutClick
@@ -287,11 +287,11 @@ object FmLA4029: TFmLA4029
       Top = 142
       Width = 64
       Height = 17
-      Color = clBlack
       BorderColor = 3355443
-      BorderWidth = 2.000000000000000000
-      PanelColor = 1118481
       BorderRadius = 5.000000000000000000
+      BorderWidth = 2.000000000000000000
+      Color = clBlack
+      PanelColor = 1118481
       TabOrder = 0
       UseDockManager = True
       object LbMixValue: TLabel
@@ -318,7 +318,7 @@ object FmLA4029: TFmLA4029
       Height = 48
       Color = clBlack
       Max = 1.301030039787292000
-      Min = -0.699000000953674300
+      Min = -0.699000000953674400
       ParentColor = False
       ScrollRange = 400.000000000000000000
       ImageList = GSPL
@@ -335,6 +335,7 @@ object FmLA4029: TFmLA4029
       Width = 48
       Height = 48
       Color = clBlack
+      DefaultValue = 1.000000000000000000
       Max = 2.698999881744385000
       Min = 1.000000000000000000
       ParentColor = False
@@ -345,7 +346,6 @@ object FmLA4029: TFmLA4029
       Value = 1.000000000000000000
       WheelStep = 1.000000000000000000
       OnChange = DialReleaseChange
-      DefaultValue = 0.000000000000000000
     end
     object DialMix: TGuiStitchedDial
       Left = 248
@@ -382,13 +382,13 @@ object FmLA4029: TFmLA4029
     Width = 321
     Height = 129
     BorderColor = clGray
+    BorderRadius = 4.000000000000000000
     BorderWidth = 2.000000000000000000
     PanelColor = clBlack
     ParentColor = True
-    BorderRadius = 4.000000000000000000
     TabOrder = 1
-    UseDockManager = True
     Transparent = True
+    UseDockManager = True
     object LbInput: TGuiLabel
       Left = 8
       Top = 8
@@ -462,11 +462,11 @@ object FmLA4029: TFmLA4029
       Top = 102
       Width = 64
       Height = 17
-      Color = clBlack
       BorderColor = 3355443
-      BorderWidth = 2.000000000000000000
-      PanelColor = 1118481
       BorderRadius = 5.000000000000000000
+      BorderWidth = 2.000000000000000000
+      Color = clBlack
+      PanelColor = 1118481
       TabOrder = 0
       UseDockManager = True
       object LbKneeValue: TLabel
@@ -491,11 +491,11 @@ object FmLA4029: TFmLA4029
       Top = 102
       Width = 64
       Height = 17
-      Color = clBlack
       BorderColor = 3355443
-      BorderWidth = 2.000000000000000000
-      PanelColor = 1118481
       BorderRadius = 5.000000000000000000
+      BorderWidth = 2.000000000000000000
+      Color = clBlack
+      PanelColor = 1118481
       TabOrder = 1
       UseDockManager = True
       object LbInputValue: TLabel
@@ -521,11 +521,11 @@ object FmLA4029: TFmLA4029
       Top = 102
       Width = 64
       Height = 17
-      Color = clBlack
       BorderColor = 3355443
-      BorderWidth = 2.000000000000000000
-      PanelColor = 1118481
       BorderRadius = 5.000000000000000000
+      BorderWidth = 2.000000000000000000
+      Color = clBlack
+      PanelColor = 1118481
       TabOrder = 2
       UseDockManager = True
       object LbRatioValue: TLabel
@@ -550,11 +550,11 @@ object FmLA4029: TFmLA4029
       Top = 102
       Width = 64
       Height = 17
-      Color = clBlack
       BorderColor = 3355443
-      BorderWidth = 2.000000000000000000
-      PanelColor = 1118481
       BorderRadius = 5.000000000000000000
+      BorderWidth = 2.000000000000000000
+      Color = clBlack
+      PanelColor = 1118481
       TabOrder = 3
       UseDockManager = True
       object LbOutputValue: TLabel

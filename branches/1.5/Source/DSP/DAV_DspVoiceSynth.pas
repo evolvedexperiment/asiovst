@@ -168,7 +168,7 @@ begin
     FLevel := abs(Input) + (FLevel - abs(Input)) * FReleaseFactor;
 
   ComplexMultiplyInplace32(FCurrentPosition, FComplexAngle);
-  result := FLevel * FCurrentPosition.Re;
+  Result := FLevel * FCurrentPosition.Re;
 end;
 
 procedure TCustomVoiceSynth.ProcessBlock32(const Data: PDAVSingleFixedArray;

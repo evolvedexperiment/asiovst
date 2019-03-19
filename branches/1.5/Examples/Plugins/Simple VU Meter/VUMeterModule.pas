@@ -64,7 +64,7 @@ uses VUMeterGUI;
 
 function TVSTVUMeterModule.GetPeak(Index: Integer): Double;
 begin
-  result := FPeak[index];
+  Result := FPeak[index];
 end;
 
 procedure TVSTVUMeterModule.VSTModuleEditIdle(Sender: TObject);

@@ -129,7 +129,7 @@ end;
 
 function TStkSitar.GetFrequency: Single;
 begin
-  result := FBaseFrequency;
+  Result := FBaseFrequency;
 end;
 
 procedure TStkSitar.Clear;
@@ -193,7 +193,7 @@ begin
   end;
   FLastOutput := FDelayLine.Tick(FLoopFilter.Tick(FDelayLine.LastOutput *
     FLoopGain) + (FAmGain * FEnvelope.Tick * FNoise.Tick));
-  result := FLastOutput;
+  Result := FLastOutput;
 end;
 
 end.

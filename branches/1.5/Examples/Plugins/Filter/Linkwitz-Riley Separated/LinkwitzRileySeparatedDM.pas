@@ -69,7 +69,7 @@ implementation
 {$ENDIF}
 
 uses
-  LinkwitzRileySeparatedGui;
+  DAV_Strings, LinkwitzRileySeparatedGui;
 
 procedure TLinkwitzRileySeparatedModule.VSTModuleOpen(Sender: TObject);
 var
@@ -164,7 +164,7 @@ function TLinkwitzRileySeparatedModule.GetLinkwitzRiley(Index: Integer): TLinkwi
 begin
  if (Index >= 0)  or (Index < Length(FLinkwitzRiley))
   then Result := FLinkwitzRiley[Index]
-  else raise Exception.CreateFmt('Index out of bounds %d', [Index]);
+  else raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
 end;
 
 procedure TLinkwitzRileySeparatedModule.ParameterFrequencyChange(

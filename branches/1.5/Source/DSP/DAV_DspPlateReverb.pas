@@ -180,7 +180,8 @@ type
 implementation
 
 uses
-  Math, SysUtils, DAV_Common, DAV_Approximations, DAV_DspInterpolation;
+  Math, SysUtils, DAV_Common, DAV_Strings, DAV_Approximations,
+  DAV_DspInterpolation;
 
 resourcestring
   RCStrBuffersizePositive = 'Buffersize must be larger or equal than zero!';
@@ -192,7 +193,6 @@ resourcestring
   RCStrBandwidthPositive =
     'Bandwidth parameter must be equal or larger than zero!';
   RCStrDampingPositive = 'Damping parameter must be equal or larger than zero!';
-  RCStrIndexOutOfBounds = 'Index out of bounds (%d)';
   RCStrPreDelayPositive = 'Pre delay must be larger or equal zero!';
 
   { TDiffusor }

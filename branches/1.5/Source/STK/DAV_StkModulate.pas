@@ -115,7 +115,7 @@ end;
 
 function TStkModulate.GetVibratoRate: Single;
 begin
-  result := FVibrato.Frequency;
+  Result := FVibrato.Frequency;
 end;
 
 procedure TStkModulate.SetVibratoRate(const Value: Single);
@@ -148,7 +148,7 @@ begin
   // Compute periodic and random modulations.
   FLastOutput := FVibratoGain * FVibrato.Tick;
   FLastOutput := FLastOutput + FFilter.Tick(FNoise.Tick);
-  result := FLastOutput;
+  Result := FLastOutput;
 end;
 
 procedure TStkModulate.Tick(const Data: PDavSingleFixedArray;

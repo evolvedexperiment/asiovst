@@ -77,15 +77,15 @@ uses
 
 constructor TOptimizer.Create(AOwner: TComponent);
 begin
- inherited Create(True);
- FOwner := AOwner;
+  inherited Create(True);
+  FOwner := AOwner;
 end;
 
 procedure TOptimizer.Execute;
 begin
- inherited;
- while not Terminated
-  do TFmImpulseResponseMatchTool(FOwner).ThreadedStep;
+  inherited;
+  while not Terminated do 
+    TFmImpulseResponseMatchTool(FOwner).ThreadedStep;
 end;
 
 
@@ -118,40 +118,38 @@ end;
 
 procedure TFmImpulseResponseMatchTool.FormShow(Sender: TObject);
 begin
- with TIniFile.Create(FIniFileName) do
-  try
-   Left := ReadInteger('Layout', 'Left', Left);
-   Top := ReadInteger('Layout', 'Top', Top);
-  finally
-   Free;
-  end;
+  with TIniFile.Create(FIniFileName) do
+    try
+      Left := ReadInteger('Layout', 'Left', Left);
+      Top := ReadInteger('Layout', 'Top', Top);
+    finally
+      Free;
+    end;
 end;
 
 procedure TFmImpulseResponseMatchTool.FormClose(Sender: TObject;
   var Action: TCloseAction);
 begin
- with TIniFile.Create(FIniFileName) do
+  with TIniFile.Create(FIniFileName) do
   try
-   WriteInteger('Layout', 'Left', Left);
-   WriteInteger('Layout', 'Top', Top);
+    WriteInteger('Layout', 'Left', Left);
+    WriteInteger('Layout', 'Top', Top);
   finally
-   Free;
+    Free;
   end;
 end;
 
 procedure TFmImpulseResponseMatchTool.MiNewClick(Sender: TObject);
 begin
- GenerateImpulseResponse;
+  GenerateImpulseResponse;
 end;
 
 procedure TFmImpulseResponseMatchTool.MiFileOpenClick(Sender: TObject);
 begin
- with OdImpulseResponse do
+  with OdImpulseResponse do
   begin
-
-   if Execute
-    then LoadFromFile(FileName);
-
+    if Execute then 
+      LoadFromFile(FileName);
   end;
 end;
 
@@ -314,27 +312,28 @@ begin
    Free;
   end;
 
- if FileExists(theFile)
-  then LoadFromFile(theFile)
-  else MessageDlg('Recent file does not exists', mtError, [mbOK], 0);
+  if FileExists(theFile) then 
+    LoadFromFile(theFile)
+  else 
+    MessageDlg('Recent file does not exists', mtError, [mbOK], 0);
 end;
 
 procedure TFmImpulseResponseMatchTool.LoadFromFile(AudioFileName: TFileName);
 begin
- Adc.LoadFromFile(AudioFileName);
- AdOriginal.Invalidate;
- Adc.ChannelCount := 1;
- Adc.ChannelCount := 2;
+  Adc.LoadFromFile(AudioFileName);
+  AdOriginal.Invalidate;
+  Adc.ChannelCount := 1;
+  Adc.ChannelCount := 2;
 
- with TIniFile.Create(FIniFileName) do
+  with TIniFile.Create(FIniFileName) do
   try
-   WriteString('Program', 'Open File Path', ExtractFilePath(AudioFileName));
-   WriteString('Recent Files', 'File0', AudioFileName);
+    WriteString('Program', 'Open File Path', ExtractFilePath(AudioFileName));
+    WriteString('Recent Files', 'File0', AudioFileName);
   finally
-   Free;
+    Free;
   end;
 
- UpdateRecentFileHistory;
+  UpdateRecentFileHistory;
 end;
 
 procedure TFmImpulseResponseMatchTool.GenerateImpulseResponse;

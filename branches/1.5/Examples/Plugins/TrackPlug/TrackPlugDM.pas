@@ -98,10 +98,8 @@ implementation
 {$ENDIF}
 
 uses
-  Math, {$IFDEF HAS_UNIT_ANSISTRINGS} AnsiStrings, {$ENDIF} TrackPlugGUI;
-
-resourcestring
-  RCStrIndexOutOfBounds = 'Index out of bounds (%d)';
+  Math, {$IFDEF HAS_UNIT_ANSISTRINGS} AnsiStrings, {$ENDIF} DAV_Strings,
+  TrackPlugGUI;
 
 procedure TTrackPlugModule.VSTModuleOpen(Sender: TObject);
 var

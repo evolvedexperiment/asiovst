@@ -115,7 +115,7 @@ end;
 
 function TStkSampler.GetFrequency: Single;
 begin
-  result := FBaseFrequency;
+  Result := FBaseFrequency;
 end;
 
 procedure TStkSampler.KeyOn;
@@ -152,7 +152,7 @@ begin
   FLastOutput := FAttackGain * FAttacks[FWhichOne].Tick;
   FLastOutput := FLastOutput + FLoopGain * FLoops[FWhichOne].Tick;
   FLastOutput := FFilter.Tick(FLastOutput) * FADSR.Tick;
-  result := FLastOutput;
+  Result := FLastOutput;
 end;
 
 procedure TStkSampler.Clear;

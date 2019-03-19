@@ -118,13 +118,15 @@ type
 
 implementation
 
+uses
+  DAV_Strings;
+
 resourcestring
   RCStrEndOfTrackEventMissing = 'End of track event is missing';
   RCStrFormat0Error = 'Format 0 may only contain one track chunk!';
   RCStrUnknownMetaEvent = 'Unknown Meta Event (%d)';
   RCStrUnknownEvent = 'Unknown Event (%d)';
   RCStrEventMayNotBeNil = 'Event may not be nil!';
-  RCStrIndexOutOfBounds = 'Index out of bounds (%d)';
   RCStrWrongIndexOrDeltaTime = 'Wrong index or delta time';
 
 

@@ -55,10 +55,10 @@ type
 
 implementation
 
-resourcestring
-  RCStrIndexOutOfBounds = 'Index out of bounds (%d)';
+uses
+  DAV_Strings;
 
-  { TGuiImageList }
+{ TGuiImageList }
 
 constructor TGuiImageList.Create(AOwner: TComponent);
 begin

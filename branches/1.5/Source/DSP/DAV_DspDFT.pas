@@ -306,13 +306,13 @@ begin
   Pos.Re := 0;
   Pos.Im := 1;
   GetSinCos(NormFrequency, Angle.Im, Angle.Re);
-  result.Re := 0;
-  result.Im := TimeSignal[0]; // -0,00001
+  Result.Re := 0;
+  Result.Im := TimeSignal[0]; // -0,00001
   for i := 0 to Length(TimeSignal) - 1 do
   begin
     ComplexMultiplyInplace64(Pos, Angle);
-    result.Re := result.Re + Pos.Re * TimeSignal[i];
-    result.Im := result.Im + Pos.Im * TimeSignal[i];
+    Result.Re := Result.Re + Pos.Re * TimeSignal[i];
+    Result.Im := Result.Im + Pos.Im * TimeSignal[i];
   end;
 
 end;
@@ -369,13 +369,13 @@ begin
   Pos.Re := 0;
   Pos.Im := 1;
   GetSinCos(NormFrequency, Angle.Im, Angle.Re);
-  result.Re := 0;
-  result.Im := TimeSignal[0];
+  Result.Re := 0;
+  Result.Im := TimeSignal[0];
   for i := 1 to Length(TimeSignal) - 1 do
   begin
     ComplexMultiplyInplace64(Pos, Angle);
-    result.Re := result.Re + Pos.Re * TimeSignal[i];
-    result.Im := result.Im + Pos.Im * TimeSignal[i];
+    Result.Re := Result.Re + Pos.Re * TimeSignal[i];
+    Result.Im := Result.Im + Pos.Im * TimeSignal[i];
   end;
 end;
 {$ELSE}
@@ -431,13 +431,13 @@ begin
   Pos.Re := 0;
   Pos.Im := 1;
   GetSinCos(NormFrequency, Angle.Im, Angle.Re);
-  result.Re := 0;
-  result.Im := TimeSignal[0]; // -0,00001
+  Result.Re := 0;
+  Result.Im := TimeSignal[0]; // -0,00001
   for i := 1 to Length - 1 do
   begin
     ComplexMultiplyInplace64(Pos, Angle);
-    result.Re := result.Re + Pos.Re * TimeSignal[i];
-    result.Im := result.Im + Pos.Im * TimeSignal[i];
+    Result.Re := Result.Re + Pos.Re * TimeSignal[i];
+    Result.Im := Result.Im + Pos.Im * TimeSignal[i];
   end;
 end;
 {$ELSE}
@@ -498,13 +498,13 @@ begin
   Pos.Re := 0;
   Pos.Im := 1;
   GetSinCos(NormFrequency, Angle.Im, Angle.Re);
-  result.Re := 0;
-  result.Im := TimeSignal[0];
+  Result.Re := 0;
+  Result.Im := TimeSignal[0];
   for i := 1 to Length - 1 do
   begin
     ComplexMultiplyInplace64(Pos, Angle);
-    result.Re := result.Re + Pos.Re * TimeSignal[i];
-    result.Im := result.Im + Pos.Im * TimeSignal[i];
+    Result.Re := Result.Re + Pos.Re * TimeSignal[i];
+    Result.Im := Result.Im + Pos.Im * TimeSignal[i];
   end;
 end;
 {$ELSE}
@@ -564,13 +564,13 @@ var
 begin
   Pos.Re := 0;
   Pos.Im := 1;
-  result.Re := 0;
-  result.Im := TimeSignal[0]; // -0,00001
+  Result.Re := 0;
+  Result.Im := TimeSignal[0]; // -0,00001
   for i := 0 to Length(TimeSignal) - 1 do
   begin
     ComplexMultiplyInplace32(Pos, Angular);
-    result.Re := result.Re + Pos.Re * TimeSignal[i];
-    result.Im := result.Im + Pos.Im * TimeSignal[i];
+    Result.Re := Result.Re + Pos.Re * TimeSignal[i];
+    Result.Im := Result.Im + Pos.Im * TimeSignal[i];
   end;
 
 end;
@@ -626,13 +626,13 @@ var
 begin
   Pos.Re := 0;
   Pos.Im := 1;
-  result.Re := 0;
-  result.Im := TimeSignal[0];
+  Result.Re := 0;
+  Result.Im := TimeSignal[0];
   for i := 1 to Length(TimeSignal) - 1 do
   begin
     ComplexMultiplyInplace64(Pos, Angular);
-    result.Re := result.Re + Pos.Re * TimeSignal[i];
-    result.Im := result.Im + Pos.Im * TimeSignal[i];
+    Result.Re := Result.Re + Pos.Re * TimeSignal[i];
+    Result.Im := Result.Im + Pos.Im * TimeSignal[i];
   end;
 end;
 {$ELSE}
@@ -687,13 +687,13 @@ var
 begin
   Pos.Re := 0;
   Pos.Im := 1;
-  result.Re := 0;
-  result.Im := TimeSignal[0]; // -0,00001
+  Result.Re := 0;
+  Result.Im := TimeSignal[0]; // -0,00001
   for i := 1 to Length - 1 do
   begin
     ComplexMultiplyInplace32(Pos, Angular);
-    result.Re := result.Re + Pos.Re * TimeSignal[i];
-    result.Im := result.Im + Pos.Im * TimeSignal[i];
+    Result.Re := Result.Re + Pos.Re * TimeSignal[i];
+    Result.Im := Result.Im + Pos.Im * TimeSignal[i];
   end;
 end;
 {$ELSE}
@@ -753,13 +753,13 @@ var
 begin
   Pos.Re := 0;
   Pos.Im := 1;
-  result.Re := 0;
-  result.Im := TimeSignal[0];
+  Result.Re := 0;
+  Result.Im := TimeSignal[0];
   for i := 1 to Length - 1 do
   begin
     ComplexMultiplyInplace64(Pos, Angular);
-    result.Re := result.Re + Pos.Re * TimeSignal[i];
-    result.Im := result.Im + Pos.Im * TimeSignal[i];
+    Result.Re := Result.Re + Pos.Re * TimeSignal[i];
+    Result.Im := Result.Im + Pos.Im * TimeSignal[i];
   end;
 end;
 {$ELSE}

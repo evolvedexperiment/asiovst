@@ -1,5 +1,4 @@
 object LightweightFeedbackCompressorDataModule: TLightweightFeedbackCompressorDataModule
-  OldCreateOrder = True
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0.2'
   EffectName = 'Lightweight Feedback Compressor'
@@ -258,8 +257,6 @@ object LightweightFeedbackCompressorDataModule: TLightweightFeedbackCompressorDa
   OnProcess = VSTModuleProcessMono
   OnProcess32Replacing = VSTModuleProcessMono
   OnSampleRateChange = VSTModuleSampleRateChange
-  Left = 286
-  Top = 77
   Height = 150
   Width = 215
 end

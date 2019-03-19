@@ -386,8 +386,6 @@ object SidechainCompressorDataModule: TSidechainCompressorDataModule
   OnSampleRateChange = VSTModuleSampleRateChange
   OnStartProcess = VSTModuleStartProcess
   OnStopProcess = VSTModuleStopProcess
-  Left = 389
-  Top = 116
   Height = 150
   Width = 215
 end

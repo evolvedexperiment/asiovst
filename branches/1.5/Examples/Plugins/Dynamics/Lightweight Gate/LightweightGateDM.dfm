@@ -1,5 +1,4 @@
 object LightweightGateDataModule: TLightweightGateDataModule
-  OldCreateOrder = True
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0.2'
   EffectName = 'Lightweight Gate'
@@ -170,8 +169,6 @@ object LightweightGateDataModule: TLightweightGateDataModule
   OnProcess = VSTModuleProcess
   OnProcess32Replacing = VSTModuleProcess
   OnSampleRateChange = VSTModuleSampleRateChange
-  Left = 286
-  Top = 77
   Height = 150
   Width = 215
 end

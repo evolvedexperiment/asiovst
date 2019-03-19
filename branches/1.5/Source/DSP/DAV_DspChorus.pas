@@ -165,7 +165,7 @@ type
 implementation
 
 uses
-  SysUtils, Math, DAV_HalfFloat, DAV_DspInterpolation;
+  SysUtils, Math, DAV_HalfFloat, DAV_Strings, DAV_DspInterpolation;
 
 { TCustomDspChorus }
 
@@ -196,7 +196,7 @@ begin
   if (Index >= 0) and (Index < Length(FLFOs)) then
     Result := FLFOs[Index]
   else
-    raise Exception.CreateFmt('Index out of bounds (%d)', [Index]);
+    raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
 end;
 
 procedure TCustomDspChorus.Reset;

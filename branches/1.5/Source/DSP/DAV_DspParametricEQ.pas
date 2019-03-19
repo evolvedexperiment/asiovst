@@ -75,10 +75,7 @@ type
 implementation
 
 uses
-  SysUtils, Math, DAV_Complex;
-
-resourcestring
-  RCStrIndexOutOfBounds = 'Index out of bounds (%d)';
+  SysUtils, Math, DAV_Complex, DAV_Strings;
 
   { TCustomParametricEQ }
 

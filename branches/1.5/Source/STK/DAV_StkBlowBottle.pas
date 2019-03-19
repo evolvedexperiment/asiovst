@@ -164,7 +164,7 @@ end;
 
 function TStkBlowBottle.GetFrequency: Single;
 begin
-  result := FBaseFrequency;
+  Result := FBaseFrequency;
 end;
 
 procedure TStkBlowBottle.StartBlowing(const Amplitude, Rate: Single);
@@ -209,7 +209,7 @@ begin
 
   FLastOutput := 0.2 * FOutputGain * FDCBlock.Tick(PressureDiff);
 
-  result := FLastOutput;
+  Result := FLastOutput;
 end;
 
 procedure TStkBlowBottle.ControlChange(const Number: Integer;

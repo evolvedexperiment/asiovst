@@ -232,7 +232,7 @@ end;
 function TSEGuiPin.GetValueText: TSeSdkString;
 begin
   // warning, unstable over 2000 bytes  ( that's 1000 UNICODE characters )
-  result := Pchar(FModule.CallHost(seGuiHostPlugGetValText, FIndex, 0, nil));
+  Result := Pchar(FModule.CallHost(seGuiHostPlugGetValText, FIndex, 0, nil));
 end;
 
 procedure TSEGuiPin.Init(const AIndex: Integer; const AModule: TSEGUIBase);
@@ -243,17 +243,17 @@ end;
 
 function TSEGuiPin.GetValueInt: Integer; // int, bool, and list type values
 begin
-  FModule.CallHost(seGuiHostPlugGetVal, FIndex, 0, @result);
+  FModule.CallHost(seGuiHostPlugGetVal, FIndex, 0, @Result);
 end;
 
 function TSEGuiPin.GetValueBool: Boolean;
 begin
-  FModule.CallHost(seGuiHostPlugGetVal, FIndex, 0, @result);
+  FModule.CallHost(seGuiHostPlugGetVal, FIndex, 0, @Result);
 end;
 
 function TSEGuiPin.GetValueFloat: Single;
 begin
-  FModule.CallHost(seGuiHostPlugGetVal, FIndex, 0, @result);
+  FModule.CallHost(seGuiHostPlugGetVal, FIndex, 0, @Result);
 end;
 
 procedure TSEGuiPin.SetValueAsString(const Value: TSeSdkString);
@@ -285,7 +285,7 @@ begin
   GetMem(Temp, StringLength * 2);
   try
     FModule.CallHost(seGuiHostPlugGetExtraData, FIndex, StringLength, Temp);
-    result := Temp;
+    Result := Temp;
   finally
     Dispose(Temp);
   end;
@@ -297,11 +297,11 @@ begin
   if Assigned(Effect) then
   begin
     assert(assigned(Effect.SEGUIBase));
-    result := Effect.SEGUIBase.Dispatcher(TSEGuiPluginOpcodes(Opcode), Index,
+    Result := Effect.SEGUIBase.Dispatcher(TSEGuiPluginOpcodes(Opcode), Index,
       Value, Ptr, Opt);
   end
   else
-    result := 0;
+    Result := 0;
 end;
 
 { TSEGUIBase }
@@ -330,7 +330,7 @@ function TSEGUIBase.Dispatcher(Opcode: TSEGuiPluginOpcodes;
 var
   pnt: TSEpoint;
 begin
-  result := 0;
+  Result := 0;
   case Opcode of
     seGuiInitialise:
       Initialise(Index = 1);
@@ -338,7 +338,7 @@ begin
       begin
         Close;
         Free;
-        result := 1; // this object now deleted, must do nothing more.
+        Result := 1; // this object now deleted, must do nothing more.
       end;
     seGuiPaint:
       GuiPaint(hDC(Index), PSEWndInfo(Ptr));
@@ -369,7 +369,7 @@ begin
     seGuiOnWindowClose:
       GuiWindowClose(PSEWndInfo(Ptr));
     seGuiOnIdle:
-      result := Integer(GuiIdle);
+      Result := Integer(GuiIdle);
     seGuiOnNewConnection:
       GuiNewConnection(Index);
     seGuiOnDisconnect:
@@ -381,7 +381,7 @@ function TSEGUIBase.CallHost(Opcode: TSEGuiHostOpcodes; Index, Value: Integer;
   Ptr: Pointer; Opt: Single): Integer;
 begin
   assert(assigned(FAudioMaster));
-  result := FAudioMaster(@FStructBase, Opcode, Index, Value, Ptr, Opt);
+  Result := FAudioMaster(@FStructBase, Opcode, Index, Value, Ptr, Opt);
 end;
 
 procedure TSEGUIBase.Close;
@@ -410,7 +410,7 @@ function TSEGUIBase.GuiIdle: Boolean;
 begin
   if Assigned(FOnIdle) then
     FOnIdle(Self);
-  result := Assigned(FOnIdle);
+  Result := Assigned(FOnIdle);
 end;
 
 procedure TSEGUIBase.GuiLButtonDown(WI: PSEWndInfo; nFlags: Cardinal;
@@ -496,7 +496,7 @@ begin
   // pins currently hold no state, implement them as a flyweight (saves having
   // to track pin add/remove, we're not notified of autoduplicate add/remove anyhow)
   StaticPin.Init(Index, Self);
-  result := StaticPin;
+  Result := StaticPin;
 
   // { return &m_pins[Index];}
 end;
@@ -516,12 +516,12 @@ end;
 // query mouse capture state
 function TSEGUIBase.GetSEGUIStructBase: PSEGUIStructBase;
 begin
-  result := @FStructBase;
+  Result := @FStructBase;
 end;
 
 function TSEGUIBase.GetCapture(const WI: PSEWndInfo): Boolean;
 begin
-  result := CallHost(seGuiHostGetCapture, 0, 0, WI) <> 0;
+  Result := CallHost(seGuiHostGetCapture, 0, 0, WI) <> 0;
 end;
 
 initialization

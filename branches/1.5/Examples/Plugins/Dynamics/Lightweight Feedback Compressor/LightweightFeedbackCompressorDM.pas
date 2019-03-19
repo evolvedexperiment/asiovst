@@ -35,14 +35,13 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
   Forms, DAV_Types, DAV_VSTModule, DAV_DspDynamics, DAV_DspLightweightDynamics;
 
 type
   TLightweightFeedbackCompressorDataModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleProcessMono(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
     procedure VSTModuleProcessStereo(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
     procedure VSTModuleProcessMonoSoftClip(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
@@ -65,6 +64,8 @@ type
     procedure ParameterTimeDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterTimeLabel(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterMixChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
+      ParentWindow: NativeUInt);
   private
     FLightweightFeedbackCompressor : array [0..1] of TCustomCompressor;
     function GetLightweightFeedbackCompressor(Index: Integer): TCustomCompressor;
@@ -83,7 +84,7 @@ implementation
 {$ENDIF}
 
 uses
-  Math, DAV_Common, DAV_Approximations, DAV_VSTModuleWithPrograms,
+  Math, DAV_Common, DAV_Strings, DAV_Approximations, DAV_VSTModuleWithPrograms,
   LightweightFeedbackCompressorGUI;
 
 procedure TLightweightFeedbackCompressorDataModule.VSTModuleOpen(Sender: TObject);
@@ -130,7 +131,8 @@ begin
  FreeAndNil(FLightweightFeedbackCompressor[1]);
 end;
 
-procedure TLightweightFeedbackCompressorDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
+procedure TLightweightFeedbackCompressorDataModule.VSTModuleEditOpen(
+  Sender: TObject; var GUI: TForm; ParentWindow: NativeUInt);
 begin
   GUI := TFmLightweightFeedbackCompressor.Create(Self);
 end;
@@ -266,9 +268,10 @@ end;
 
 function TLightweightFeedbackCompressorDataModule.GetLightweightFeedbackCompressor(Index: Integer): TCustomCompressor;
 begin
- if Index in [0..Length(FLightweightFeedbackCompressor) - 1]
-  then Result := FLightweightFeedbackCompressor[Index]
-  else raise Exception.CreateFmt('Index out of bounds (%d)', [Index]);
+ if Index in [0 .. Length(FLightweightFeedbackCompressor) - 1] then
+    Result := FLightweightFeedbackCompressor[Index]
+  else
+    raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
 end;
 
 procedure TLightweightFeedbackCompressorDataModule.ParameterAttackChange(

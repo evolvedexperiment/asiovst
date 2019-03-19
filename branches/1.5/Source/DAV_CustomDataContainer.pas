@@ -59,12 +59,9 @@ type
 implementation
 
 uses
-  SysUtils;
+  SysUtils, DAV_Strings;
 
-resourcestring
-  RCStrIndexOutOfBounds = 'Index out of bounds (%d)';
-
-  { TCustomDataContainer }
+{ TCustomDataContainer }
 
 constructor TCustomDataContainer.Create;
 begin

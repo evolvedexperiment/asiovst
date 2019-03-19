@@ -154,7 +154,7 @@ end;
 
 function TStkPlucked.GetFrequency: Single;
 begin
-  result := FBaseFrequency;
+  Result := FBaseFrequency;
 end;
 
 procedure TStkPlucked.Pluck(const Amplitude: Single);
@@ -189,7 +189,7 @@ begin
   // Here's the whole inner loop of the instrument!!
   FLastOutput := FDelayLine.Tick(FLoopFilter.Tick(FDelayLine.LastOutput *
     FLoopGain)) * 3;
-  result := FLastOutput;
+  Result := FLastOutput;
 end;
 
 end.

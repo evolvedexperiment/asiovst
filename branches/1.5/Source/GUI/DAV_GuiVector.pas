@@ -257,10 +257,10 @@ type
 
 implementation
 
-resourcestring
-  RCStrIndexOutOfBounds = 'Index out of bounds %d';
+uses
+  DAV_Strings;
 
-  { TGuiCustomGeometricShape }
+{ TGuiCustomGeometricShape }
 
 procedure TGuiCustomGeometricShape.AssignTo(Dest: TPersistent);
 begin

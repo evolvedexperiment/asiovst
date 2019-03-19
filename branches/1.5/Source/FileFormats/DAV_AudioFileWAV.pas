@@ -239,7 +239,7 @@ type
 implementation
 
 uses
-  DAV_Common;
+  DAV_Common, DAV_Strings;
 
 resourcestring
   RCRIFFChunkNotFound = 'This is not a RIFF file!';
@@ -248,7 +248,6 @@ resourcestring
   RCFMTChunkDublicate = 'More than one format chunk found!';
   RCFACTChunkDublicate = 'More than one fact chunk found!';
   RCDATAChunkDublicate = 'Only one data chunk supported!';
-  RCStrIndexOutOfBounds = 'Index out of bounds (%d)';
   RCStrCantChangeTheFormat = 'Can''t change the format!';
   RCStrNoDataChunkFound = 'No data chunk found!';
 

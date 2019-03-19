@@ -72,8 +72,8 @@ type
 
 implementation
 
-resourcestring
-  RCStrIndexOutOfBounds = 'Index out of bounds (%d)';
+uses
+  DAV_Strings;
 
 { TDavMidiFile }
 

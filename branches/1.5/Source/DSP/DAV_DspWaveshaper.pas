@@ -173,10 +173,9 @@ function SoftSat(Input, Parameter: Double): Double; overload;
 implementation
 
 uses
-  SysUtils, Math, DAV_Common, DAV_Math;
+  SysUtils, Math, DAV_Common, DAV_Strings, DAV_Math;
 
 resourcestring
-  RCStrIndexOutOfBounds = 'Index out of bounds (%d)';
   RCStrOnlyEvenHarmonics = 'Only even harmonics are allowed!';
 
 function Waveshaper1(Input, Parameter: Single): Single;

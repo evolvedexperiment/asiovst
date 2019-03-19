@@ -432,18 +432,18 @@ var
   Low, High, Harmonic: Single;
 begin
   (*
-    result := FUpwardComp.ProcessSample64(Input);
+    Result := FUpwardComp.ProcessSample64(Input);
     continue;
   *)
 
   (*
-    result := FDecay + Input * (1 + Input * -2 * FDecay);
+    Result := FDecay + Input * (1 + Input * -2 * FDecay);
     continue;
   *)
 
   (*
-    result := FLimiter.ProcessSample64(2 * Input);
-    result := Limit(0.5 * result);
+    Result := FLimiter.ProcessSample64(2 * Input);
+    Result := Limit(0.5 * Result);
     continue;
   *)
 

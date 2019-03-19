@@ -245,7 +245,7 @@ end;
 
 function TStkRagamat.GetFrequency: Single;
 begin
-  result := 0;
+  Result := 0;
 end;
 
 end.

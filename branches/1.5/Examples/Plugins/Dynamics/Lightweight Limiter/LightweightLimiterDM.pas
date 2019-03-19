@@ -42,7 +42,6 @@ type
   TLightweightLimiterDataModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleProcessMono(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
     procedure VSTModuleProcessStereo(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
     procedure VSTModuleProcessMonoSoftClip(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
@@ -64,6 +63,8 @@ type
     procedure ParameterTimeDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterTimeLabel(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterMixChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
+      ParentWindow: NativeUInt);
   private
     FLightweightLimiter : array [0..1] of TCustomKneeLimiter;
     function GetLightweightLimiter(Index: Integer): TCustomKneeLimiter;
@@ -128,9 +129,10 @@ begin
  FreeAndNil(FLightweightLimiter[1]);
 end;
 
-procedure TLightweightLimiterDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
+procedure TLightweightLimiterDataModule.VSTModuleEditOpen(Sender: TObject;
+  var GUI: TForm; ParentWindow: NativeUInt);
 begin
- GUI := TFmLightweightLimiter.Create(Self);
+  GUI := TFmLightweightLimiter.Create(Self);
 end;
 
 function TLightweightLimiterDataModule.EvaluateCharacteristic(
@@ -264,7 +266,7 @@ function TLightweightLimiterDataModule.GetLightweightLimiter(Index: Integer): TC
 begin
  if Index in [0..Length(FLightweightLimiter) - 1]
   then Result := FLightweightLimiter[Index]
-  else raise Exception.CreateFmt('Index out of bounds (%d)', [Index]);
+  else raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
 end;
 
 procedure TLightweightLimiterDataModule.ParameterAttackChange(

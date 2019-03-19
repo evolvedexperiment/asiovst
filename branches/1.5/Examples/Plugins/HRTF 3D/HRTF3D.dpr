@@ -9,14 +9,13 @@ library HRTF3D;
 {$R 'Head.res' 'Head.rc'}
 
 uses
-  FastMM4, // either download the library or comment if there is an error here
+  FastMM4,
   {$IFDEF UseFastMove}
-  FastMove, // either download the library or comment if there is an error here
-  {$ENDIF}
+  FastMove,
+  {$ENDIF }
   {$IFDEF UseMadExcept}
-  madExcept, // either download madExcept or remove mad* if there is an error here
-  madLinkDisAsm,
-  {$ENDIF}
+  madExcept,
+  {$ENDIF }
   DAV_WinAmp,
   DAV_VSTEffect,
   DAV_VSTBasicModule,

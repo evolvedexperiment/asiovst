@@ -35,7 +35,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
   Forms, SyncObjs, DAV_Types, DAV_VSTModule;
 
 type
@@ -244,260 +244,283 @@ end;
 
 procedure TVTVSTModule.VSTModuleCreate(Sender: TObject);
 begin
- FCriticalSection := TCriticalSection.Create;
+  FCriticalSection := TCriticalSection.Create;
 end;
 
 procedure TVTVSTModule.VSTModuleDestroy(Sender: TObject);
 begin
- FreeAndNil(FCriticalSection);
+  FreeAndNil(FCriticalSection);
 end;
 
 procedure TVTVSTModule.VSTModuleOpen(Sender: TObject);
 var
-  i, m, n, sz : Integer;
+  i, m, n, sz: Integer;
 begin
- EditorFormClass := TFmVT;
+  EditorFormClass := TFmVT;
 
- FDriveMode := dmRoasty1;
- FOutGain := 1.25;
- FBufferPos[0] := 0;
- FBufferPos[1] := 0;
- FHistoryBuffer[0] := nil;
- FHistoryBuffer[1] := nil;
- FCircularBuffer[0] := nil;
- FCircularBuffer[1] := nil;
+  FDriveMode := dmRoasty1;
+  FOutGain := 1.25;
+  FBufferPos[0] := 0;
+  FBufferPos[1] := 0;
+  FHistoryBuffer[0] := nil;
+  FHistoryBuffer[1] := nil;
+  FCircularBuffer[0] := nil;
+  FCircularBuffer[1] := nil;
 
- for m := 1 to 4 do
-  for n := 0 to 1 do
-   with TResourceStream.Create(hInstance, CKernelResourceNames[m, n], RT_RCDATA) do
-    try
-     for i := 0 to Length(FImpulseResponse[m, n]) - 1 do
-      begin
-       GetMem(FImpulseResponse[m, n, i], CKernelSizes[m, n] * SizeOf(Single));
-       sz := Read(FImpulseResponse[m, n, i]^, CKernelSizes[m, n] * SizeOf(Single));
-       Assert(sz = CKernelSizes[m, n] * SizeOf(Single));
-      end;
-    finally
-     Free;
-    end;
- SetCPUDependant;
- BuildEntireFilters;
+  for m := 1 to 4 do
+    for n := 0 to 1 do
+      with TResourceStream.Create(hInstance, CKernelResourceNames[m, n], RT_RCDATA) do
+        try
+          for i := 0 to Length(FImpulseResponse[m, n]) - 1 do
+          begin
+            GetMem(FImpulseResponse[m, n, i], CKernelSizes[m, n] *
+              SizeOf(Single));
+            sz := Read(FImpulseResponse[m, n, i]^,
+              CKernelSizes[m, n] * SizeOf(Single));
+            Assert(sz = CKernelSizes[m, n] * SizeOf(Single));
+          end;
+        finally
+          Free;
+        end;
+  SetCPUDependant;
+  BuildEntireFilters;
 
- // Initial Parameters
- Parameter[ 0] := 0;
- Parameter[ 1] := 0;
- Parameter[ 2] := 0;
- Parameter[ 3] := 0;
- Parameter[ 4] := 0;
- Parameter[ 5] := 0;
- Parameter[ 6] := 0;
- Parameter[ 7] := 0;
- Parameter[ 8] := 1;
- Parameter[ 9] := 1;
- Parameter[10] := 0;
+  // Initial Parameters
+  Parameter[0] := 0;
+  Parameter[1] := 0;
+  Parameter[2] := 0;
+  Parameter[3] := 0;
+  Parameter[4] := 0;
+  Parameter[5] := 0;
+  Parameter[6] := 0;
+  Parameter[7] := 0;
+  Parameter[8] := 1;
+  Parameter[9] := 1;
+  Parameter[10] := 0;
 end;
 
 procedure TVTVSTModule.VSTModuleClose(Sender: TObject);
 begin
- Dispose(FHistoryBuffer[0]);
- Dispose(FHistoryBuffer[1]);
- Dispose(FCircularBuffer[0]);
- Dispose(FCircularBuffer[1]);
- Dispose(FBassKernel[0]);
- Dispose(FBassKernel[1]);
- Dispose(FTrebleKernel[0]);
- Dispose(FTrebleKernel[1]);
- Dispose(FFilterKernel[0]);
- Dispose(FFilterKernel[1]);
+  Dispose(FHistoryBuffer[0]);
+  Dispose(FHistoryBuffer[1]);
+  Dispose(FCircularBuffer[0]);
+  Dispose(FCircularBuffer[1]);
+  Dispose(FBassKernel[0]);
+  Dispose(FBassKernel[1]);
+  Dispose(FTrebleKernel[0]);
+  Dispose(FTrebleKernel[1]);
+  Dispose(FFilterKernel[0]);
+  Dispose(FFilterKernel[1]);
 end;
 
 procedure TVTVSTModule.SetCPUDependant;
 begin
-// if not (isFPU in CPU.Instructions) then raise Exception.Create('FPU not found');
+  // if not (isFPU in CPU.Instructions) then raise Exception.Create('FPU not found');
   FConvolveIR := ConvolveIR_X87large;
 (*
- if (isSSE in CPU.Instructions)
-  then FConvolveIR := ConvolveIR_X87SSE;
+  if (isSSE in CPU.Instructions) then
+    FConvolveIR := ConvolveIR_X87SSE;
 *)
 end;
 
 
 procedure TVTVSTModule.KernelSizeLeftChanged;
 begin
- ReallocMem(FFilterKernel[0], FKernelSize[0] * SizeOf(Single));
- ReallocMem(FHistoryBuffer[0], FKernelSize[0] * SizeOf(Single));
- ReallocMem(FCircularBuffer[0], 2 * FKernelSize[0] * SizeOf(Single));
+  ReallocMem(FFilterKernel[0], FKernelSize[0] * SizeOf(Single));
+  ReallocMem(FHistoryBuffer[0], FKernelSize[0] * SizeOf(Single));
+  ReallocMem(FCircularBuffer[0], 2 * FKernelSize[0] * SizeOf(Single));
 
- FillChar(FFilterKernel[0]^[0], FKernelSize[0] * SizeOf(Single), 0);
- FillChar(FHistoryBuffer[0]^[0], FKernelSize[0] * SizeOf(Single), 0);
- FillChar(FCircularBuffer[0]^[0], 2 * FKernelSize[0] * SizeOf(Single), 0);
+  FillChar(FFilterKernel[0]^[0], FKernelSize[0] * SizeOf(Single), 0);
+  FillChar(FHistoryBuffer[0]^[0], FKernelSize[0] * SizeOf(Single), 0);
+  FillChar(FCircularBuffer[0]^[0], 2 * FKernelSize[0] * SizeOf(Single), 0);
 
- if FBufferPos[0] >= FKernelSize[0]
-  then FBufferPos[0] := 0;
+  if FBufferPos[0] >= FKernelSize[0] then
+    FBufferPos[0] := 0;
 end;
 
 procedure TVTVSTModule.KernelSizeRightChanged;
 begin
- ReallocMem(FFilterKernel[1], FKernelSize[1] * SizeOf(Single));
- ReallocMem(FHistoryBuffer[1], FKernelSize[1] * SizeOf(Single));
- ReallocMem(FCircularBuffer[1], 2 * FKernelSize[1] * SizeOf(Single));
+  ReallocMem(FFilterKernel[1], FKernelSize[1] * SizeOf(Single));
+  ReallocMem(FHistoryBuffer[1], FKernelSize[1] * SizeOf(Single));
+  ReallocMem(FCircularBuffer[1], 2 * FKernelSize[1] * SizeOf(Single));
 
- FillChar(FFilterKernel[1]^[0], FKernelSize[1] * SizeOf(Single), 0);
- FillChar(FHistoryBuffer[1]^[0], FKernelSize[1] * SizeOf(Single), 0);
- FillChar(FCircularBuffer[1]^[0], 2 * FKernelSize[1] * SizeOf(Single), 0);
+  FillChar(FFilterKernel[1]^[0], FKernelSize[1] * SizeOf(Single), 0);
+  FillChar(FHistoryBuffer[1]^[0], FKernelSize[1] * SizeOf(Single), 0);
+  FillChar(FCircularBuffer[1]^[0], 2 * FKernelSize[1] * SizeOf(Single), 0);
 
- if FBufferPos[1] >= FKernelSize[1]
-  then FBufferPos[1] := 0;
+  if FBufferPos[1] >= FKernelSize[1] then
+    FBufferPos[1] := 0;
 end;
 
 procedure TVTVSTModule.SetKernelSize(Index: Integer; const Value: Cardinal);
 begin
- case Index of
-  0 : SetKernelSizeLeft(Value);
-  1 : SetKernelSizeRight(Value);
- end;
+  case Index of
+    0:
+      SetKernelSizeLeft(Value);
+    1:
+      SetKernelSizeRight(Value);
+  end;
 end;
 
 procedure TVTVSTModule.SetKernelSizeLeft(const Value: Cardinal);
 begin
- if FKernelSize[0] <> Value then
+  if FKernelSize[0] <> Value then
   begin
-   FKernelSize[0] := Value;
-   KernelSizeLeftChanged;
+    FKernelSize[0] := Value;
+    KernelSizeLeftChanged;
   end;
 end;
 
 procedure TVTVSTModule.SetKernelSizeRight(const Value: Cardinal);
 begin
- if FKernelSize[1] <> Value then
+  if FKernelSize[1] <> Value then
   begin
-   FKernelSize[1] := Value;
-   KernelSizeRightChanged;
+    FKernelSize[1] := Value;
+    KernelSizeRightChanged;
   end;
 end;
 
 procedure TVTVSTModule.ParamHiBypassLeftChange(Sender: TObject;
   const Index: Integer; var Value: Single);
 begin
- FModeBypass[0, 1] := (Round(Value) > 0);
- BuildCompleteFilterKernel(0);
- if EditorForm is TFmVT then
-  with TFmVT(EditorForm) do UpdateTrebleBypassLeft;
+  FModeBypass[0, 1] := (Round(Value) > 0);
+  BuildCompleteFilterKernel(0);
+  if EditorForm is TFmVT then
+    with TFmVT(EditorForm) do
+      UpdateTrebleBypassLeft;
 end;
 
 procedure TVTVSTModule.ParamHiBypassRightChange(Sender: TObject;
   const Index: Integer; var Value: Single);
 begin
- FModeBypass[1, 1] := (Round(Value) > 0);
- BuildCompleteFilterKernel(1);
- if EditorForm is TFmVT then
-  with TFmVT(EditorForm) do UpdateTrebleBypassRight;
+  FModeBypass[1, 1] := (Round(Value) > 0);
+  BuildCompleteFilterKernel(1);
+  if EditorForm is TFmVT then
+    with TFmVT(EditorForm) do
+      UpdateTrebleBypassRight;
 end;
 
-procedure TVTVSTModule.ParamLowBypassLeftChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TVTVSTModule.ParamLowBypassLeftChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
- FModeBypass[0, 0] := (Round(Value) > 0);
- BuildCompleteFilterKernel(0);
- if EditorForm is TFmVT then
-  with TFmVT(EditorForm) do UpdateBassBypassLeft;
+  FModeBypass[0, 0] := (Round(Value) > 0);
+  BuildCompleteFilterKernel(0);
+  if EditorForm is TFmVT then
+    with TFmVT(EditorForm) do
+      UpdateBassBypassLeft;
 end;
 
 procedure TVTVSTModule.ParamLowBypassRightChange(Sender: TObject;
   const Index: Integer; var Value: Single);
 begin
- FModeBypass[1, 0] := (Round(Value) > 0);
- BuildCompleteFilterKernel(1);
- if EditorForm is TFmVT then
-  with TFmVT(EditorForm) do UpdateBassBypassRight;
+  FModeBypass[1, 0] := (Round(Value) > 0);
+  BuildCompleteFilterKernel(1);
+  if EditorForm is TFmVT then
+    with TFmVT(EditorForm) do
+      UpdateBassBypassRight;
 end;
 
 procedure TVTVSTModule.ParamDriveDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
   case Round(Parameter[Index]) of
-    1 : PreDefined := 'Roasty 1';
-    2 : PreDefined := 'Roasty 2';
-    3 : PreDefined := 'Steamin'' 1';
-    4 : PreDefined := 'Steamin'' 2';
-   end;
+    1:
+      PreDefined := 'Roasty 1';
+    2:
+      PreDefined := 'Roasty 2';
+    3:
+      PreDefined := 'Steamin'' 1';
+    4:
+      PreDefined := 'Steamin'' 2';
+  end;
 end;
 
-procedure TVTVSTModule.ParamChannelDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+procedure TVTVSTModule.ParamChannelDisplay(Sender: TObject;
+  const Index: Integer; var PreDefined: AnsiString);
 begin
   case Round(Parameter[Index]) of
-    1 : PreDefined := 'Mid/Side';
-    2 : PreDefined := 'Left/Right';
-   end;
+    1:
+      PreDefined := 'Mid/Side';
+    2:
+      PreDefined := 'Left/Right';
+  end;
 end;
 
 procedure TVTVSTModule.BuildBassFilterKernel(const index: Integer);
 var
-  SngleIndex : Single;
-  LowerIndex : Integer;
-  UpperIndex : Integer;
-  i          : Integer;
-  Lwr, Upr   : PDAVSingleFixedArray;
+  SngleIndex: Single;
+  LowerIndex: Integer;
+  UpperIndex: Integer;
+  i: Integer;
+  Lwr, Upr: PDAVSingleFixedArray;
 begin
- // Calculate Filter Index
- SngleIndex := (Parameter[2 + 4 * index] + 12) * 2;
- LowerIndex := Round(SngleIndex - 0.5);
- UpperIndex := LowerIndex + 1;
- if LowerIndex <  0 then LowerIndex :=  0;
- if UpperIndex <  0 then UpperIndex :=  0;
- if LowerIndex > 47 then LowerIndex := 47;
- if UpperIndex > 47 then UpperIndex := 47;
- SngleIndex := SngleIndex - LowerIndex;
+  // Calculate Filter Index
+  SngleIndex := (Parameter[2 + 4 * index] + 12) * 2;
+  LowerIndex := Round(SngleIndex - 0.5);
+  UpperIndex := LowerIndex + 1;
+  if LowerIndex < 0 then
+    LowerIndex := 0;
+  if UpperIndex < 0 then
+    UpperIndex := 0;
+  if LowerIndex > 47 then
+    LowerIndex := 47;
+  if UpperIndex > 47 then
+    UpperIndex := 47;
+  SngleIndex := SngleIndex - LowerIndex;
 
- // Setup Filter Kernel Pointer
- Lwr := FImpulseResponse[Integer(FDriveMode), 0, LowerIndex];
- Upr := FImpulseResponse[Integer(FDriveMode), 0, UpperIndex];
+  // Setup Filter Kernel Pointer
+  Lwr := FImpulseResponse[Integer(FDriveMode), 0, LowerIndex];
+  Upr := FImpulseResponse[Integer(FDriveMode), 0, UpperIndex];
 
- // Build Filter Kernel
- ReallocMem(FBassKernel[index], CKernelSizes[Integer(FDriveMode), 0] * SizeOf(Single));
- for i := 0 to CKernelSizes[Integer(FDriveMode), 0] - 1 do
-  begin
-   FBassKernel[index, i] := (1 - SngleIndex) * Lwr^[i] +
-                                 SngleIndex  * Upr^[i];
-  end;
+  // Build Filter Kernel
+  ReallocMem(FBassKernel[index], CKernelSizes[Integer(FDriveMode), 0] *
+    SizeOf(Single));
+  for i := 0 to CKernelSizes[Integer(FDriveMode), 0] - 1 do
+    FBassKernel[index, i] := (1 - SngleIndex) * Lwr^[i] + SngleIndex * Upr^[i];
 end;
 
 procedure TVTVSTModule.BuildTrebleFilterKernel(const index: Integer);
 var
-  SngleIndex : Single;
-  LowerIndex : Integer;
-  UpperIndex : Integer;
-  i          : Integer;
-  Lwr, Upr   : PDAVSingleFixedArray;
+  SngleIndex: Single;
+  LowerIndex: Integer;
+  UpperIndex: Integer;
+  i: Integer;
+  Lwr, Upr: PDAVSingleFixedArray;
 begin
- // Calculate Filter Index
- SngleIndex := (Parameter[4 * index] + 12) * 2;
- LowerIndex := Round(SngleIndex - 0.5);
- UpperIndex := LowerIndex + 1;
- if LowerIndex <  0 then LowerIndex :=  0;
- if UpperIndex <  0 then UpperIndex :=  0;
- if LowerIndex > 47 then LowerIndex := 47;
- if UpperIndex > 47 then UpperIndex := 47;
- SngleIndex := SngleIndex - LowerIndex;
+  // Calculate Filter Index
+  SngleIndex := (Parameter[4 * index] + 12) * 2;
+  LowerIndex := Round(SngleIndex - 0.5);
+  UpperIndex := LowerIndex + 1;
+  if LowerIndex < 0 then
+    LowerIndex := 0;
+  if UpperIndex < 0 then
+    UpperIndex := 0;
+  if LowerIndex > 47 then
+    LowerIndex := 47;
+  if UpperIndex > 47 then
+    UpperIndex := 47;
+  SngleIndex := SngleIndex - LowerIndex;
 
- // Setup Filter Kernel Pointer
- Lwr := FImpulseResponse[Integer(FDriveMode), 1, LowerIndex];
- Upr := FImpulseResponse[Integer(FDriveMode), 1, UpperIndex];
+  // Setup Filter Kernel Pointer
+  Lwr := FImpulseResponse[Integer(FDriveMode), 1, LowerIndex];
+  Upr := FImpulseResponse[Integer(FDriveMode), 1, UpperIndex];
 
- // Build Filter Kernel
- ReallocMem(FTrebleKernel[index], CKernelSizes[Integer(FDriveMode), 1] * SizeOf(Single));
- for i := 0 to CKernelSizes[Integer(FDriveMode), 1] - 1 do
+  // Build Filter Kernel
+  ReallocMem(FTrebleKernel[index], CKernelSizes[Integer(FDriveMode), 1] * SizeOf(Single));
+  for i := 0 to CKernelSizes[Integer(FDriveMode), 1] - 1 do
   begin
-   FTrebleKernel[index, i] := (1 - SngleIndex) * Lwr^[i] +
-                                   SngleIndex  * Upr^[i];
+    FTrebleKernel[index, i] := (1 - SngleIndex) * Lwr^[i] + SngleIndex
+      * Upr^[i];
   end;
 end;
 
 function TVTVSTModule.GetKernelSize(Index: Integer): Cardinal;
 begin
- case Index of
-  0..1 : result := FKernelSize[Index];
-  else result := 0;
- end;
+  case Index of
+    0 .. 1:
+      Result := FKernelSize[Index];
+  else
+    Result := 0;
+  end;
 end;
 
 procedure TVTVSTModule.BuildCompleteFilterKernel(const index: Integer);
@@ -539,215 +562,245 @@ procedure TVTVSTModule.BuildCompleteFilterKernel(const index: Integer);
   end;
 
 var
-  TempIR : PDAVSingleFixedArray;
+  TempIR: PDAVSingleFixedArray;
 begin
- FCriticalSection.Enter;
- try
-  if FModeBypass[index, 0] and FModeBypass[index, 1] then
-   begin
-    KernelSize[index] := 1;
-    FFilterKernel[index]^[0] := 0.8;
-   end else
-  if FModeBypass[index, 0] then
-   begin
-    FKernelSize[index] := CKernelSizes[Integer(FDriveMode), 1];
-    Move(FTrebleKernel[index]^[0], FFilterKernel[index]^[0], KernelSize[index] * SizeOf(Single));
-   end else
-  if FModeBypass[index, 1] then
-   begin
-    KernelSize[index] := CKernelSizes[Integer(FDriveMode), 0];
-    Move(FBassKernel[index]^[0], FFilterKernel[index]^[0], KernelSize[index] * SizeOf(Single));
-   end
-  else
-   begin
-    KernelSize[index] := CKernelSizes[Integer(FDriveMode), 0] + CKernelSizes[Integer(FDriveMode), 1];
-    GetMem(TempIR, KernelSize[index] * SizeOf(Single));
-    FillChar(TempIR^[0], KernelSize[index] * SizeOf(Single), 0);
-    SimpleConvolveIR(@TempIR^[0],
-                     @FBassKernel[index]^[0], CKernelSizes[Integer(FDriveMode), 0] - 1,
-                     @FTrebleKernel[index]^[0], CKernelSizes[Integer(FDriveMode), 1] - 1);
-    Move(TempIR^[0], FFilterKernel[index]^[0], KernelSize[index] * SizeOf(Single));
-   end;
- finally
-  FCriticalSection.Leave;
- end;
+  FCriticalSection.Enter;
+  try
+    if FModeBypass[index, 0] and FModeBypass[index, 1] then
+    begin
+      KernelSize[index] := 1;
+      FFilterKernel[index]^[0] := 0.8;
+    end
+    else if FModeBypass[index, 0] then
+    begin
+      FKernelSize[index] := CKernelSizes[Integer(FDriveMode), 1];
+      Move(FTrebleKernel[index]^[0], FFilterKernel[index]^[0],
+        KernelSize[index] * SizeOf(Single));
+    end
+    else if FModeBypass[index, 1] then
+    begin
+      KernelSize[index] := CKernelSizes[Integer(FDriveMode), 0];
+      Move(FBassKernel[index]^[0], FFilterKernel[index]^[0],
+        KernelSize[index] * SizeOf(Single));
+    end
+    else
+    begin
+      KernelSize[index] := CKernelSizes[Integer(FDriveMode), 0] + CKernelSizes
+        [Integer(FDriveMode), 1];
+      GetMem(TempIR, KernelSize[index] * SizeOf(Single));
+      FillChar(TempIR^[0], KernelSize[index] * SizeOf(Single), 0);
+      SimpleConvolveIR(@TempIR^[0], @FBassKernel[index]^[0],
+        CKernelSizes[Integer(FDriveMode), 0] - 1, @FTrebleKernel[index]^[0],
+        CKernelSizes[Integer(FDriveMode), 1] - 1);
+      Move(TempIR^[0], FFilterKernel[index]^[0],
+        KernelSize[index] * SizeOf(Single));
+    end;
+  finally
+    FCriticalSection.Leave;
+  end;
 end;
 
-procedure TVTVSTModule.ParamLowGainLeftChange(Sender: TObject; const Index: Integer; var Value: Single);
+procedure TVTVSTModule.ParamLowGainLeftChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
- BuildBassFilterKernel(0);
- BuildCompleteFilterKernel(0);
- if EditorForm is TFmVT then
-  with TFmVT(EditorForm) do UpdateBassGainLeft;
+  BuildBassFilterKernel(0);
+  BuildCompleteFilterKernel(0);
+  if EditorForm is TFmVT then
+    with TFmVT(EditorForm) do
+      UpdateBassGainLeft;
 end;
 
 procedure TVTVSTModule.ParamLowGainRightChange(Sender: TObject;
   const Index: Integer; var Value: Single);
 begin
- BuildBassFilterKernel(1);
- BuildCompleteFilterKernel(1);
- if EditorForm is TFmVT then
-  with TFmVT(EditorForm) do UpdateBassGainRight;
+  BuildBassFilterKernel(1);
+  BuildCompleteFilterKernel(1);
+  if EditorForm is TFmVT then
+    with TFmVT(EditorForm) do
+      UpdateBassGainRight;
 end;
 
-procedure TVTVSTModule.ParamHiGainLeftChange(Sender: TObject; const Index: Integer; var Value: Single);
+procedure TVTVSTModule.ParamHiGainLeftChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
- BuildTrebleFilterKernel(0);
- BuildCompleteFilterKernel(0);
- if EditorForm is TFmVT then
-  with TFmVT(EditorForm) do UpdateTrebleGainLeft;
+  BuildTrebleFilterKernel(0);
+  BuildCompleteFilterKernel(0);
+  if EditorForm is TFmVT then
+    with TFmVT(EditorForm) do
+      UpdateTrebleGainLeft;
 end;
 
 procedure TVTVSTModule.ParamHiGainRightChange(Sender: TObject;
   const Index: Integer; var Value: Single);
 begin
- BuildTrebleFilterKernel(1);
- BuildCompleteFilterKernel(1);
- if EditorForm is TFmVT then
-  with TFmVT(EditorForm) do UpdateTrebleGainRight;
+  BuildTrebleFilterKernel(1);
+  BuildCompleteFilterKernel(1);
+  if EditorForm is TFmVT then
+    with TFmVT(EditorForm) do
+      UpdateTrebleGainRight;
 end;
 
 procedure TVTVSTModule.BuildEntireFilters;
 begin
- BuildBassFilterKernel(0);
- BuildBassFilterKernel(1);
- BuildTrebleFilterKernel(0);
- BuildTrebleFilterKernel(1);
- BuildCompleteFilterKernel(0);
- BuildCompleteFilterKernel(1);
+  BuildBassFilterKernel(0);
+  BuildBassFilterKernel(1);
+  BuildTrebleFilterKernel(0);
+  BuildTrebleFilterKernel(1);
+  BuildCompleteFilterKernel(0);
+  BuildCompleteFilterKernel(1);
 end;
 
-procedure TVTVSTModule.ParamDriveChange(Sender: TObject; const Index: Integer; var Value: Single);
+procedure TVTVSTModule.ParamDriveChange(Sender: TObject; const Index: Integer;
+  var Value: Single);
 var
-  NewDriveMode : TDriveMode;
+  NewDriveMode: TDriveMode;
 begin
- NewDriveMode := TDriveMode(Round(Value));
+  NewDriveMode := TDriveMode(Round(Value));
 
- if FDriveMode <> NewDriveMode then
+  if FDriveMode <> NewDriveMode then
   begin
-   FDriveMode := NewDriveMode;
-   BuildEntireFilters;
-   if EditorForm is TFmVT then
-    with TFmVT(EditorForm) do UpdateSelector;
+    FDriveMode := NewDriveMode;
+    BuildEntireFilters;
+    if EditorForm is TFmVT then
+      with TFmVT(EditorForm) do
+        UpdateSelector;
   end;
 end;
 
-procedure TVTVSTModule.ParamChannelChange(Sender: TObject; const Index: Integer; var Value: Single);
+procedure TVTVSTModule.ParamChannelChange(Sender: TObject; const Index: Integer;
+  var Value: Single);
 begin
- case Round(Value) of
-   1 : OnProcess := VSTModuleProcessStereo;
-   2 : OnProcess := VSTModuleProcessMidSide;
-  else OnProcess := nil;
- end;
- OnProcess32Replacing := OnProcess;
+  case Round(Value) of
+    1:
+      OnProcess := VSTModuleProcessStereo;
+    2:
+      OnProcess := VSTModuleProcessMidSide;
+  else
+    OnProcess := nil;
+  end;
+  OnProcess32Replacing := OnProcess;
 
- // update GUI
- if EditorForm is TFmVT then
-  with TFmVT(EditorForm) do UpdateChannel;
+  // update GUI
+  if EditorForm is TFmVT then
+    with TFmVT(EditorForm) do
+      UpdateChannel;
 end;
 
-procedure TVTVSTModule.ParamOutGainChange(Sender: TObject; const Index: Integer; var Value: Single);
+procedure TVTVSTModule.ParamOutGainChange(Sender: TObject; const Index: Integer;
+  var Value: Single);
 begin
- FOutGain := 1.25 * dB_to_Amp(Value);
- if EditorForm is TFmVT then
-  with TFmVT(EditorForm) do UpdateGain;
+  FOutGain := 1.25 * dB_to_Amp(Value);
+  if EditorForm is TFmVT then
+    with TFmVT(EditorForm) do
+      UpdateGain;
 end;
 
-procedure TVTVSTModule.VSTModuleProcessMidSide(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
+procedure TVTVSTModule.VSTModuleProcessMidSide(const Inputs,
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
-  i    : Cardinal;
-  M, S : Single;
+  i: Cardinal;
+  m, S: Single;
 begin
- FCriticalSection.Enter;
- try
-  for i := 0 to SampleFrames - 1 do
-   begin
-    FHistoryBuffer[0, FBufferPos[0]] := Inputs[0, i] + Inputs[1, i];
-    M := FOutGain * (FCircularBuffer[0, FBufferPos[0]] + FHistoryBuffer[0, FBufferPos[0]] * FFilterKernel[0]^[0]);
-    FCircularBuffer[0, FBufferPos[0]] := 0;
+  FCriticalSection.Enter;
+  try
+    for i := 0 to SampleFrames - 1 do
+    begin
+      FHistoryBuffer[0, FBufferPos[0]] := Inputs[0, i] + Inputs[1, i];
+      M := FOutGain * (FCircularBuffer[0, FBufferPos[0]] + FHistoryBuffer[0, FBufferPos[0]] * FFilterKernel[0]^[0]);
+      FCircularBuffer[0, FBufferPos[0]] := 0;
 
-    FHistoryBuffer[1, FBufferPos[1]] := Inputs[0, i] - Inputs[1, i];
-    S := FOutGain * (FCircularBuffer[1, FBufferPos[1]] + FHistoryBuffer[1, FBufferPos[1]] * FFilterKernel[1]^[0]);
-    FCircularBuffer[1, FBufferPos[1]] := 0;
+      FHistoryBuffer[1, FBufferPos[1]] := Inputs[0, i] - Inputs[1, i];
+      S := FOutGain * (FCircularBuffer[1, FBufferPos[1]] + FHistoryBuffer[1, FBufferPos[1]] * FFilterKernel[1]^[0]);
+      FCircularBuffer[1, FBufferPos[1]] := 0;
 
-    Outputs[0, i] := 0.5 * (M + S);
-    Outputs[1, i] := 0.5 * (M - S);
+      Outputs[0, i] := 0.5 * (M + S);
+      Outputs[1, i] := 0.5 * (M - S);
 
-    FConvolveIR(@FCircularBuffer[0, FBufferPos[0]], @FFilterKernel[0]^[0], KernelSize[0], FHistoryBuffer[0, FBufferPos[0]]);
-    FConvolveIR(@FCircularBuffer[1, FBufferPos[1]], @FFilterKernel[1]^[0], KernelSize[1], FHistoryBuffer[1, FBufferPos[1]]);
-    Inc(FBufferPos[0]);
-    Inc(FBufferPos[1]);
+      FConvolveIR(@FCircularBuffer[0, FBufferPos[0]], @FFilterKernel[0]^[0], KernelSize[0], FHistoryBuffer[0, FBufferPos[0]]);
+      FConvolveIR(@FCircularBuffer[1, FBufferPos[1]], @FFilterKernel[1]^[0], KernelSize[1], FHistoryBuffer[1, FBufferPos[1]]);
+      Inc(FBufferPos[0]);
+      Inc(FBufferPos[1]);
 
-    if FBufferPos[0] >= FKernelSize[0] then
-     begin
-      FBufferPos[0] := 0;
-      Move(FCircularBuffer[0, FKernelSize[0]], FCircularBuffer[0, 0], FKernelSize[0] * SizeOf(Single));
-      FillChar(FCircularBuffer[0, FKernelSize[0]], FKernelSize[0] * SizeOf(Single), 0);
-     end;
-    if FBufferPos[1] >= FKernelSize[1] then
-     begin
-      FBufferPos[1] := 0;
-      Move(FCircularBuffer[1, FKernelSize[1]], FCircularBuffer[1, 0], FKernelSize[1] * SizeOf(Single));
-      FillChar(FCircularBuffer[1, FKernelSize[1]], FKernelSize[1] * SizeOf(Single), 0);
-     end;
-   end;
- finally
-  FCriticalSection.Leave
- end;
+      if FBufferPos[0] >= FKernelSize[0] then
+      begin
+        FBufferPos[0] := 0;
+        Move(FCircularBuffer[0, FKernelSize[0]], FCircularBuffer[0, 0],
+          FKernelSize[0] * SizeOf(Single));
+        FillChar(FCircularBuffer[0, FKernelSize[0]],
+          FKernelSize[0] * SizeOf(Single), 0);
+      end;
+      if FBufferPos[1] >= FKernelSize[1] then
+      begin
+        FBufferPos[1] := 0;
+        Move(FCircularBuffer[1, FKernelSize[1]], FCircularBuffer[1, 0],
+          FKernelSize[1] * SizeOf(Single));
+        FillChar(FCircularBuffer[1, FKernelSize[1]],
+          FKernelSize[1] * SizeOf(Single), 0);
+      end;
+    end;
+  finally
+    FCriticalSection.Leave
+  end;
 end;
 
 procedure TVTVSTModule.VSTModuleProcessStereo(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
   i: Cardinal;
 begin
- FCriticalSection.Enter;
- try
-  for i := 0 to SampleFrames - 1 do
-   begin
-    FHistoryBuffer[0, FBufferPos[0]] := Inputs[0, i];
-    Outputs[0, i] := FOutGain * (FCircularBuffer[0, FBufferPos[0]] + FHistoryBuffer[0, FBufferPos[0]] * FFilterKernel[0]^[0]);
-    FCircularBuffer[0, FBufferPos[0]] := 0;
+  FCriticalSection.Enter;
+  try
+    for i := 0 to SampleFrames - 1 do
+    begin
+      FHistoryBuffer[0, FBufferPos[0]] := Inputs[0, i];
+      Outputs[0, i] := FOutGain * (FCircularBuffer[0, FBufferPos[0]] + FHistoryBuffer[0, FBufferPos[0]] * FFilterKernel[0]^[0]);
+      FCircularBuffer[0, FBufferPos[0]] := 0;
 
-    FHistoryBuffer[1, FBufferPos[1]] := Inputs[1, i];
-    Outputs[1, i] := FOutGain * (FCircularBuffer[1, FBufferPos[1]] + FHistoryBuffer[1, FBufferPos[1]] * FFilterKernel[1]^[0]);
-    FCircularBuffer[1, FBufferPos[1]] := 0;
+      FHistoryBuffer[1, FBufferPos[1]] := Inputs[1, i];
+      Outputs[1, i] := FOutGain * (FCircularBuffer[1, FBufferPos[1]] + FHistoryBuffer[1, FBufferPos[1]] * FFilterKernel[1]^[0]);
+      FCircularBuffer[1, FBufferPos[1]] := 0;
 
-    FConvolveIR(@FCircularBuffer[0, FBufferPos[0]], @FFilterKernel[0]^[0], KernelSize[0], FHistoryBuffer[0, FBufferPos[0]]);
-    FConvolveIR(@FCircularBuffer[1, FBufferPos[1]], @FFilterKernel[1]^[0], KernelSize[1], FHistoryBuffer[1, FBufferPos[1]]);
-    Inc(FBufferPos[0]);
-    Inc(FBufferPos[1]);
+      FConvolveIR(@FCircularBuffer[0, FBufferPos[0]], @FFilterKernel[0]^[0], KernelSize[0], FHistoryBuffer[0, FBufferPos[0]]);
+      FConvolveIR(@FCircularBuffer[1, FBufferPos[1]], @FFilterKernel[1]^[0], KernelSize[1], FHistoryBuffer[1, FBufferPos[1]]);
+      Inc(FBufferPos[0]);
+      Inc(FBufferPos[1]);
 
-    if FBufferPos[0] >= FKernelSize[0] then
-     begin
-      FBufferPos[0] := 0;
-      Move(FCircularBuffer[0, FKernelSize[0]], FCircularBuffer[0, 0], FKernelSize[0] * SizeOf(Single));
-      FillChar(FCircularBuffer[0, FKernelSize[0]], FKernelSize[0] * SizeOf(Single), 0);
-     end;
-    if FBufferPos[1] >= FKernelSize[1] then
-     begin
-      FBufferPos[1] := 0;
-      Move(FCircularBuffer[1, FKernelSize[1]], FCircularBuffer[1, 0], FKernelSize[1] * SizeOf(Single));
-      FillChar(FCircularBuffer[1, FKernelSize[1]], FKernelSize[1] * SizeOf(Single), 0);
-     end;
-   end;
- finally
-  FCriticalSection.Leave
- end;
+      if FBufferPos[0] >= FKernelSize[0] then
+      begin
+        FBufferPos[0] := 0;
+        Move(FCircularBuffer[0, FKernelSize[0]], FCircularBuffer[0, 0],
+          FKernelSize[0] * SizeOf(Single));
+        FillChar(FCircularBuffer[0, FKernelSize[0]],
+          FKernelSize[0] * SizeOf(Single), 0);
+      end;
+      if FBufferPos[1] >= FKernelSize[1] then
+      begin
+        FBufferPos[1] := 0;
+        Move(FCircularBuffer[1, FKernelSize[1]], FCircularBuffer[1, 0],
+          FKernelSize[1] * SizeOf(Single));
+        FillChar(FCircularBuffer[1, FKernelSize[1]],
+          FKernelSize[1] * SizeOf(Single), 0);
+      end;
+    end;
+  finally
+    FCriticalSection.Leave
+  end;
 end;
 
 procedure TVTVSTModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 begin
- if Abs(SampleRate - 44100) > 4000
-  then ShowMessage('Samplerates other than 44.1 kHz have not been implemented yet');
+  if Abs(SampleRate - 44100) > 4000 then
+    ShowMessage
+      ('Samplerates other than 44.1 kHz have not been implemented yet');
 end;
 
-procedure TVTVSTModule.ParameterBypassDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+procedure TVTVSTModule.ParameterBypassDisplay(Sender: TObject;
+  const Index: Integer; var PreDefined: AnsiString);
 begin
- if Boolean(Round(Parameter[Index]))
-  then PreDefined := 'On'
-  else PreDefined := 'Off';
+  if Boolean(Round(Parameter[Index])) then
+    PreDefined := 'On'
+  else
+    PreDefined := 'Off';
 end;
 
 end.

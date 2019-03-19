@@ -93,17 +93,17 @@ end;
 function TCustomGuiAudioDataDisplayCursor.GetSampleLower: Int64;
 begin
   if FSampleActive < FSamplePassive then
-    result := FSampleActive
+    Result := FSampleActive
   else
-    result := FSamplePassive;
+    Result := FSamplePassive;
 end;
 
 function TCustomGuiAudioDataDisplayCursor.GetSampleUpper: Int64;
 begin
   if FSampleActive > FSamplePassive then
-    result := FSampleActive
+    Result := FSampleActive
   else
-    result := FSamplePassive;
+    Result := FSamplePassive;
 end;
 
 procedure TCustomGuiAudioDataDisplayCursor.SampleActiveChanged;

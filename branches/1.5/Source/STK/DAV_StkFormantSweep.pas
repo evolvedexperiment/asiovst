@@ -194,7 +194,7 @@ end;
 
 function TStkFormantSweep.GetSweepTime: Single;
 begin
-  result := 1.0 / (FSweepRate * SampleRate);
+  Result := 1.0 / (FSweepRate * SampleRate);
 end;
 
 function TStkFormantSweep.Tick(const Sample: Single): Single;
@@ -218,7 +218,7 @@ begin
     end;
     inherited SetResonance(FFrequency, FRadius, True);
   end;
-  result := inherited Tick(Sample);
+  Result := inherited Tick(Sample);
 end;
 
 function TStkFormantSweep.Tick(vector: PSingle; VectorSize: Integer): PSingle;
@@ -232,7 +232,7 @@ begin
     p^ := Tick(p^);
     Inc(p);
   end;
-  result := vector;
+  Result := vector;
 end;
 
 end.

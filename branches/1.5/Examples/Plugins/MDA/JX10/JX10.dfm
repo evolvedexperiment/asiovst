@@ -9,7 +9,6 @@ object JX10DataModule: TJX10DataModule
   CanDos = [vcdReceiveVstEvents, vcdReceiveVstMidiEvent]
   SampleRate = 44100.000000000000000000
   numInputs = 0
-  CurrentProgram = 0
   CurrentProgramName = '5th Sweep Pad'
   IORatio = 1.000000000000000000
   UniqueID = 'MDAj'
@@ -273,7 +272,6 @@ object JX10DataModule: TJX10DataModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'OSC Mix'
       LargeStepFloat = 2.000000000000000000
@@ -286,7 +284,6 @@ object JX10DataModule: TJX10DataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'OSC Tune'
       LargeStepFloat = 2.000000000000000000
@@ -299,7 +296,6 @@ object JX10DataModule: TJX10DataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'OSC Fine'
       LargeStepFloat = 2.000000000000000000
@@ -312,7 +308,6 @@ object JX10DataModule: TJX10DataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Glide'
       LargeStepFloat = 2.000000000000000000
@@ -325,7 +320,6 @@ object JX10DataModule: TJX10DataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Glide Rate'
       LargeStepFloat = 2.000000000000000000
@@ -338,7 +332,6 @@ object JX10DataModule: TJX10DataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Glide Bend'
       LargeStepFloat = 2.000000000000000000
@@ -351,7 +344,6 @@ object JX10DataModule: TJX10DataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'VCF Frequency'
       LargeStepFloat = 2.000000000000000000
@@ -364,7 +356,6 @@ object JX10DataModule: TJX10DataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'VCF Resonance'
       LargeStepFloat = 2.000000000000000000
@@ -377,7 +368,6 @@ object JX10DataModule: TJX10DataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'VCF Envelope'
       LargeStepFloat = 2.000000000000000000
@@ -390,7 +380,6 @@ object JX10DataModule: TJX10DataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'VCF LFO'
       LargeStepFloat = 2.000000000000000000
@@ -403,7 +392,6 @@ object JX10DataModule: TJX10DataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'VCF Velocity'
       LargeStepFloat = 2.000000000000000000
@@ -416,7 +404,6 @@ object JX10DataModule: TJX10DataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'VCF Attack'
       LargeStepFloat = 2.000000000000000000
@@ -429,7 +416,6 @@ object JX10DataModule: TJX10DataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'VCF Decay'
       LargeStepFloat = 2.000000000000000000
@@ -441,7 +427,6 @@ object JX10DataModule: TJX10DataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'VCF Sustain'
       LargeStepFloat = 2.000000000000000000
@@ -454,7 +439,6 @@ object JX10DataModule: TJX10DataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'VCF Release'
       LargeStepFloat = 2.000000000000000000
@@ -467,7 +451,6 @@ object JX10DataModule: TJX10DataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'ENV Attack'
       LargeStepFloat = 2.000000000000000000
@@ -480,7 +463,6 @@ object JX10DataModule: TJX10DataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'ENV Decay'
       LargeStepFloat = 2.000000000000000000
@@ -493,7 +475,6 @@ object JX10DataModule: TJX10DataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'ENV Sustain'
       LargeStepFloat = 2.000000000000000000
@@ -506,7 +487,6 @@ object JX10DataModule: TJX10DataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'ENV Release'
       LargeStepFloat = 2.000000000000000000
@@ -519,7 +499,6 @@ object JX10DataModule: TJX10DataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'LFO Rate'
       LargeStepFloat = 2.000000000000000000
@@ -532,7 +511,6 @@ object JX10DataModule: TJX10DataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Vibrato'
       LargeStepFloat = 2.000000000000000000
@@ -545,7 +523,6 @@ object JX10DataModule: TJX10DataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Noise'
       LargeStepFloat = 2.000000000000000000
@@ -558,7 +535,6 @@ object JX10DataModule: TJX10DataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Octave'
       LargeStepFloat = 2.000000000000000000
@@ -570,7 +546,6 @@ object JX10DataModule: TJX10DataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Tuning'
       LargeStepFloat = 2.000000000000000000
@@ -582,17 +557,16 @@ object JX10DataModule: TJX10DataModule
       Units = 'cent'
       VSTModule = Owner
     end>
+  ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnOutputProperties = VSTModuleOutputProperties
   OnParameterChange = VSTModuleParameterChange
   OnProcess = VSTModuleProcess
-  OnProcessMidi = VSTModuleProcessMidi
   OnProcess32Replacing = VSTModuleProcess
+  OnProcessMidi = VSTModuleProcessMidi
   OnResume = VSTModuleResume
   OnSampleRateChange = VSTModuleSampleRateChange
   OnSuspend = VSTModuleSuspend
-  Left = 218
-  Top = 81
   Height = 150
   Width = 215
 end

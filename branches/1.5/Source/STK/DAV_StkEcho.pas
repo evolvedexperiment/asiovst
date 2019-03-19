@@ -91,7 +91,7 @@ end;
 
 function TStkEcho.GetDelay: Single;
 begin
-  result := FDelayLine.Delay;
+  Result := FDelayLine.Delay;
 end;
 
 procedure TStkEcho.Clear;
@@ -114,7 +114,7 @@ function TStkEcho.Tick(const Input: Single): Single;
 begin
   FLastOutput := FEffectMix * FDelayLine.Tick(Input);
   FLastOutput := FLastOutput + Input * (1.0 - FEffectMix);
-  result := FLastOutput;
+  Result := FLastOutput;
 end;
 
 procedure TStkEcho.Tick(const Input, Output: PDAVSingleFixedArray;

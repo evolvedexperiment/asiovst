@@ -82,10 +82,7 @@ implementation
 {$ENDIF}
 
 uses
-  DAV_Math, HrtfConvolverGui;
-
-resourcestring
-  RCStrIndexOutOfBouds = 'Index out of bouds(%d)';
+  DAV_Strings, DAV_Math, HrtfConvolverGui;
 
 procedure THrtfConvolverDataModule.VSTModuleCreate(Sender: TObject);
 begin
@@ -150,7 +147,7 @@ function THrtfConvolverDataModule.GetConvolution(Index: Integer)
   : TLowLatencyConvolution32;
 begin
   if Index in [0 .. 1] then
-    result := FConvolution[Index]
+    Result := FConvolution[Index]
   else
     raise Exception.CreateFmt(RCStrIndexOutOfBouds, [Index]);
 end;

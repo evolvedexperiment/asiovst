@@ -69,10 +69,7 @@ implementation
 {$ENDIF}
 
 uses
-  GranularPitchShifterGUI, DAV_Approximations, DAV_VSTCustomModule;
-
-resourcestring
-  RCStrIndexOutOfBounds = 'Index out of bounds (%d)';
+  GranularPitchShifterGUI, DAV_Strings, DAV_Approximations, DAV_VSTCustomModule;
 
 procedure TGranularPitchShifterModule.VSTModuleCreate(Sender: TObject);
 begin

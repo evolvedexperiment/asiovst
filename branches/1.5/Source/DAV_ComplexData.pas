@@ -179,7 +179,7 @@ type
 implementation
 
 uses
-  SysUtils, Math;
+  SysUtils, Math, DAV_Strings;
 
 resourcestring
   RStrChannel = 'Channel';
@@ -210,14 +210,14 @@ function TCustomComplexChannel.GetComplexData: TCustomComplexData;
 begin
   assert(Collection is TCustomComplexChannels);
   assert(TCustomComplexChannels(Collection).GetOwner is TCustomComplexData);
-  result := TCustomComplexData(TCustomComplexChannels(GetOwner).GetOwner);
+  Result := TCustomComplexData(TCustomComplexChannels(GetOwner).GetOwner);
 end;
 
 {$IFNDEF FPC}
 
 function TCustomComplexChannel.GetDisplayName: string;
 begin
-  result := FDisplayName;
+  Result := FDisplayName;
 end;
 
 procedure TCustomComplexChannel.SetDisplayName(const Value: string);
@@ -252,7 +252,7 @@ end;
 function TComplexChannel32.GetChannelDataReal(Bin: Int64): Single;
 begin
   if (Bin >= 0) and (Bin < BinCount) then
-    result := FChannelDataPtr^[Bin].Re
+    Result := FChannelDataPtr^[Bin].Re
   else
     raise Exception.Create('Bin out of range');
 end;
@@ -260,7 +260,7 @@ end;
 function TComplexChannel32.GetChannelDataImaginary(Bin: Int64): Single;
 begin
   if (Bin >= 0) and (Bin < BinCount) then
-    result := FChannelDataPtr^[Bin].Im
+    Result := FChannelDataPtr^[Bin].Im
   else
     raise Exception.Create('Bin out of range');
 end;
@@ -268,7 +268,7 @@ end;
 function TComplexChannel32.GetChannelDataMagnitude(Bin: Int64): Single;
 begin
   if (Bin >= 0) and (Bin < BinCount) then
-    result := sqrt(sqr(FChannelDataPtr^[Bin].Re) +
+    Result := sqrt(sqr(FChannelDataPtr^[Bin].Re) +
       sqr(FChannelDataPtr^[Bin].Im))
   else
     raise Exception.Create('Bin out of range');
@@ -277,7 +277,7 @@ end;
 function TComplexChannel32.GetChannelDataPhase(Bin: Int64): Single;
 begin
   if (Bin >= 0) and (Bin < BinCount) then
-    result := arctan2(FChannelDataPtr^[Bin].Im, FChannelDataPtr^[Bin].Re)
+    Result := arctan2(FChannelDataPtr^[Bin].Im, FChannelDataPtr^[Bin].Re)
   else
     raise Exception.Create('Bin out of range');
 end;
@@ -349,7 +349,7 @@ end;
 function TComplexChannel64.GetChannelDataReal(Bin: Int64): Double;
 begin
   if (Bin >= 0) and (Bin < BinCount) then
-    result := FChannelDataPtr^[Bin].Re
+    Result := FChannelDataPtr^[Bin].Re
   else
     raise Exception.Create('Bin out of range');
 end;
@@ -357,7 +357,7 @@ end;
 function TComplexChannel64.GetChannelDataImaginary(Bin: Int64): Double;
 begin
   if (Bin >= 0) and (Bin < BinCount) then
-    result := FChannelDataPtr^[Bin].Im
+    Result := FChannelDataPtr^[Bin].Im
   else
     raise Exception.Create('Bin out of range');
 end;
@@ -365,7 +365,7 @@ end;
 function TComplexChannel64.GetChannelDataMagnitude(Bin: Int64): Double;
 begin
   if (Bin >= 0) and (Bin < BinCount) then
-    result := sqrt(sqr(FChannelDataPtr^[Bin].Re) +
+    Result := sqrt(sqr(FChannelDataPtr^[Bin].Re) +
       sqr(FChannelDataPtr^[Bin].Im))
   else
     raise Exception.Create('Bin out of range');
@@ -374,7 +374,7 @@ end;
 function TComplexChannel64.GetChannelDataPhase(Bin: Int64): Double;
 begin
   if (Bin >= 0) and (Bin < BinCount) then
-    result := arctan2(FChannelDataPtr^[Bin].Im, FChannelDataPtr^[Bin].Re)
+    Result := arctan2(FChannelDataPtr^[Bin].Im, FChannelDataPtr^[Bin].Re)
   else
     raise Exception.Create('Bin out of range');
 end;
@@ -472,9 +472,9 @@ end;
 function TComplexData32.GetComplexChannel(index: Integer): TComplexChannel32;
 begin
   if (Index < 0) or (Index >= FChannels.Count) then
-    raise Exception.Create('Index out of bounds')
+    raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index])
   else
-    result := TComplexChannel32(FChannels.Items[index]);
+    Result := TComplexChannel32(FChannels.Items[index]);
 end;
 
 { TComplexData64 }
@@ -488,9 +488,9 @@ end;
 function TComplexData64.GetComplexChannel(index: Integer): TComplexChannel64;
 begin
   if (Index < 0) or (Index >= FChannels.Count) then
-    raise Exception.Create('Index out of bounds')
+    raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index])
   else
-    result := TComplexChannel64(FChannels.Items[index]);
+    Result := TComplexChannel64(FChannels.Items[index]);
 end;
 
 end.

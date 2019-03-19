@@ -393,13 +393,13 @@ begin
   Result := FLowpassFilter.ProcessSample64(Hermite32_asm(d, @FBuffer32[p - 4]));
 
   // store new data
-  FBuffer32[FBufferPos] := Input + FFeedbackFactor * result;
+  FBuffer32[FBufferPos] := Input + FFeedbackFactor * Result;
 
   // apply mix
-  Result := FMixFactors[0] * Input + FMixFactors[1] * result;
+  Result := FMixFactors[0] * Input + FMixFactors[1] * Result;
 
   // advance buffer position
-  inc(FBufferPos);
+  Inc(FBufferPos);
   if FBufferPos >= FRealBufSize then
   begin
     Move(FBuffer32[FRealBufSize - 4], FBuffer32[0], 4 * SizeOf(Single));
@@ -486,14 +486,14 @@ begin
   else if p < 4 then
     p := p + (FRealBufSize - 4);
 
-  // calculate pure result
+  // calculate pure Result
   Result := FLowpassFilter.ProcessSample64(Hermite64_asm(d, @FBuffer64[p - 4]));
 
   // store new data
-  FBuffer64[FBufferPos] := Input + FFeedbackFactor * result;
+  FBuffer64[FBufferPos] := Input + FFeedbackFactor * Result;
 
   // apply mix
-  Result := FMixFactors[0] * Input + FMixFactors[1] * result;
+  Result := FMixFactors[0] * Input + FMixFactors[1] * Result;
 
   // advance buffer position
   inc(FBufferPos);

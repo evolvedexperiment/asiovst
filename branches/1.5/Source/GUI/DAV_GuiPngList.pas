@@ -77,12 +77,9 @@ type
 implementation
 
 uses
-  DAV_Common, DAV_GuiBlend;
+  DAV_Common, DAV_Strings, DAV_GuiBlend;
 
-resourcestring
-  RCStrIndexOutOfBounds = 'Index out of bounds (%d)';
-
-  { TGuiPNGCollectionItem }
+{ TGuiPNGCollectionItem }
 
 constructor TGuiPNGCollectionItem.Create(Collection: TCollection);
 begin

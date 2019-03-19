@@ -526,6 +526,9 @@ var
 
 implementation
 
+uses
+  DAV_Strings;
+
 {$IFDEF DELPHI10_UP} {$REGION 'Dial Renderer'} {$ENDIF}
 { TGuiDialLayerCollection }
 
@@ -1225,7 +1228,7 @@ begin
   if (Index >= 0) and (Index < FLayers.Count) then
     Result := FLayers[Index]
   else
-    raise Exception.CreateFmt('Index out of bounds (%d)', [Index]);
+    raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
 end;
 
 procedure TGuiDialImageRenderer.RenderDial(Bitmap: TBitmap;

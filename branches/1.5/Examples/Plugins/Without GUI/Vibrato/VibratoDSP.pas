@@ -67,10 +67,7 @@ implementation
 {$ENDIF}
 
 uses
-  DAV_Approximations;
-
-resourcestring
-  RCStrIndexOutOfBounds = 'Index out of bounds (%d)';
+  DAV_Strings, DAV_Approximations;
 
 
 { TVibratoModule }

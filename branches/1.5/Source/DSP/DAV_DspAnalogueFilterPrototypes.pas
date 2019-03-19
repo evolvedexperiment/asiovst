@@ -293,11 +293,10 @@ type
 implementation
 
 uses
-  Math, DAV_Math;
+  Math, DAV_Math, DAV_Strings;
 
 resourcestring
   RCStrFixedOrder = 'The order of a biquad filter can not be changed';
-  RCStrIndexOutOfBounds = 'Index out of bounds';
 
   { TCustomAnalogueFilterPrototype }
 
@@ -432,7 +431,7 @@ begin
   if Index in [0 .. 2] then
     Result := FDenominator[Index]
   else
-    raise Exception.Create(RCStrIndexOutOfBounds);
+    raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
 end;
 
 function TCustomBiquadAnalogueFilterPrototype.GetNominator

@@ -70,10 +70,7 @@ implementation
 {$ENDIF}
 
 uses
-  DAV_Approximations, SimpleVibratoGUI;
-
-resourcestring
-  RCStrIndexOutOfBounds = 'Index out of bounds (%d)';
+  DAV_Strings, DAV_Approximations, SimpleVibratoGUI;
 
 procedure TSimpleVibratoModule.VSTModuleCreate(Sender: TObject);
 begin
