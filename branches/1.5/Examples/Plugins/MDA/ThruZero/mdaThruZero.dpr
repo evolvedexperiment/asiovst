@@ -2,26 +2,28 @@
 library mdaThruZero;
 
 uses
-  Forms,
+  FastMM4,
+  FastMove,
+  {$ENDIF}
+  DAV_WinAmp,
   DAV_VSTEffect,
-  DAV_VSTModule,
+  DAV_VSTBasicModule,
   ThruZeroDM in 'ThruZeroDM.pas' {ThruZeroDataModule: TVSTModule};
 
-function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
+function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
- try
-  with TThruZeroDataModule.Create(Application) do
-   begin
-    AudioMaster := AudioMasterCallback;
-    Result := Effect;
-   end;
- except
-  Result := nil;
- end;
+  Result := VstModuleMain(AudioMasterCallback, TThruZeroDataModule);
 end;
 
-exports Main name 'main';
-exports Main name 'VSTPluginMain';
+function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
+begin
+  Result := WinampDSPModuleHeader(TThruZeroDataModule);
+end;
+
+exports
+  VstPluginMain name 'main',
+  VstPluginMain name 'VSTPluginMain',
+  WinampDSPGetHeader name 'winampDSPGetHeader2';
 
 begin
 end.
