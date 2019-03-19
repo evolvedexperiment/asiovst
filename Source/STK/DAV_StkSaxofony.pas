@@ -199,7 +199,7 @@ end;
 
 function TStkSaxofony.GetFrequency: Single;
 begin
-  result := FBaseFrequency;
+  Result := FBaseFrequency;
 end;
 
 procedure TStkSaxofony.SetBlowPosition(const Position: Single);
@@ -264,7 +264,7 @@ begin
     (pressureDiff * FReedTable.Tick(pressureDiff)) - temp);
 
   FLastOutput := FLastOutput * FOutputGain;
-  result := FLastOutput;
+  Result := FLastOutput;
 end;
 
 procedure TStkSaxofony.ControlChange(const Number: Integer;

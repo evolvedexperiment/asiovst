@@ -6,9 +6,7 @@ object BeatBoxDataModule: TBeatBoxDataModule
   ProductName = 'DAV mda'
   VendorName = 'Delphi ASIO & VST Project / mda'
   PlugCategory = vpcEffect
-  CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'BeatBox - Drum Replacer'
   IORatio = 1.000000000000000000
   UniqueID = 'mdaG'
@@ -20,7 +18,6 @@ object BeatBoxDataModule: TBeatBoxDataModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Hat Threshold'
       LargeStepFloat = 2.000000000000000000
@@ -32,7 +29,6 @@ object BeatBoxDataModule: TBeatBoxDataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Hat Rate'
       LargeStepFloat = 2.000000000000000000
@@ -44,7 +40,6 @@ object BeatBoxDataModule: TBeatBoxDataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Hat Mix'
       LargeStepFloat = 2.000000000000000000
@@ -56,7 +51,6 @@ object BeatBoxDataModule: TBeatBoxDataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Kick Threshold'
       LargeStepFloat = 2.000000000000000000
@@ -68,7 +62,6 @@ object BeatBoxDataModule: TBeatBoxDataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Kick Trigger'
       LargeStepFloat = 2.000000000000000000
@@ -80,7 +73,6 @@ object BeatBoxDataModule: TBeatBoxDataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Kick Mix'
       LargeStepFloat = 2.000000000000000000
@@ -92,7 +84,6 @@ object BeatBoxDataModule: TBeatBoxDataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Snare Threshold'
       LargeStepFloat = 2.000000000000000000
@@ -104,7 +95,6 @@ object BeatBoxDataModule: TBeatBoxDataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Snare Trigger'
       LargeStepFloat = 2.000000000000000000
@@ -116,7 +106,6 @@ object BeatBoxDataModule: TBeatBoxDataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Snare Mix'
       LargeStepFloat = 2.000000000000000000
@@ -128,7 +117,6 @@ object BeatBoxDataModule: TBeatBoxDataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Dynamics'
       LargeStepFloat = 2.000000000000000000
@@ -141,7 +129,6 @@ object BeatBoxDataModule: TBeatBoxDataModule
       OnParameterChange = ParameterDynamicsChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Record'
       LargeStepFloat = 2.000000000000000000
@@ -152,7 +139,6 @@ object BeatBoxDataModule: TBeatBoxDataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Thru Mix'
       LargeStepFloat = 2.000000000000000000
@@ -164,13 +150,12 @@ object BeatBoxDataModule: TBeatBoxDataModule
       VSTModule = Owner
       OnParameterChange = ParameterMixChange
     end>
+  ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
   OnParameterChange = VSTModuleParameterChange
   OnProcess = VSTModuleProcess
   OnProcess32Replacing = VSTModuleProcess
-  Left = 218
-  Top = 81
   Height = 150
   Width = 215
 end

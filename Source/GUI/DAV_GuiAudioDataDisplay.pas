@@ -255,7 +255,7 @@ end;
 
 function TCustomDisplayChannel.GetDisplayName: string;
 begin
-  result := FDisplayName;
+  Result := FDisplayName;
 end;
 
 procedure TCustomDisplayChannel.AssignTo(Dest: TPersistent);
@@ -364,9 +364,9 @@ end;
 function TCustomGuiAudioDataDisplay.GetSampleFrames: Integer;
 begin
   if Assigned(FAudioDataCollection) then
-    result := FAudioDataCollection.SampleFrames
+    Result := FAudioDataCollection.SampleFrames
   else
-    result := 0;
+    Result := 0;
 end;
 
 procedure TCustomGuiAudioDataDisplay.Loaded;
@@ -380,11 +380,11 @@ end;
 function TCustomGuiAudioDataDisplay.GetChannelCount: Integer;
 begin
   if Assigned(FAudioDataCollection) then
-    result := FAudioDataCollection.Channels.Count
+    Result := FAudioDataCollection.Channels.Count
   else if Assigned(FAudioData) then
-    result := 1
+    Result := 1
   else
-    result := 0;
+    Result := 0;
 end;
 
 procedure TCustomGuiAudioDataDisplay.SetAntiAlias(const Value: TGuiAntiAlias);

@@ -255,10 +255,9 @@ type
 implementation
 
 uses
-  SysUtils, Math, DAV_HalfFloat, DAV_DspInterpolation;
+  SysUtils, Math, DAV_Strings, DAV_HalfFloat, DAV_DspInterpolation;
 
 resourcestring
-  RCStrIndexOutOfBounds = 'Index out of bounds (%d)';
   RCStrUnknownFloatingPointFormat = 'Floating point format unknown';
 
   { TCustomDelayLine }
@@ -455,7 +454,7 @@ var
   Pos: Integer;
 begin
   if (Index < 0) or (Index >= FBufferSize) then
-    raise Exception.CreateFmt('Index out of bounds(%d)', [Index]);
+    raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
 
   Pos := FBufferPos - Index;
   if Pos < 0 then
@@ -580,7 +579,7 @@ var
   Pos: Integer;
 begin
   if (Index < 0) or (Index >= FBufferSize) then
-    raise Exception.CreateFmt('Index out of bounds(%d)', [Index]);
+    raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
 
   Pos := FBufferPos - Index;
   if Pos < 0 then

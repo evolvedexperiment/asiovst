@@ -171,7 +171,7 @@ end;
 
 class function TCustomChebyshev2Filter.GetMaxOrder: Cardinal;
 begin
-  result := 32;
+  Result := 32;
 end;
 
 procedure TCustomChebyshev2Filter.Reset;
@@ -304,7 +304,7 @@ end;
 function TCustomChebyshev2Filter.MagnitudeLog10(const Frequency
   : Double): Double;
 begin
-  result := 10 * Log10(MagnitudeSquared(Frequency));
+  Result := 10 * Log10(MagnitudeSquared(Frequency));
 end;
 
 { TCustomChebyshev2LowpassFilter }
@@ -316,7 +316,7 @@ var
 begin
   t := Sqrt(FStopbandGain - 1);
   t := Exp(FOrderInv * Ln(t + Sqrt((t - 1) / (t + 1)) * (t + 1)));
-  result := FFrequency * (t + 1 / t) * 0.5;
+  Result := FFrequency * (t + 1 / t) * 0.5;
 end;
 
 function TCustomChebyshev2LowpassFilter.Phase(const Frequency: Double): Double;
@@ -324,7 +324,7 @@ var
   Cmplx: TComplex64;
 begin
   Complex(Frequency, Cmplx.Re, Cmplx.Im);
-  result := ArcTan2(Cmplx.Im, Cmplx.Re);
+  Result := ArcTan2(Cmplx.Im, Cmplx.Re);
 end;
 
 procedure TCustomChebyshev2LowpassFilter.CalculateCoefficients;
@@ -368,22 +368,22 @@ var
   x: Double;
   i: Integer;
 begin
-  result := FFilterGain * Input;
+  Result := FFilterGain * Input;
   for i := 0 to (FOrder div 2) - 1 do
   begin
-    x := result;
-    result := x + FState[2 * i];
-    FState[2 * i] := x * FCoeffs[3 * i] + FCoeffs[3 * i + 1] * result +
+    x := Result;
+    Result := x + FState[2 * i];
+    FState[2 * i] := x * FCoeffs[3 * i] + FCoeffs[3 * i + 1] * Result +
       FState[2 * i + 1];
-    FState[2 * i + 1] := x + FCoeffs[3 * i + 2] * result;
+    FState[2 * i + 1] := x + FCoeffs[3 * i + 2] * Result;
   end;
 
   if (FOrder mod 2) = 1 then
   begin
     i := ((FOrder + 1) div 2) - 1;
-    x := result;
-    result := x + FState[2 * i];
-    FState[2 * i] := x + FCoeffs[3 * i] * result;
+    x := Result;
+    Result := x + FState[2 * i];
+    FState[2 * i] := x + FCoeffs[3 * i] * Result;
   end;
 {$ELSE}
 asm
@@ -486,10 +486,10 @@ var
   cw: Double;
 begin
   cw := 2 * cos(2 * Frequency * Pi * SampleRateReciprocal);
-  result := sqr(FFilterGain);
+  Result := sqr(FFilterGain);
 
   for i := 0 to (FOrder div 2) - 1 do
-    result := result * (sqr(FCoeffs[3 * i]) + cw * (2 * FCoeffs[3 * i] + cw)) /
+    Result := Result * (sqr(FCoeffs[3 * i]) + cw * (2 * FCoeffs[3 * i] + cw)) /
       (1 + sqr(FCoeffs[3 * i + 1]) + sqr(FCoeffs[3 * i + 2]) + 2 *
       FCoeffs[3 * i + 2] + cw * (FCoeffs[3 * i + 1] * (FCoeffs[3 * i + 2] - 1) -
       cw * FCoeffs[3 * i + 2]));
@@ -497,11 +497,11 @@ begin
   if (FOrder mod 2) = 1 then
   begin
     i := ((FOrder + 1) div 2) - 1;
-    result := result * (cw + 2) /
+    Result := Result * (cw + 2) /
       (1 + sqr(FCoeffs[3 * i]) - cw * FCoeffs[3 * i]);
   end;
 
-  result := CDenorm64 + Abs(result);
+  Result := CDenorm64 + Abs(Result);
 end;
 
 { TCustomChebyshev2HighpassFilter }
@@ -513,7 +513,7 @@ var
 begin
   t := Sqrt(max(2, FStopbandGain) - 1);
   t := Exp(FOrderInv * Ln(t + Sqrt((t - 1) / (t + 1)) * (t + 1)));
-  result := FFrequency / (t + 1 / t) * 2;
+  Result := FFrequency / (t + 1 / t) * 2;
 end;
 
 function TCustomChebyshev2HighpassFilter.Phase(const Frequency: Double): Double;
@@ -521,7 +521,7 @@ var
   Cmplx: TComplex64;
 begin
   Complex(Frequency, Cmplx.Re, Cmplx.Im);
-  result := ArcTan2(Cmplx.Im, Cmplx.Re);
+  Result := ArcTan2(Cmplx.Im, Cmplx.Re);
 end;
 
 procedure TCustomChebyshev2HighpassFilter.CalculateCoefficients;
@@ -564,22 +564,22 @@ var
   x: Double;
   i: Integer;
 begin
-  result := FFilterGain * Input;
+  Result := FFilterGain * Input;
   for i := 0 to (FOrder div 2) - 1 do
   begin
-    x := result;
-    result := x + FState[2 * i];
-    FState[2 * i] := x * FCoeffs[3 * i] + FCoeffs[3 * i + 1] * result +
+    x := Result;
+    Result := x + FState[2 * i];
+    FState[2 * i] := x * FCoeffs[3 * i] + FCoeffs[3 * i + 1] * Result +
       FState[2 * i + 1];
-    FState[2 * i + 1] := x + FCoeffs[3 * i + 2] * result;
+    FState[2 * i + 1] := x + FCoeffs[3 * i + 2] * Result;
   end;
 
   if (FOrder mod 2) = 1 then
   begin
     i := ((FOrder + 1) div 2) - 1;
-    x := result;
-    result := x + FState[2 * i];
-    FState[2 * i] := -x + FCoeffs[3 * i] * result;
+    x := Result;
+    Result := x + FState[2 * i];
+    FState[2 * i] := -x + FCoeffs[3 * i] * Result;
   end;
 {$ELSE}
 asm
@@ -690,10 +690,10 @@ var
   cw: Double;
 begin
   cw := 2 * cos(2 * Frequency * Pi * SampleRateReciprocal);
-  result := sqr(FFilterGain);
+  Result := sqr(FFilterGain);
 
   for i := 0 to (FOrder div 2) - 1 do
-    result := result * (sqr(FCoeffs[3 * i]) + cw * (2 * FCoeffs[3 * i] + cw)) /
+    Result := Result * (sqr(FCoeffs[3 * i]) + cw * (2 * FCoeffs[3 * i] + cw)) /
       (1 + sqr(FCoeffs[3 * i + 1]) + sqr(FCoeffs[3 * i + 2]) + 2 *
       FCoeffs[3 * i + 2] + cw * (FCoeffs[3 * i + 1] * (FCoeffs[3 * i + 2] - 1) -
       cw * FCoeffs[3 * i + 2]));
@@ -701,11 +701,11 @@ begin
   if (FOrder mod 2) = 1 then
   begin
     i := ((FOrder + 1) div 2) - 1;
-    result := result * (cw - 2) /
+    Result := Result * (cw - 2) /
       (1 + sqr(FCoeffs[3 * i]) - cw * FCoeffs[3 * i]);
   end;
 
-  result := CDenorm64 + Abs(result);
+  Result := CDenorm64 + Abs(Result);
 end;
 
 { TChebyshev2LowpassFilterAutomatable }
@@ -796,7 +796,7 @@ begin
     Den := Den * (1 + sqr(FCoeffs[3 * i]) - cw * FCoeffs[3 * i]);
   end;
 
-  result := CDenorm64 + Abs(Nom / Den);
+  Result := CDenorm64 + Abs(Nom / Den);
 end;
 
 procedure TChebyshev2LowpassFilterAutomatable.OrderChanged;
@@ -902,7 +902,7 @@ begin
     Den := Den * (1 + sqr(FCoeffs[3 * i]) - cw * FCoeffs[3 * i]);
   end;
 
-  result := CDenorm64 + Abs(Nom / Den);
+  Result := CDenorm64 + Abs(Nom / Den);
 end;
 
 procedure TChebyshev2HighpassFilterAutomatable.OrderChanged;

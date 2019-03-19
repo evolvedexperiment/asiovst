@@ -476,7 +476,7 @@ implementation
 
 uses
   Dialogs, ExtCtrls, Math, {$IFNDEF FPC}Consts, {$ENDIF} DAV_Math,
-  DAV_Complex, ImgList;
+  DAV_Complex, DAV_Strings, ImgList;
 
 resourcestring
   RCStrGlyphCountMustBePositive = 'GlyphCount must be > 0!';
@@ -1704,7 +1704,7 @@ begin
   if (Index >= 0) and (Index < FDialImageCollection.Count) then
     Result := FDialImageCollection[Index]
   else
-    raise Exception.CreateFmt('Index out of bounds (%d)', [Index]);
+    raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
 end;
 
 {$IFDEF DELPHI10_UP} {$ENDREGION } {$ENDIF}

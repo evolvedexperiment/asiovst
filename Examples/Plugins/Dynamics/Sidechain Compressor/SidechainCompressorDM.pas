@@ -271,7 +271,7 @@ function TSidechainCompressorDataModule.GetSidechainCompressor(Index: Integer): 
 begin
  if Index in [0..Length(FCompressor) - 1]
   then Result := FCompressor[Index]
-  else raise Exception.CreateFmt('Index out of bounds (%d)', [Index]);
+  else raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
 end;
 
 class function TSidechainCompressorDataModule.GetStaticDescription: string;

@@ -106,12 +106,9 @@ type
 implementation
 
 uses
-  SysUtils, DAV_Common;
+  SysUtils, DAV_Common, DAV_Strings;
 
-resourcestring
-  RCStrIndexOutOfBounds = 'Index out of bounds [%d]';
-
-  { TCustomAudio2MidiTrigger }
+{ TCustomAudio2MidiTrigger }
 
 constructor TCustomAudio2MidiTrigger.Create;
 begin

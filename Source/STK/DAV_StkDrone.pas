@@ -154,7 +154,7 @@ end;
 
 function TStkDrone.GetFrequency: Single;
 begin
-  result := FBaseFrequency;
+  Result := FBaseFrequency;
 end;
 
 procedure TStkDrone.Pluck(const Amplitude: Single);
@@ -178,7 +178,7 @@ begin
   // Here's the whole inner loop of the instrument!!
   FLastOutput := FDelayLine.Tick(FLoopFilter.Tick(FDelayLine.LastOutput *
     FLoopGain) + (0.005 * FEnvelope.Tick * FNoise.Tick));
-  result := FLastOutput;
+  Result := FLastOutput;
 end;
 
 end.

@@ -1,5 +1,4 @@
 object LightweightUpwardCompressorDataModule: TLightweightUpwardCompressorDataModule
-  OldCreateOrder = True
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0.2'
   EffectName = 'Lightweight Compressor'
@@ -258,8 +257,6 @@ object LightweightUpwardCompressorDataModule: TLightweightUpwardCompressorDataMo
   OnProcess = VSTModuleProcessMono
   OnProcess32Replacing = VSTModuleProcessMono
   OnSampleRateChange = VSTModuleSampleRateChange
-  Left = 286
-  Top = 77
   Height = 150
   Width = 215
 end

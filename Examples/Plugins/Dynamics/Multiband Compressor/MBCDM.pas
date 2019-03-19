@@ -35,12 +35,12 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
-  Forms, DAV_Types, DAV_VSTModule, DAV_DspFilter, DAV_DspFilterLinkwitzRiley, 
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
+  Forms, DAV_Types, DAV_VSTModule, DAV_DspFilter, DAV_DspFilterLinkwitzRiley,
   DAV_DspDynamics, DAV_DspLightweightDynamics;
 
 type
-  TBandState = (bsNone, bsMute, bsBypass); 
+  TBandState = (bsNone, bsMute, bsBypass);
   TMBCDataModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
@@ -419,17 +419,17 @@ end;
 
 function TMBCDataModule.GetHighGainReduction: Single;
 begin
- result := 1 - FHighComp.GainReductionFactor;
+  Result := 1 - FHighComp.GainReductionFactor;
 end;
 
 function TMBCDataModule.GetLowGainReduction: Single;
 begin
- result := 1 - FLowComp.GainReductionFactor;
+  Result := 1 - FLowComp.GainReductionFactor;
 end;
 
 function TMBCDataModule.GetMidGainReduction: Single;
 begin
- result := 1 - FMidComp.GainReductionFactor;
+  Result := 1 - FMidComp.GainReductionFactor;
 end;
 
 procedure TMBCDataModule.ParameterOnOffDisplay(

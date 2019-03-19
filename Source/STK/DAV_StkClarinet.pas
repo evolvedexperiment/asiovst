@@ -177,7 +177,7 @@ end;
 
 function TStkClarinet.GetFrequency: Single;
 begin
-  result := FBaseFrequency;
+  Result := FBaseFrequency;
 end;
 
 procedure TStkClarinet.StartBlowing(const Amplitude, Rate: Single);
@@ -227,7 +227,7 @@ begin
   // Apply output gain.
   FLastOutput := FLastOutput * FOutputGain;
 
-  result := FLastOutput;
+  Result := FLastOutput;
 end;
 
 procedure TStkClarinet.ControlChange(const Number: Integer;

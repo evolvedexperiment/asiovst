@@ -205,7 +205,7 @@ end;
 
 function TStkStifKarp.GetFrequency: Single;
 begin
-  result := FLastFrequency;
+  Result := FLastFrequency;
 end;
 
 procedure TStkStifKarp.SetStretch(const Value: Single);
@@ -308,7 +308,7 @@ begin
 
   FLastOutput := FDelayLine.Tick(temp);
   FLastOutput := FLastOutput - FCombDelay.Tick(FLastOutput);
-  result := FLastOutput;
+  Result := FLastOutput;
 end;
 
 procedure TStkStifKarp.ControlChange(const Number: Integer;

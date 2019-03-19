@@ -497,11 +497,10 @@ type
 implementation
 
 uses
-  Math, DAV_BlockProcessing;
+  Math, DAV_Strings, DAV_BlockProcessing;
 
 resourcestring
   RCStrNoAudioFileFormat = 'No audio file format registered';
-  RCStrIndexOutOfBounds = 'Index out of bounds (%d)';
   RCStrSampleOutOfRange = 'Sample out of range (%d)';
 
 {$IFDEF DELPHI10_UP} {$REGION 'AudioData implementation'} {$ENDIF}

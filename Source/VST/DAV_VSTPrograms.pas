@@ -110,11 +110,10 @@ type
 implementation
 
 uses
-  SysUtils, DAV_VSTEffect, DAV_VSTModuleWithPrograms;
+  SysUtils, DAV_Strings, DAV_VSTEffect, DAV_VSTModuleWithPrograms;
 
 resourcestring
   RCStrParameterMismatch = 'Parameter mismatch (%d)';
-  RCStrIndexOutOfBounds = 'Index out of bounds (%d)';
 
 {$IFDEF FPC}
 

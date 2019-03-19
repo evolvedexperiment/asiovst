@@ -83,7 +83,7 @@ implementation
 {$ENDIF}
 
 uses
-  Math, DAV_Common, DAV_Approximations, DAV_VSTModuleWithPrograms,
+  Math, DAV_Strings, DAV_Common, DAV_Approximations, DAV_VSTModuleWithPrograms,
   LightweightCompressorGUI;
 
 procedure TLightweightCompressorDataModule.VSTModuleOpen(Sender: TObject);
@@ -169,7 +169,7 @@ begin
   if Index in [0 .. Length(FCompressor) - 1] then
     Result := FCompressor[Index]
   else
-    raise Exception.CreateFmt('Index out of bounds (%d)', [Index]);
+    raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
 end;
 
 procedure TLightweightCompressorDataModule.ParameterAttackChange

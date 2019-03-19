@@ -421,6 +421,7 @@ object FmSidechainCompressor: TFmSidechainCompressor
     BorderColor = 9681911
     BorderRadius = 3.000000000000000000
     BorderWidth = 1.000000000000000000
+    Caption = ''
     Color = 5196083
     CurveMapping = 2.000000000000000000
     DefaultValue = 10.000000000000000000
@@ -438,6 +439,7 @@ object FmSidechainCompressor: TFmSidechainCompressor
     FontShadow.Visible = True
     Max = 1000.000000000000000000
     Min = 0.009999999776482582
+    ReadOnly = False
     ParentColor = False
     Value = 10.000000000000000000
     SlideColor = 6322591
@@ -451,6 +453,7 @@ object FmSidechainCompressor: TFmSidechainCompressor
     BorderColor = 9681911
     BorderRadius = 3.000000000000000000
     BorderWidth = 1.000000000000000000
+    Caption = ''
     Color = 5196083
     CurveMapping = 2.000000000000000000
     DefaultValue = 50.000000000000000000
@@ -468,6 +471,7 @@ object FmSidechainCompressor: TFmSidechainCompressor
     FontShadow.Visible = True
     Max = 5000.000000000000000000
     Min = 0.050000000745058060
+    ReadOnly = False
     ParentColor = False
     Value = 50.000000000000000000
     SlideColor = 6322591
@@ -481,6 +485,7 @@ object FmSidechainCompressor: TFmSidechainCompressor
     BorderColor = 9681911
     BorderRadius = 3.000000000000000000
     BorderWidth = 1.000000000000000000
+    Caption = ''
     Color = 5196083
     DefaultValue = -20.000000000000000000
     Digits = 0
@@ -497,6 +502,7 @@ object FmSidechainCompressor: TFmSidechainCompressor
     FontShadow.Visible = True
     Max = 10.000000000000000000
     Min = -90.000000000000000000
+    ReadOnly = False
     ParentColor = False
     Value = -20.000000000000000000
     SlideColor = 6322591
@@ -511,6 +517,7 @@ object FmSidechainCompressor: TFmSidechainCompressor
     BorderColor = 9681911
     BorderRadius = 3.000000000000000000
     BorderWidth = 1.000000000000000000
+    Caption = ''
     Color = 5196083
     DefaultValue = 1.000000000000000000
     Digits = 0
@@ -526,6 +533,7 @@ object FmSidechainCompressor: TFmSidechainCompressor
     FontShadow.Saturation = 8.000000000000000000
     FontShadow.Visible = True
     Max = 10.000000000000000000
+    ReadOnly = False
     ParentColor = False
     Value = 1.000000000000000000
     SlideColor = 6322591
@@ -539,6 +547,7 @@ object FmSidechainCompressor: TFmSidechainCompressor
     BorderColor = 9681911
     BorderRadius = 3.000000000000000000
     BorderWidth = 1.000000000000000000
+    Caption = ''
     Color = 5196083
     CurveMapping = 1.000000000000000000
     DefaultValue = 50.000000000000000000
@@ -556,6 +565,7 @@ object FmSidechainCompressor: TFmSidechainCompressor
     FontShadow.Visible = True
     Max = 100.000000000000000000
     Min = 1.000000000000000000
+    ReadOnly = False
     ParentColor = False
     Value = 10.000000000000000000
     SlideColor = 6322591
@@ -569,6 +579,7 @@ object FmSidechainCompressor: TFmSidechainCompressor
     BorderColor = 9681911
     BorderRadius = 3.000000000000000000
     BorderWidth = 1.000000000000000000
+    Caption = ''
     Color = 5196083
     DefaultValue = 50.000000000000000000
     Digits = 0
@@ -585,6 +596,7 @@ object FmSidechainCompressor: TFmSidechainCompressor
     FontShadow.Visible = True
     Max = 90.000000000000000000
     Min = -10.000000000000000000
+    ReadOnly = False
     ParentColor = False
     Value = 10.000000000000000000
     SlideColor = 6322591
@@ -598,6 +610,7 @@ object FmSidechainCompressor: TFmSidechainCompressor
     BorderColor = 9681911
     BorderRadius = 3.000000000000000000
     BorderWidth = 1.000000000000000000
+    Caption = ''
     Color = 5196083
     CurveMapping = 2.000000000000000000
     DefaultValue = 10.000000000000000000
@@ -615,6 +628,7 @@ object FmSidechainCompressor: TFmSidechainCompressor
     FontShadow.Visible = True
     Max = 1000.000000000000000000
     Min = 0.009999999776482582
+    ReadOnly = False
     ParentColor = False
     Value = 10.000000000000000000
     SlideColor = 6322591
@@ -628,6 +642,7 @@ object FmSidechainCompressor: TFmSidechainCompressor
     BorderColor = 9681911
     BorderRadius = 3.000000000000000000
     BorderWidth = 1.000000000000000000
+    Caption = ''
     Color = 5196083
     CurveMapping = 2.000000000000000000
     DefaultValue = 10.000000000000000000
@@ -645,6 +660,7 @@ object FmSidechainCompressor: TFmSidechainCompressor
     FontShadow.Visible = True
     Max = 20000.000000000000000000
     Min = 20.000000000000000000
+    ReadOnly = False
     ParentColor = False
     Value = 20.000000000000000000
     SlideColor = 6322591
@@ -658,6 +674,7 @@ object FmSidechainCompressor: TFmSidechainCompressor
     BorderColor = 9681911
     BorderRadius = 3.000000000000000000
     BorderWidth = 1.000000000000000000
+    Caption = ''
     Color = 5196083
     CurveMapping = 2.000000000000000000
     DefaultValue = 50.000000000000000000
@@ -675,6 +692,7 @@ object FmSidechainCompressor: TFmSidechainCompressor
     FontShadow.Visible = True
     Max = 20000.000000000000000000
     Min = 20.000000000000000000
+    ReadOnly = False
     ParentColor = False
     Value = 20000.000000000000000000
     SlideColor = 6322591
@@ -688,6 +706,7 @@ object FmSidechainCompressor: TFmSidechainCompressor
     BorderColor = 9681911
     BorderRadius = 3.000000000000000000
     BorderWidth = 1.000000000000000000
+    Caption = ''
     Color = 5196083
     DefaultValue = 16.000000000000000000
     Digits = 0
@@ -703,6 +722,7 @@ object FmSidechainCompressor: TFmSidechainCompressor
     FontShadow.Saturation = 8.000000000000000000
     FontShadow.Visible = True
     Max = 16.000000000000000000
+    ReadOnly = False
     ParentColor = False
     Value = 2.000000000000000000
     SlideColor = 6322591
@@ -716,6 +736,7 @@ object FmSidechainCompressor: TFmSidechainCompressor
     BorderColor = 9681911
     BorderRadius = 3.000000000000000000
     BorderWidth = 1.000000000000000000
+    Caption = ''
     Color = 5196083
     DefaultValue = 16.000000000000000000
     Digits = 0
@@ -731,6 +752,7 @@ object FmSidechainCompressor: TFmSidechainCompressor
     FontShadow.Saturation = 8.000000000000000000
     FontShadow.Visible = True
     Max = 16.000000000000000000
+    ReadOnly = False
     ParentColor = False
     Value = 2.000000000000000000
     SlideColor = 6322591
@@ -781,6 +803,7 @@ object FmSidechainCompressor: TFmSidechainCompressor
     BorderColor = 9681911
     BorderRadius = 3.000000000000000000
     BorderWidth = 1.000000000000000000
+    Caption = ''
     Color = 5196083
     DefaultValue = 50.000000000000000000
     Digits = 0
@@ -796,6 +819,7 @@ object FmSidechainCompressor: TFmSidechainCompressor
     FontShadow.Saturation = 8.000000000000000000
     FontShadow.Visible = True
     Max = 100.000000000000000000
+    ReadOnly = False
     ParentColor = False
     Value = 10.000000000000000000
     SlideColor = 6322591

@@ -88,7 +88,7 @@ function TCustomChebyshevFilter.Imaginary(const Frequency: Double): Double;
 var
   Temp: Double;
 begin
-  Complex(Frequency, Temp, result);
+  Complex(Frequency, Temp, Result);
 end;
 
 procedure TCustomChebyshevFilter.OrderChanged;
@@ -134,7 +134,7 @@ function TCustomChebyshevFilter.Real(const Frequency: Double): Double;
 var
   Temp: Double;
 begin
-  Complex(Frequency, result, Temp);
+  Complex(Frequency, Result, Temp);
 end;
 
 procedure TCustomChebyshevFilter.ResetStatesInt64;

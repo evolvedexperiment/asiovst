@@ -48,7 +48,7 @@ type
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure VSTModuleResume(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
-    function VSTModuleOutputProperties(Sender: TObject; const index: Integer; var vLabel, shortLabel: string; var SpeakerArrangement: TVstSpeakerArrangementType; var Flags: TVstPinPropertiesFlags): Boolean;
+    function VSTModuleOutputProperties(Sender: TObject; const index: Integer; var vLabel, shortLabel: AnsiString; var SpeakerArrangement: TVstSpeakerArrangementType; var Flags: TVstPinPropertiesFlags): Boolean;
     procedure VSTModuleProcessMidi(Sender: TObject; MidiEvent: TVstMidiEvent);
     procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
@@ -784,17 +784,18 @@ begin
 end;
 
 function TJX10DataModule.VSTModuleOutputProperties(Sender: TObject;
-  const Index : Integer; var vLabel, shortLabel: string;
+  const Index : Integer; var vLabel, shortLabel: AnsiString;
   var SpeakerArrangement: TVstSpeakerArrangementType;
   var Flags: TVstPinPropertiesFlags): Boolean;
 begin
- result := False;
- if (index < numOutputs) then
+  Result := False;
+  if (index < numOutputs) then
   begin
     vLabel := 'JX10 Channel ' + IntToStr(Index + 1);
-    Flags  := [vppIsActive];
-    if index < 2 then Flags := Flags + [vppIsStereo]; //make channel 1+2 stereo
-    result := True;
+    Flags := [vppIsActive];
+    if index < 2 then
+      Flags := Flags + [vppIsStereo]; // make channel 1+2 stereo
+    Result := True;
   end;
 end;
 
@@ -956,7 +957,7 @@ begin
              y := V.fc * exp(fz + fe * V.fenv) * ipb; // Filter cutoff
              if (y < 0.005) then y := 0.005;
              V.ff := y;
- 
+
              V.period := V.period + gl * (V.target - V.period); // Glide
              if V.target < V.period
               then V.period := V.period + gl * (V.target - V.period);
@@ -986,7 +987,7 @@ begin
         noteOn(note, vel);
        end;
     end;
-  
+
     fActiveVoices := cNumVoices;
     for v := 0 to cNumVoices - 1 do
      begin

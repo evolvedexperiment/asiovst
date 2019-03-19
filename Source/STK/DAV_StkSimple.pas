@@ -125,7 +125,7 @@ end;
 
 function TStkSimple.GetFrequency: Single;
 begin
-  result := FLoop.Frequency;
+  Result := FLoop.Frequency;
 end;
 
 procedure TStkSimple.KeyOn;
@@ -162,7 +162,7 @@ begin
   FBiQuad.Tick(FNoise.Tick);
   FLastOutput := lastoutput + (1.0 - FLoopGain) * FBiQuad.lastoutput;
   FLastOutput := FFilter.Tick(lastoutput) * FADSR.Tick;
-  result := FLastOutput;
+  Result := FLastOutput;
 end;
 
 procedure TStkSimple.ControlChange(const Number: Integer; const Value: Single);

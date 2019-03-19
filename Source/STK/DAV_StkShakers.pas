@@ -441,7 +441,7 @@ const
     cerr << "TShakers: Setting instrument to " << instrs[Which] << endl;
     #endif
 
-    result:= SetupNum(Which);
+    Result:= SetupNum(Which);
     end;
 
   }

@@ -95,7 +95,7 @@ end;
 
 function TStkEnvelope.GetTime: Single;
 begin
-  result := -1.0 / (Rate * SampleRate);
+  Result := -1.0 / (Rate * SampleRate);
 end;
 
 procedure TStkEnvelope.KeyOn;
@@ -184,7 +184,7 @@ begin
         FState := 0;
       end;
     end;
-  result := FCurrentValue;
+  Result := FCurrentValue;
 end;
 
 procedure TStkEnvelope.Tick(const Vector: PDAVSingleFixedArray;

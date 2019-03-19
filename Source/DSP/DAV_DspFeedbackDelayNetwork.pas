@@ -162,12 +162,9 @@ type
 implementation
 
 uses
-  Math, SysUtils, DAV_DspInterpolation;
+  Math, SysUtils, DAV_DspInterpolation, DAV_Strings;
 
-resourcestring
-  RCIndexOutOfBounds = 'Index out of bounds (%d)';
-
-  { TFeedbackZDelayNetwork32 }
+{ TFeedbackZDelayNetwork32 }
 
 constructor TFeedbackZDelayNetwork32.Create;
 var
@@ -201,35 +198,35 @@ end;
 function TFeedbackZDelayNetwork32.GetDelaySamples(Index: Integer): Integer;
 begin
   if Index in [0 .. 3] then
-    result := FDelaySamples[Index]
+    Result := FDelaySamples[Index]
   else
-    result := 0;
+    Result := 0;
 end;
 
 function TFeedbackZDelayNetwork32.GetFeedbackMatrix(InputIndex,
   OutputIndex: Integer): Double;
 begin
   if (InputIndex in [0 .. 3]) and (OutputIndex in [0 .. 3]) then
-    result := FFeedbackMatrix[InputIndex, OutputIndex]
+    Result := FFeedbackMatrix[InputIndex, OutputIndex]
   else
-    result := 0;
+    Result := 0;
 end;
 
 function TFeedbackZDelayNetwork32.GetInputVector(Index: Integer): Double;
 begin
   if Index in [0 .. 3] then
-    result := FInputVector[Index]
+    Result := FInputVector[Index]
   else
-    result := 0;
+    Result := 0;
 end;
 
 function TFeedbackZDelayNetwork32.GetOutputVector(Index: Integer): Double;
 begin
   case Index of
     0 .. 3:
-      result := FOutputVector[Index];
+      Result := FOutputVector[Index];
   else
-    result := 0;
+    Result := 0;
   end;
 end;
 
@@ -308,7 +305,7 @@ begin
   DelayedSignal[3] := FDelayBuffers[3]^[FDelayPos[3]];
 
   // Output
-  result := VectorDotProduct(FOutputVector, DelayedSignal);
+  Result := VectorDotProduct(FOutputVector, DelayedSignal);
 
   // Feedback Matrix
   FeedbackInput := VectorTransform(DelayedSignal, FFeedbackMatrix);
@@ -438,18 +435,18 @@ end;
 function TFeedbackDelayNetwork32.GetDelaySamples(Index: Integer): Integer;
 begin
   if Index in [0 .. 3] then
-    result := FDelaySamples[Index]
+    Result := FDelaySamples[Index]
   else
-    result := 0;
+    Result := 0;
 end;
 
 function TFeedbackDelayNetwork32.GetDelayTimes(Index: Integer): Single;
 begin
   case Index of
     0 .. 3:
-      result := FDelayTimes[Index];
+      Result := FDelayTimes[Index];
   else
-    result := 0;
+    Result := 0;
   end;
 end;
 
@@ -457,26 +454,26 @@ function TFeedbackDelayNetwork32.GetFeedbackMatrix(InputIndex,
   OutputIndex: Integer): Double;
 begin
   if (InputIndex in [0 .. 3]) and (OutputIndex in [0 .. 3]) then
-    result := FFeedbackMatrix[InputIndex, OutputIndex]
+    Result := FFeedbackMatrix[InputIndex, OutputIndex]
   else
-    result := 0;
+    Result := 0;
 end;
 
 function TFeedbackDelayNetwork32.GetInputVector(Index: Integer): Double;
 begin
   if Index in [0 .. 3] then
-    result := FInputVector[Index]
+    Result := FInputVector[Index]
   else
-    result := 0;
+    Result := 0;
 end;
 
 function TFeedbackDelayNetwork32.GetOutputVector(Index: Integer): Double;
 begin
   case Index of
     0 .. 3:
-      result := FOutputVector[Index];
+      Result := FOutputVector[Index];
   else
-    result := 0;
+    Result := 0;
   end;
 end;
 
@@ -578,7 +575,7 @@ begin
   DelayedSignal[3] := FDelayBuffers[3]^[FDelayPos[3]];
 
   // Output
-  result := VectorDotProduct(FOutputVector, DelayedSignal);
+  Result := VectorDotProduct(FOutputVector, DelayedSignal);
 
   // Feedback Matrix
   FeedbackInput := VectorTransform(DelayedSignal, FFeedbackMatrix);
@@ -622,7 +619,7 @@ begin
 
     Move(FIntBuffer[1], FIntBuffer[0], 2 * SizeOf(Single));
     FIntBuffer[2] := FBuffer^[FBufferPos];
-    result := Hermite32_asm(FFractional, @FIntBuffer);
+    Result := Hermite32_asm(FFractional, @FIntBuffer);
   *)
 
   // Build Delay Vector

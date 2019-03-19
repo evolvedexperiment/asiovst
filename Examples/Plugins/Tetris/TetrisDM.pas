@@ -60,29 +60,34 @@ uses
 
 function TTetrisModule.VSTModuleCheckKey(Sender: TObject; Key: Char): Boolean;
 begin
- result := True;
+  Result := True;
 end;
 
 procedure TTetrisModule.VSTModuleCreate(Sender: TObject);
 begin
- EditorFormClass := TFmTetris;
+  EditorFormClass := TFmTetris;
 end;
 
 procedure TTetrisModule.VSTModuleEditorKeyDown(Sender: TObject;
   var keyCode: TVstKeyCode);
 begin
- if Assigned(EditorForm) then
-  with (EditorForm As TFmTetris) do
-   begin
-    case keyCode.Character of
-     VKEY_SPACE : Tetris.StepGame;
-     VKEY_LEFT : Tetris.Left;
-     VKEY_right : Tetris.right;
-     VKEY_up : Tetris.Rotate;
-     VKEY_DOWN : Tetris.StepGame;
+  if Assigned(EditorForm) then
+    with (EditorForm As TFmTetris) do
+    begin
+      case keyCode.Character of
+        VKEY_SPACE:
+          Tetris.StepGame;
+        VKEY_LEFT:
+          Tetris.Left;
+        VKEY_right:
+          Tetris.right;
+        VKEY_up:
+          Tetris.Rotate;
+        VKEY_DOWN:
+          Tetris.StepGame;
+      end;
+      FormPaint(nil);
     end;
-    FormPaint(nil);
-   end;
 end;
 
 end.

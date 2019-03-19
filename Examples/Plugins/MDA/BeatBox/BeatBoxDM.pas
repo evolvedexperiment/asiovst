@@ -35,7 +35,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
   Forms, DAV_Types, DAV_VSTModule;
 
 type
@@ -116,7 +116,7 @@ var
   Oversampling : Integer;
 begin
  Oversampling := Round(SampleRate / 49000 + 0.5);
- if Oversampling < 1 then Oversampling := 1; 
+ if Oversampling < 1 then Oversampling := 1;
 
  FHihatBufferLength := Oversampling * 20000;
  FKickBufferLength  := Oversampling * 20000;
@@ -392,20 +392,20 @@ end;
 
 function fmod(Arg1, Arg2: Single): Single;
 var
-  Norm : Single;
+  Norm: Single;
 begin
- Norm := Arg1 / Arg2;
- result := (Norm - Round(Norm - 0.5)) * Arg2
+  Norm := Arg1 / Arg2;
+  Result := (Norm - Round(Norm - 0.5)) * Arg2
 end;
 
 procedure TBeatBoxDataModule.ParameterMixChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FMix := Value;
+  FMix := Value;
 end;
 
 procedure TBeatBoxDataModule.ParameterDynamicsChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FDynm := Value;
+  FDynm := Value;
 end;
 
 procedure TBeatBoxDataModule.Synth;
@@ -458,31 +458,3 @@ begin
 end;
 
 end.
-
-(*
-void mdaBeatBox::getParameterDisplay(VstInt32 index, char *text)
-begin
-  switch(index)
-  begin
-    case 0: float2strng((40.0*Parameter[0 - 40.0),text); break;
-    case 1: long2string((long)(1000. * FHihatDelay / SampleRate),text); break;
-    case 2: long2string((long)(20. * log10(FHihatLevel)),text); break;
-    case 3: float2strng((40.0*Parameter[3 - 40.0),text); break;
-    case 4: long2string((long)(0.5 * FKWW * SampleRate), text); break;
-    case 5: long2string((long)(20. * log10(FKickLevel)),text); break;
-    case 6: float2strng((40.0*Parameter[6 - 40.0),text); break;
-    case 7: long2string((long)(0.5 * FWW * SampleRate), text); break;
-    case 8: long2string((long)(20. * log10(FSnareLevel)),text); break;
-    case 9: long2string((long)(100. * Parameter[9),text); break; 
-    case 11: long2string((long)(20. * log10(Parameter[11)),text); break;
-
-    case 10: switch(FRec) 
-            begin case 0: strcpy(text, "-"); break;
-              case 1: strcpy(text, "MONITOR"); break;
-              case 2: strcpy(text, "-> HAT"); break;
-              case 3: strcpy(text, "-> KIK"); break;
-              case 4: strcpy(text, "-> SNR"); break; end; break;
-  end;
-end;
-
-*)

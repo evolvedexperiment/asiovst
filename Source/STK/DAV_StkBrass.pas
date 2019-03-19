@@ -183,7 +183,7 @@ end;
 
 function TStkBrass.GetFrequency: Single;
 begin
-  result := FBaseFrequency;
+  Result := FBaseFrequency;
 end;
 
 procedure TStkBrass.SetLip(const Frequency: Single);
@@ -241,7 +241,7 @@ begin
     borePressure;
   FLastOutput := FDelayLine.Tick(FDcBlock.Tick(LastOutput));
 
-  result := FLastOutput;
+  Result := FLastOutput;
 end;
 
 procedure TStkBrass.ControlChange(const Number: Integer; const Value: Single);

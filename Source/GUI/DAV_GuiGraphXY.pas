@@ -2353,7 +2353,7 @@ begin
     FSeriesCollection[Index] := Value;
   end
   else
-    raise Exception.Create('Index out of bounds (' + IntToStr(Index) + ')');
+    raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
 end;
 
 procedure RegisterSeriesClass(SeriesClass: TCustomGuiGraphXYSeriesClass);

@@ -73,10 +73,7 @@ implementation
 {$ENDIF}
 
 uses
-  DAV_Approximations, DAV_VSTCustomModule, BarberpoleFlangerGUI;
-
-resourcestring
-  RCStrIndexOutOfBounds = 'Index out of bounds (%d)';
+  DAV_Strings, DAV_Approximations, DAV_VSTCustomModule, BarberpoleFlangerGUI;
 
 procedure TBarberpoleFlangerModule.VSTModuleCreate(Sender: TObject);
 begin

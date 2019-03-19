@@ -482,11 +482,10 @@ type
 implementation
 
 uses
-  Math, DAV_Common, DAV_Complex, DAV_Approximations;
+  Math, DAV_Common, DAV_Strings, DAV_Complex, DAV_Approximations;
 
 resourcestring
   RCStrPositiveValueOnly = 'Value must be larger than 0!';
-  RCStrIndexOutOfBounds = 'Index out of bounds (%d)';
   RCStrChunkAlreadyExists = 'Chunk already exists';
 
 

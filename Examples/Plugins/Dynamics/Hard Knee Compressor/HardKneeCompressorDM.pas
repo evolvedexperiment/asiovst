@@ -64,7 +64,7 @@ implementation
 {$ENDIF}
 
 uses
-  Math, HardKneeCompressorGUI;
+  Math, DAV_Strings, HardKneeCompressorGUI;
 
 procedure THardKneeCompressorDataModule.VSTModuleOpen(Sender: TObject);
 begin
@@ -149,7 +149,7 @@ begin
   if Index in [0 .. 1] then
     Result := FSimpleCompressors[Index]
   else
-    raise Exception.CreateFmt('Index out of bounds (%d)', [Index]);
+    raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
 end;
 
 procedure THardKneeCompressorDataModule.VSTModuleProcess(const Inputs,

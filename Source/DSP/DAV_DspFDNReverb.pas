@@ -185,7 +185,7 @@ type
 implementation
 
 uses
-  Math, SysUtils, DAV_Math, DAV_Approximations, DAV_DspInterpolation;
+  Math, SysUtils, DAV_Math, DAV_Strings, DAV_Approximations, DAV_DspInterpolation;
 
 { TDampingFilter }
 
@@ -215,33 +215,33 @@ begin
   PInt64(@FState)^ := 0;
 end;
 
-procedure TDampingFilter.SetFilterValues(const AFrequency, AGain : Single);
+procedure TDampingFilter.SetFilterValues(const AFrequency, AGain: Single);
 const
-  ln10_0025 : Double = 5.7564627325E-2;
+  ln10_0025: Double = 5.7564627325E-2;
 begin
- FFrequency := AFrequency;
- FGain_dB := AGain;
- FGainFactor := Exp(FGain_dB * ln10_0025);
- CalculateW0;
+  FFrequency := AFrequency;
+  FGain_dB := AGain;
+  FGainFactor := Exp(FGain_dB * ln10_0025);
+  CalculateW0;
 end;
 
 procedure TDampingFilter.SetOrder(const Value: Cardinal);
 begin
- // read only!
+  // read only!
 end;
 
 function TDampingFilter.Real(const Frequency: Double): Double;
 var
   Temp: Double;
 begin
- Complex(Frequency, result, Temp);
+  Complex(Frequency, Result, Temp);
 end;
 
 function TDampingFilter.Imaginary(const Frequency: Double): Double;
 var
   Temp: Double;
 begin
- Complex(Frequency, Temp, result);
+  Complex(Frequency, Temp, Result);
 end;
 
 procedure TDampingFilter.Complex(const Frequency: Double; out Real, Imaginary: Double);
@@ -307,43 +307,44 @@ end;
 
 procedure TDampingFilter.AssignTo(Dest: TPersistent);
 begin
- if Dest is TDampingFilter then
-  with TDampingFilter(Dest) do
-   begin
+  if Dest is TDampingFilter then
+    with TDampingFilter(Dest) do
+    begin
+      inherited;
+      FCoeffs := Self.FCoeffs;
+      FState := Self.FState;
+    end
+  else
     inherited;
-    FCoeffs := Self.FCoeffs;
-    FState  := Self.FState;
-   end
- else inherited;
 end;
 
 procedure TDampingFilter.CalculateCoefficients;
 var
-  K, t : Double;
+  K, t: Double;
 begin
- K := Tan(FW0 * 0.5);
- t := 1 / (K + 1);
- FCoeffs[0] := K * t;
- FCoeffs[1] := (1 - K) * t;
+  K := Tan(FW0 * 0.5);
+  t := 1 / (K + 1);
+  FCoeffs[0] := K * t;
+  FCoeffs[1] := (1 - K) * t;
 end;
 
 function TDampingFilter.MagnitudeSquared(const Frequency: Double): Double;
 var
-  cw : Double;
+  cw: Double;
 begin
- cw := 2 * cos(2 * Frequency * pi * fSRR);
- Result := Abs(1E-32 + sqr(FCoeffs[0]) * (cw + 2) / (1 + sqr(FCoeffs[1]) - cw * FCoeffs[1]));
+  cw := 2 * cos(2 * Frequency * pi * fSRR);
+  Result := Abs(1E-32 + sqr(FCoeffs[0]) * (cw + 2) / (1 + sqr(FCoeffs[1]) - cw * FCoeffs[1]));
 end;
 
 function TDampingFilter.ProcessSample64(Input: Double): Double;
 {$IFDEF PUREPASCAL}
 var
-  x : Double;
-  i : Integer;
+  x: Double;
+  i: Integer;
 begin
- x      := FCoeffs[0] * Input;
- Result := x + FState;
- FState := x + FCoeffs[1] * Result;
+  x := FCoeffs[0] * Input;
+  Result := x + FState;
+  FState := x + FCoeffs[1] * Result;
 {$ELSE}
 asm
 {$IFDEF CPUx86_64}
@@ -372,12 +373,12 @@ end;
 
 procedure TDampingFilter.PopStates;
 begin
- raise Exception.Create('Not supported');
+  raise Exception.Create('Not supported');
 end;
 
 procedure TDampingFilter.PushStates;
 begin
- raise Exception.Create('Not supported');
+  raise Exception.Create('Not supported');
 end;
 
 
@@ -385,336 +386,337 @@ end;
 
 constructor TCustomDspFDNReverb.Create;
 begin
- inherited;
- FHalfLife         := 1;
- FDamping          := 0.25;
- FNonLinearActive  := False;
- FModulationActive := False;
- FNonLinearGain    := 1;
+  inherited;
+  FHalfLife := 1;
+  FDamping := 0.25;
+  FNonLinearActive := False;
+  FModulationActive := False;
+  FNonLinearGain := 1;
 end;
 
 procedure TCustomDspFDNReverb.AssignTo(Dest: TPersistent);
 begin
- if Dest is TCustomDspFDNReverb then
-  with TCustomDspFDNReverb(Dest) do
-   begin
+  if Dest is TCustomDspFDNReverb then
+    with TCustomDspFDNReverb(Dest) do
+    begin
+      inherited;
+      FDamping := Self.FDamping;
+      FDryMix := Self.FDryMix;
+      FFeedbackRotation := Self.FFeedbackRotation;
+      FFeedbackInversion := Self.FFeedbackInversion;
+      FHalfLife := Self.FHalfLife;
+      FInputAngle := Self.FInputAngle;
+      FModulationDepth := Self.FModulationDepth;
+      FModulationSpread := Self.FModulationSpread;
+      FNonLinearGain := Self.FNonLinearGain;
+      FOutputAngle := Self.FOutputAngle;
+      FWetMix := Self.FWetMix;
+      FHold := Self.FHold;
+      FModulationActive := Self.FModulationActive;
+      FNonLinearActive := Self.FNonLinearActive;
+      FGeometry := Self.FGeometry;
+      FBaseDelay := Self.FBaseDelay;
+    end
+  else
     inherited;
-    FDamping           := Self.FDamping;
-    FDryMix            := Self.FDryMix;
-    FFeedbackRotation  := Self.FFeedbackRotation;
-    FFeedbackInversion := Self.FFeedbackInversion;
-    FHalfLife          := Self.FHalfLife;
-    FInputAngle        := Self.FInputAngle;
-    FModulationDepth   := Self.FModulationDepth;
-    FModulationSpread  := Self.FModulationSpread;
-    FNonLinearGain     := Self.FNonLinearGain;
-    FOutputAngle       := Self.FOutputAngle;
-    FWetMix            := Self.FWetMix;
-    FHold              := Self.FHold;
-    FModulationActive  := Self.FModulationActive;
-    FNonLinearActive   := Self.FNonLinearActive;
-    FGeometry          := Self.FGeometry;
-    FBaseDelay         := Self.FBaseDelay;
-   end
- else inherited;
 end;
 
 function TCustomDspFDNReverb.GetFeedbackRotation(Index: Integer): Double;
 begin
-  if (Index < 0) or (Index > 1) then 
-   raise Exception.CreateFmt('Index out of bounds (%d)', [Index])
-  else 
+  if (Index < 0) or (Index > 1) then
+    raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index])
+  else
     Result := FFeedbackRotation[Index];
 end;
 
 procedure TCustomDspFDNReverb.SetBaseDelay(const Value: Double);
 begin
- if BaseDelay <> Value then
+  if BaseDelay <> Value then
   begin
-   FBaseDelay := Value;
-   BaseDelayChanged;
+    FBaseDelay := Value;
+    BaseDelayChanged;
   end;
 end;
 
 procedure TCustomDspFDNReverb.SetDamping(const Value: Double);
 begin
- if Damping <> Value then
+  if Damping <> Value then
   begin
-   FDamping := Value;
-   DampingChanged;
+    FDamping := Value;
+    DampingChanged;
   end;
 end;
 
 procedure TCustomDspFDNReverb.SetDryMix(const Value: Double);
 begin
- if DryMix <> Value then
+  if DryMix <> Value then
   begin
-   FDryMix := Value;
-   DryMixChanged;
+    FDryMix := Value;
+    DryMixChanged;
   end;
 end;
 
 procedure TCustomDspFDNReverb.SetFeedbackInversion(const Value: Double);
 begin
- if FeedbackInversion <> Value then
+  if FeedbackInversion <> Value then
   begin
-   FFeedbackInversion := Value;
-   FeedbackInversionChanged;
+    FFeedbackInversion := Value;
+    FeedbackInversionChanged;
   end
 end;
 
 procedure TCustomDspFDNReverb.SetFeedbackRotation(Index: Integer;
   const Value: Double);
 begin
- if (Index < 0) or (Index > 1)
-  then raise Exception.CreateFmt('Index out of bounds (%d)', [Index])
-  else FFeedbackRotation[Index] := Value;
+  if (Index < 0) or (Index > 1) then
+    raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index])
+  else
+    FFeedbackRotation[Index] := Value;
 end;
 
 procedure TCustomDspFDNReverb.SetGeometry(const Value: TReverbGeometry);
 begin
- if Geometry <> Value then
+  if Geometry <> Value then
   begin
-   FGeometry := Value;
-   GeometryChanged;
+    FGeometry := Value;
+    GeometryChanged;
   end;
 end;
 
 procedure TCustomDspFDNReverb.SetHalfLife(const Value: Double);
 begin
- if HalfLife <> Value then
+  if HalfLife <> Value then
   begin
-   FHalfLife := Value;
-   HalfLifeChanged;
+    FHalfLife := Value;
+    HalfLifeChanged;
   end;
 end;
 
 procedure TCustomDspFDNReverb.SetHold(const Value: Boolean);
 begin
- if Hold <> Value then
+  if Hold <> Value then
   begin
-   FHold := Value;
-   HoldChanged;
+    FHold := Value;
+    HoldChanged;
   end;
 end;
 
 procedure TCustomDspFDNReverb.SetInputAngle(const Value: Double);
 begin
- if InputAngle <> Value then
+  if InputAngle <> Value then
   begin
-   FInputAngle := Value;
-   InputAngleChanged;
+    FInputAngle := Value;
+    InputAngleChanged;
   end;
 end;
 
-procedure TCustomDspFDNReverb.SetModulationActive(
-  const Value: Boolean);
+procedure TCustomDspFDNReverb.SetModulationActive(const Value: Boolean);
 begin
- if FModulationActive <> Value then
+  if FModulationActive <> Value then
   begin
-   FModulationActive := Value;
-   ModulationActiveChanged;
+    FModulationActive := Value;
+    ModulationActiveChanged;
   end;
 end;
 
 procedure TCustomDspFDNReverb.SetModulationDepth(const Value: Double);
 begin
- if ModulationDepth <> Value then
+  if ModulationDepth <> Value then
   begin
-   FModulationDepth := Value;
-   ModulationDepthChanged;
+    FModulationDepth := Value;
+    ModulationDepthChanged;
   end;
 end;
 
 procedure TCustomDspFDNReverb.SetModulationSpread(const Value: Double);
 begin
- if ModulationSpread <> Value then
+  if ModulationSpread <> Value then
   begin
-   FModulationSpread := Value;
-   ModulationSpreadChanged;
+    FModulationSpread := Value;
+    ModulationSpreadChanged;
   end;
 end;
 
 procedure TCustomDspFDNReverb.SetNonLinearActive(const Value: Boolean);
 begin
- if FNonLinearActive <> Value then
+  if FNonLinearActive <> Value then
   begin
-   FNonLinearActive := Value;
-   NonLinearActiveChanged;
+    FNonLinearActive := Value;
+    NonLinearActiveChanged;
   end;
 end;
 
 procedure TCustomDspFDNReverb.SetNonLinearGain(const Value: Double);
 begin
- if FNonLinearGain <> Value then
+  if FNonLinearGain <> Value then
   begin
-   FNonLinearGain := Value;
-   NonLinearGainChanged;
+    FNonLinearGain := Value;
+    NonLinearGainChanged;
   end;
 end;
 
 procedure TCustomDspFDNReverb.SetOutputAngle(const Value: Double);
 begin
- if FOutputAngle <> Value then
+  if FOutputAngle <> Value then
   begin
-   FOutputAngle := Value;
-   OutputAngleChanged;
+    FOutputAngle := Value;
+    OutputAngleChanged;
   end;
 end;
 
 procedure TCustomDspFDNReverb.SetWetMix(const Value: Double);
 begin
- if WetMix <> Value then
+  if WetMix <> Value then
   begin
-   FWetMix := Value;
-   WetMixChanged;
+    FWetMix := Value;
+    WetMixChanged;
   end;
 end;
-
 
 { TDspFDNReverb32 }
 
 constructor TDspFDNReverb32.Create;
 var
-  n : Integer;
+  n: Integer;
 begin
- inherited;
- SampleRateChanged;
- FFeedbackDelayNetwork := TFeedbackZDelayNetwork32.Create;
- FFeedbackDelayNetwork.OnProcessFeedbackPath := ProcessFeedbackPath;
- FDamping := 0.25;
- for n := 0 to 3 do
+  inherited;
+  SampleRateChanged;
+  FFeedbackDelayNetwork := TFeedbackZDelayNetwork32.Create;
+  FFeedbackDelayNetwork.OnProcessFeedbackPath := ProcessFeedbackPath;
+  FDamping := 0.25;
+  for n := 0 to 3 do
   begin
-   FDampingFilter[n] := TDampingFilter.Create;
-   FVibrato[n]       := TDspVibrato32.Create;
-//   FVibrato[n].Depth :=
+    FDampingFilter[n] := TDampingFilter.Create;
+    FVibrato[n] := TDspVibrato32.Create;
+    // FVibrato[n].Depth :=
   end;
- DampingChanged;
+  DampingChanged;
 end;
 
 destructor TDspFDNReverb32.Destroy;
 var
-  n : Integer;
+  n: Integer;
 begin
- for n := 0 to 3 do
+  for n := 0 to 3 do
   begin
-   FreeAndNil(FDampingFilter[n]);
-   FreeAndNil(FVibrato[n]);
+    FreeAndNil(FDampingFilter[n]);
+    FreeAndNil(FVibrato[n]);
   end;
- FreeAndNil(FFeedbackDelayNetwork);
- inherited;
+  FreeAndNil(FFeedbackDelayNetwork);
+  inherited;
 end;
 
 procedure TDspFDNReverb32.DryMixChanged;
 begin
- // nothing here yet
+  // nothing here yet
 end;
 
 procedure TDspFDNReverb32.FeedbackInversionChanged;
 begin
- // nothing here yet
+  // nothing here yet
 end;
 
 procedure TDspFDNReverb32.GeometryChanged;
 begin
- ReverbTimesChanged;
+  ReverbTimesChanged;
 end;
 
 procedure TDspFDNReverb32.DampingChanged;
 var
-  n : Integer;
+  n: Integer;
 begin
- for n := 0 to 3
-  do FDampingFilter[n].Frequency := (0.01 + 0.99 * FDamping) * 5000 * (4 - n);
+  for n := 0 to 3 do
+    FDampingFilter[n].Frequency := (0.01 + 0.99 * FDamping) * 5000 * (4 - n);
 end;
 
 procedure TDspFDNReverb32.AssignTo(Dest: TPersistent);
 begin
- if Dest is TCustomDspFDNReverb then
-  with TCustomDspFDNReverb(Dest) do
-   begin
+  if Dest is TCustomDspFDNReverb then
+    with TCustomDspFDNReverb(Dest) do
+    begin
+      inherited;
+      FFeedbackDelayNetwork.Assign(Self.FFeedbackDelayNetwork);
+      FHalflifeVector := Self.FHalflifeVector;
+      FDampingFilter[0].Assign(Self.FDampingFilter[0]);
+      FDampingFilter[1].Assign(Self.FDampingFilter[1]);
+      FDampingFilter[2].Assign(Self.FDampingFilter[2]);
+      FDampingFilter[3].Assign(Self.FDampingFilter[3]);
+      FVibrato[0].Assign(Self.FVibrato[0]);
+      FVibrato[1].Assign(Self.FVibrato[1]);
+      FVibrato[2].Assign(Self.FVibrato[2]);
+      FVibrato[3].Assign(Self.FVibrato[3]);
+    end
+  else
     inherited;
-    FFeedbackDelayNetwork.Assign(Self.FFeedbackDelayNetwork);
-    FHalflifeVector := Self.FHalflifeVector;
-    FDampingFilter[0].Assign(Self.FDampingFilter[0]);
-    FDampingFilter[1].Assign(Self.FDampingFilter[1]);
-    FDampingFilter[2].Assign(Self.FDampingFilter[2]);
-    FDampingFilter[3].Assign(Self.FDampingFilter[3]);
-    FVibrato[0].Assign(Self.FVibrato[0]);
-    FVibrato[1].Assign(Self.FVibrato[1]);
-    FVibrato[2].Assign(Self.FVibrato[2]);
-    FVibrato[3].Assign(Self.FVibrato[3]);
-   end
- else inherited;
 end;
 
 procedure TDspFDNReverb32.BaseDelayChanged;
 begin
- ReverbTimesChanged;
- HalfLifeChanged;
+  ReverbTimesChanged;
+  HalfLifeChanged;
 end;
 
 procedure TDspFDNReverb32.HalfLifeChanged;
 var
-  HL : Double;
+  HL: Double;
 begin
- HL := Exp(-ln2 / (FHalfLife * (FBaseDelay * SampleRate)));
- FHalflifeVector[0] := HL;
- FHalflifeVector[1] := HL;
- FHalflifeVector[2] := HL;
- FHalflifeVector[3] := HL;
+  HL := Exp(-ln2 / (FHalfLife * (FBaseDelay * SampleRate)));
+  FHalflifeVector[0] := HL;
+  FHalflifeVector[1] := HL;
+  FHalflifeVector[2] := HL;
+  FHalflifeVector[3] := HL;
 end;
 
 procedure TDspFDNReverb32.HoldChanged;
 begin
- // nothing here yet
+  // nothing here yet
 end;
 
 procedure TDspFDNReverb32.InputAngleChanged;
 var
-  Cmplx : TComplex32;
+  cmplx: TComplex32;
 begin
- GetSinCos(FInputAngle * Pi / 180, Cmplx.Im, Cmplx.Re);
- FFeedbackDelayNetwork.InputVector[0] := Cmplx.Re;
- FFeedbackDelayNetwork.InputVector[1] := Cmplx.Im;
- FFeedbackDelayNetwork.InputVector[2] := -Cmplx.Re;
- FFeedbackDelayNetwork.InputVector[3] := -Cmplx.Im;
+  GetSinCos(FInputAngle * pi / 180, cmplx.Im, cmplx.Re);
+  FFeedbackDelayNetwork.InputVector[0] := cmplx.Re;
+  FFeedbackDelayNetwork.InputVector[1] := cmplx.Im;
+  FFeedbackDelayNetwork.InputVector[2] := -cmplx.Re;
+  FFeedbackDelayNetwork.InputVector[3] := -cmplx.Im;
 end;
 
 procedure TDspFDNReverb32.ModulationActiveChanged;
 begin
- // nothing here yet
+  // nothing here yet
 end;
 
 procedure TDspFDNReverb32.ModulationDepthChanged;
 begin
- // nothing here yet
+  // nothing here yet
 end;
 
 procedure TDspFDNReverb32.ModulationSpreadChanged;
 begin
- // nothing here yet
+  // nothing here yet
 end;
 
 procedure TDspFDNReverb32.NonLinearActiveChanged;
 begin
- // nothing here yet
+  // nothing here yet
 end;
 
 procedure TDspFDNReverb32.NonLinearGainChanged;
 begin
- // nothing here yet
+  // nothing here yet
 end;
 
 procedure TDspFDNReverb32.OutputAngleChanged;
 var
-  Cmplx : TComplex32;
+  cmplx: TComplex32;
 begin
- GetSinCos(FOutputAngle * Pi / 180, Cmplx.Im, Cmplx.Re);
- FFeedbackDelayNetwork.OutputVector[0] := Cmplx.Re;
- FFeedbackDelayNetwork.OutputVector[1] := Cmplx.Im;
- FFeedbackDelayNetwork.OutputVector[2] := -Cmplx.Re;
- FFeedbackDelayNetwork.OutputVector[3] := -Cmplx.Im;
+  GetSinCos(FOutputAngle * pi / 180, cmplx.Im, cmplx.Re);
+  FFeedbackDelayNetwork.OutputVector[0] := cmplx.Re;
+  FFeedbackDelayNetwork.OutputVector[1] := cmplx.Im;
+  FFeedbackDelayNetwork.OutputVector[2] := -cmplx.Re;
+  FFeedbackDelayNetwork.OutputVector[3] := -cmplx.Im;
 end;
 
 procedure TDspFDNReverb32.ProcessBlock32(const Data: PDAVSingleFixedArray;
@@ -722,105 +724,107 @@ procedure TDspFDNReverb32.ProcessBlock32(const Data: PDAVSingleFixedArray;
 var
   Sample: Integer;
 begin
- for Sample := 0 to SampleCount - 1
-  do Data[Sample] := ProcessSample32(Data[Sample]);
+  for Sample := 0 to SampleCount - 1 do
+    Data[Sample] := ProcessSample32(Data[Sample]);
 end;
 
 procedure TDspFDNReverb32.ProcessFeedbackPath(var FeedbackVector: TDAVVector32);
 begin
- if FNonLinearActive then
+  if FNonLinearActive then
   begin
-   {$IFDEF FPC}
-   FeedbackVector[0] := FastTanhOpt5Term(FNonLinearGain * FeedbackVector[0]);
-   FeedbackVector[1] := FastTanhOpt5Term(FNonLinearGain * FeedbackVector[1]);
-   FeedbackVector[2] := FastTanhOpt5Term(FNonLinearGain * FeedbackVector[2]);
-   FeedbackVector[3] := FastTanhOpt5Term(FNonLinearGain * FeedbackVector[3]);
-   {$ELSE}
-   FeedbackVector[0] := FastTanhOpt5TermFPU(FNonLinearGain * FeedbackVector[0]);
-   FeedbackVector[1] := FastTanhOpt5TermFPU(FNonLinearGain * FeedbackVector[1]);
-   FeedbackVector[2] := FastTanhOpt5TermFPU(FNonLinearGain * FeedbackVector[2]);
-   FeedbackVector[3] := FastTanhOpt5TermFPU(FNonLinearGain * FeedbackVector[3]);
-   {$ENDIF}
+{$IFDEF FPC}
+    FeedbackVector[0] := FastTanhOpt5Term(FNonLinearGain * FeedbackVector[0]);
+    FeedbackVector[1] := FastTanhOpt5Term(FNonLinearGain * FeedbackVector[1]);
+    FeedbackVector[2] := FastTanhOpt5Term(FNonLinearGain * FeedbackVector[2]);
+    FeedbackVector[3] := FastTanhOpt5Term(FNonLinearGain * FeedbackVector[3]);
+{$ELSE}
+    FeedbackVector[0] := FastTanhOpt5TermFPU(FNonLinearGain * FeedbackVector[0]);
+    FeedbackVector[1] := FastTanhOpt5TermFPU(FNonLinearGain * FeedbackVector[1]);
+    FeedbackVector[2] := FastTanhOpt5TermFPU(FNonLinearGain * FeedbackVector[2]);
+    FeedbackVector[3] := FastTanhOpt5TermFPU(FNonLinearGain * FeedbackVector[3]);
+{$ENDIF}
   end;
 
- // Halflife
- ScaleVector(FeedbackVector, FHalflifeVector);
+  // Halflife
+  ScaleVector(FeedbackVector, FHalflifeVector);
 
- FeedbackVector[0] := FDampingFilter[0].ProcessSample64(FeedbackVector[0]);
- FeedbackVector[1] := FDampingFilter[1].ProcessSample64(FeedbackVector[1]);
- FeedbackVector[2] := FDampingFilter[2].ProcessSample64(FeedbackVector[2]);
- FeedbackVector[3] := FDampingFilter[3].ProcessSample64(FeedbackVector[3]);
+  FeedbackVector[0] := FDampingFilter[0].ProcessSample64(FeedbackVector[0]);
+  FeedbackVector[1] := FDampingFilter[1].ProcessSample64(FeedbackVector[1]);
+  FeedbackVector[2] := FDampingFilter[2].ProcessSample64(FeedbackVector[2]);
+  FeedbackVector[3] := FDampingFilter[3].ProcessSample64(FeedbackVector[3]);
 
- if FModulationActive then
+  if FModulationActive then
   begin
-   FeedbackVector[0] := FVibrato[0].ProcessSample32(FeedbackVector[0]);
-   FeedbackVector[1] := FVibrato[0].ProcessSample32(FeedbackVector[1]);
-   FeedbackVector[2] := FVibrato[0].ProcessSample32(FeedbackVector[2]);
-   FeedbackVector[3] := FVibrato[0].ProcessSample32(FeedbackVector[3]);
+    FeedbackVector[0] := FVibrato[0].ProcessSample32(FeedbackVector[0]);
+    FeedbackVector[1] := FVibrato[0].ProcessSample32(FeedbackVector[1]);
+    FeedbackVector[2] := FVibrato[0].ProcessSample32(FeedbackVector[2]);
+    FeedbackVector[3] := FVibrato[0].ProcessSample32(FeedbackVector[3]);
   end;
 end;
 
 function TDspFDNReverb32.ProcessSample32(Input: Single): Single;
 begin
- Result := FDryMix * Input +
-           FWetMix * FFeedbackDelayNetwork.ProcessSample32(Input);
+  Result := FDryMix * Input + FWetMix *
+    FFeedbackDelayNetwork.ProcessSample32(Input);
 end;
 
 procedure TDspFDNReverb32.ProcessStereo(const InLeft, InRight: Single;
   out OutLeft, OutRight: Single);
 begin
- FFeedbackDelayNetwork.ProcessStereo(InLeft,  InRight, OutLeft, OutRight);
- OutLeft  := InLeft  * FDryMix + OutLeft  * FWetMix;
- OutRight := InRight * FDryMix + OutRight * FWetMix;
+  FFeedbackDelayNetwork.ProcessStereo(InLeft, InRight, OutLeft, OutRight);
+  OutLeft := InLeft * FDryMix + OutLeft * FWetMix;
+  OutRight := InRight * FDryMix + OutRight * FWetMix;
 end;
 
 procedure TDspFDNReverb32.ReverbTimesChanged;
 const
-  CGeometryTimeScales: Array [0..16, 0..2] of Single = (
+  CGeometryTimeScales: array [0 .. 16, 0 .. 2] of Single = (
     (1, 1, 1), (1.04, 1.11, 1.16), (1.05, 1.14, 1.3), (1.22, 1.34, 1.72),
     (1.78, 2.44, 2.62), (1.15, 1.63, 2.41), (1.41, 2.22, 3.13),
     (1.67, 2.52, 3.11), (1.44, 2.59, 3.35), (2.24, 3.78, 4.67),
     (2.61, 3.78, 5.1), (4/3, 5/6, 2), (4/3, 8/5, 2), (4/3, 2, 4),
     (2, 4, 8), (3/2, 2, 3), (1.0001, 1.0030, 1.0031));
 begin
- if round(FBaseDelay * SampleRate) <= 0 then exit;
- FFeedbackDelayNetwork.DelaySamples[0] := round(FBaseDelay * SampleRate);
- case FGeometry of
-  rgSphere : with FFeedbackDelayNetwork do
-              begin
-               DelaySamples[1] := DelaySamples[0];
-               DelaySamples[2] := DelaySamples[0];
-               DelaySamples[3] := DelaySamples[0];
-              end;
-   else with FFeedbackDelayNetwork do
-         begin
-          DelaySamples[1] := round(CGeometryTimeScales[Integer(FGeometry), 0] * FBaseDelay * SampleRate);
-          DelaySamples[2] := round(CGeometryTimeScales[Integer(FGeometry), 1] * FBaseDelay * SampleRate);
-          DelaySamples[3] := round(CGeometryTimeScales[Integer(FGeometry), 2] * FBaseDelay * SampleRate);
-         end;
- end;
+  if round(FBaseDelay * SampleRate) <= 0 then
+    exit;
+  FFeedbackDelayNetwork.DelaySamples[0] := round(FBaseDelay * SampleRate);
+  case FGeometry of
+    rgSphere:
+      with FFeedbackDelayNetwork do
+      begin
+        DelaySamples[1] := DelaySamples[0];
+        DelaySamples[2] := DelaySamples[0];
+        DelaySamples[3] := DelaySamples[0];
+      end;
+  else
+    with FFeedbackDelayNetwork do
+    begin
+      DelaySamples[1] := round(CGeometryTimeScales[Integer(FGeometry), 0] * FBaseDelay * SampleRate);
+      DelaySamples[2] := round(CGeometryTimeScales[Integer(FGeometry), 1] * FBaseDelay * SampleRate);
+      DelaySamples[3] := round(CGeometryTimeScales[Integer(FGeometry), 2] * FBaseDelay * SampleRate);
+    end;
+  end;
 end;
 
 procedure TDspFDNReverb32.SampleRateChanged;
 var
-  n : Integer;
+  n: Integer;
 begin
- for n := 0 to 3 do
+  for n := 0 to 3 do
   begin
-   if Assigned(FDampingFilter[n])
-    then FDampingFilter[n].SampleRate := SampleRate;
-   if Assigned(FVibrato[n])
-    then FVibrato[n].SampleRate := SampleRate;
+    if Assigned(FDampingFilter[n]) then
+      FDampingFilter[n].SampleRate := SampleRate;
+    if Assigned(FVibrato[n]) then
+      FVibrato[n].SampleRate := SampleRate;
   end;
 end;
 
 procedure TDspFDNReverb32.WetMixChanged;
 begin
- // nothing here yet
+  // nothing here yet
 end;
 
 initialization
   RegisterDspProcessor32(TDspFDNReverb32);
-//  RegisterDspProcessor64(TDspFDNReverb64);
 
 end.

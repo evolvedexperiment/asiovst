@@ -278,7 +278,7 @@ end;
 
 function FastPower2NollockError3(Value: Single): Single;
 var
-  IntCast : Integer absolute result;
+  IntCast : Integer absolute Result;
 begin
  IntCast := Round(Value);
  Value := Value - IntCast;

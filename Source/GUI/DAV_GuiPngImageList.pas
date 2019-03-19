@@ -103,6 +103,9 @@ type
 
 implementation
 
+uses
+  DAV_Strings;
+
 { TGuiPngImageCollection }
 
 constructor TGuiPngImageCollection.Create(AOwner: TComponent);
@@ -242,7 +245,7 @@ begin
   if (Index >= 0) and (Index < FPngImageCollection.Count) then
     Result := FPngImageCollection[Index]
   else
-    raise Exception.CreateFmt('Index out of bounds (%d)', [Index]);
+    raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
 end;
 
 end.

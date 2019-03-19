@@ -243,7 +243,7 @@ end;
 
 function TStkBlowHole.GetFrequency: Single;
 begin
-  result := FBaseFrequency;
+  Result := FBaseFrequency;
 end;
 
 procedure TStkBlowHole.SetVent(const Value: Single);
@@ -334,7 +334,7 @@ begin
   FDelays[1].Tick(pb + temp);
   FTonehole.Tick(pa + pb - pth + temp);
 
-  result := LastOutput;
+  Result := LastOutput;
 end;
 
 procedure TStkBlowHole.ControlChange(const Number: Integer;

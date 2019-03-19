@@ -42,7 +42,6 @@ type
   TLightweightGateDataModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
     procedure VSTModuleProcessStereo(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
@@ -57,6 +56,8 @@ type
     procedure ParameterTimeDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterTimeLabel(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterMixChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
+      ParentWindow: NativeUInt);
   private
     FLightweightGate : array [0..1] of TCustomKneeCompressor;
     function GetLightweightGate(Index: Integer): TCustomKneeCompressor;
@@ -116,7 +117,8 @@ begin
  FreeAndNil(FLightweightGate[1]);
 end;
 
-procedure TLightweightGateDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
+procedure TLightweightGateDataModule.VSTModuleEditOpen(Sender: TObject;
+  var GUI: TForm; ParentWindow: NativeUInt);
 begin
  GUI := TFmLightweightGate.Create(Self);
 end;
@@ -131,7 +133,7 @@ function TLightweightGateDataModule.GetLightweightGate(Index: Integer): TCustomK
 begin
  if Index in [0..Length(FLightweightGate) - 1]
   then Result := FLightweightGate[Index]
-  else raise Exception.CreateFmt('Index out of bounds (%d)', [Index]);
+  else raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
 end;
 
 procedure TLightweightGateDataModule.ParameterAttackChange(

@@ -313,12 +313,9 @@ implementation
 {$ENDIF}
 
 uses
-  Math, SysUtils, DAV_Common, DAV_Math, DAV_DspDFT;
+  Math, SysUtils, DAV_Common, DAV_Strings, DAV_Math, DAV_DspDFT;
 
-resourcestring
-  RCStrIndexOutOfBounds = 'Index out of bounds (%d)';
-
-  { TCustomFilter }
+{ TCustomFilter }
 
 constructor TCustomFilter.Create;
 begin

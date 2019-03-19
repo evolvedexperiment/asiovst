@@ -113,43 +113,43 @@ function Midi2String(const n: Single): string;
 var
   o, s: Integer;
 begin
-  o := round(n / 12 - 0.49999);
-  s := round(n - (12 * o) - 0.49999);
+  o := Round(n / 12 - 0.49999);
+  s := Round(n - (12 * o) - 0.49999);
   o := o - 2;
   case s of
     0:
-      result := result + 'C';
+      Result := Result + 'C';
     1:
-      result := result + 'C#';
+      Result := Result + 'C#';
     2:
-      result := result + 'D';
+      Result := Result + 'D';
     3:
-      result := result + 'Eb';
+      Result := Result + 'Eb';
     4:
-      result := result + 'E';
+      Result := Result + 'E';
     5:
-      result := result + 'F';
+      Result := Result + 'F';
     6:
-      result := result + 'F#';
+      Result := Result + 'F#';
     7:
-      result := result + 'G';
+      Result := Result + 'G';
     8:
-      result := result + 'G#';
+      Result := Result + 'G#';
     9:
-      result := result + 'A';
+      Result := Result + 'A';
     10:
-      result := result + 'Bb';
+      Result := Result + 'Bb';
     11:
-      result := result + 'B';
+      Result := Result + 'B';
   else
-    result := '  ';
+    Result := '  ';
   end;
 
-  result := result + ' ';
+  Result := Result + ' ';
 
   if (o < 0) then
-    result := result + '-';
-  result := result + AnsiChar(48 + (abs(o) mod 10));
+    Result := Result + '-';
+  Result := Result + AnsiChar(48 + (abs(o) mod 10));
 end;
 
 { TCustomVoiceInput }
@@ -235,7 +235,7 @@ end;
 
 procedure TCustomVoiceInput.PitchChanged;
 begin
-  FPitchMult := Power(1.0594631, round(48 * FPitch - 24));
+  FPitchMult := Power(1.0594631, Round(48 * FPitch - 24));
   CalculatePitchStep;
 end;
 
@@ -288,10 +288,10 @@ begin
   // fundamental level
   FLowEnv := FLowEnv - FLowFreq * 0.1 * (FLowEnv - abs(FLowpassState[0]));
 
-  result := abs((Input + 0.03) * FVUv);
+  Result := abs((Input + 0.03) * FVUv);
 
   // overall level (+ constant so >f0 when quiet)
-  FHighEnv := FHighEnv - FLowFreq * 0.1 * (FHighEnv - result);
+  FHighEnv := FHighEnv - FLowFreq * 0.1 * (FHighEnv - Result);
 
   FLowBuffer[1] := FLowBuffer[1] + 1;
   if FTracking > ttOff then // pitch tracking
@@ -326,8 +326,8 @@ begin
 
   // ...or modulated breath noise
   if (FLowEnv > FHighEnv) then
-    result := result * FSawPhase * FNoise;
-  result := 1 * (result + FSawPhase);
+    Result := Result * FSawPhase * FNoise;
+  Result := 1 * (Result + FSawPhase);
   FSawPhase := FSawPhase + FPitchStep;
 
   // badly aliased sawtooth!

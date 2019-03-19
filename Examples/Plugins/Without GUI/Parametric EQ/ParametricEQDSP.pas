@@ -87,10 +87,7 @@ implementation
 {$ENDIF}
 
 uses
-  DAV_Common, DAV_Approximations, DAV_VSTModuleWithPrograms;
-
-resourcestring
-  RCStrIndexOutOfBounds = 'Index out of bounds (%d)';
+  DAV_Common, DAV_Strings, DAV_Approximations, DAV_VSTModuleWithPrograms;
 
 procedure TParametricEQDataModule.VSTModuleCreate(Sender: TObject);
 begin

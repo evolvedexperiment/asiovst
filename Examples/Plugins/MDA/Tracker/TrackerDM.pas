@@ -52,7 +52,7 @@ type
     FDyn, FPhi : Single;
     FRel, FEnv : Single;
     FDeltaPhi  : Single;
-    FBuffer    : array [0..3] of Single; 
+    FBuffer    : array [0..3] of Single;
     function FilterFreq(Hz: Double): Double;
   public
   end;
@@ -71,23 +71,28 @@ uses
 procedure TTrackerDataModule.ParameterModeDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- case Round(Parameter[Index]) of
-  0: PreDefined := 'SINE';
-  1: PreDefined := 'SQUARE';
-  2: PreDefined := 'SAW';
-  3: PreDefined := 'RING';
-  4: PreDefined := 'EQ';
- end;
+  case Round(Parameter[Index]) of
+    0:
+      PreDefined := 'SINE';
+    1:
+      PreDefined := 'SQUARE';
+    2:
+      PreDefined := 'SAW';
+    3:
+      PreDefined := 'RING';
+    4:
+      PreDefined := 'EQ';
+  end;
 end;
 
-function TTrackerDataModule.FilterFreq(Hz: Double) : Double;
+function TTrackerDataModule.FilterFreq(Hz: Double): Double;
 var
-  j, k, r : Double;
+  j, k, r: Double;
 begin
- r := 0.999;
- j := r * r - 1;
- k := 2 - 2 * sqr(r) * cos(0.647 * Hz / SampleRate);
- result := (sqrt(k * k - 4 * j * j) - k) / (2 * j);
+  r := 0.999;
+  j := r * r - 1;
+  k := 2 - 2 * sqr(r) * cos(0.647 * Hz / SampleRate);
+  Result := (sqrt(k * k - 4 * j * j) - k) / (2 * j);
 end;
 
 procedure TTrackerDataModule.VSTModuleOpen(Sender: TObject);
@@ -243,7 +248,7 @@ begin
          x  := x + (b3 * r1) - (b4 * r2);
          b4 := 0.996 * ((b3 * r2) + (b4 * r1));
          b3 := 0.996 * x;
-        end; 
+        end;
     end;
     x := x * (we + dy * e);
     Outputs[0, Sample] := a;           // dr * a + x;

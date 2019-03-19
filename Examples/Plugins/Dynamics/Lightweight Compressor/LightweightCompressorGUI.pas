@@ -179,7 +179,7 @@ end;
 function TFmLightweightCompressor.EvaluateCharacteristic(Sender: TObject;
   X: Double): Double;
 begin
-  result := TLightweightCompressorDataModule(Owner).EvaluateCharacteristic(X);
+  Result := TLightweightCompressorDataModule(Owner).EvaluateCharacteristic(X);
 end;
 
 procedure TFmLightweightCompressor.DialRatioChange(Sender: TObject);

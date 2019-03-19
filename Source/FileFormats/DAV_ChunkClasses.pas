@@ -244,7 +244,7 @@ function CompareChunkNames(ChunkNameA, ChunkNameB: TChunkName): Boolean;
 implementation
 
 uses
-  Types, DAV_Common;
+  Types, DAV_Common, DAV_Strings;
 
 function CompareChunkNames(ChunkNameA, ChunkNameB: TChunkName): Boolean;
 begin
@@ -443,7 +443,7 @@ begin
       Position := Index;
       Read(Result, 1);
     end
-  else raise Exception.CreateFmt('Index out of bounds (%d)', [Index]);
+  else raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
 end;
 
 procedure TDavUnknownChunk.LoadFromStream(Stream: TStream);
@@ -491,7 +491,7 @@ begin
       Write(Value, 1);
     end
   else
-    raise Exception.CreateFmt('Index out of bounds (%d)', [Index]);
+    raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
 end;
 
 

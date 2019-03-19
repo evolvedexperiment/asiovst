@@ -498,8 +498,6 @@ object SmoothMultibandCompressorDataModule: TSmoothMultibandCompressorDataModule
   OnProcess = VSTModuleProcessMono
   OnProcess32Replacing = VSTModuleProcessMono
   OnSampleRateChange = VSTModuleSampleRateChange
-  Left = 286
-  Top = 77
   Height = 150
   Width = 215
 end

@@ -326,15 +326,17 @@ function TPianoDataModule.VSTModuleOutputProperties(Sender: TObject;
   var SpeakerArrangement: TVstSpeakerArrangementType;
   var Flags: TVstPinPropertiesFlags): Boolean;
 begin
- result := False;
- if (index < numOutputs) then
+  Result := False;
+  if (index < numOutputs) then
   begin
-   if (index mod 2 = 1)
-    then vLabel := 'Piano R'
-    else vLabel := 'Piano L';
-   Flags := [vppIsActive];
-   if (index < 2) then Flags := Flags + [vppIsStereo]; // make channel 1+2 stereo
-   result := True;
+    if (index mod 2 = 1) then
+      vLabel := 'Piano R'
+    else
+      vLabel := 'Piano L';
+    Flags := [vppIsActive];
+    if (index < 2) then
+      Flags := Flags + [vppIsStereo]; // make channel 1+2 stereo
+    Result := True;
   end;
 end;
 
@@ -466,7 +468,7 @@ begin
 
    s := FSize;
    if (Velocity > 40)
-    then s := s + Round(FSizeVelocity * (Velocity - 40));  
+    then s := s + Round(FSizeVelocity * (Velocity - 40));
 
    k := 0;
    while (Note > (FKeyGroup[k].high + s)) do Inc(k);  // Find Keygroup

@@ -69,10 +69,7 @@ implementation
 {$ENDIF}
 
 uses
-  DAV_Approximations, DAV_VSTCustomModule;
-
-resourcestring
-  RCStrIndexOutOfBounds = 'Index out of bounds (%d)';
+  DAV_Strings, DAV_Approximations, DAV_VSTCustomModule;
 
 procedure TChorusModule.VSTModuleCreate(Sender: TObject);
 begin

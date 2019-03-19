@@ -9,7 +9,6 @@ object PianoDataModule: TPianoDataModule
   CanDos = [vcdReceiveVstEvents, vcdReceiveVstMidiEvent]
   SampleRate = 44100.000000000000000000
   numInputs = 0
-  CurrentProgram = 0
   CurrentProgramName = 'mda Piano'
   IORatio = 1.000000000000000000
   UniqueID = 'MDAp'
@@ -49,7 +48,6 @@ object PianoDataModule: TPianoDataModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Envelope Decay'
       LargeStepFloat = 2.000000000000000000
@@ -61,7 +59,6 @@ object PianoDataModule: TPianoDataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Envelope Release'
       LargeStepFloat = 2.000000000000000000
@@ -73,7 +70,6 @@ object PianoDataModule: TPianoDataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Hardness Offset'
       LargeStepFloat = 2.000000000000000000
@@ -85,7 +81,6 @@ object PianoDataModule: TPianoDataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Velocity to Hardness'
       LargeStepFloat = 2.000000000000000000
@@ -97,7 +92,6 @@ object PianoDataModule: TPianoDataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Muffling Filter'
       LargeStepFloat = 2.000000000000000000
@@ -109,7 +103,6 @@ object PianoDataModule: TPianoDataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Velocity to Muffling'
       LargeStepFloat = 2.000000000000000000
@@ -121,7 +114,6 @@ object PianoDataModule: TPianoDataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Velocity to Sensitivity'
       LargeStepFloat = 2.000000000000000000
@@ -133,7 +125,6 @@ object PianoDataModule: TPianoDataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Stereo Width'
       LargeStepFloat = 2.000000000000000000
@@ -145,7 +136,6 @@ object PianoDataModule: TPianoDataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Polyphony'
       LargeStepFloat = 2.000000000000000000
@@ -157,7 +147,6 @@ object PianoDataModule: TPianoDataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Fine Tuning'
       LargeStepFloat = 2.000000000000000000
@@ -169,7 +158,6 @@ object PianoDataModule: TPianoDataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Random Tuning'
       LargeStepFloat = 2.000000000000000000
@@ -181,7 +169,6 @@ object PianoDataModule: TPianoDataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Stretch Tuning'
       LargeStepFloat = 2.000000000000000000
@@ -192,16 +179,15 @@ object PianoDataModule: TPianoDataModule
       Units = 'centes'
       VSTModule = Owner
     end>
+  ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
   OnOutputProperties = VSTModuleOutputProperties
   OnParameterChange = VSTModuleParameterChange
   OnProcess = VSTModuleProcess
-  OnProcessMidi = VSTModuleProcessMidi
   OnProcess32Replacing = VSTModuleProcess
+  OnProcessMidi = VSTModuleProcessMidi
   OnResume = VSTModuleResume
-  Left = 188
-  Top = 77
   Height = 150
   Width = 215
 end

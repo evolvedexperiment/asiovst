@@ -272,7 +272,7 @@ begin
     p := p - (FRealBufSize - 4)
   else if p < 4 then
     p := p + (FRealBufSize - 4);
-  result := Hermite32_asm(d, @FBuffer32[p - 4]);
+  Result := Hermite32_asm(d, @FBuffer32[p - 4]);
 
   // store new data
   FBuffer32[FBufferPos] := Input;
@@ -352,7 +352,7 @@ begin
     p := p - (FRealBufSize - 4)
   else if p < 4 then
     p := p + (FRealBufSize - 4);
-  result := Hermite64_asm(d, @FBuffer64[p - 4]);
+  Result := Hermite64_asm(d, @FBuffer64[p - 4]);
 
   // store new data
   FBuffer64[FBufferPos] := Input;

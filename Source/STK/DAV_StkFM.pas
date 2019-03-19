@@ -305,28 +305,28 @@ end;
 
 function TStkFM.GetFrequency: Single;
 begin
-  result := FBaseFrequency;
+  Result := FBaseFrequency;
 end;
 
 function TStkFM.GetGain(WaveIndex: Integer): Single;
 begin
   if WaveIndex in [0 .. FNOperators] then
-    result := FGains[WaveIndex]
+    Result := FGains[WaveIndex]
   else
-    result := 0;
+    Result := 0;
 end;
 
 function TStkFM.GetModulationSpeed: Single;
 begin
-  result := FVibrato.Frequency;
+  Result := FVibrato.Frequency;
 end;
 
 function TStkFM.GetRatio(WaveIndex: Integer): Single;
 begin
   if WaveIndex in [0 .. FNOperators] then
-    result := FRatios[WaveIndex]
+    Result := FRatios[WaveIndex]
   else
-    result := 0;
+    Result := 0;
 end;
 
 procedure TStkFM.SetGain(WaveIndex: Integer; gain: Single);
@@ -377,7 +377,7 @@ end;
 
 function TStkFM.Tick: Single;
 begin
-  result := 0;
+  Result := 0;
 end;
 
 end.

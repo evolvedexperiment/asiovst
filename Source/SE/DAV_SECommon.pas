@@ -115,7 +115,7 @@ begin
       Delete(list, 1, 5); // List = ' 3, 6'
 
       p := Pos(',', list);
-      assert(p > 0); // no range specified
+      Assert(p > 0); // no range specified
 
       lval := list; // lval = ' 3, 6'
       Copy(lval, 1, p); // lval = ' 3'
@@ -166,7 +166,7 @@ begin
     if (FCurrent.Value > FRangeHi) then
     begin
       FCurrent.Index := -1;
-      exit;
+      Exit;
     end;
   end
   else
@@ -182,7 +182,7 @@ begin
       if FRangeLo >= p then // then we are done
       begin
         FCurrent.Index := -1;
-        exit;
+        Exit;
       end;
     end;
 
@@ -222,7 +222,7 @@ var
   i, sz: Integer;
 begin
   if FRangeMode then
-    result := 1 + abs(FRangeHi - FRangeLo)
+    Result := 1 + Abs(FRangeHi - FRangeLo)
   else
   begin
     // count number of commas
@@ -230,7 +230,7 @@ begin
     for i := Length(FEnumList) - 1 downto 1 do
       if FEnumList[i] = ',' then
         Inc(sz);
-    result := sz;
+    Result := sz;
   end;
 end;
 
@@ -238,25 +238,25 @@ function TItEnumList.FindValue(AValue: Integer): Boolean;
 begin
   // could be specialied for ranges
   First;
-  result := True;
+  Result := True;
   while not IsDone do
     if (CurrentItem.Value = AValue) then
-      exit
+      Exit
     else
       Next;
-  result := False;
+  Result := False;
 end;
 
 function TItEnumList.FindIndex(AIndex: Integer): Boolean;
 begin
   First;
-  result := True;
+  Result := True;
   while not IsDone do
     if (CurrentItem.Index = AIndex) then
-      exit
+      Exit
     else
       Next;
-  result := False;
+  Result := False;
 end;
 
 class function TItEnumList.IsValidValue(var AEnumList: TSeSdkString2;
@@ -265,7 +265,7 @@ var
   itr: TItEnumList;
 begin
   itr := TItEnumList.Create(AEnumList);
-  result := itr.FindValue(AValue);
+  Result := itr.FindValue(AValue);
 end;
 
 // ensure a Value is one of the valid choices, if not return first item, if no items avail return 0
@@ -277,41 +277,41 @@ begin
   itr := TItEnumList.Create(AEnumList);
   if itr.FindValue(AValue) then
   begin
-    result := AValue;
-    exit;
+    Result := AValue;
+    Exit;
   end;
 
   itr.First;
   if not itr.IsDone then
-    result := itr.CurrentItem.Value
+    Result := itr.CurrentItem.Value
   else
-    result := 0;
+    Result := 0;
 end;
 
 function TItEnumList.IsRange: Boolean;
 begin
-  result := FRangeMode;
+  Result := FRangeMode;
 end;
 
 function TItEnumList.RangeHi: Integer;
 begin
-  result := FRangeHi;
+  Result := FRangeHi;
 end;
 
 function TItEnumList.RangeLo: Integer;
 begin
-  result := FRangeLo;
+  Result := FRangeLo;
 end;
 
 function TItEnumList.CurrentItem: PEnumEntry;
 begin
-  assert(not IsDone);
-  result := @FCurrent;
+  Assert(not IsDone);
+  Result := @FCurrent;
 end;
 
 function TItEnumList.IsDone: Boolean;
 begin
-  result := FCurrent.Index = -1;
+  Result := FCurrent.Index = -1;
 end;
 
 end.

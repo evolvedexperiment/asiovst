@@ -193,7 +193,7 @@ end;
 
 function TStkPluckTwo.GetFrequency: Single;
 begin
-  result := FLastFrequency;
+  Result := FLastFrequency;
 end;
 
 procedure TStkPluckTwo.SetDetune(const Value: Single);
@@ -242,7 +242,7 @@ end;
 
 function TStkPluckTwo.Tick: Single;
 begin
-  result := 0;
+  Result := 0;
 end;
 
 end.

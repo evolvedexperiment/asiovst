@@ -78,10 +78,7 @@ type
 implementation
 
 uses
-  DAV_GuiBlend;
-
-resourcestring
-  RCStrIndexOutOfBounds = 'Index out of bounds (%d)';
+  DAV_Strings, DAV_GuiBlend;
 
   { TGuiStitchedPNGCollectionItem }
 
