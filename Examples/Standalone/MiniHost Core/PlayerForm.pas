@@ -187,12 +187,12 @@ end;
 procedure TPlayer.ScrollBarPitchChange(Sender: TObject);
 begin
   FormMiniHost.Wavefile.Speed := 2 * ScrollBarPitch.Position / 341;
-  LabelWavPitch.Caption := 'pitch: ' + IntToStr(round(200 * ScrollBarPitch.Position / 341)) + ' %';
+  LabelWavPitch.Caption := 'pitch: ' + IntToStr(Round(200 * ScrollBarPitch.Position / 341)) + ' %';
 end;
 
 procedure TPlayer.ScrollBarWavPositionChange(Sender: TObject);
 begin
-  FormMiniHost.Wavefile.SetPos(round((FormMiniHost.Wavefile.Size - 1) * ScrollBarWavPosition.Position * 0.01));
+  FormMiniHost.Wavefile.SetPos(Round((FormMiniHost.Wavefile.Size - 1) * ScrollBarWavPosition.Position * 0.01));
   LabelWavPosition.Caption := 'position: ' + IntToStr(ScrollBarWavPosition.Position) + ' %';
 end;
 

@@ -297,7 +297,7 @@ begin
   for i := 0 to FPresetModes - 1 do
   begin
     // Calculate the FDelay line lengths for each mode.
-    length := round(base / FModes[i]);
+    length := Round(base / FModes[i]);
     if (length > 2.0) then
     begin
       FDelay[i].setDelay(length);
@@ -327,7 +327,7 @@ end;
 
 procedure TStkBandedWG.setStrikePosition;
 begin
-  FStrikePosition := round(FDelay[0].getDelay * position / 2.0);
+  FStrikePosition := Round(FDelay[0].getDelay * position / 2.0);
 end;
 
 procedure TStkBandedWG.startBowing;
@@ -350,7 +350,7 @@ var
 begin
   min_len := FDelay[FNModes - 1].getDelay;
   for i := 0 to FNModes - 1 do
-    for j := 0 to round(FDelay[i].getDelay / min_len) - 1 do
+    for j := 0 to Round(FDelay[i].getDelay / min_len) - 1 do
       FDelay[i].Tick(FExcitation[i] * amp / FNModes);
 end;
 
@@ -481,7 +481,7 @@ begin
       FTrackVelocity := True;
   end
   else if (number = __SK_ProphesyRibbon_) then // 16
-    setPreset(round(Value * 3));
+    setPreset(Round(Value * 3));
 end;
 
 end.

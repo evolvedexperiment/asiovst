@@ -202,8 +202,8 @@ end;
 
 procedure TCustomSimpleBandlimitedImpulseTrain32.FractionalChanged;
 begin
-  assert(FFractional >= 0);
-  assert(FFractional <= 1);
+  Assert(FFractional >= 0);
+  Assert(FFractional <= 1);
   FAllpass.PhaseDelay := 1 + FFractional;
 end;
 

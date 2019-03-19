@@ -150,7 +150,7 @@ begin
     Outputs[0, Sample] := (Inputs[0, Sample] * li) - (Inputs[1, Sample] * ld); // output
     Outputs[1, Sample] := (Inputs[0, Sample] * ri) - (Inputs[1, Sample] * rd);
 
-    dec(bp);
+    Dec(bp);
     if (bp < 0)
      then bp := 4410; //FBuffer position
 
@@ -168,7 +168,7 @@ begin
     Outputs[0, Sample] := (Inputs[0, Sample] * li) - (Inputs[1, Sample] * ld); // output
     Outputs[1, Sample] := (Inputs[0, Sample] * ri) - (Inputs[1, Sample] * rd);
 
-    dec(bp);
+    Dec(bp);
     if (bp < 0)
      then bp := 4410; //FBuffer position
 

@@ -1395,7 +1395,7 @@ begin
       inc(currentbuffer);
     end;
 
-    assert(Fpref > 0);
+    Assert(Fpref > 0);
     Result := (FDriver.CreateBuffers(FInputBuffer,
       (FInputChannelCount + FOutputChannelCount), Fpref, FCallbacks) = ASE_OK);
     FDriver.GetLatencies(FInputLatency, FOutputLatency);

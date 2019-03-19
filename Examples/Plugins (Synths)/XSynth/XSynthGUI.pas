@@ -69,11 +69,11 @@ var
   newNote: TXSynthVoice;
 begin
   Assert(Owner is TVSTSSModule);
-  TVSTSSModule(Owner).MidiNoteOn(0, KeyNo, round(Velocity * 128));
+  TVSTSSModule(Owner).MidiNoteOn(0, KeyNo, Round(Velocity * 128));
   newNote := TXSynthVoice.Create(TVSTSSModule(Owner));
   newNote.MidiKey := KeyNo;
-  newNote.Velocity := round(Velocity*127);
-  newNote.NoteOn(Midi2Pitch[KeyNo],Velocity);
+  newNote.Velocity := Round(Velocity * 127);
+  newNote.NoteOn(Midi2Pitch[KeyNo], Velocity);
   TVSTSSModule(Owner).Voices.Add(newNote);
 end;
 

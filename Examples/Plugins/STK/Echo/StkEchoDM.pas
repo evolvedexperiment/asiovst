@@ -123,7 +123,7 @@ begin
       Outputs[1, Sample] := FEcho[1].Tick(Inputs[1, Sample]);
     end;
   finally
-    dec(FSemaphore);
+    Dec(FSemaphore);
   end;
 end;
 
@@ -141,7 +141,7 @@ begin
       Outputs[1, Sample] := FEcho[1].Tick(Inputs[1, Sample]);
     end;
   finally
-    dec(FSemaphore);
+    Dec(FSemaphore);
   end;
 end;
 
@@ -155,7 +155,7 @@ begin
     FEcho[0].Delay := 0.99 * Value;
     FEcho[0].Delay := 1.01 * Value;
   finally
-    dec(FSemaphore);
+    Dec(FSemaphore);
   end;
 
   // update GUI

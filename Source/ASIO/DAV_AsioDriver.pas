@@ -794,8 +794,8 @@ begin
       if (r.Right-r.Left<Width) or (r.Bottom-r.Top<Height) then
         GetWindowRect(GetDesktopWindow, r);
 
-      left := r.Left + round(((r.Right-r.Left)-Width)*0.5);
-      top  := r.Top + round(((r.Bottom-r.Top)-Height)*0.5);
+      left := r.Left + Round(((r.Right-r.Left)-Width)*0.5);
+      top  := r.Top + Round(((r.Bottom-r.Top)-Height)*0.5);
       ShowModal;
     end;
 

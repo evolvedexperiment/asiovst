@@ -420,27 +420,25 @@ begin
     (FDenominator[0] - FDenominator[2] * Sqr(Omega)) +
     (FNominator[1] * FDenominator[1] * Sqr(Omega))) * Divisor;
 
-  Result.Im := Omega * (FNominator[1] * (FDenominator[0] - FDenominator[2] *
-    Sqr(Omega)) - (FDenominator[1] * (FNominator[0] - FNominator[2] * Sqr(Omega)
-    ))) * Divisor;
+  Result.Im := Omega * Divisor *
+    (FNominator[1] * (FDenominator[0] - FDenominator[2] * Sqr(Omega)) -
+    (FDenominator[1] * (FNominator[0] - FNominator[2] * Sqr(Omega))));
 end;
 
-function TCustomBiquadAnalogueFilterPrototype.GetDenominator
-  (Index: Integer): Double;
+function TCustomBiquadAnalogueFilterPrototype.GetDenominator(Index: Integer): Double;
 begin
   if Index in [0 .. 2] then
     Result := FDenominator[Index]
   else
-    raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
+    raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
 end;
 
-function TCustomBiquadAnalogueFilterPrototype.GetNominator
-  (Index: Integer): Double;
+function TCustomBiquadAnalogueFilterPrototype.GetNominator(Index: Integer): Double;
 begin
   if Index in [0 .. 2] then
     Result := FNominator[Index]
   else
-    raise Exception.Create(RCStrIndexOutOfBounds);
+    raise Exception.Create(RStrIndexOutOfBounds);
 end;
 
 function TCustomBiquadAnalogueFilterPrototype.GetOrder: Integer;

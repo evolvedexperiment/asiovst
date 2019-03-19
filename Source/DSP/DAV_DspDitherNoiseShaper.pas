@@ -498,7 +498,7 @@ begin
       FBitDiv := Self.FBitDiv;
       FDitherAmplitude := Self.FDitherAmplitude;
 
-      assert(FOrder = Self.FOrder);
+      Assert(FOrder = Self.FOrder);
       Move(Self.FCoefficients^, FCoefficients^, FOrder * SizeOf(Single));
       Move(Self.FHistory^, FHistory^, FOrder * SizeOf(Single));
     end
@@ -510,7 +510,7 @@ begin
       FBitDiv := Self.FBitDiv;
       FDitherAmplitude := Self.FDitherAmplitude;
 
-      assert(FOrder = Self.FOrder);
+      Assert(FOrder = Self.FOrder);
       for Sample := 0 to FOrder - 1 do
       begin
         FCoefficients^[Sample] := Self.FCoefficients^[Sample];
@@ -738,7 +738,7 @@ begin
       FBitDiv := Self.FBitDiv;
       FDitherAmplitude := Self.FDitherAmplitude;
 
-      assert(FOrder = Self.FOrder);
+      Assert(FOrder = Self.FOrder);
       for Sample := 0 to FOrder - 1 do
       begin
         FCoefficients^[Sample] := Self.FCoefficients^[Sample];
@@ -753,7 +753,7 @@ begin
       FBitDiv := Self.FBitDiv;
       FDitherAmplitude := Self.FDitherAmplitude;
 
-      assert(FOrder = Self.FOrder);
+      Assert(FOrder = Self.FOrder);
       Move(Self.FCoefficients^, FCoefficients^, FOrder * SizeOf(Single));
       Move(Self.FHistory^, FHistory^, FOrder * SizeOf(Single));
     end

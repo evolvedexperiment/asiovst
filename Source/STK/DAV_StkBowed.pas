@@ -118,7 +118,7 @@ var
   Length: longint;
 begin
   inherited Create(SampleRate);
-  Length := round(SampleRate / lowestFrequency + 1);
+  Length := Round(SampleRate / lowestFrequency + 1);
   FNeckDelay := TStkDelayl.Create(SampleRate, 100.0, Length);
   Length := Length shr 1;
   FBridgeDelay := TStkDelayl.Create(SampleRate, 29.0, Length);

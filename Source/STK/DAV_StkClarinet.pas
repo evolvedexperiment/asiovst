@@ -118,7 +118,7 @@ uses
 constructor TStkClarinet.Create;
 begin
   inherited Create(SampleRate);
-  FLength := round(SampleRate / LowestFrequency + 1);
+  FLength := Round(SampleRate / LowestFrequency + 1);
   FDelayLine := TStkDelayL.Create(SampleRate, (FLength / 2.0), FLength);
   FReedTable := TStkReedTable.Create(SampleRate);
   FReedTable.Offset := 0.7;

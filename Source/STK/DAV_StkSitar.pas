@@ -103,7 +103,7 @@ uses
 constructor TStkSitar.Create;
 begin
   inherited Create(SampleRate);
-  FLength := round(SampleRate / lowestFrequency + 1);
+  FLength := Round(SampleRate / lowestFrequency + 1);
   FLoopGain := 0.999;
   FDelayLine := TStkDelayA.Create(SampleRate, (FLength / 2.0), FLength);
   FDelay := FLength / 2.0;

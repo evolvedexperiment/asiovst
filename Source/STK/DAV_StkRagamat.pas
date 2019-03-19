@@ -154,7 +154,7 @@ begin
   if (FCounter <= 0) then
   begin
     rateScaler := 22050.0 * FSampleRateInv;
-    FCounter := round(FTempo / rateScaler);
+    FCounter := Round(FTempo / rateScaler);
     if (Random < FDrone_prob) then
       FDrones[0].NoteOn(FDroneFreqs[0] + Random(10), 0.1);
     if (Random < FDrone_prob) then
@@ -213,7 +213,7 @@ begin
     CMidiModWheel:
       FDrum_prob := norm; // 1
     3:
-      FTempo := round(11025 - (norm * 128 * 70)); // 3
+      FTempo := Round(11025 - (norm * 128 * 70)); // 3
     CMidiAfterTouchCont: // 128
       if norm < 0.5 then
       begin

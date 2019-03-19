@@ -76,7 +76,7 @@ begin
   FVolume := (TrackBar.Max - TrackBar.Position) / TrackBar.Max;
   if Assigned(FOnVolumeChange) then
     FOnVolumeChange(Self);
-  TrackBar.Hint := IntToStr(round(FVolume * 100)) + '%';
+  TrackBar.Hint := IntToStr(Round(FVolume * 100)) + '%';
 end;
 
 procedure TFrChannelStrip.CBMuteClick(Sender: TObject);

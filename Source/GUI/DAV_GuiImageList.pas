@@ -83,7 +83,7 @@ begin
   if (Index >= 0) and (Index < FImageCollection.Count) then
     Result := TGuiCustomImageCollectionItem(FImageCollection[Index])
   else
-    raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
+    raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
 end;
 
 end.

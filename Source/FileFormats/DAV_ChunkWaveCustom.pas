@@ -337,7 +337,7 @@ begin
   inherited;
   // calculate end of stream position
   ChunkEnd := Stream.Position + FChunkSize;
-  // assert(ChunkEnd <= Stream.Size);
+  // Assert(ChunkEnd <= Stream.Size);
 
   // read type ID
   Stream.Read(FTypeID, SizeOf(Cardinal));
@@ -346,7 +346,7 @@ begin
   SetLength(FData, FChunkSize - SizeOf(Cardinal));
   Stream.Read(FData[1], Length(FData));
 
-  assert(Stream.Position <= ChunkEnd);
+  Assert(Stream.Position <= ChunkEnd);
 
   // goto end of this chunk
   Stream.Position := ChunkEnd;

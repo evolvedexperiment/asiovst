@@ -226,7 +226,7 @@ begin
   else if (Number = CMidiStrikePosition) then // 4
     SetStrikePosition(norm)
   else if (Number = CMidiProphesyRibbon) then // 3
-    SetPreset(round(Value))
+    SetPreset(Round(Value))
     { else if (number = CMidiModWheel) then // 1
       directGain:=norm }
   else if (Number = 11) then // 11

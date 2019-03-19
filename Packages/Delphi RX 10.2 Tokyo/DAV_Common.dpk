@@ -82,8 +82,10 @@ contains
   DAV_SampleRateSource in '..\..\Source\DAV_SampleRateSource.pas',
   DAV_StereoBuffer in '..\..\Source\DAV_StereoBuffer.pas',
   DAV_SynthFilter in '..\..\Source\DAV_SynthFilter.pas',
+  DAV_Strings in '..\..\Source\DAV_Strings.pas',
   DAV_Types in '..\..\Source\DAV_Types.pas',
   DAV_VectorMath in '..\..\Source\DAV_VectorMath.pas',
   DAV_WaveFileTypes in '..\..\Source\DAV_WaveFileTypes.pas';
 
 end.
+

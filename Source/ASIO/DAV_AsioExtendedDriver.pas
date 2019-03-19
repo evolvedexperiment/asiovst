@@ -1093,7 +1093,7 @@ procedure TDavASIOExtendedDriver.ProcessBuffers;
 begin
   // this is a dummy, override it
   ASIOBufferSwitch(FCurrentBuffer, ASIOTrue);
-  Sleep(round(1000 * FBufferSize.Current / FSampleRate));
+  Sleep(Round(1000 * FBufferSize.Current / FSampleRate));
   FCurrentBuffer := 1 - FCurrentBuffer;
 end;
 

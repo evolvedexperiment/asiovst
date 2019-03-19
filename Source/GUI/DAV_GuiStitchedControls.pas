@@ -253,7 +253,7 @@ begin
   if (Index >= 0) and (Index < FStitchedCollection.Count) then
     Result := TGuiCustomImageCollectionItem(FStitchedCollection[Index])
   else
-    raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
+    raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
 end;
 
 function TGuiCustomStitchedList.GetStitchedItems(Index: Integer)
@@ -263,7 +263,7 @@ begin
   if (Index >= 0) and (Index < FStitchedCollection.Count) then
     Result := TGuiCustomStitchedCollectionItem(FStitchedCollection[Index])
   else
-    raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
+    raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
 end;
 
 { TGuiCustomStitchedControl }

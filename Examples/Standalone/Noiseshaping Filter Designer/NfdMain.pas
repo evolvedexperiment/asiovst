@@ -292,7 +292,7 @@ begin
         Min := FMagnitude[BinNo];
     end;
   end;
-  Avg := Result / round(RelFrq);
+  Avg := Result / Round(RelFrq);
   Result := 2 * Avg + 2 * Max - Min + abs(Above - Below);
 end;
 

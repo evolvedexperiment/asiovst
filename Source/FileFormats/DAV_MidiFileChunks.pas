@@ -350,7 +350,7 @@ end;
 procedure TDavMidiFileTrackEventsChunk.Delete(Index: Int32);
 begin
   if (Index < 0) or (Index >= FList.Count) then
-    raise EDavMidiFileChunkError.CreateFmt(RCStrIndexOutOfBounds, [Index])
+    raise EDavMidiFileChunkError.CreateFmt(RStrIndexOutOfBounds, [Index])
   else
   begin
     // eventually shift delta time
@@ -373,7 +373,7 @@ function TDavMidiFileTrackEventsChunk.GetEvent(
   Index: Int32): TDavCustomMidiFileTrackEvent;
 begin
   if (Index < 0) or (Index >= FList.Count) then
-    raise EDavMidiFileChunkError.CreateFmt(RCStrIndexOutOfBounds, [Index])
+    raise EDavMidiFileChunkError.CreateFmt(RStrIndexOutOfBounds, [Index])
   else
     Result := TDavCustomMidiFileTrackEvent(FList[Index]);
 end;

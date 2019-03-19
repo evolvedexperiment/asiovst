@@ -330,7 +330,7 @@ begin
                 begin
                   WriteString('Recent ' + IntToStr(i),
                     ReadString('Recent ' + IntToStr(i - 1)));
-                  dec(i);
+                  Dec(i);
                 end;
                 WriteString('Recent 1', FileName);
               end;
@@ -409,7 +409,7 @@ begin
             begin
               WriteString('Recent ' + IntToStr(i),
                 ReadString('Recent ' + IntToStr(i - 1)));
-              dec(i);
+              Dec(i);
             end;
             WriteString('Recent 1', str);
           end;

@@ -88,11 +88,9 @@ object Chebyshev2HPModule: TChebyshev2HPModule
   OnClose = VSTModuleClose
   OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
-  OnProcess64Replacing = VSTModuleProcessDoubleReplacing
   OnProcess32Replacing = VSTModuleProcess
+  OnProcess64Replacing = VSTModuleProcessDoubleReplacing
   OnSampleRateChange = VSTModuleSampleRateChange
-  Left = 778
-  Top = 75
   Height = 150
   Width = 215
 end

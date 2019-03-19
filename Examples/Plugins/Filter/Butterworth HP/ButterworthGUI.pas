@@ -87,136 +87,137 @@ uses
 
 procedure TFmButterworth.FormDestroy(Sender: TObject);
 begin
- if Assigned(FEdValue)
-  then FreeAndNil(FEdValue);
+  if Assigned(FEdValue) then
+    FreeAndNil(FEdValue);
 end;
 
 procedure TFmButterworth.DialFrequencyChange(Sender: TObject);
 begin
- with TButterworthHPModule(Owner) do
+  with TButterworthHPModule(Owner) do
   begin
-   ParameterByName['Frequency'] := DialFrequency.Value;
+    ParameterByName['Frequency'] := DialFrequency.Value;
   end;
 end;
 
 procedure TFmButterworth.DialOrderChange(Sender: TObject);
 begin
- with TButterworthHPModule(Owner) do
+  with TButterworthHPModule(Owner) do
   begin
-   ParameterByName['Order'] := DialOrder.Value;
+    ParameterByName['Order'] := DialOrder.Value;
   end;
 end;
 
 procedure TFmButterworth.FormShow(Sender: TObject);
 begin
- UpdateFrequency;
- UpdateOrder;
+  UpdateFrequency;
+  UpdateOrder;
 end;
 
 function TFmButterworth.GetFilterGain(Sender: TObject;
   const Frequency: Single): Single;
 begin
- Result := TButterworthHPModule(Owner).Magnitude_dB(Frequency);
+  Result := TButterworthHPModule(Owner).Magnitude_dB(Frequency);
 end;
 
 procedure TFmButterworth.LbFrequencyValueDblClick(Sender: TObject);
 begin
- if not Assigned(FEdValue)
-  then FEdValue := TEdit.Create(Self);
+  if not Assigned(FEdValue) then
+    FEdValue := TEdit.Create(Self);
 
- with FEdValue do
+  with FEdValue do
   begin
-   Parent := PnControls;
-   Left := LbFrequencyValue.Left;
-   Top := LbFrequencyValue.Top;
-   Width := LbFrequencyValue.Width;
-   Height := LbFrequencyValue.Height;
-   BorderStyle := bsNone;
-   Color := PnControls.PanelColor;
-   Text := LbFrequencyValue.Caption;
-   Tag := 0;
-   OnKeyPress := EdValueKeyPress;
-   SetFocus;
+    Parent := PnControls;
+    Left := LbFrequencyValue.Left;
+    Top := LbFrequencyValue.Top;
+    Width := LbFrequencyValue.Width;
+    Height := LbFrequencyValue.Height;
+    BorderStyle := bsNone;
+    Color := PnControls.PanelColor;
+    Text := LbFrequencyValue.Caption;
+    Tag := 0;
+    OnKeyPress := EdValueKeyPress;
+    SetFocus;
   end;
 end;
 
 procedure TFmButterworth.LbOrderValueDblClick(Sender: TObject);
 begin
- if not Assigned(FEdValue)
-  then FEdValue := TEdit.Create(Self);
+  if not Assigned(FEdValue) then
+    FEdValue := TEdit.Create(Self);
 
- with FEdValue do
+  with FEdValue do
   begin
-   Parent := PnControls;
-   Left := LbOrderValue.Left;
-   Top := LbOrderValue.Top;
-   Width := LbOrderValue.Width;
-   Height := LbOrderValue.Height;
-   BorderStyle := bsNone;
-   Color := PnControls.PanelColor;
-   Text := LbOrderValue.Caption;
-   Tag := 1;
-   OnKeyPress := EdValueKeyPress;
-   SetFocus;
+    Parent := PnControls;
+    Left := LbOrderValue.Left;
+    Top := LbOrderValue.Top;
+    Width := LbOrderValue.Width;
+    Height := LbOrderValue.Height;
+    BorderStyle := bsNone;
+    Color := PnControls.PanelColor;
+    Text := LbOrderValue.Caption;
+    Tag := 1;
+    OnKeyPress := EdValueKeyPress;
+    SetFocus;
   end;
 end;
 
 procedure TFmButterworth.EdValueKeyPress(Sender: TObject; var Key: Char);
 begin
- with TButterworthHPModule(Owner) do
-  if (Key = #13) and Assigned(FEdValue) then
-   try
-    StringToParameter(FEdValue.Tag, AnsiString(FEdValue.Text));
-    FreeAndNil(FEdValue);
-   except
-   end;
+  with TButterworthHPModule(Owner) do
+    if (Key = #13) and Assigned(FEdValue) then
+      try
+        StringToParameter(FEdValue.Tag, AnsiString(FEdValue.Text));
+        FreeAndNil(FEdValue);
+      except
+      end;
 end;
 
 procedure TFmButterworth.PnControlsClick(Sender: TObject);
 begin
- if Assigned(FEdValue)
-  then FreeAndNil(FEdValue);
+  if Assigned(FEdValue) then
+    FreeAndNil(FEdValue);
 end;
 
 procedure TFmButterworth.UpdateFrequency;
 var
-  Freq : Single;
+  Freq: Single;
 begin
- with TButterworthHPModule(Owner) do
+  with TButterworthHPModule(Owner) do
   begin
-   Freq := ParameterByName['Frequency'];
-   if DialFrequency.Value <> Freq
-    then DialFrequency.Value := Freq;
-   if Freq < 1000
-    then LbFrequencyValue.Caption := FloatToStrF(Freq, ffGeneral, 4, 4) + ' Hz'
-    else LbFrequencyValue.Caption := FloatToStrF(Freq * 1E-3, ffGeneral, 4, 4) + ' kHz';
-   EQGraphUpdate;
+    Freq := ParameterByName['Frequency'];
+    if DialFrequency.Value <> Freq then
+      DialFrequency.Value := Freq;
+    if Freq < 1000 then
+      LbFrequencyValue.Caption := FloatToStrF(Freq, ffGeneral, 4, 4) + ' Hz'
+    else
+      LbFrequencyValue.Caption := FloatToStrF(Freq * 1E-3, ffGeneral, 4, 4) + ' kHz';
+    EQGraphUpdate;
   end;
 end;
 
 procedure TFmButterworth.UpdateOrder;
 var
-  Order : Single;
+  Order: Single;
 begin
- with TButterworthHPModule(Owner) do
+  with TButterworthHPModule(Owner) do
   begin
-   Order := ParameterByName['Order'];
-   if DialOrder.Value <> Order
-    then DialOrder.Value := Order;
-   LbOrderValue.Caption := IntToStr(Round(Order));
-   EQGraphUpdate;
+    Order := ParameterByName['Order'];
+    if DialOrder.Value <> Order then
+      DialOrder.Value := Order;
+    LbOrderValue.Caption := IntToStr(Round(Order));
+    EQGraphUpdate;
   end;
 end;
 
 procedure TFmButterworth.EQGraphUpdateTimer(Sender: TObject);
 begin
- Timer.Enabled := False;
- GuiEQGraph.UpdateGraph;
+  Timer.Enabled := False;
+  GuiEQGraph.UpdateGraph;
 end;
 
 procedure TFmButterworth.EQGraphUpdate;
 begin
- Timer.Enabled := True;
+  Timer.Enabled := True;
 end;
 
 end.

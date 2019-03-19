@@ -296,7 +296,7 @@ var
 begin
   if FListenerDistance < 0.5 * FSpeakerDistance then
     exit;
-  assert(FListenerDistance >= 0.5 * FSpeakerDistance);
+  Assert(FListenerDistance >= 0.5 * FSpeakerDistance);
 
   Alpha := arcsin(FSpeakerDistance * 0.5 / FListenerDistance);
   DirectDist := sqrt(sqr(FHeadRadius) + sqr(FListenerDistance) - 2 * FHeadRadius
@@ -305,7 +305,7 @@ begin
   CTDistance := sqrt(sqr(FHeadRadius) + sqr(FListenerDistance) - 2 * FHeadRadius
     * FListenerDistance * cos(0.5 * Pi + Alpha));
 
-  assert(CTDistance - DirectDist > 0);
+  Assert(CTDistance - DirectDist > 0);
 
   for Channel := 0 to Length(FDelayLine) - 1 do
     for Stage := 0 to Length(FDelayLine[Channel]) - 1 do

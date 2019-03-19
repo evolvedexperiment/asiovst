@@ -358,7 +358,7 @@ var
   Pos: Integer;
 begin
   if (Index < 0) or (Index >= FBufferSize) then
-    raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
+    raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
 
   Pos := FBufferPos - Index;
   if Pos < 0 then

@@ -100,13 +100,10 @@ type
     property Range: Double read FRange;
     property PixelSize: Integer read FPixelSize write SetPixelSize nodefault;
   published
-    property Flags: TCustomAxisFlags read FFlags write SetFlags
-      default [cafAutoGranularity];
+    property Flags: TCustomAxisFlags read FFlags write SetFlags default [cafAutoGranularity];
     property Granularity: Double read FGranularity write SetGranularity;
-    property GranularityBase: Integer read FGranBase write SetGranularityBase
-      default 10;
-    property MinimumGranularityDistance: Integer read FMinGranDist
-      write SetMinGranDist default 30;
+    property GranularityBase: Integer read FGranBase write SetGranularityBase default 10;
+    property MinimumGranularityDistance: Integer read FMinGranDist write SetMinGranDist default 30;
     property Minimum: Double read FMinimum write SetMinimum;
     property Maximum: Double read FMaximum write SetMaximum;
     property Lower: Double read FLower write SetLower;
@@ -334,9 +331,8 @@ type
     procedure UpdateBuffer; override;
     procedure UpdateBackBuffer; override;
 
-    property SeriesCollectionItem[Index: Integer]
-      : TGuiGraphXYSeriesCollectionItem read GetSeriesCollectionItem
-      write SetSeriesCollectionItem; default;
+    property SeriesCollectionItem[Index: Integer]: TGuiGraphXYSeriesCollectionItem
+      read GetSeriesCollectionItem write SetSeriesCollectionItem; default;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -345,15 +341,12 @@ type
   published
     property Alpha: Byte read FAlpha write SetAlpha default $FF;
     property AntiAlias: Boolean read FAntiAlias write SetAntiAlias default True;
-    property BorderColor: TColor read FBorderColor write SetBorderColor
-      default clRed;
+    property BorderColor: TColor read FBorderColor write SetBorderColor default clRed;
     property BorderRadius: Single read FBorderRadius write SetBorderRadius;
     property BorderWidth: Single read FBorderWidth write SetBorderWidth;
-    property FrameColor: TColor read FFrameColor write SetFrameColor
-      default clRed;
+    property FrameColor: TColor read FFrameColor write SetFrameColor default clRed;
     property GridColor: TColor read FGridColor write SetGridColor default clRed;
-    property Flags: TGraphXYFlags read FFlags write SetFlags
-      default [gfShowLabels];
+    property Flags: TGraphXYFlags read FFlags write SetFlags default [gfShowLabels];
     property FontShadow: TGuiShadow read GetFontShadow write SetFontShadow;
     property SeriesCollection: TGuiGraphXYSeriesCollection
       read FSeriesCollection write SetSeriesCollection;
@@ -394,8 +387,8 @@ var
 implementation
 
 uses
-  ExtCtrls, Math, DAV_Types, DAV_Common, DAV_Complex, DAV_MemoryUtils,
-  DAV_GuiCommon, DAV_GuiFixedPoint, DAV_GuiBlend;
+  ExtCtrls, Math, DAV_Types, DAV_Common, DAV_Strings, DAV_Complex,
+  DAV_MemoryUtils, DAV_GuiCommon, DAV_GuiFixedPoint, DAV_GuiBlend;
 
 resourcestring
   RCStrCalculateRange = 'The upper value must not be equal to the lower value!'
@@ -2336,8 +2329,8 @@ begin
   end;
 end;
 
-procedure TCustomGuiGraphXY.SetSeriesCollection(const Value
-  : TGuiGraphXYSeriesCollection);
+procedure TCustomGuiGraphXY.SetSeriesCollection(
+  const Value: TGuiGraphXYSeriesCollection);
 begin
   FSeriesCollection.Assign(Value);
 end;
@@ -2364,10 +2357,9 @@ begin
 end;
 
 initialization
-
-// register series classes
-RegisterSeriesClass(TGuiGraphXYFunctionSeries);
-RegisterSeriesClass(TGuiGraphXYDataSeries);
+  // register series classes
+  RegisterSeriesClass(TGuiGraphXYFunctionSeries);
+  RegisterSeriesClass(TGuiGraphXYDataSeries);
 
 finalization
 

@@ -50,10 +50,10 @@ procedure TVSTGUI.MidiKeysNoteOn(Sender: TObject; KeyNo: Byte;
 var
   newNote: TVocoderVoice;
 begin 
-  TVSTSSModule(Owner).MidiNoteOn(0, KeyNo, round(Velocity * 128));
+  TVSTSSModule(Owner).MidiNoteOn(0, KeyNo, Round(Velocity * 128));
   newNote := TVocoderVoice.Create(TVSTSSModule(Owner));
   newNote.MidiKey := KeyNo;
-  newNote.Velocity := round(Velocity * 127);
+  newNote.Velocity := Round(Velocity * 127);
   newNote.NoteOn(Midi2Pitch[KeyNo], Velocity);
   TVSTSSModule(Owner).Voices.Add(newNote);
 end;
@@ -91,7 +91,7 @@ procedure TVSTGUI.UpdateInputVolume;
 begin
   with TVSTSSModule(Owner) do
   begin
-    SBInputLevel.Position := round(Parameter[0]);
+    SBInputLevel.Position := Round(Parameter[0]);
   end;
 end;
 
@@ -99,7 +99,7 @@ procedure TVSTGUI.UpdateSynthVolume;
 begin
   with TVSTSSModule(Owner) do
   begin
-    SBSynthLevel.Position := round(Parameter[1]);
+    SBSynthLevel.Position := Round(Parameter[1]);
   end;
 end;
 
@@ -107,7 +107,7 @@ procedure TVSTGUI.UpdateVocoderVolume;
 begin
   with TVSTSSModule(Owner) do
   begin
-    SBVocoderLevel.Position := round(Parameter[2]);
+    SBVocoderLevel.Position := Round(Parameter[2]);
   end;
 end;
 

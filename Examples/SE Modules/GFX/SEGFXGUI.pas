@@ -1381,7 +1381,7 @@ begin
                 end;
               end;
             end;
-            dec(X);
+            Dec(X);
           until X <= 1;
         end;
     end;

@@ -857,7 +857,7 @@ begin
         w := *(float * )&r;
         w := ww * (w - 3);
 
-        dec(k);
+        Dec(k);
         if (k < 0) then
          begin
           FLFO := FLFO + FDeltaLFO;
@@ -998,7 +998,7 @@ begin
         fVoices[v].f0   := 0;
         fVoices[v].f1   := 0;
         fVoices[v].f2   := 0;
-        dec(fActiveVoices);
+        Dec(fActiveVoices);
        end;
      end;
    end

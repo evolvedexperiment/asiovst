@@ -104,11 +104,11 @@ var
 begin
   if Length(FFilterArray) = 0 then
     exit;
-  assert(assigned(FFilterArray[0]));
+  Assert(Assigned(FFilterArray[0]));
   FFilterArray[0].Complex(Frequency, Real, Imaginary);
   for i := 1 to Length(FFilterArray) - 1 do
   begin
-    assert(assigned(FFilterArray[i]));
+    Assert(Assigned(FFilterArray[i]));
     FFilterArray[i].Complex(Frequency, Tmp.Re, Tmp.Im);
     ComplexMultiply64(Real, Imaginary, Tmp.Re, Tmp.Im);
   end;
@@ -119,7 +119,7 @@ begin
   if (Index >= 0) and (Index < Length(FFilterArray)) then
     Result := FFilterArray[Index]
   else
-    raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
+    raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
 end;
 
 function TCustomParametricEQ.Imaginary(const Frequency: Double): Double;
@@ -143,11 +143,11 @@ begin
     Result := 1;
     exit;
   end;
-  assert(assigned(FFilterArray[0]));
+  Assert(Assigned(FFilterArray[0]));
   Result := FFilterArray[0].MagnitudeSquared(Frequency);
   for Band := 1 to Length(FFilterArray) - 1 do
   begin
-    assert(assigned(FFilterArray[Band]));
+    Assert(Assigned(FFilterArray[Band]));
     Result := Result * FFilterArray[Band].MagnitudeSquared(Frequency);
   end;
 end;
@@ -184,7 +184,7 @@ begin
   SetLength(FFilterArray, FBandCount);
 
   for Band := 0 to Length(FFilterArray) - 1 do
-    if not assigned(FFilterArray[Band]) then
+    if not Assigned(FFilterArray[Band]) then
     begin
       FFilterArray[Band] := TBasicPeakFilter.Create;
       FFilterArray[Band].OnChange := OnChangeEventHandler;

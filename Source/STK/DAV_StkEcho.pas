@@ -77,7 +77,7 @@ uses
 constructor TStkEcho.Create(const SampleRate, LongestDelay: Single);
 begin
   inherited Create(SampleRate);
-  FLength := round(LongestDelay) + 2;
+  FLength := Round(LongestDelay) + 2;
   FDelayLine := TStkDelay.Create(SampleRate, FLength shr 1, FLength);
   FEffectMix := 0.5;
   Clear;
@@ -102,7 +102,7 @@ end;
 
 procedure TStkEcho.SetDelay(const Value: Single);
 begin
-  FDelayLine.Delay := round(Limit(Value, 0, FLength));
+  FDelayLine.Delay := Round(Limit(Value, 0, FLength));
 end;
 
 procedure TStkEcho.SetEffectMix(const Value: Single);

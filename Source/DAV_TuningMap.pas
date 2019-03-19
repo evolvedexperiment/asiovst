@@ -144,7 +144,7 @@ begin
 
     for i := 0 to 127 do
     begin
-      s := 'note ' + IntToStr(i) + ' = ' + IntToStr(round(FTunes[i])) + CRLF;
+      s := 'note ' + IntToStr(i) + ' = ' + IntToStr(Round(FTunes[i])) + CRLF;
       FS.Write(s[1], Length(s));
     end;
 
@@ -165,7 +165,7 @@ begin
 
     for i := 0 to 127 do
     begin
-      s := 'note ' + IntToStr(i) + ' = ' + FloatToStr(round(FTunes[i])) + CRLF;
+      s := 'note ' + IntToStr(i) + ' = ' + FloatToStr(Round(FTunes[i])) + CRLF;
       FS.Write(s[1], Length(s));
     end;
   finally
@@ -281,7 +281,7 @@ begin
   // Important, because notes not listed in the tuning file
   // should always have standard tuning.
   Reset;
-  for i := 0 to 127 do lTunes[i] := round(FTunes[i]);
+  for i := 0 to 127 do lTunes[i] := Round(FTunes[i]);
 
   if uppercase(extractfileext(FileName)) = '.SCL' then
     ImportScala(FileName)

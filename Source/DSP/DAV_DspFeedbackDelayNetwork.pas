@@ -250,7 +250,7 @@ begin
     end
     else
   else
-    raise Exception.CreateFmt(RCIndexOutOfBounds, [Index]);
+    raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
 end;
 
 procedure TFeedbackZDelayNetwork32.SetFeedbackMatrix(InputIndex,
@@ -260,10 +260,9 @@ begin
     if (OutputIndex in [0 .. 3]) then
       FFeedbackMatrix[InputIndex, OutputIndex] := Value
     else
-      raise Exception.CreateFmt('Output Index out of bounds (%d)',
-        [OutputIndex])
+      raise Exception.CreateFmt('Output ' + RStrIndexOutOfBounds, [OutputIndex])
   else
-    raise Exception.CreateFmt('Input Index out of bounds (%d)', [InputIndex]);
+    raise Exception.CreateFmt('Input ' + RStrIndexOutOfBounds, [InputIndex]);
 end;
 
 procedure TFeedbackZDelayNetwork32.SetInputVector(Index: Integer;
@@ -272,7 +271,7 @@ begin
   if Index in [0 .. 3] then
     FInputVector[Index] := Value
   else
-    raise Exception.CreateFmt(RCIndexOutOfBounds, [Index]);
+    raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
 end;
 
 procedure TFeedbackZDelayNetwork32.SetOutputVector(Index: Integer;
@@ -281,7 +280,7 @@ begin
   if Index in [0 .. 3] then
     FOutputVector[Index] := Value
   else
-    raise Exception.CreateFmt(RCIndexOutOfBounds, [Index]);
+    raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
 end;
 
 procedure TFeedbackZDelayNetwork32.ProcessBlock32
@@ -497,7 +496,7 @@ begin
     end
     else
   else
-    raise Exception.CreateFmt(RCIndexOutOfBounds, [Index]);
+    raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
 end;
 
 procedure TFeedbackDelayNetwork32.SetDelayTimes(Index: Integer;
@@ -511,16 +510,16 @@ begin
         DelayTimeChanged(Index);
       end;
   else
-    raise Exception.CreateFmt(RCIndexOutOfBounds, [Index]);
+    raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
   end;
 end;
 
 procedure TFeedbackDelayNetwork32.DelayTimeChanged(Index: Integer);
 begin
-  DelaySamples[Index] := round(FDelayTimes[Index] * Samplerate + 0.5);
+  DelaySamples[Index] := Round(FDelayTimes[Index] * Samplerate + 0.5);
   FDelayFracs[Index] := DelaySamples[Index] - FDelayTimes[Index] * Samplerate;
-  assert(FDelayFracs[Index] >= 0);
-  assert(FDelayFracs[Index] <= 1);
+  Assert(FDelayFracs[Index] >= 0);
+  Assert(FDelayFracs[Index] <= 1);
 end;
 
 procedure TFeedbackDelayNetwork32.SetFeedbackMatrix(InputIndex,
@@ -542,7 +541,7 @@ begin
   if Index in [0 .. 3] then
     FInputVector[Index] := Value
   else
-    raise Exception.CreateFmt(RCIndexOutOfBounds, [Index]);
+    raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
 end;
 
 procedure TFeedbackDelayNetwork32.SetOutputVector(Index: Integer;
@@ -551,7 +550,7 @@ begin
   if Index in [0 .. 3] then
     FOutputVector[Index] := Value
   else
-    raise Exception.CreateFmt(RCIndexOutOfBounds, [Index]);
+    raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
 end;
 
 procedure TFeedbackDelayNetwork32.ProcessBlock32

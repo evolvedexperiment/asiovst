@@ -135,7 +135,7 @@ uses
 constructor TStkFlute.Create;
 begin
   inherited Create(SampleRate);
-  FLength := round(SampleRate / LowestFrequency + 1);
+  FLength := Round(SampleRate / LowestFrequency + 1);
   FBoreDelay := TStkDelayL.Create(SampleRate, 100.0, FLength);
   FLength := FLength shr 1;
   FJetDelay := TStkDelayL.Create(SampleRate, 49.0, FLength);

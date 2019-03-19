@@ -1640,7 +1640,7 @@ function TCustomAudioDataCollection32.GetAudioChannel(index: Integer)
 begin
   if Assigned(FChannels) then
     if (Index < 0) or (Index >= FChannels.Count) then
-      raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index])
+      raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index])
     else
       Result := TAudioChannel32(FChannels.Items[index])
   else
@@ -1830,7 +1830,7 @@ function TCustomAudioDataCollection64.GetAudioChannel(index: Integer)
   : TAudioChannel64;
 begin
   if (Index < 0) or (Index >= FChannels.Count) then
-    raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index])
+    raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index])
   else
     Result := TAudioChannel64(FChannels.Items[index]);
 end;

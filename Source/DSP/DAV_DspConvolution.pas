@@ -540,7 +540,7 @@ begin
   sz := IRSize;
   for Blocks := 0 to Length(FFilterFreqs) - 1 do
   begin
-    assert(sz > 0);
+    Assert(sz > 0);
     ReallocMem(FFilterFreqs[Blocks], (FFFTSizeHalf + 1) * SizeOf(TComplex32));
 
     if sz < FFFTSizeHalf then
@@ -1143,7 +1143,7 @@ var
   TempIR: PDAVSingleFixedArray;
   Blocks: Integer;
 begin
-  assert(FFFTSize = FFFT.FFTSize);
+  Assert(FFFTSize = FFFT.FFTSize);
 
   // get temporary buffer to store zero padded IR parts
   GetMem(TempIR, FFFTSize * SizeOf(Single));
@@ -1178,9 +1178,9 @@ var
 begin
   if FMod = 0 then
   begin
-    assert(Assigned(FSignalFreq));
-    assert(Assigned(SignalIn));
-    assert(Assigned(SignalOut));
+    Assert(Assigned(FSignalFreq));
+    Assert(Assigned(SignalIn));
+    Assert(Assigned(SignalOut));
 
     FFFT.PerformFFT(FSignalFreq, @SignalIn[-FFFTSize]);
     Half := FFFTSizeHalf;
@@ -1456,7 +1456,7 @@ begin
   if FIRSizePadded = 0 then
     Exit;
 
-  assert(FMaximumIRBlockOrder >= FMinimumIRBlockOrder);
+  Assert(FMaximumIRBlockOrder >= FMinimumIRBlockOrder);
 
   // calculate maximum FFT order (to create proper buffers later)
   MaxIROrd := TruncLog2(FIRSizePadded + MinimumIRBlockSize) - 1;
@@ -1530,7 +1530,7 @@ begin
     end
     else
     begin
-      assert(FInputHistorySize + FBlockPosition + FLatency - FBlockPosition <=
+      Assert(FInputHistorySize + FBlockPosition + FLatency - FBlockPosition <=
         FInputBufferSize);
       Move(Input^[CurrentPosition],
         FInputBuffer^[FInputHistorySize + FBlockPosition],
@@ -1547,7 +1547,7 @@ begin
       // actually perform partitioned convolution
       for Part := 0 to Length(FConvStages) - 1 do
       begin
-        assert(FInputBufferSize - FConvStages[Part].FFFTSize >= 0);
+        Assert(FInputBufferSize - FConvStages[Part].FFFTSize >= 0);
         FConvStages[Part].PerformConvolution(@FInputBuffer[FInputBufferSize],
           FOutputBuffer);
       end;
@@ -1838,7 +1838,7 @@ var
   TempIR: PDAVDoubleFixedArray;
   Blocks: Integer;
 begin
-  assert(FFFTSize = FFFT.FFTSize);
+  Assert(FFFTSize = FFFT.FFTSize);
 
   // get temporary buffer to store zero padded IR parts
   GetMem(TempIR, FFFTSize * SizeOf(Double));
@@ -2104,7 +2104,7 @@ begin
   if FIRSizePadded = 0 then
     Exit;
 
-  assert(FMaximumIRBlockOrder >= FMinimumIRBlockOrder);
+  Assert(FMaximumIRBlockOrder >= FMinimumIRBlockOrder);
 
   // calculate maximum FFT order (to create proper buffers later)
   MaxIROrd := TruncLog2(FIRSizePadded + MinimumIRBlockSize) - 1;

@@ -90,13 +90,12 @@ begin
   Result := FStitchedCollection.Count;
 end;
 
-function TGuiStitchedImageList.GetStitchedItems(Index: Integer)
-  : TGuiStitchedImageCollectionItem;
+function TGuiStitchedImageList.GetStitchedItems(Index: Integer): TGuiStitchedImageCollectionItem;
 begin
   if (Index >= 0) and (Index < FStitchedCollection.Count) then
     Result := TGuiStitchedImageCollectionItem(FStitchedCollection[Index])
   else
-    raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
+    raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
 end;
 
 end.

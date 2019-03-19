@@ -349,7 +349,7 @@ begin
   if (Index >= 0) and (Index < FFontCollection.Count) then
     Result := TGuiFontCollectionItem(FFontCollection[Index])
   else
-    raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
+    raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
 end;
 
 { TGuiCustomFontList }
@@ -373,7 +373,7 @@ begin
   if (Index >= 0) and (Index < FFontCollection.Count) then
     Result := TGuiCustomFontCollectionItem(FFontCollection[Index])
   else
-    raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
+    raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
 end;
 
 procedure TGuiCustomFontList.LinkControl(Control: TControl);

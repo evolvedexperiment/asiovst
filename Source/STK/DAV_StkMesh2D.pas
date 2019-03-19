@@ -285,14 +285,14 @@ begin
   else if (xFactor > 1.0) then
     FXInput := FNX - 1
   else
-    FXInput := round(xFactor * (FNX - 1));
+    FXInput := Round(xFactor * (FNX - 1));
 
   if (yFactor < 0.0) then
     FYInput := 0
   else if (yFactor > 1.0) then
     FYInput := FNY - 1
   else
-    FYInput := round(yFactor * (FNY - 1));
+    FYInput := Round(yFactor * (FNY - 1));
 end;
 
 procedure TStkMesh2D.NoteOn(const Frequency, Amplitude: Single);
@@ -448,9 +448,9 @@ begin
   Norm := Limit(Value, 0, 1);
 
   if (Number = 2) then // 2
-    SetNX(round(Norm * (CNxMax - 2) + 2))
+    SetNX(Round(Norm * (CNxMax - 2) + 2))
   else if (Number = 4) then // 4
-    SetNY(round(Norm * (CNyMax - 2) + 2))
+    SetNY(Round(Norm * (CNyMax - 2) + 2))
   else if (Number = 11) then // 11
     SetDecay(0.9 + (Norm * 0.1))
   else if (Number = CMidiModWheel) then // 1

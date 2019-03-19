@@ -175,7 +175,7 @@ begin
     Grid[j] := bands[2 * band];
     lowf := bands[2 * band];
     Highf := bands[2 * band + 1];
-    k := round((Highf - lowf) / delf { +  0.5 } );
+    k := Round((Highf - lowf) / delf { +  0.5 } );
     { .5 for rounding }  // eigentlich int
     for i := 0 to k - 1 do
     begin
@@ -635,7 +635,7 @@ begin
 
   gridsize := 0;
   for i := 0 to numband - 1 do
-    gridsize := gridsize + round(2 * r * CGridDensity *
+    gridsize := gridsize + Round(2 * r * CGridDensity *
       (bands[2 * i + 1] - bands[2 * i])); // ceil???
 
   if symmetry = skOdd then

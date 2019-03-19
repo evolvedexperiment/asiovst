@@ -153,13 +153,13 @@ begin
 
   FBaseFrequency := Value;
   temp := (temp2 * FPhonems.FormantFrequency(i, 0) / FBaseFrequency) + 0.5;
-  tempi := round(temp);
+  tempi := Round(temp);
   Ratio[0] := tempi;
   temp := (temp2 * FPhonems.FormantFrequency(i, 1) / FBaseFrequency) + 0.5;
-  tempi := round(temp);
+  tempi := Round(temp);
   Ratio[1] := tempi;
   temp := (temp2 * FPhonems.FormantFrequency(i, 2) / FBaseFrequency) + 0.5;
-  tempi := round(temp);
+  tempi := Round(temp);
   Ratio[2] := tempi;
   FGains[0] := 1.0;
   FGains[1] := 1.0;
@@ -207,10 +207,10 @@ begin
   norm := Limit(Value, 0, 1);
 
   if (Number = CMidiBreath) then // 2
-    FGains[3] := FFMGains[round(norm * 99.9)]
+    FGains[3] := FFMGains[Round(norm * 99.9)]
   else if (Number = CMidiFootControl) then
   begin // 4
-    FCurrentVowel := round(norm * 128.0);
+    FCurrentVowel := Round(norm * 128.0);
     SetFrequency(FBaseFrequency);
   end
   else if (Number = CMidiModFrequency) then // 11

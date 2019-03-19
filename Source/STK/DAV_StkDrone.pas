@@ -98,7 +98,7 @@ uses
 constructor TStkDrone.Create(const SampleRate, LowestFrequency: Single);
 begin
   inherited Create(SampleRate);
-  FLength := round(FSampleRate / LowestFrequency + 1);
+  FLength := Round(FSampleRate / LowestFrequency + 1);
   FLoopGain := 0.999;
   FDelayLine := TStkDelayA.Create(FSampleRate, (FLength / 2.0), FLength);
   FLoopFilter := TStkOneZero.Create(FSampleRate);

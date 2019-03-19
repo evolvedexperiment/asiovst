@@ -307,7 +307,7 @@ var
 begin
  for i := 0 to CNumFrequencies - 1 do
   begin
-   bs := round(sqr(sqr(1 - CThirdOctaveFrequencies[i] * FSampleRateReci)) * FBufferSize);
+   bs := Round(sqr(sqr(1 - CThirdOctaveFrequencies[i] * FSampleRateReci)) * FBufferSize);
    with Goertzel(PDAVSingleFixedArray(@FBuffer^[(FBufferSize - bs) div 2]), bs, FThirdOctaveExp[i]) do
      FMagnitudes[i] := FSpeedConst[0] * FMagnitudes[i] + FSpeedConst[1] *
        Amp_to_dB(Sqr(Re) + Sqr(Im));
@@ -337,7 +337,7 @@ begin
   ChartAnalyser.Invalidate;
  {$ELSE}
   for j := 0 to cNumFrequencies - 1 do
-    TBar(ChartAnalyser.Bars.Items[Band]).Value := round(FMagnitudes[Band] + FFSGain);
+    TBar(ChartAnalyser.Bars.Items[Band]).Value := Round(FMagnitudes[Band] + FFSGain);
   ChartAnalyser.Invalidate;
  {$ENDIF}
 end;

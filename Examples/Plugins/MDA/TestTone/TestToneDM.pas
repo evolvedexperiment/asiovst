@@ -289,7 +289,7 @@ begin
    case m of
     1: if st > 0 then //impulse
         begin
-         dec(st);
+         Dec(st);
          x := 0;
         end
        else
@@ -321,7 +321,7 @@ begin
     6, 7: begin                               // Log sweep & step
            if (st > 0) then
             begin
-             dec(st);
+             Dec(st);
              ph := 0;
             end
            else
@@ -343,7 +343,7 @@ begin
     8: begin                                  // Lin sweep
         if st > 0 then
          begin
-          dec(st);
+          Dec(st);
           ph := 0;
          end
         else

@@ -257,7 +257,7 @@ begin
   begin
     BaseEnv := BaseStage / FBufferSize;
     FPitchShifterStage[0].FEnvelopePos := BaseEnv;
-    // assert(abs(BaseEnv - FPitchShifterStage[0].FEnvelopePos) < 1E-3);
+    // Assert(abs(BaseEnv - FPitchShifterStage[0].FEnvelopePos) < 1E-3);
     for i := 1 to FStages - 1 do
       with FPitchShifterStage[i] do
       begin
@@ -265,7 +265,7 @@ begin
         while FEnvelopePos > 1 do
           FEnvelopePos := FEnvelopePos - 1;
         d := BaseStage + i * StageOffset * FBufferSize;
-        FBufferOffset := round(d + 0.500001) - 1;
+        FBufferOffset := Round(d + 0.500001) - 1;
         FAllpass.FFractional := d - FBufferOffset;
         while FBufferOffset > FBufferSize do
           FBufferOffset := FBufferOffset - FBufferSize;
@@ -278,7 +278,7 @@ end;
 procedure TCustomDspGranularPitchShifter.UpdateBuffer;
 begin
   // determine buffer size
-  FBufferSize := round(FGranularity * SampleRate) + 1; // quarter second
+  FBufferSize := Round(FGranularity * SampleRate) + 1; // quarter second
 
   // check and reset buffer position
   if FBufferPos >= FBufferSize then

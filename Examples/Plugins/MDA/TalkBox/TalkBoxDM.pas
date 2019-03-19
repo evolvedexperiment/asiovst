@@ -135,7 +135,7 @@ begin
    r[j] := 0;
    for i := 0 to nn - 1
     do r[j] := r[j] + Buf[i] * Buf[i + j]; //autocorrelation
-   dec(nn);
+   Dec(nn);
   end;
  r[0] := 1.001 * r[0];  //stability fix
 

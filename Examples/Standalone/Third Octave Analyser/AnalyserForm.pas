@@ -351,7 +351,7 @@ begin
   ChartAnalyser.Invalidate;
   {$ELSE}
   for j := 0 to cNumFrequencies - 1 do
-    TBar(ChartAnalyser.Bars.Items[Band]).Value := round(FFilterArray[cNumFrequencies - Band - 1].RMS + FFSGain);
+    TBar(ChartAnalyser.Bars.Items[Band]).Value := Round(FFilterArray[cNumFrequencies - Band - 1].RMS + FFSGain);
   ChartAnalyser.Invalidate;
   {$ENDIF}
 end;

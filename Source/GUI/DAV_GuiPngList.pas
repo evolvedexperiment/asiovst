@@ -141,7 +141,7 @@ begin
   if (Index >= 0) and (Index < FImageCollection.Count) then
     Result := TGuiCustomImageCollectionItem(FImageCollection[Index])
   else
-    raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
+    raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
 end;
 
 function TGuiPNGList.GetPngItems(Index: Integer): TGuiPNGCollectionItem;
@@ -149,7 +149,7 @@ begin
   if (Index >= 0) and (Index < FImageCollection.Count) then
     Result := TGuiPNGCollectionItem(FImageCollection[Index])
   else
-    raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
+    raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
 end;
 
 procedure TGuiPNGList.Loaded;

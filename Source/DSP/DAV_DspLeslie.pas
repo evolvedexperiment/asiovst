@@ -419,7 +419,7 @@ begin
 
   // delay output pos
   hint := FHiPos + FHDep * (1 + chp);
-  hdd := round(hint);
+  hdd := Round(hint);
 
   // linear interpolation
   hint := hint - hdd;

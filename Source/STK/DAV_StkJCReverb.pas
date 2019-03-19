@@ -182,7 +182,7 @@ begin
 
   for i := 0 to 8 do
   begin
-    Delay := round(Scaler * CLength[i] + CHalf32) - 1;
+    Delay := Round(Scaler * CLength[i] + CHalf32) - 1;
     if ((Delay and 1) = 0) then
       Delay := Delay + 1;
     while (not isPrime(Delay)) do

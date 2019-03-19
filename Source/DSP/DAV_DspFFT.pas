@@ -62,7 +62,7 @@ var
   le2, k, logN: Integer;
 
 begin
-  logN := round(log2(FFTSize) + 0.5);
+  logN := Round(log2(FFTSize) + 0.5);
 
   i := 2;
   while i < 2 * FFTSize - 2 do

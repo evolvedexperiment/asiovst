@@ -149,66 +149,57 @@ end;
 
 procedure TDelayDataModule.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
-  Sample      : Integer;
-  i, l, r, s  : Integer;
-  fb, lx, hx,
-  f, f0, tmp  : Single;
+  Sample: Integer;
+  i, l, r, s: Integer;
+  fb, lx, hx, f, f0, tmp: Single;
 begin
- fb := FFeedback;
- lx := FLowMix;
- hx := FHighMix;
- f  := FFilter;
- f0 := FFilter0;
+  fb := FFeedback;
+  lx := FLowMix;
+  hx := FHighMix;
+  f := FFilter;
+  f0 := FFilter0;
 
- i  := FIntPos;
+  i := FIntPos;
 
- s  := FSize;
- l  := (i + ldel) mod (s + 1);
- r  := (i + rdel) mod (s + 1);
+  s := FSize;
+  l := (i + ldel) mod (s + 1);
+  r := (i + rdel) mod (s + 1);
 
- for Sample := 0 to SampleFrames - 1 do
+  for Sample := 0 to SampleFrames - 1 do
   begin
-   Outputs[0, Sample] := FBuffer[l]; //delay outputs
-   Outputs[1, Sample] := FBuffer[r];
+    Outputs[0, Sample] := FBuffer[l]; // delay outputs
+    Outputs[1, Sample] := FBuffer[r];
 
-   tmp := FWet * ( Inputs[0, Sample] +  Inputs[1, Sample]) +
-          fb   * (Outputs[0, Sample] + Outputs[1, Sample]);   // mix input & feedback
-   f0  := f * (f0 - tmp) + tmp;                             // low-pass filter
-   FBuffer[i] := lx * f0 + hx * tmp;                        // delay input
+    tmp := FWet * (Inputs[0, Sample] + Inputs[1, Sample]) + fb *
+      (Outputs[0, Sample] + Outputs[1, Sample]); // mix input & feedback
+    f0 := f * (f0 - tmp) + tmp; // low-pass filter
+    FBuffer[i] := lx * f0 + hx * tmp; // delay input
 
-   dec(i); if (i < 0) then i := s;
-   dec(l); if (l < 0) then l := s;
-   dec(r); if (r < 0) then r := s;
+    Dec(i);
+    if (i < 0) then
+      i := s;
+    Dec(l);
+    if (l < 0) then
+      l := s;
+    Dec(r);
+    if (r < 0) then
+      r := s;
 
-   Outputs[0, Sample] := FDry * Inputs[0, Sample] + Outputs[0, Sample]; //mix FWet & FDry
-   Outputs[1, Sample] := FDry * Inputs[1, Sample] + Outputs[1, Sample];
+    // mix FWet & FDry
+    Outputs[0, Sample] := FDry * Inputs[0, Sample] + Outputs[0, Sample];
+    Outputs[1, Sample] := FDry * Inputs[1, Sample] + Outputs[1, Sample];
   end;
 
- FIntPos := i;
- if abs(f0) < 1E-10
-  then FFilter0 := 0
-  else FFilter0 := f0; //trap denormals
+  FIntPos := i;
+  if abs(f0) < 1E-10 then
+    FFilter0 := 0
+  else
+    FFilter0 := f0; // trap denormals
 end;
 
 procedure TDelayDataModule.VSTModuleSuspend(Sender: TObject);
 begin
- FillChar(FBuffer, FSize * SizeOf(Single), 0);
+  FillChar(FBuffer, FSize * SizeOf(Single), 0);
 end;
 
 end.
-
-(*
-void mdaDelay::getParameterDisplay(VstInt32 index, char *text)
-{
-  switch(index)
-  {
-    case 0: long2string((long)(ldel * 1000.0 / SampleRate), text); break;
-    case 1: long2string((long)(100 * rdel / ldel), text); break;
-    case 2: long2string((long)(99 * Parameter[2]), text); break;
-    case 3: long2string((long)(200 * Parameter[3] - 100), text); break;
-    case 4: long2string((long)(100 * Parameter[4]), text); break;
-    case 5: long2string((long)(20 * log10(2.0 * Parameter[5])), text); break;
-  }
-}
-
-*)

@@ -33,10 +33,10 @@ var
 begin
   with TVSTSSModule(Owner) do
   begin
-    MidiNoteOn(0, KeyNr, round(Velocity * 128));
+    MidiNoteOn(0, KeyNr, Round(Velocity * 128));
     newNote := TSineSynthVoice.Create(TVSTSSModule(Owner));
     newNote.MidiKey := KeyNr;
-    newNote.Velocity := round(Velocity * 127);
+    newNote.Velocity := Round(Velocity * 127);
     newNote.NoteOn(Midi2Pitch[KeyNr], Velocity);
     Voices.Add(newNote);
   end;

@@ -498,10 +498,10 @@ begin
         if COffsetRounded = 1 then
         begin
           OldMaxPos :=
-            Point(0, round(YOffset - MaxSample * FNormalizationFactors[Channel]
+            Point(0, Round(YOffset - MaxSample * FNormalizationFactors[Channel]
             * HalfHeight));
           OldMinPos :=
-            Point(0, round(YOffset - MinSample * FNormalizationFactors[Channel]
+            Point(0, Round(YOffset - MinSample * FNormalizationFactors[Channel]
             * HalfHeight));
           MoveTo((OldMinPos.X + OldMaxPos.X) div 2,
             (OldMinPos.Y + OldMaxPos.Y) div 2);
@@ -509,9 +509,9 @@ begin
 
         COffsetRounded := ceil(COffset);
         DrawSamples(OldMaxPos, OldMinPos, Point(COffsetRounded - 1,
-          round(YOffset - MaxSample * FNormalizationFactors[Channel] *
+          Round(YOffset - MaxSample * FNormalizationFactors[Channel] *
           HalfHeight)), Point(COffsetRounded - 1,
-          round(YOffset - MinSample * FNormalizationFactors[Channel] *
+          Round(YOffset - MinSample * FNormalizationFactors[Channel] *
           HalfHeight)));
 
         MaxSample := FWaveData[Channel][i];

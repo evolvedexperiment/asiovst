@@ -334,7 +334,7 @@ end;
 
 procedure TSoundTouch.ChannelsChanged;
 begin
-  assert(FChannels in [1, 2]);
+  Assert(FChannels in [1, 2]);
   SoundTouchSetChannels(FHandle, FChannels);
 end;
 
@@ -399,8 +399,8 @@ end;
 
 procedure TSoundTouch.SamplerateChanged;
 begin
-  assert(FSampleRate > 0);
-  SoundTouchSetSampleRate(FHandle, round(FSampleRate));
+  Assert(FSampleRate > 0);
+  SoundTouchSetSampleRate(FHandle, Round(FSampleRate));
 end;
 
 procedure TSoundTouch.SetTempo(const Value: Single);

@@ -333,7 +333,7 @@ procedure TCustomBufferedAudioPlayer.DecodeHandler(Sender: TObject;
 var
   ChannelIndex: Integer;
 begin
-  assert(Coder is TCustomChannel32DataCoder);
+  Assert(Coder is TCustomChannel32DataCoder);
   with TCustomChannel32DataCoder(Coder) do
   begin
     case ChannelCount of

@@ -475,7 +475,7 @@ begin
     SetLength(FFilterArray, Length(FFilterArray) - 1);
   end
   else
-    raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
+    raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
 end;
 
 destructor TCustomFilterCascade.Destroy;

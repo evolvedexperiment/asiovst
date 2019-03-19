@@ -198,8 +198,7 @@ type
     X, Y: TFixed16Dot16;
   end;
 
-  TGetValueEvent = function(Sender: TObject; PixelPosition: Integer)
-    : TFixed24Dot8 of object;
+  TGetValueEvent = function(Sender: TObject; PixelPosition: Integer): TFixed24Dot8 of object;
 
   TGuiEquallySpacedPolyline = class(TGuiCustomGeometricShape)
   private
@@ -242,10 +241,6 @@ type
 
     procedure AddPoint(X, Y: TFixed24Dot8); overload;
     procedure AddPoint(Point: TFixed24Dot8Point); overload;
-    (*
-      procedure RemovePoint(X, Y: TFixed24Dot8); overload;
-      procedure RemovePoint(Point: TFixed24Dot8Point); overload;
-    *)
     procedure RemovePoint(Index: Integer); overload;
 
     property X[Index: Integer]: TFixed24Dot8 read GetX write SetX;
@@ -778,7 +773,7 @@ begin
   if Index < Length(FData) then
     Result := FData[Index].X
   else
-    raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
+    raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
 end;
 
 function TGuiCustomPolygon.GetY(Index: Integer): TFixed24Dot8;
@@ -786,13 +781,13 @@ begin
   if Index < Length(FData) then
     Result := FData[Index].Y
   else
-    raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
+    raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
 end;
 
 procedure TGuiCustomPolygon.RemovePoint(Index: Integer);
 begin
   if Index >= Length(FData) then
-    raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index])
+    raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index])
   else
   begin
     if Index + 1 < Length(FData) then
@@ -807,7 +802,7 @@ begin
   if Index < Length(FData) then
     FData[Index].X := Value
   else
-    raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
+    raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
 end;
 
 procedure TGuiCustomPolygon.SetY(Index: Integer; const Value: TFixed24Dot8);
@@ -815,7 +810,7 @@ begin
   if Index < Length(FData) then
     FData[Index].Y := Value
   else
-    raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
+    raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
 end;
 
 end.

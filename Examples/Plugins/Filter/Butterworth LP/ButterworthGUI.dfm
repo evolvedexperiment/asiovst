@@ -203,6 +203,7 @@ object FmButterworth: TFmButterworth
     YAxis.UpperLevel = 6.000000000000000000
     YAxis.Granularity = 20.000000000000000000
     YAxis.MaximumGridLines = 3
+    YAxis.MouseActions = []
     Anchors = [akLeft, akTop, akBottom]
     Color = 657940
     Font.Charset = DEFAULT_CHARSET

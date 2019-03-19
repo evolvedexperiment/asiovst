@@ -101,7 +101,7 @@ begin
   if Index <= Count then
     FTracks.Insert(Index, Track)
   else
-    raise EDavMidiFileError.CreateFmt(RCStrIndexOutOfBounds, [Index]);
+    raise EDavMidiFileError.CreateFmt(RStrIndexOutOfBounds, [Index]);
 end;
 
 class function TDavMidiFile.DefaultExtension: TFileName;
@@ -114,7 +114,7 @@ begin
   if Index < Count then
     FTracks.Delete(Index)
   else
-    raise EDavMidiFileError.CreateFmt(RCStrIndexOutOfBounds, [Index]);
+    raise EDavMidiFileError.CreateFmt(RStrIndexOutOfBounds, [Index]);
 end;
 
 procedure TDavMidiFile.AssignTo(Dest: TPersistent);

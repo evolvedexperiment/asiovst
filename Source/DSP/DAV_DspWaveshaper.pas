@@ -572,7 +572,7 @@ end;
 function TCustomChebyshevWaveshaper.GetCoefficients(Index: Integer): Double;
 begin
   if (Index < 0) or (Index >= FCoeffCount) then
-    raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index])
+    raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index])
   else
     Result := FChebyshevCoeffs^[Index];
 end;
@@ -722,7 +722,7 @@ end;
 function TChebyshevWaveshaper.GetGain(Harmonic: Integer): Double;
 begin
   if (Harmonic < 0) or (Harmonic >= Order) then
-    raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Harmonic])
+    raise Exception.CreateFmt(RStrIndexOutOfBounds, [Harmonic])
   else
     Result := FGains[Harmonic];
 end;
@@ -749,7 +749,7 @@ end;
 procedure TChebyshevWaveshaper.SetGain(Harmonic: Integer; const Value: Double);
 begin
   if (Harmonic < 0) or (Harmonic >= Order) then
-    raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Harmonic])
+    raise Exception.CreateFmt(RStrIndexOutOfBounds, [Harmonic])
   else
   begin
     FGains[Harmonic] := Value;
@@ -910,7 +910,7 @@ procedure TSymmetricChebyshevWaveshaper.SetGain(Harmonic: Integer;
   const Value: Double);
 begin
   if (Harmonic < 0) or (Harmonic >= Order) then
-    raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Harmonic])
+    raise Exception.CreateFmt(RStrIndexOutOfBounds, [Harmonic])
   else if Harmonic mod 2 <> 0 then
     raise Exception.Create(RCStrOnlyEvenHarmonics)
   else
@@ -941,7 +941,7 @@ end;
 function TSymmetricChebyshevWaveshaper.GetGain(Harmonic: Integer): Double;
 begin
   if (Harmonic < 0) or (Harmonic >= Order) then
-    raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Harmonic])
+    raise Exception.CreateFmt(RStrIndexOutOfBounds, [Harmonic])
   else if Harmonic mod 2 <> 0 then
     raise Exception.Create(RCStrOnlyEvenHarmonics)
   else

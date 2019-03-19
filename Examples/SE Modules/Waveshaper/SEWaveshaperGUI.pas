@@ -503,7 +503,7 @@ begin
         y := 5.0 - pt.y * 0.1;
         sprintf(pt, '(%3.1f,%3.1f)', x, y);
         strcat(v, pt);
-        assert(Length(v) < 280);
+        Assert(Length(v) < 280);
       *)
     end;
 

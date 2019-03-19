@@ -219,7 +219,7 @@ begin
       FFilter[1, 1].Assign(Self.FFilter[1, 1]);
       FFilter[1, 2].Assign(Self.FFilter[1, 2]);
 
-      assert(FBufSize = Self.FBufSize);
+      Assert(FBufSize = Self.FBufSize);
       Move(Self.FBuffer[0], FBuffer[0], FBufSize * SizeOf(Single));
       Move(Self.FBuffer[1], FBuffer[1], FBufSize * SizeOf(Single));
     end
@@ -231,7 +231,7 @@ procedure TCustomIIRCrosstalkSimulator.CalculateBufferSize;
 var
   Channel: Integer;
 begin
-  FBufSize := max(1, round(SampleRate * (FDiameter / 344)));
+  FBufSize := max(1, Round(SampleRate * (FDiameter / 344)));
 
   for Channel := 0 to 1 do
   begin

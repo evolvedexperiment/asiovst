@@ -7,7 +7,6 @@ object DelayDataModule: TDelayDataModule
   VendorName = 'Delphi ASIO & VST Project / mda'
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Delay'
   IORatio = 1.000000000000000000
   UniqueID = 'mday'
@@ -19,7 +18,6 @@ object DelayDataModule: TDelayDataModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'L Delay'
       LargeStepFloat = 2.000000000000000000
@@ -31,7 +29,6 @@ object DelayDataModule: TDelayDataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'R Delay'
       LargeStepFloat = 2.000000000000000000
@@ -43,7 +40,6 @@ object DelayDataModule: TDelayDataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Feedback'
       LargeStepFloat = 2.000000000000000000
@@ -54,7 +50,6 @@ object DelayDataModule: TDelayDataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Fb Tone'
       LargeStepFloat = 2.000000000000000000
@@ -66,7 +61,6 @@ object DelayDataModule: TDelayDataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'FX Mix'
       LargeStepFloat = 2.000000000000000000
@@ -78,7 +72,6 @@ object DelayDataModule: TDelayDataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Output'
       LargeStepFloat = 2.000000000000000000
@@ -89,14 +82,13 @@ object DelayDataModule: TDelayDataModule
       Units = 'dB'
       VSTModule = Owner
     end>
+  ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
   OnParameterChange = VSTModuleParameterChange
   OnProcess = VSTModuleProcess
   OnProcess32Replacing = VSTModuleProcess
   OnSuspend = VSTModuleSuspend
-  Left = 218
-  Top = 81
   Height = 150
   Width = 215
 end

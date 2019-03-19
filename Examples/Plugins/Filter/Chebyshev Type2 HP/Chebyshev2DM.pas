@@ -43,7 +43,7 @@ type
   TChebyshev2HPModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
+    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: NativeUInt);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
     procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
@@ -72,138 +72,141 @@ uses
 
 procedure TChebyshev2HPModule.VSTModuleOpen(Sender: TObject);
 var
-  ChannelIndex : Integer;
+  ChannelIndex: Integer;
 begin
- for ChannelIndex := 0 to numInputs - 1 do
+  for ChannelIndex := 0 to numInputs - 1 do
   begin
-   FFilter[ChannelIndex] := TChebyshev2HighpassFilter.Create;
-   FFilter[ChannelIndex].SetFilterValues(1000, 0, -10);
+    FFilter[ChannelIndex] := TChebyshev2HighpassFilter.Create;
+    FFilter[ChannelIndex].SetFilterValues(1000, 0, -10);
   end;
-(*
+  (*
  FResizer := TVstWindowSizer.Create;
  FResizer.Effect := Self;
 *)
 
- // Initial Parameters
- Parameter[0] := 1000;
- Parameter[1] := -24;
- Parameter[2] := 4;
+  // Initial Parameters
+  Parameter[0] := 1000;
+  Parameter[1] := -24;
+  Parameter[2] := 4;
 
- with Programs[0] do
+  with Programs[0] do
   begin
-   Parameter[0] := 1000;
-   Parameter[1] := -24;
-   Parameter[2] := 4;
+    Parameter[0] := 1000;
+    Parameter[1] := -24;
+    Parameter[2] := 4;
   end;
 end;
 
 procedure TChebyshev2HPModule.VSTModuleClose(Sender: TObject);
 var
-  ChannelIndex : Integer;
+  ChannelIndex: Integer;
 begin
- for ChannelIndex := 0 to numInputs - 1
-  do FreeAndNil(FFilter[ChannelIndex]);
-// FreeAndNil(FResizer);
+  for ChannelIndex := 0 to numInputs - 1 do
+    FreeAndNil(FFilter[ChannelIndex]);
+  // FreeAndNil(FResizer);
 end;
 
 procedure TChebyshev2HPModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
-  ParentWindow: Cardinal);
+  ParentWindow: NativeUInt);
 begin
- GUI := TFmChebyshev2.Create(Self);
+  GUI := TFmChebyshev2.Create(Self);
 end;
 
 procedure TChebyshev2HPModule.ParamStopbandChange(Sender: TObject;
   const Index: Integer; var Value: Single);
 var
-  ChannelIndex : Integer;
+  ChannelIndex: Integer;
 begin
- for ChannelIndex := 0 to numInputs - 1 do
-  if Assigned(FFilter[ChannelIndex]) then FFilter[ChannelIndex].Stopband := Value;
+  for ChannelIndex := 0 to numInputs - 1 do
+    if Assigned(FFilter[ChannelIndex]) then
+      FFilter[ChannelIndex].Stopband := Value;
 
- // update GUI if necessary
- if EditorForm is TFmChebyshev2
-  then TFmChebyshev2(EditorForm).UpdateStopband;
+  // update GUI if necessary
+  if EditorForm is TFmChebyshev2 then
+    TFmChebyshev2(EditorForm).UpdateStopband;
 end;
 
 procedure TChebyshev2HPModule.ParamOrderChange(Sender: TObject;
   const Index: Integer; var Value: Single);
 var
-  ChannelIndex : Integer;
+  ChannelIndex: Integer;
 begin
- for ChannelIndex := 0 to numInputs - 1 do
-  if Assigned(FFilter[ChannelIndex])
-   then FFilter[ChannelIndex].Order := Round(Value); //max(2, 2 * Round(0.5 * Value));
+  for ChannelIndex := 0 to numInputs - 1 do
+    if Assigned(FFilter[ChannelIndex]) then
+      FFilter[ChannelIndex].Order := Round(Value);
+  // max(2, 2 * Round(0.5 * Value));
 
- // update GUI if necessary
- if EditorForm is TFmChebyshev2
-  then TFmChebyshev2(EditorForm).UpdateOrder;
+  // update GUI if necessary
+  if EditorForm is TFmChebyshev2 then
+    TFmChebyshev2(EditorForm).UpdateOrder;
 end;
 
-procedure TChebyshev2HPModule.ParameterOnOffDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+procedure TChebyshev2HPModule.ParameterOnOffDisplay(Sender: TObject;
+  const Index: Integer; var PreDefined: AnsiString);
 begin
- if Parameter[Index] > 0.5
-  then PreDefined := 'On'
-  else PreDefined := 'Off';
+  if Parameter[Index] > 0.5 then
+    PreDefined := 'On'
+  else
+    PreDefined := 'Off';
 end;
 
-procedure TChebyshev2HPModule.ParameterCorrectFrequencyChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TChebyshev2HPModule.ParameterCorrectFrequencyChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 var
-  ChannelIndex : Integer;
+  ChannelIndex: Integer;
 begin
- for ChannelIndex := 0 to numInputs - 1 do
-  if Assigned(FFilter[ChannelIndex])
-   then FFilter[ChannelIndex].FixFrequency := Value > 0.5;
+  for ChannelIndex := 0 to numInputs - 1 do
+    if Assigned(FFilter[ChannelIndex]) then
+      FFilter[ChannelIndex].FixFrequency := Value > 0.5;
 end;
 
 procedure TChebyshev2HPModule.ParamFrequencyChange(Sender: TObject;
   const Index: Integer; var Value: Single);
 var
-  ChannelIndex : Integer;
+  ChannelIndex: Integer;
 begin
- for ChannelIndex := 0 to numInputs - 1 do
-  if Assigned(FFilter[ChannelIndex])
-   then FFilter[ChannelIndex].Frequency := Value;
+  for ChannelIndex := 0 to numInputs - 1 do
+    if Assigned(FFilter[ChannelIndex]) then
+      FFilter[ChannelIndex].Frequency := Value;
 
- // update GUI if necessary
- if EditorForm is TFmChebyshev2
-  then TFmChebyshev2(EditorForm).UpdateFrequency;
+  // update GUI if necessary
+  if EditorForm is TFmChebyshev2 then
+    TFmChebyshev2(EditorForm).UpdateFrequency;
 end;
 
 procedure TChebyshev2HPModule.VSTModuleProcess(const Inputs,
   Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
-  SampleIndex : Integer;
+  SampleIndex: Integer;
 begin
- for SampleIndex := 0 to SampleFrames - 1 do
+  for SampleIndex := 0 to SampleFrames - 1 do
   begin
-   Outputs[0, SampleIndex] := FFilter[0].ProcessSample64(Inputs[0, SampleIndex]);
-   Outputs[1, SampleIndex] := FFilter[1].ProcessSample64(Inputs[1, SampleIndex]);
+    Outputs[0, SampleIndex] := FFilter[0].ProcessSample64(Inputs[0, SampleIndex]);
+    Outputs[1, SampleIndex] := FFilter[1].ProcessSample64(Inputs[1, SampleIndex]);
   end;
 end;
 
 procedure TChebyshev2HPModule.VSTModuleProcessDoubleReplacing(const Inputs,
   Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
 var
-  SampleIndex : Integer;
+  SampleIndex: Integer;
 begin
- for SampleIndex := 0 to SampleFrames - 1 do
+  for SampleIndex := 0 to SampleFrames - 1 do
   begin
-   Outputs[0, SampleIndex] := FFilter[0].ProcessSample64(Inputs[0, SampleIndex]);
-   Outputs[1, SampleIndex] := FFilter[1].ProcessSample64(Inputs[1, SampleIndex]);
+    Outputs[0, SampleIndex] := FFilter[0].ProcessSample64(Inputs[0, SampleIndex]);
+    Outputs[1, SampleIndex] := FFilter[1].ProcessSample64(Inputs[1, SampleIndex]);
   end;
 end;
 
 procedure TChebyshev2HPModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 var
-  ChannelIndex : Integer;
+  ChannelIndex: Integer;
 begin
- if Abs(SampleRate) > 0 then
-  for ChannelIndex := 0 to numInputs - 1 do
-   if Assigned(FFilter[ChannelIndex])
-    then FFilter[ChannelIndex].SampleRate := Abs(SampleRate);
+  if Abs(SampleRate) > 0 then
+    for ChannelIndex := 0 to numInputs - 1 do
+      if Assigned(FFilter[ChannelIndex]) then
+        FFilter[ChannelIndex].SampleRate := Abs(SampleRate);
 end;
 
 end.

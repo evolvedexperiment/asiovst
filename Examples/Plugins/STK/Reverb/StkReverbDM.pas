@@ -149,7 +149,7 @@ begin
       Outputs[1, Sample] := CFixMix[0] * Inputs[1, Sample] + CFixMix[1] * FNReverb.LastOutputRight;
     end;
   finally
-    dec(FSemaphore);
+    Dec(FSemaphore);
   end;
 end;
 
@@ -168,7 +168,7 @@ begin
       Outputs[1, Sample] := CFixMix[0] * Inputs[1, Sample] + CFixMix[1] * FJCReverb.LastOutputRight;
     end;
   finally
-    dec(FSemaphore);
+    Dec(FSemaphore);
   end;
 end;
 
@@ -187,7 +187,7 @@ begin
       Outputs[1, Sample] := CFixMix[0] * Inputs[1, Sample] + CFixMix[1] * FPCReverb.LastOutputRight;
     end;
   finally
-    dec(FSemaphore);
+    Dec(FSemaphore);
   end;
 end;
 
@@ -207,7 +207,7 @@ begin
       Outputs[1, Sample] := CFixMix[0] * Inputs[1, Sample] + CHalf32 * CFixMix[1] * (FJCReverb.LastOutputRight + FNReverb.LastOutputLeft);
     end;
   finally
-    dec(FSemaphore);
+    Dec(FSemaphore);
   end;
 end;
 
@@ -227,7 +227,7 @@ begin
       Outputs[1, Sample] := CFixMix[0] * Inputs[1, Sample] + CHalf32 * CFixMix[1] * (FJCReverb.LastOutputRight + FPCReverb.LastOutputLeft);
     end;
   finally
-    dec(FSemaphore);
+    Dec(FSemaphore);
   end;
 end;
 
@@ -246,7 +246,7 @@ begin
       Outputs[1, Sample] := CFixMix[0] * Inputs[1, Sample] + CFixMix[1] * FNReverb.LastOutputRight;
     end;
   finally
-    dec(FSemaphore);
+    Dec(FSemaphore);
   end;
 end;
 
@@ -265,7 +265,7 @@ begin
       Outputs[1, Sample] := CFixMix[0] * Inputs[1, Sample] + CFixMix[1] * FJCReverb.LastOutputRight;
     end;
   finally
-    dec(FSemaphore);
+    Dec(FSemaphore);
   end;
 end;
 
@@ -284,7 +284,7 @@ begin
       Outputs[1, Sample] := CFixMix[0] * Inputs[1, Sample] + CFixMix[1] * FPCReverb.LastOutputRight;
     end;
   finally
-    dec(FSemaphore);
+    Dec(FSemaphore);
   end;
 end;
 
@@ -304,7 +304,7 @@ begin
       Outputs[1, Sample] := CFixMix[0] * Inputs[1, Sample] + CHalf32 * CFixMix[1] * (FJCReverb.LastOutputRight + FNReverb.LastOutputLeft);
     end;
   finally
-    dec(FSemaphore);
+    Dec(FSemaphore);
   end;
 end;
 
@@ -324,7 +324,7 @@ begin
       Outputs[1, Sample] := CFixMix[0] * Inputs[1, Sample] + CHalf32 * CFixMix[1] * (FJCReverb.LastOutputRight + FPCReverb.LastOutputLeft);
     end;
   finally
-    dec(FSemaphore);
+    Dec(FSemaphore);
   end;
 end;
 
@@ -339,7 +339,7 @@ begin
     FJCReverb.T60 := 0.001 * Value;
     FPCReverb.T60 := 0.001 * Value;
   finally
-    dec(FSemaphore);
+    Dec(FSemaphore);
   end;
   if EditorForm is TFmStkReverb then
     TFmStkReverb(EditorForm).UpdateT60;

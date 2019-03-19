@@ -830,7 +830,7 @@ end;
   FromY := ToY;
   ToY := t;
   end;
-  Gradient := round((dy / dx) * CFixedPointOne);
+  Gradient := Round((dy / dx) * CFixedPointOne);
 
   // handle first endpoint
   xend := (FromX + CFixedPointHalf) and $FFFF0000;

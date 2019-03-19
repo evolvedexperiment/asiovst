@@ -46,7 +46,7 @@ type
     procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
+    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: NativeUInt);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure ParameterThresholdChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -131,7 +131,7 @@ begin
   do FreeAndNil(FAdditionalDelay[Channel]);
 end;
 
-procedure TSpectralNoiseGateModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
+procedure TSpectralNoiseGateModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: NativeUInt);
 begin
   GUI := TFmSpectralNoiseGate.Create(Self);
 end;
