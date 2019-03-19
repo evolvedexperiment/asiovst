@@ -1,0 +1,188 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{F36CDB24-BAED-4BD6-A251-A64FA70C390D}</ProjectGuid>
+        <MainSource>SEAllDspModules.dpr</MainSource>
+        <Base>True</Base>
+        <Config Condition="'$(Config)'==''">Debug</Config>
+        <TargetedPlatforms>1</TargetedPlatforms>
+        <AppType>Library</AppType>
+        <FrameworkType>None</FrameworkType>
+        <ProjectVersion>18.3</ProjectVersion>
+        <Platform Condition="'$(Platform)'==''">Win32</Platform>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">
+        <Base>true</Base>
+    </PropertyGroup>
+    <PropertyGroup Condition="('$(Platform)'=='Win32' and '$(Base)'=='true') or '$(Base_Win32)'!=''">
+        <Base_Win32>true</Base_Win32>
+        <CfgParent>Base</CfgParent>
+        <Base>true</Base>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Config)'=='Release' or '$(Cfg_1)'!=''">
+        <Cfg_1>true</Cfg_1>
+        <CfgParent>Base</CfgParent>
+        <Base>true</Base>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Config)'=='Debug' or '$(Cfg_2)'!=''">
+        <Cfg_2>true</Cfg_2>
+        <CfgParent>Base</CfgParent>
+        <Base>true</Base>
+    </PropertyGroup>
+    <PropertyGroup Condition="('$(Platform)'=='Win32' and '$(Cfg_2)'=='true') or '$(Cfg_2_Win32)'!=''">
+        <Cfg_2_Win32>true</Cfg_2_Win32>
+        <CfgParent>Cfg_2</CfgParent>
+        <Cfg_2>true</Cfg_2>
+        <Base>true</Base>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Base)'!=''">
+        <VerInfo_Locale>1031</VerInfo_Locale>
+        <DCC_S>false</DCC_S>
+        <DCC_K>false</DCC_K>
+        <DCC_F>false</DCC_F>
+        <DCC_ImageBase>00400000</DCC_ImageBase>
+        <DCC_E>false</DCC_E>
+        <DCC_N>false</DCC_N>
+        <GenDll>true</GenDll>
+        <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Winapi;$(DCC_Namespace)</DCC_Namespace>
+        <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
+        <DCC_UnitSearchPath>..\..\..\Source;..\..\..\Source\DSP;..\..\..\Source\SE;..\..\..\Source\GUI;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+        <SanitizedProjectName>SEAllDspModules</SanitizedProjectName>
+        <DCC_ExeOutput>..\..\..\Bin\$(Platform)\SEM</DCC_ExeOutput>
+        <DCC_DcuOutput>..\..\..\UnitCache\$(Platform)\$(Config)</DCC_DcuOutput>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Base_Win32)'!=''">
+        <VerInfo_Locale>1033</VerInfo_Locale>
+        <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
+        <DCC_Namespace>System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Cfg_1)'!=''">
+        <DCC_SymbolReferenceInfo>0</DCC_SymbolReferenceInfo>
+        <DCC_DebugInformation>0</DCC_DebugInformation>
+        <DCC_Define>RELEASE;$(DCC_Define)</DCC_Define>
+        <DCC_LocalDebugSymbols>false</DCC_LocalDebugSymbols>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Cfg_2)'!=''">
+        <DCC_GenerateStackFrames>true</DCC_GenerateStackFrames>
+        <DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>
+        <DCC_Optimize>false</DCC_Optimize>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
+        <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
+        <VerInfo_Locale>1033</VerInfo_Locale>
+        <Manifest_File>(Ohne)</Manifest_File>
+    </PropertyGroup>
+    <ItemGroup>
+        <DelphiCompile Include="$(MainSource)">
+            <MainSource>MainSource</MainSource>
+        </DelphiCompile>
+        <DCCReference Include="..\Approximations\SEApproximationsModule.pas"/>
+        <DCCReference Include="..\Audio File Oscillator\SEAudioFileOscillatorModule.pas"/>
+        <DCCReference Include="..\AudioRGB\SEAudioRGBModule.pas"/>
+        <DCCReference Include="..\Barberpole\SEBarberpoleModule.pas"/>
+        <DCCReference Include="..\Bass Enhancer\SEBassEnhancerModule.pas"/>
+        <DCCReference Include="..\MP3 Player\SEBufferedMp3PlayerModule.pas"/>
+        <DCCReference Include="..\Butterworth\SEButterworthModule.pas"/>
+        <DCCReference Include="..\Butterworth\SEButterworthSplitterModule.pas"/>
+        <DCCReference Include="..\Chebyshev\SEChebyshev1FilterModule.pas"/>
+        <DCCReference Include="..\Chebyshev\SEChebyshev2FilterModule.pas"/>
+        <DCCReference Include="..\ChebyshevWaveshaper\SEChebyshevWaveshaperModule.pas"/>
+        <DCCReference Include="..\Chorus\SEChorusModule.pas"/>
+        <DCCReference Include="..\Convolution\SEConvolutionModule.pas"/>
+        <DCCReference Include="..\Dither &amp; NoiseShaper\SEDitherHighshelfNoiseshaperModule.pas"/>
+        <DCCReference Include="..\Dither &amp; NoiseShaper\SEDitherNoiseshaperModule.pas"/>
+        <DCCReference Include="..\Dither &amp; NoiseShaper\SEDitherSharpNoiseshaperModule.pas"/>
+        <DCCReference Include="..\Dynamics\SEDynamicsModule.pas"/>
+        <DCCReference Include="..\Envelope\SEEnvelopeModule.pas"/>
+        <DCCReference Include="..\Exciter\SEExciterModule.pas"/>
+        <DCCReference Include="..\Filters\SEFiltersModule.pas"/>
+        <DCCReference Include="..\Frequency Shifter\SEFrequencyShifterModule.pas"/>
+        <DCCReference Include="..\Bass Enhancer\SEHarmonicBassModule.pas"/>
+        <DCCReference Include="..\Leslie\SELeslieModule.pas"/>
+        <DCCReference Include="..\Lightweight Dynamics\SELightweightDynamicsModule.pas"/>
+        <DCCReference Include="..\Filters\SELightweightFiltersModule.pas"/>
+        <DCCReference Include="..\Linkwitz-Riley\SELinkwitzRileyModule.pas"/>
+        <DCCReference Include="..\Convolution\SELowLatencyConvolutionModule.pas"/>
+        <DCCReference Include="..\ModDelay\SEModDelayModule.pas"/>
+        <DCCReference Include="..\MP3 Player\SEMp3PlayerModule.pas"/>
+        <DCCReference Include="..\Phaser\SEPhaserModule.pas"/>
+        <DCCReference Include="..\Pitch Shifter\SEPitchShifterModule.pas"/>
+        <DCCReference Include="..\Reverb\SEPlateVerbModule.pas"/>
+        <DCCReference Include="..\Realverb\SERealverbModule.pas"/>
+        <DCCReference Include="..\Realverb\SERealverbStereoModule.pas"/>
+        <DCCReference Include="..\Bass Enhancer\SEResurrectionBassModule.pas"/>
+        <DCCReference Include="..\Reverb\SEReverbModule.pas"/>
+        <DCCReference Include="..\Audio File Oscillator\SESimpleAudioFileOscillatorModule.pas"/>
+        <DCCReference Include="..\MP3 Player\SESimpleMp3PlayerModule.pas"/>
+        <DCCReference Include="..\Vocoder\SESimpleVocoderModule.pas"/>
+        <DCCReference Include="..\Sine\SESineModule.pas"/>
+        <DCCReference Include="..\Tanh Aproximations\SETanhAproximationsModule.pas"/>
+        <DCCReference Include="..\Transient Processor\SETransientProcessorModule.pas"/>
+        <DCCReference Include="..\Tuner\SETunerModule.pas"/>
+        <DCCReference Include="..\Vibrato\SEVibratoModule.pas"/>
+        <DCCReference Include="..\Vocoder\SEVocoderModule.pas"/>
+        <DCCReference Include="..\VoiceSynth\SEVoiceSynthModule.pas"/>
+        <DCCReference Include="..\Noise Reduction\SENoiseReductionModule.pas"/>
+        <DCCReference Include="..\Lookahead Limiter\SELookaheadLimiterModule.pas"/>
+        <BuildConfiguration Include="Debug">
+            <Key>Cfg_2</Key>
+            <CfgParent>Base</CfgParent>
+        </BuildConfiguration>
+        <BuildConfiguration Include="Base">
+            <Key>Base</Key>
+        </BuildConfiguration>
+        <BuildConfiguration Include="Release">
+            <Key>Cfg_1</Key>
+            <CfgParent>Base</CfgParent>
+        </BuildConfiguration>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Delphi.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Delphi.Personality>
+                <Source>
+                    <Source Name="MainSource">SEAllDspModules.dpr</Source>
+                </Source>
+                <VersionInfo>
+                    <VersionInfo Name="IncludeVerInfo">False</VersionInfo>
+                    <VersionInfo Name="AutoIncBuild">False</VersionInfo>
+                    <VersionInfo Name="MajorVer">1</VersionInfo>
+                    <VersionInfo Name="MinorVer">0</VersionInfo>
+                    <VersionInfo Name="Release">0</VersionInfo>
+                    <VersionInfo Name="Build">0</VersionInfo>
+                    <VersionInfo Name="Debug">False</VersionInfo>
+                    <VersionInfo Name="PreRelease">False</VersionInfo>
+                    <VersionInfo Name="Special">False</VersionInfo>
+                    <VersionInfo Name="Private">False</VersionInfo>
+                    <VersionInfo Name="DLL">False</VersionInfo>
+                    <VersionInfo Name="Locale">1031</VersionInfo>
+                    <VersionInfo Name="CodePage">1252</VersionInfo>
+                </VersionInfo>
+                <VersionInfoKeys>
+                    <VersionInfoKeys Name="CompanyName"/>
+                    <VersionInfoKeys Name="FileDescription"/>
+                    <VersionInfoKeys Name="FileVersion">1.0.0.0</VersionInfoKeys>
+                    <VersionInfoKeys Name="InternalName"/>
+                    <VersionInfoKeys Name="LegalCopyright"/>
+                    <VersionInfoKeys Name="LegalTrademarks"/>
+                    <VersionInfoKeys Name="OriginalFilename"/>
+                    <VersionInfoKeys Name="ProductName"/>
+                    <VersionInfoKeys Name="ProductVersion">1.0.0.0</VersionInfoKeys>
+                    <VersionInfoKeys Name="Comments"/>
+                </VersionInfoKeys>
+                <Excluded_Packages>
+                    <Excluded_Packages Name="$(BDSBIN)\dcloffice2k250.bpl">Microsoft Office 2000 Beispiele für gekapselte Komponenten für Automatisierungsserver</Excluded_Packages>
+                    <Excluded_Packages Name="$(BDSBIN)\dclofficexp250.bpl">Microsoft Office XP Beispiele für gekapselte Komponenten für Automation Server</Excluded_Packages>
+                </Excluded_Packages>
+            </Delphi.Personality>
+            <Platforms>
+                <Platform value="OSX32">False</Platform>
+                <Platform value="Win32">True</Platform>
+                <Platform value="Win64">False</Platform>
+            </Platforms>
+        </BorlandProject>
+        <ProjectFileVersion>12</ProjectFileVersion>
+    </ProjectExtensions>
+    <Import Condition="Exists('$(BDS)\Bin\CodeGear.Delphi.Targets')" Project="$(BDS)\Bin\CodeGear.Delphi.Targets"/>
+    <Import Condition="Exists('$(APPDATA)\Embarcadero\$(BDSAPPDATABASEDIR)\$(PRODUCTVERSION)\UserTools.proj')" Project="$(APPDATA)\Embarcadero\$(BDSAPPDATABASEDIR)\$(PRODUCTVERSION)\UserTools.proj"/>
+</Project>
