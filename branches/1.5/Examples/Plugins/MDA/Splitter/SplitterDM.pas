@@ -45,10 +45,10 @@ type
       const SampleFrames: Cardinal);
     procedure VSTModuleSuspend(Sender: TObject);
     procedure ParameterEnvelopeChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterEnvelopeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterFreqLevelModeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterFrequencyDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterModeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterEnvelopeDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterFreqLevelModeDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterFrequencyDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterModeDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
   private
     FBuffer    : array [0..1, 0..1] of Single;
     FFreq, ff  : Single;
@@ -74,9 +74,9 @@ implementation
 {$ENDIF}
 
 uses
-  Math;
+  Math, DAV_Common;
 
-procedure TSplitterDataModule.ParameterModeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+procedure TSplitterDataModule.ParameterModeDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  case Round(Parameter[Index]) of
   0 : PreDefined := 'NORMAL';
@@ -86,12 +86,12 @@ begin
  end;
 end;
 
-procedure TSplitterDataModule.ParameterEnvelopeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+procedure TSplitterDataModule.ParameterEnvelopeDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := FloatToStrF(Power(10, 1 + 2 * Parameter[index]), ffGeneral, 2, 2);
 end;
 
-procedure TSplitterDataModule.ParameterFrequencyDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+procedure TSplitterDataModule.ParameterFrequencyDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := FloatToStrF(FFreqDisp, ffGeneral, 5, 5); 
 end;
@@ -104,7 +104,7 @@ begin
   if (FRelease < 0.9995) then FRelease := 0.9995;
 end;
 
-procedure TSplitterDataModule.ParameterFreqLevelModeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+procedure TSplitterDataModule.ParameterFreqLevelModeDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  case Round(Parameter[Index]) of
     0: PreDefined := 'BELOW';

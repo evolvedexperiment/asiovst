@@ -78,7 +78,7 @@ implementation
 {$ENDIF}
 
 uses
-  StkReverbGUI, DAV_StkReverb;
+  DAV_Common, StkReverbGUI, DAV_StkReverb;
 
 procedure TStkReverbModule.VSTModuleCreate(Sender: TObject);
 begin
@@ -369,30 +369,30 @@ begin
     0:
       begin
         OnProcess := VSTModuleProcessNetwork;
-        OnProcessDoubleReplacing := VSTModuleProcessDoubleReplacingNetwork;
+        OnProcess64Replacing := VSTModuleProcessDoubleReplacingNetwork;
       end;
     1:
       begin
         OnProcess := VSTModuleProcessJC;
-        OnProcessDoubleReplacing := VSTModuleProcessDoubleReplacingJC;
+        OnProcess64Replacing := VSTModuleProcessDoubleReplacingJC;
       end;
     2:
       begin
         OnProcess := VSTModuleProcessPC;
-        OnProcessDoubleReplacing := VSTModuleProcessDoubleReplacingPC;
+        OnProcess64Replacing := VSTModuleProcessDoubleReplacingPC;
       end;
     3:
       begin
         OnProcess := VSTModuleProcessBlendA;
-        OnProcessDoubleReplacing := VSTModuleProcessDoubleReplacingBlendA;
+        OnProcess64Replacing := VSTModuleProcessDoubleReplacingBlendA;
       end;
     4:
       begin
         OnProcess := VSTModuleProcessBlendB;
-        OnProcessDoubleReplacing := VSTModuleProcessDoubleReplacingBlendB;
+        OnProcess64Replacing := VSTModuleProcessDoubleReplacingBlendB;
       end;
   end;
-  OnProcessReplacing := OnProcess;
+  OnProcess32Replacing := OnProcess;
 end;
 
 procedure TStkReverbModule.ParamMixChange(Sender: TObject; const Index: Integer;

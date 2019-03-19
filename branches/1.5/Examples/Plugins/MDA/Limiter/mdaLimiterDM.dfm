@@ -6,7 +6,6 @@ object mdaLimiterDataModule: TmdaLimiterDataModule
   ProductName = 'DAV mda'
   VendorName = 'Delphi ASIO & VST Project / mda'
   PlugCategory = vpcEffect
-  CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000
   CurrentProgram = -1
   IORatio = 1.000000000000000000
@@ -15,7 +14,6 @@ object mdaLimiterDataModule: TmdaLimiterDataModule
   Programs = <>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Threshold'
       LargeStepFloat = 2.000000000000000000
@@ -31,7 +29,6 @@ object mdaLimiterDataModule: TmdaLimiterDataModule
       OnParameterChange = ThresholdChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Output'
       LargeStepFloat = 2.000000000000000000
@@ -47,7 +44,6 @@ object mdaLimiterDataModule: TmdaLimiterDataModule
       OnParameterChange = OutputTrimChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Attack'
       LargeStepFloat = 2.000000000000000000
@@ -62,7 +58,6 @@ object mdaLimiterDataModule: TmdaLimiterDataModule
       OnCustomParameterDisplay = AttackDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Release'
       LargeStepFloat = 2.000000000000000000
@@ -77,7 +72,6 @@ object mdaLimiterDataModule: TmdaLimiterDataModule
       OnCustomParameterDisplay = ReleaseDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Knee'
       LargeStepFloat = 2.000000000000000000
@@ -89,12 +83,11 @@ object mdaLimiterDataModule: TmdaLimiterDataModule
       OnParameterChange = KneeChange
       OnCustomParameterDisplay = KneeDisplay
     end>
+  ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnProcess = VSTModuleProcess
-  OnProcess64Replacing = VSTModuleProcessDoubleReplacing
   OnProcess32Replacing = VSTModuleProcess
-  Left = 218
-  Top = 81
+  OnProcess64Replacing = VSTModuleProcessDoubleReplacing
   Height = 150
   Width = 215
 end

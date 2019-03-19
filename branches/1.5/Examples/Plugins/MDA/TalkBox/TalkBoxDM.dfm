@@ -81,8 +81,6 @@ object TalkBoxDataModule: TTalkBoxDataModule
   OnProcess32Replacing = VSTModuleProcess
   OnResume = VSTModuleResume
   OnSuspend = VSTModuleSuspend
-  Left = 188
-  Top = 77
   Height = 150
   Width = 215
 end

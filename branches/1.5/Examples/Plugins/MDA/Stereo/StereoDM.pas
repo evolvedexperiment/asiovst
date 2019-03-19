@@ -43,12 +43,12 @@ type
     procedure VSTModuleSuspend(Sender: TObject);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterWidthLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterWidthLabel(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterWidthChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterDelayChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterRateChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterModChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterModDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterModDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
   private
@@ -74,7 +74,7 @@ implementation
 {$ENDIF}
 
 uses
-  Math;
+  Math, DAV_Math;
 
 procedure TStereoDataModule.VSTModuleClose(Sender: TObject);
 begin
@@ -175,7 +175,7 @@ begin
     ph := ph + dph;
    end;
  FBufferPos := bp;
- FPhi       := f_mod(ph, 2 * Pi);
+ FPhi       := FloatMod(ph, 2 * Pi);
 end;
 
 procedure TStereoDataModule.VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
@@ -206,14 +206,14 @@ begin
   end;
 end;
 
-procedure TStereoDataModule.ParameterWidthLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
+procedure TStereoDataModule.ParameterWidthLabel(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  if Parameter[Index] < 0.5
   then Predefined := 'Haas'
   else Predefined := 'Comb';
 end;
 
-procedure TStereoDataModule.ParameterModDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+procedure TStereoDataModule.ParameterModDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  if FMod > 0
   then PreDefined := FloatToStrF(1000 * FMod / SampleRate, ffGeneral, 2, 2)

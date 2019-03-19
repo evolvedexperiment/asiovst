@@ -35,8 +35,8 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
-  Forms, DAV_Types, DAV_VSTModule;
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
+  DAV_Types, DAV_VSTModule;
 
 type
   TRePsychoQuality = (rqLow, rqHigh);
@@ -47,16 +47,16 @@ type
     procedure VSTModuleProcessLowQuality(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
     procedure VSTModuleProcessHighQuality(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
-    procedure ParameterQualityDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterQualityDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterMixChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterDecayChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterHoldChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterThresholdChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterTuneChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterFineChanged(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterTuneDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterFineDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterHoldDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterTuneDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterFineDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterHoldDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterQualityChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
     FWet       : Single;
@@ -82,8 +82,7 @@ type
     procedure BufferSizeChanged; virtual;
     procedure CalculateBufferSize; virtual;
     procedure HoldChanged; virtual;
-    procedure CalculateDelayTime; virtual; 
-  public
+    procedure CalculateDelayTime; virtual;
   end;
 
 implementation
@@ -95,274 +94,292 @@ implementation
 {$ENDIF}
 
 uses
-  Math, DAV_VSTCustomModule;
+  Math, DAV_Common, DAV_VSTCustomModule;
 
 procedure TRePsychoDataModule.VSTModuleOpen(Sender: TObject);
 begin
- FSize      := Round(0.5 * SampleRate);
- FDelayTime := Round(0.01 * SampleRate + 0.5 * FSize * 0.45);
- FSampleCnt := FSize + 1;
+  FSize := Round(0.5 * SampleRate);
+  FDelayTime := Round(0.01 * SampleRate + 0.5 * FSize * 0.45);
+  FSampleCnt := FSize + 1;
 
- AllocateBuffer;
- ClearBuffer;
+  AllocateBuffer;
+  ClearBuffer;
 
- // Initial Parameters
- Parameter[0] := 0;    // Tune
- Parameter[1] := 0;    // Fine Tune
- Parameter[2] := 0;    // Envelope
- Parameter[3] := 0.6;  // Threshold
- Parameter[4] := 0.45; // Minimum Chunk Length
- Parameter[5] := 100;  // Mix
- Parameter[6] := 0.4;  // Quality
+  // Initial Parameters
+  Parameter[0] := 0; // Tune
+  Parameter[1] := 0; // Fine Tune
+  Parameter[2] := 0; // Envelope
+  Parameter[3] := 0.6; // Threshold
+  Parameter[4] := 0.45; // Minimum Chunk Length
+  Parameter[5] := 100; // Mix
+  Parameter[6] := 0.4; // Quality
 end;
 
 procedure TRePsychoDataModule.VSTModuleClose(Sender: TObject);
 begin
- if Assigned(FBuffer[0]) then Dispose(FBuffer[0]);
- if Assigned(FBuffer[1]) then Dispose(FBuffer[1]);
+  if Assigned(FBuffer[0]) then
+    Dispose(FBuffer[0]);
+  if Assigned(FBuffer[1]) then
+    Dispose(FBuffer[1]);
 end;
 
 procedure TRePsychoDataModule.CalculateBufferSize;
 begin
- if FSize <> Round(0.5 * SampleRate) then
+  if FSize <> Round(0.5 * SampleRate) then
   begin
-   FSize := Round(0.5 * SampleRate);
-   BufferSizeChanged;
+    FSize := Round(0.5 * SampleRate);
+    BufferSizeChanged;
   end;
 end;
 
 procedure TRePsychoDataModule.BufferSizeChanged;
 begin
- FSampleCnt  := FSize + 1;
- CalculateDelayTime;
- AllocateBuffer;
+  FSampleCnt := FSize + 1;
+  CalculateDelayTime;
+  AllocateBuffer;
 end;
 
 procedure TRePsychoDataModule.AllocateBuffer;
 begin
- ReallocMem(FBuffer[0], FSize * SizeOf(Single));
- ReallocMem(FBuffer[1], FSize * SizeOf(Single));
+  ReallocMem(FBuffer[0], FSize * SizeOf(Single));
+  ReallocMem(FBuffer[1], FSize * SizeOf(Single));
 end;
 
 procedure TRePsychoDataModule.ClearBuffer;
 begin
- FillChar(FBuffer[0]^, FSize * SizeOf(Single), 0);
- FillChar(FBuffer[1]^, FSize * SizeOf(Single), 0);
+  FillChar(FBuffer[0]^, FSize * SizeOf(Single), 0);
+  FillChar(FBuffer[1]^, FSize * SizeOf(Single), 0);
 end;
 
-procedure TRePsychoDataModule.ParameterMixChange(Sender: TObject; const Index: Integer; var Value: Single);
+procedure TRePsychoDataModule.ParameterMixChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
- FWet := (0.5 * sqrt(0.01 * Value));
- FDry := sqrt(1 - 0.01 * Value);
+  FWet := (0.5 * sqrt(0.01 * Value));
+  FDry := sqrt(1 - 0.01 * Value);
 end;
 
-procedure TRePsychoDataModule.ParameterDecayChange(Sender: TObject; const Index: Integer; var Value: Single);
+procedure TRePsychoDataModule.ParameterDecayChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
- if Value > 0
-  then FEnvelope := 1 + 0.003 * Power(Value * 0.02, 5)
-  else FEnvelope := 1 + 0.025 * Power(Value * 0.02, 5);
+  if Value > 0 then
+    FEnvelope := 1 + 0.003 * Power(Value * 0.02, 5)
+  else
+    FEnvelope := 1 + 0.025 * Power(Value * 0.02, 5);
 
-// if Value > 0.5
-//  then FEnvelope := (1.0 + 0.01 * (Value / 50))
-//  else FEnvelope := (1.0 + 0.01 * (Value / 50));
+  // if Value > 0.5
+  // then FEnvelope := (1.0 + 0.01 * (Value / 50))
+  // else FEnvelope := (1.0 + 0.01 * (Value / 50));
 end;
 
-procedure TRePsychoDataModule.ParameterHoldChange(Sender: TObject; const Index: Integer; var Value: Single);
+procedure TRePsychoDataModule.ParameterHoldChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
- if FHold <> Value then
+  if FHold <> Value then
   begin
-   FHold := Value;
-   HoldChanged;
+    FHold := Value;
+    HoldChanged;
   end;
 end;
 
 procedure TRePsychoDataModule.HoldChanged;
 begin
- CalculateDelayTime;
+  CalculateDelayTime;
 end;
 
 procedure TRePsychoDataModule.CalculateDelayTime;
 begin
- FDelayTime := Round(0.01 * SampleRate + 0.5 * FSize * FHold);
+  FDelayTime := Round(0.01 * SampleRate + 0.5 * FSize * FHold);
 end;
 
-procedure TRePsychoDataModule.ParameterThresholdChange(Sender: TObject; const Index: Integer; var Value: Single);
+procedure TRePsychoDataModule.ParameterThresholdChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
- FThreshold := dB_to_Amp(Parameter[3]);
+  FThreshold := dB_to_Amp(Parameter[3]);
 end;
 
-procedure TRePsychoDataModule.ParameterTuneChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TRePsychoDataModule.ParameterTuneChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
- if FSemiTones <> Round(Value) then
+  if FSemiTones <> Round(Value) then
   begin
-   FSemiTones := Round(Value);
-   TuneChanged;
+    FSemiTones := Round(Value);
+    TuneChanged;
   end;
 end;
 
-procedure TRePsychoDataModule.ParameterTuneDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+procedure TRePsychoDataModule.ParameterTuneDisplay(Sender: TObject;
+  const Index: Integer; var PreDefined: AnsiString);
 begin
- PreDefined := IntToStr(FSemiTones);
+  PreDefined := IntToStr(FSemiTones);
 end;
 
-procedure TRePsychoDataModule.ParameterQualityChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TRePsychoDataModule.ParameterQualityChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
- if FQuality <> TRePsychoQuality(Value > 0.5) then
+  if FQuality <> TRePsychoQuality(Value > 0.5) then
   begin
-   FQuality := TRePsychoQuality(Value > 0.5);
-   QualityChanged;
+    FQuality := TRePsychoQuality(Value > 0.5);
+    QualityChanged;
   end;
 end;
 
 procedure TRePsychoDataModule.QualityChanged;
 begin
- case FQuality of
-  rqLow  : OnProcess := VSTModuleProcessLowQuality;
-  rqHigh : OnProcess := VSTModuleProcessHighQuality;
-  else raise Exception.Create('not yet defined');
- end;
- 
- OnProcessReplacing := OnProcess;
+  case FQuality of
+    rqLow:
+      OnProcess := VSTModuleProcessLowQuality;
+    rqHigh:
+      OnProcess := VSTModuleProcessHighQuality;
+  else
+    raise Exception.Create('not yet defined');
+  end;
+
+  OnProcess32Replacing := OnProcess;
 end;
 
-procedure TRePsychoDataModule.ParameterFineDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+procedure TRePsychoDataModule.ParameterFineDisplay(Sender: TObject;
+  const Index: Integer; var PreDefined: AnsiString);
 begin
- PreDefined := IntToStr(Round(FFineTune));
+  PreDefined := IntToStr(Round(FFineTune));
 end;
 
-procedure TRePsychoDataModule.ParameterHoldDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+procedure TRePsychoDataModule.ParameterHoldDisplay(Sender: TObject;
+  const Index: Integer; var PreDefined: AnsiString);
 begin
- PreDefined := IntToStr(Round(1000.0 * FDelayTime / SampleRate));
+  PreDefined := IntToStr(Round(1000.0 * FDelayTime / SampleRate));
 end;
 
-procedure TRePsychoDataModule.ParameterFineChanged(Sender: TObject; const Index: Integer; var Value: Single);
+procedure TRePsychoDataModule.ParameterFineChanged(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
- if FFineTune <> Value then
+  if FFineTune <> Value then
   begin
-   FFineTune := Value;
-   TuneChanged;
+    FFineTune := Value;
+    TuneChanged;
   end;
 end;
 
-procedure TRePsychoDataModule.ParameterQualityDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+procedure TRePsychoDataModule.ParameterQualityDisplay(Sender: TObject;
+  const Index: Integer; var PreDefined: AnsiString);
 begin
- if Parameter[Index] > 0.5
-  then PreDefined := 'HIGH'
-  else PreDefined := 'LOW';
+  if Parameter[Index] > 0.5 then
+    PreDefined := 'HIGH'
+  else
+    PreDefined := 'LOW';
 end;
 
 procedure TRePsychoDataModule.TuneChanged;
 begin
- FTune := (FSemiTones + 0.01 * FFineTune) / 24;
- FTune := Power(10, 0.60206 * FTune);
+  FTune := (FSemiTones + 0.01 * FFineTune) / 24;
+  FTune := Power(10, 0.60206 * FTune);
 end;
 
-procedure TRePsychoDataModule.VSTModuleProcessLowQuality(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
+procedure TRePsychoDataModule.VSTModuleProcessLowQuality(const Inputs,
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
-  Sample : Integer;
-  Left   : Single;
-  Right  : Single;
-  Mono   : Single;
-  Output : Single;
-  State  : Single;
+  Sample: Integer;
+  Left: Single;
+  Right: Single;
+  Mono: Single;
+  Output: Single;
+  State: Single;
 const
-  COne80th : Single = 0.0125;
+  COne80th: Single = 0.0125;
 begin
- Output := 0;
- State := FState[0];
-     
- for Sample := 0 to SampleFrames - 1 do
+  Output := 0;
+  State := FState[0];
+
+  for Sample := 0 to SampleFrames - 1 do
   begin
-   Left  := Inputs[0, Sample];
-   Right := Inputs[1, Sample];
-   Mono  := Left + Right;
+    Left := Inputs[0, Sample];
+    Right := Inputs[1, Sample];
+    Mono := Left + Right;
 
-   // Process from here...
+    // Process from here...
 
-   // Trigger
-   if ((Mono > FThreshold) and (FSampleCnt > FDelayTime)) then
+    // Trigger
+    if ((Mono > FThreshold) and (FSampleCnt > FDelayTime)) then
     begin
-     FGain := 1;
-     FSampleCnt := 0;
+      FGain := 1;
+      FSampleCnt := 0;
     end;
 
-   // Play buffer
-   if FSampleCnt < FSize then
+    // Play buffer
+    if FSampleCnt < FSize then
     begin
-     // Check fade in
-     if FSampleCnt < 80 then
+      // Check fade in
+      if FSampleCnt < 80 then
       begin
-       if FSampleCnt = 0 then State := Output;
+        if FSampleCnt = 0 then
+          State := Output;
 
-       FBuffer[0, FSampleCnt] := Mono;
-       Output := FBuffer[0, Round(FSampleCnt * FTune)];
+        FBuffer[0, FSampleCnt] := Mono;
+        Output := FBuffer[0, Round(FSampleCnt * FTune)];
 
-       // Fade
-       Output := (State  * (1 - (COne80th * FSampleCnt)) +
-                 (Output * COne80th * FSampleCnt));
+        // Fade
+        Output := (State * (1 - (COne80th * FSampleCnt)) +
+          (Output * COne80th * FSampleCnt));
       end
-     else
+      else
       begin
-       //update to/from FBuffer[0]
-       FBuffer[0, FSampleCnt] := Mono;
-       Output := FBuffer[0, Round(FSampleCnt * FTune)];
+        // update to/from FBuffer[0]
+        FBuffer[0, FSampleCnt] := Mono;
+        Output := FBuffer[0, Round(FSampleCnt * FTune)];
       end;
 
-     Inc(FSampleCnt);
-     FGain := FGain * FEnvelope;
+      Inc(FSampleCnt);
+      FGain := FGain * FEnvelope;
     end
-   else FGain := 0; //mute
+    else
+      FGain := 0; // mute
 
-   // Output
-   Outputs[0, Sample] := (Inputs[0, Sample] * FDry) + (Output * FGain * FWet);
-   Outputs[1, Sample] := (Inputs[1, Sample] * FDry) + (Output * FGain * FWet);
+    // Output
+    Outputs[0, Sample] := (Inputs[0, Sample] * FDry) + (Output * FGain * FWet);
+    Outputs[1, Sample] := (Inputs[1, Sample] * FDry) + (Output * FGain * FWet);
   end;
 
- FState[0]  := State;
+  FState[0] := State;
 end;
 
-procedure TRePsychoDataModule.VSTModuleProcessHighQuality(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
+procedure TRePsychoDataModule.VSTModuleProcessHighQuality(const Inputs,
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
-  Sample      : Integer;
-  Left, Right : Single;
-  Output      : array [0..1] of Single;
-  it1, it2    : Single;
-  of1, of2    : Integer;
+  Sample: Integer;
+  Left, Right: Single;
+  Output: array [0 .. 1] of Single;
+  it1, it2: Single;
+  of1, of2: Integer;
 const
-  COne80th : Single = 0.0125;
+  COne80th: Single = 0.0125;
 begin
- Output[0] := 0;
- Output[1] := 0;
+  Output[0] := 0;
+  Output[1] := 0;
 
- FWet := 2 * FWet;
- for Sample := 0 to SampleFrames - 1 do
+  FWet := 2 * FWet;
+  for Sample := 0 to SampleFrames - 1 do
   begin
-   Left := Inputs[0, Sample];
-   Right := Inputs[1, Sample];
+    Left := Inputs[0, Sample];
+    Right := Inputs[1, Sample];
 
-   //process from here...
-   if ((Left + Right > FThreshold) and (FSampleCnt > FDelayTime)) then //trigger
+    // process from here...
+    if ((Left + Right > FThreshold) and (FSampleCnt > FDelayTime)) then
+    // trigger
     begin
-     FGain := 1;
-     FSampleCnt := 0;
+      FGain := 1;
+      FSampleCnt := 0;
     end;
 
     // Play Out
     if (FSampleCnt < FSize) then
-     begin
+    begin
       // Fade In
       if (FSampleCnt < 80) then
-       begin
+      begin
         if (FSampleCnt = 0) then
-         begin
+        begin
           FState[0] := Output[0];
           FState[1] := Output[1];
-         end;
+        end;
 
         FBuffer[0, FSampleCnt] := Left;
         FBuffer[1, FSampleCnt] := Right;
@@ -372,9 +389,9 @@ begin
 
         Output[0] := (FState[0] * (1 - (COne80th * FSampleCnt)) + (Output[0] * COne80th * FSampleCnt));
         Output[1] := (FState[1] * (1 - (COne80th * FSampleCnt)) + (Output[1] * COne80th * FSampleCnt));
-       end
+      end
       else
-       begin
+      begin
         // update to/from FBuffer[0]
         FBuffer[0, FSampleCnt] := Left;
         FBuffer[1, FSampleCnt] := Right;
@@ -388,12 +405,13 @@ begin
 
         Output[0] := (it2 * FBuffer[0, of1]) + (it1 * FBuffer[0, of2]);
         Output[1] := (it2 * FBuffer[1, of1]) + (it1 * FBuffer[1, of2]);
-       end;
+      end;
 
       Inc(FSampleCnt);
       FGain := FGain * FEnvelope;
-     end
-    else FGain := 0; // Mute
+    end
+    else
+      FGain := 0; // Mute
 
     // Output
     Outputs[0, Sample] := (Left * FDry) + (Output[0] * FGain * FWet);
@@ -404,13 +422,13 @@ end;
 procedure TRePsychoDataModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 begin
- CalculateBufferSize;
- ClearBuffer;
+  CalculateBufferSize;
+  ClearBuffer;
 end;
 
 procedure TRePsychoDataModule.VSTModuleSuspend(Sender: TObject);
 begin
- ClearBuffer;
+  ClearBuffer;
 end;
 
 end.

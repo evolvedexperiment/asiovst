@@ -6,9 +6,7 @@ object StereoDataModule: TStereoDataModule
   ProductName = 'DAV mda'
   VendorName = 'Delphi ASIO & VST Project / mda'
   PlugCategory = vpcEffect
-  CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Stereo Simulator'
   IORatio = 1.000000000000000000
   UniqueID = 'mdaS'
@@ -20,7 +18,6 @@ object StereoDataModule: TStereoDataModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Width'
       LargeStepFloat = 2.000000000000000000
@@ -33,7 +30,6 @@ object StereoDataModule: TStereoDataModule
       OnCustomParameterLabel = ParameterWidthLabel
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Delay'
       LargeStepFloat = 2.000000000000000000
@@ -46,7 +42,6 @@ object StereoDataModule: TStereoDataModule
       OnParameterChange = ParameterDelayChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Balance'
       LargeStepFloat = 2.000000000000000000
@@ -57,7 +52,6 @@ object StereoDataModule: TStereoDataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Mod'
       LargeStepFloat = 2.000000000000000000
@@ -71,7 +65,6 @@ object StereoDataModule: TStereoDataModule
       OnCustomParameterDisplay = ParameterModDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Rate'
       LargeStepFloat = 2.000000000000000000
@@ -83,6 +76,7 @@ object StereoDataModule: TStereoDataModule
       VSTModule = Owner
       OnParameterChange = ParameterRateChange
     end>
+  ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
   OnParameterChange = VSTModuleParameterChange
@@ -90,8 +84,6 @@ object StereoDataModule: TStereoDataModule
   OnProcess32Replacing = VSTModuleProcess
   OnSampleRateChange = VSTModuleSampleRateChange
   OnSuspend = VSTModuleSuspend
-  Left = 188
-  Top = 77
   Height = 150
   Width = 215
 end

@@ -7,7 +7,6 @@ object RePsychoDataModule: TRePsychoDataModule
   VendorName = 'Delphi ASIO & VST Project / mda'
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Re-PsYcHo!'
   IORatio = 1.000000000000000000
   UniqueID = 'mdaY'
@@ -19,7 +18,6 @@ object RePsychoDataModule: TRePsychoDataModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Tune'
       Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
@@ -38,7 +36,6 @@ object RePsychoDataModule: TRePsychoDataModule
       OnCustomParameterDisplay = ParameterTuneDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Fine'
       Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
@@ -57,7 +54,6 @@ object RePsychoDataModule: TRePsychoDataModule
       OnCustomParameterDisplay = ParameterFineDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Decay'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
@@ -75,7 +71,6 @@ object RePsychoDataModule: TRePsychoDataModule
       OnParameterChange = ParameterDecayChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Threshold'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
@@ -93,7 +88,6 @@ object RePsychoDataModule: TRePsychoDataModule
       OnParameterChange = ParameterThresholdChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Hold'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
@@ -109,7 +103,6 @@ object RePsychoDataModule: TRePsychoDataModule
       OnCustomParameterDisplay = ParameterHoldDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Mix'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
@@ -124,7 +117,6 @@ object RePsychoDataModule: TRePsychoDataModule
       OnParameterChange = ParameterMixChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Quality'
       Flags = [ppfParameterIsSwitch, ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
@@ -147,8 +139,6 @@ object RePsychoDataModule: TRePsychoDataModule
   OnProcess32Replacing = VSTModuleProcessLowQuality
   OnSampleRateChange = VSTModuleSampleRateChange
   OnSuspend = VSTModuleSuspend
-  Left = 188
-  Top = 77
   Height = 150
   Width = 215
 end

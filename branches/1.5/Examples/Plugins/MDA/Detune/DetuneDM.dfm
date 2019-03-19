@@ -6,9 +6,7 @@ object DetuneDataModule: TDetuneDataModule
   ProductName = 'DAV mda'
   VendorName = 'Delphi ASIO & VST Project / mda'
   PlugCategory = vpcEffect
-  CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Stereo Detune'
   IORatio = 1.000000000000000000
   UniqueID = 'mdat'
@@ -30,7 +28,6 @@ object DetuneDataModule: TDetuneDataModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Detune'
       LargeStepFloat = 1.000000000000000000
@@ -43,7 +40,6 @@ object DetuneDataModule: TDetuneDataModule
       OnParameterChange = ParamDetuneChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Mix'
       LargeStepFloat = 2.000000000000000000
@@ -56,7 +52,6 @@ object DetuneDataModule: TDetuneDataModule
       OnParameterChange = ParamMixChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Output'
       LargeStepFloat = 2.000000000000000000
@@ -72,7 +67,6 @@ object DetuneDataModule: TDetuneDataModule
       OnParameterChange = ParamOutputChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Latency'
       LargeStepFloat = 2.000000000000000000
@@ -85,13 +79,12 @@ object DetuneDataModule: TDetuneDataModule
       OnParameterChange = ParamLatencyChange
       OnCustomParameterDisplay = ParamDetuneDisplay
     end>
+  ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
   OnProcess = VSTModuleProcess
   OnProcess32Replacing = VSTModuleProcess
   OnSuspend = VSTModuleSuspend
-  Left = 218
-  Top = 81
   Height = 150
   Width = 215
 end

@@ -6,9 +6,7 @@ object ThruZeroDataModule: TThruZeroDataModule
   ProductName = 'DAV mda'
   VendorName = 'Delphi ASIO & VST Project / mda'
   PlugCategory = vpcEffect
-  CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Thru-Zero Flanger'
   IORatio = 1.000000000000000000
   UniqueID = 'mdaZ'
@@ -32,7 +30,6 @@ object ThruZeroDataModule: TThruZeroDataModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Rate'
       LargeStepFloat = 2.000000000000000000
@@ -46,7 +43,6 @@ object ThruZeroDataModule: TThruZeroDataModule
       OnCustomParameterDisplay = ParameterRateDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Depth'
       LargeStepFloat = 2.000000000000000000
@@ -60,7 +56,6 @@ object ThruZeroDataModule: TThruZeroDataModule
       OnCustomParameterDisplay = ParameterDepthDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Mix'
       LargeStepFloat = 2.000000000000000000
@@ -73,7 +68,6 @@ object ThruZeroDataModule: TThruZeroDataModule
       OnParameterChange = ParameterMixChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'DepthMod'
       LargeStepFloat = 2.000000000000000000
@@ -88,7 +82,6 @@ object ThruZeroDataModule: TThruZeroDataModule
       OnParameterChange = ParameterDepthModChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Feedback'
       LargeStepFloat = 2.000000000000000000
@@ -100,6 +93,7 @@ object ThruZeroDataModule: TThruZeroDataModule
       VSTModule = Owner
       OnParameterChange = ParameterFeedbackChange
     end>
+  ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
   OnProcess = VSTModuleProcess
@@ -107,8 +101,6 @@ object ThruZeroDataModule: TThruZeroDataModule
   OnResume = VSTModuleResume
   OnSampleRateChange = VSTModuleSampleRateChange
   OnSuspend = VSTModuleSuspend
-  Left = 188
-  Top = 77
   Height = 150
   Width = 215
 end

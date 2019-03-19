@@ -42,8 +42,8 @@ type
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleSuspend(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
-    procedure ParameterModeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterChannelDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterModeDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterChannelDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
   private
     FLength    : Integer;
     FPhi       : Single;
@@ -73,7 +73,7 @@ implementation
 {$ENDIF}
 
 uses
-  Math;
+  Math, DAV_Math;
 
 function TTestToneDataModule.Midi2String(const n: Single): string;
 var
@@ -126,7 +126,7 @@ begin
 end;
 
 procedure TTestToneDataModule.ParameterModeDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  case Round(Parameter[Index]) of
   0: PreDefined := 'MIDI #';
@@ -142,7 +142,7 @@ begin
 end;
 
 procedure TTestToneDataModule.ParameterChannelDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  case Round(Parameter[2]) of
   0 : PreDefined := 'LEFT';
@@ -257,7 +257,7 @@ begin
     4: x := 0;                                // Mute
 
     0, 5, 9: begin                            // Tones
-              ph := f_mod(ph + dph, TwoPi);
+              ph := FloatMod(ph + dph, TwoPi);
               x  := sin(ph);
              end;
 
@@ -275,7 +275,7 @@ begin
             then dph := fsc * Power(10, 0.1 * Round(s))
             else dph := fsc * Power(10, 0.1 * s);
            x  := sin(ph);
-           ph := f_mod(ph + dph, 2 * Pi);
+           ph := FloatMod(ph + dph, 2 * Pi);
            if (s > sx) then
             begin
              l := 0;

@@ -6,9 +6,7 @@ object OverdriveDataModule: TOverdriveDataModule
   ProductName = 'DAV mda'
   VendorName = 'Delphi ASIO & VST Project / mda'
   PlugCategory = vpcEffect
-  CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Soft Overdrive'
   IORatio = 1.000000000000000000
   UniqueID = 'mdaO'
@@ -20,7 +18,6 @@ object OverdriveDataModule: TOverdriveDataModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Drive'
       LargeStepFloat = 10.000000000000000000
@@ -33,7 +30,6 @@ object OverdriveDataModule: TOverdriveDataModule
       OnParameterChange = ParameterDriveChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Muffle'
       LargeStepFloat = 10.000000000000000000
@@ -46,7 +42,6 @@ object OverdriveDataModule: TOverdriveDataModule
       OnParameterChange = ParameterMuffleChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Output'
       LargeStepFloat = 2.000000000000000000
@@ -62,11 +57,10 @@ object OverdriveDataModule: TOverdriveDataModule
       VSTModule = Owner
       OnParameterChange = ParameterOutputChange
     end>
+  ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnProcess = VSTModuleProcess
   OnProcess32Replacing = VSTModuleProcess
-  Left = 188
-  Top = 77
   Height = 150
   Width = 215
 end

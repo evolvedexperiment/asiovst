@@ -6,9 +6,7 @@ object LoudnessDataModule: TLoudnessDataModule
   ProductName = 'DAV mda'
   VendorName = 'Delphi ASIO & VST Project / mda'
   PlugCategory = vpcEffect
-  CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Equal Loudness Contours'
   IORatio = 1.000000000000000000
   UniqueID = 'mdal'
@@ -20,7 +18,6 @@ object LoudnessDataModule: TLoudnessDataModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Loudness'
       LargeStepFloat = 2.000000000000000000
@@ -32,7 +29,6 @@ object LoudnessDataModule: TLoudnessDataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Output'
       LargeStepFloat = 2.000000000000000000
@@ -44,7 +40,6 @@ object LoudnessDataModule: TLoudnessDataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Link'
       LargeStepFloat = 1.000000000000000000
@@ -58,14 +53,13 @@ object LoudnessDataModule: TLoudnessDataModule
       VSTModule = Owner
       OnCustomParameterDisplay = ParameterLinkDisplay
     end>
+  ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnParameterChange = VSTModuleParameterChange
   OnProcess = VSTModuleProcess
   OnProcess32Replacing = VSTModuleProcess
   OnResume = VSTModuleResume
   OnSuspend = VSTModuleSuspend
-  Left = 188
-  Top = 77
   Height = 150
   Width = 215
 end

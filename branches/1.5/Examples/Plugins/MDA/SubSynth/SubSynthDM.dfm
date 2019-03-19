@@ -6,9 +6,7 @@ object SubSynthDataModule: TSubSynthDataModule
   ProductName = 'DAV mda'
   VendorName = 'Delphi ASIO & VST Project / mda'
   PlugCategory = vpcEffect
-  CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Sub Bass Synthesizer'
   IORatio = 1.000000000000000000
   UniqueID = 'mdaB'
@@ -20,7 +18,6 @@ object SubSynthDataModule: TSubSynthDataModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Type'
       LargeStepFloat = 1.000000000000000000
@@ -34,7 +31,6 @@ object SubSynthDataModule: TSubSynthDataModule
       OnCustomParameterDisplay = ParameterModeDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Level'
       LargeStepFloat = 2.000000000000000000
@@ -47,7 +43,6 @@ object SubSynthDataModule: TSubSynthDataModule
       OnParameterChange = ParameterLevelChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Tune'
       LargeStepFloat = 2.000000000000000000
@@ -60,7 +55,6 @@ object SubSynthDataModule: TSubSynthDataModule
       OnCustomParameterDisplay = ParameterTuneDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Dry Mix'
       LargeStepFloat = 2.000000000000000000
@@ -73,7 +67,6 @@ object SubSynthDataModule: TSubSynthDataModule
       OnParameterChange = ParameterDryChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Thresh'
       LargeStepFloat = 2.000000000000000000
@@ -89,7 +82,6 @@ object SubSynthDataModule: TSubSynthDataModule
       OnParameterChange = ParameterThresholdChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Release'
       LargeStepFloat = 2.000000000000000000
@@ -102,13 +94,12 @@ object SubSynthDataModule: TSubSynthDataModule
       OnParameterChange = ParameterReleaseChange
       OnCustomParameterDisplay = ParameterReleaseDisplay
     end>
+  ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnParameterChange = VSTModuleParameterChange
   OnProcess = VSTModuleProcess
   OnProcess32Replacing = VSTModuleProcess
   OnResume = VSTModuleResume
-  Left = 188
-  Top = 77
   Height = 150
   Width = 215
 end

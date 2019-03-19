@@ -53,10 +53,10 @@ type
     procedure ParamHPFFreqChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamHPFResonanceChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamModelChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParamModelDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParamModelDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParamOutputChanged(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamProcessChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParamProcessDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParamProcessDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
   private
     FBufferSize     : Integer;
     FBufferPosition : Integer;
@@ -331,7 +331,7 @@ begin
  if FStereo then FTrim := FTrim * 2;
 end;
 
-procedure TComboDataModule.ParamModelDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+procedure TComboDataModule.ParamModelDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  case Round(Parameter[Index]) of
   0 : PreDefined := 'D.I.';
@@ -359,7 +359,7 @@ begin
  {$ENDIF}
 end;
 
-procedure TComboDataModule.ParamProcessDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+procedure TComboDataModule.ParamProcessDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  if Parameter[Index] > 0.5
   then PreDefined := 'STEREO'

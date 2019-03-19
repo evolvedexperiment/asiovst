@@ -6,9 +6,7 @@ object DitherDataModule: TDitherDataModule
   ProductName = 'DAV mda'
   VendorName = 'Delphi ASIO & VST Project / mda'
   PlugCategory = vpcEffect
-  CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Dither & Noise Shaping'
   IORatio = 1.000000000000000000
   UniqueID = 'mdad'
@@ -20,7 +18,6 @@ object DitherDataModule: TDitherDataModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Word Len'
       LargeStepFloat = 2.000000000000000000
@@ -32,7 +29,6 @@ object DitherDataModule: TDitherDataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Dither'
       LargeStepFloat = 1.000000000000000000
@@ -46,7 +42,6 @@ object DitherDataModule: TDitherDataModule
       OnCustomParameterDisplay = ParamDitherDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Dith Amp'
       LargeStepFloat = 2.000000000000000000
@@ -58,7 +53,6 @@ object DitherDataModule: TDitherDataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'DC Trim'
       LargeStepFloat = 2.000000000000000000
@@ -70,7 +64,6 @@ object DitherDataModule: TDitherDataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Zoom...'
       LargeStepFloat = 2.000000000000000000
@@ -81,11 +74,10 @@ object DitherDataModule: TDitherDataModule
       Units = 'dB'
       VSTModule = Owner
     end>
+  ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnParameterChange = VSTModuleParameterChange
   OnProcess = VSTModuleProcess
-  Left = 218
-  Top = 81
   Height = 150
   Width = 215
 end

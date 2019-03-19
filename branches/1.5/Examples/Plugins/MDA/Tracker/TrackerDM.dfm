@@ -8,7 +8,6 @@ object TrackerDataModule: TTrackerDataModule
   PlugCategory = vpcEffect
   CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend]
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Pitch Tracker'
   IORatio = 1.000000000000000000
   UniqueID = 'mdaJ'
@@ -20,7 +19,6 @@ object TrackerDataModule: TTrackerDataModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Mode'
       LargeStepFloat = 1.000000000000000000
@@ -34,7 +32,6 @@ object TrackerDataModule: TTrackerDataModule
       OnCustomParameterDisplay = ParameterModeDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Dynamics'
       LargeStepFloat = 10.000000000000000000
@@ -46,7 +43,6 @@ object TrackerDataModule: TTrackerDataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Mix'
       LargeStepFloat = 10.000000000000000000
@@ -58,7 +54,6 @@ object TrackerDataModule: TTrackerDataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Glide'
       LargeStepFloat = 10.000000000000000000
@@ -70,7 +65,6 @@ object TrackerDataModule: TTrackerDataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Transpose'
       LargeStepFloat = 2.000000000000000000
@@ -82,7 +76,6 @@ object TrackerDataModule: TTrackerDataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Maximum'
       LargeStepFloat = 2.000000000000000000
@@ -94,7 +87,6 @@ object TrackerDataModule: TTrackerDataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Trigger'
       LargeStepFloat = 2.000000000000000000
@@ -106,7 +98,6 @@ object TrackerDataModule: TTrackerDataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Output'
       LargeStepFloat = 2.000000000000000000
@@ -117,12 +108,11 @@ object TrackerDataModule: TTrackerDataModule
       Units = 'dB'
       VSTModule = Owner
     end>
+  ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnParameterChange = VSTModuleParameterChange
   OnProcess = VSTModuleProcess
   OnProcess32Replacing = VSTModuleProcess
-  Left = 188
-  Top = 77
   Height = 150
   Width = 215
 end

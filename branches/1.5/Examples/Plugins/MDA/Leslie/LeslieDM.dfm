@@ -7,7 +7,6 @@ object LeslieDataModule: TLeslieDataModule
   VendorName = 'Delphi ASIO & VST Project / mda'
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Leslie Simulator'
   IORatio = 1.000000000000000000
   UniqueID = 'mdaH'
@@ -27,7 +26,6 @@ object LeslieDataModule: TLeslieDataModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Speed'
       LargeStepFloat = 2.000000000000000000
@@ -41,7 +39,6 @@ object LeslieDataModule: TLeslieDataModule
       OnCustomParameterDisplay = ParamSpeedDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Low Width'
       LargeStepFloat = 2.000000000000000000
@@ -54,7 +51,6 @@ object LeslieDataModule: TLeslieDataModule
       OnParameterChange = ParameterLowWidthChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Low Throb'
       LargeStepFloat = 2.000000000000000000
@@ -67,7 +63,6 @@ object LeslieDataModule: TLeslieDataModule
       OnParameterChange = ParameterLowThrobChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'High Width'
       LargeStepFloat = 2.000000000000000000
@@ -80,7 +75,6 @@ object LeslieDataModule: TLeslieDataModule
       OnParameterChange = ParameterHighWidthChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'High Depth'
       LargeStepFloat = 2.000000000000000000
@@ -93,7 +87,6 @@ object LeslieDataModule: TLeslieDataModule
       OnParameterChange = ParameterHighDepthChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'High Throb'
       LargeStepFloat = 2.000000000000000000
@@ -106,7 +99,6 @@ object LeslieDataModule: TLeslieDataModule
       OnParameterChange = ParameterHighThrobChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'X-Over'
       LargeStepFloat = 2.000000000000000000
@@ -119,7 +111,6 @@ object LeslieDataModule: TLeslieDataModule
       OnParameterChange = ParameterXOverChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Output'
       LargeStepFloat = 2.000000000000000000
@@ -135,7 +126,6 @@ object LeslieDataModule: TLeslieDataModule
       OnParameterChange = ParameterOutputChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Speed'
       LargeStepFloat = 2.000000000000000000
@@ -154,8 +144,6 @@ object LeslieDataModule: TLeslieDataModule
   OnProcess = VSTModuleProcess
   OnProcess32Replacing = VSTModuleProcess
   OnSampleRateChange = VSTModuleSampleRateChange
-  Left = 161
-  Top = 134
   Height = 150
   Width = 215
 end

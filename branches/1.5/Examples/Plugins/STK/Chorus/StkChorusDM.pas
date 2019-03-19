@@ -35,8 +35,8 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
-  DAV_StkChorus;
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
+  Forms, DAV_Types, DAV_VSTModule, DAV_StkChorus;
 
 type
   TStkChorusModule = class(TVSTModule)
@@ -65,7 +65,7 @@ implementation
 {$ENDIF}
 
 uses
-  StkChorusGUI;
+  DAV_Common, StkChorusGUI;
 
 procedure TStkChorusModule.VSTModuleCreate(Sender: TObject);
 begin

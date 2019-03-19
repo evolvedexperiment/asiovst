@@ -6,9 +6,7 @@ object ImageDataModule: TImageDataModule
   ProductName = 'DAV mda'
   VendorName = 'Delphi ASIO & VST Project / mda'
   PlugCategory = vpcEffect
-  CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Stereo Image / MS Matrix'
   IORatio = 1.000000000000000000
   UniqueID = 'mdaI'
@@ -20,7 +18,6 @@ object ImageDataModule: TImageDataModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Mode'
       LargeStepFloat = 1.000000000000000000
@@ -35,7 +32,6 @@ object ImageDataModule: TImageDataModule
       OnCustomParameterDisplay = ParamModeDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'S Width'
       LargeStepFloat = 2.000000000000000000
@@ -48,7 +44,6 @@ object ImageDataModule: TImageDataModule
       OnParameterChange = ParameterSWidthChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'S Pan'
       LargeStepFloat = 2.000000000000000000
@@ -61,7 +56,6 @@ object ImageDataModule: TImageDataModule
       OnParameterChange = ParameterSPanChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'M Level'
       LargeStepFloat = 2.000000000000000000
@@ -74,7 +68,6 @@ object ImageDataModule: TImageDataModule
       OnParameterChange = ParameterMLevelChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'M Pan'
       LargeStepFloat = 2.000000000000000000
@@ -87,7 +80,6 @@ object ImageDataModule: TImageDataModule
       OnParameterChange = ParameterMPanChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Output'
       LargeStepFloat = 2.000000000000000000
@@ -102,12 +94,11 @@ object ImageDataModule: TImageDataModule
       VSTModule = Owner
       OnParameterChange = ParameterOutputGainChange
     end>
+  ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnProcess = VSTModuleProcess
-  OnProcess64Replacing = VSTModuleProcessDoubleReplacing
   OnProcess32Replacing = VSTModuleProcess
-  Left = 218
-  Top = 81
+  OnProcess64Replacing = VSTModuleProcessDoubleReplacing
   Height = 150
   Width = 215
 end

@@ -43,7 +43,7 @@ type
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
     procedure VSTModuleSuspend(Sender: TObject);
     procedure VSTModuleResume(Sender: TObject);
-    procedure ParameterLinkDisplay( Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterLinkDisplay( Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
     FIsBoost : Boolean;
@@ -84,7 +84,7 @@ const
       (   0,      0,  0.00)  );
 
 
-procedure TLoudnessDataModule.ParameterLinkDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+procedure TLoudnessDataModule.ParameterLinkDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  if Parameter[Index] > 0.5
   then PreDefined := 'ON'

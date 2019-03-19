@@ -41,12 +41,12 @@ type
   TmdaLimiterDataModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
     procedure AttackChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure AttackDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure AttackDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure KneeChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure KneeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure KneeDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure OutputTrimChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ReleaseDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ReleaseDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ThresholdChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
     procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
@@ -99,19 +99,19 @@ begin
  FAttack := Power(10, -2 * Value);
 end;
 
-procedure TmdaLimiterDataModule.KneeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+procedure TmdaLimiterDataModule.KneeDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  if Parameter[Index] < 0.5
   then PreDefined := 'HARD'
   else PreDefined := 'SOFT';
 end;
 
-procedure TmdaLimiterDataModule.AttackDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+procedure TmdaLimiterDataModule.AttackDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := FloatToStrF(-301030.1 / (SampleRate * log10(1 - FAttack)), ffGeneral, 4, 4);
 end;
 
-procedure TmdaLimiterDataModule.ReleaseDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+procedure TmdaLimiterDataModule.ReleaseDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := FloatToStrF(-301.0301 / (SampleRate * log10(1 - FRelease)), ffGeneral, 4, 4);
 end;

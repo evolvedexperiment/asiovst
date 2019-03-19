@@ -44,10 +44,10 @@ type
     procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleSuspend(Sender: TObject);
     procedure ParameterGainChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterAttackDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterReleaseDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterLFORateDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterTriggerDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterAttackDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterReleaseDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterLFORateDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterTriggerDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
   private
     FBuffer           : array [0..2] of Single;
     FFrequency        : Single;
@@ -74,22 +74,22 @@ implementation
 {$ENDIF}
 
 uses
-  Math;
+  Math, DAV_Common;
 
 procedure TRezFilterDataModule.ParameterGainChange(Sender: TObject;
   const Index: Integer; var Value: Single);
 begin
- FGain  := 0.5 * dB_to_Amp(Value);
+  FGain  := 0.5 * dB_to_Amp(Value);
 end;
 
 procedure TRezFilterDataModule.ParameterReleaseDisplay(Sender: TObject;
-  const Index: Integer; var PreDefined: string);
+  const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := FloatToStrF((-301.0301 / (SampleRate * log10(FRel))), ffGeneral, 3, 3);
 end;
 
 procedure TRezFilterDataModule.ParameterTriggerDisplay(Sender: TObject;
-  const Index: Integer; var PreDefined: string);
+  const Index: Integer; var PreDefined: AnsiString);
 begin
  if (FTriggerThreshold = 0)
   then PreDefined := 'FREE RUN'
@@ -97,13 +97,13 @@ begin
 end;
 
 procedure TRezFilterDataModule.ParameterLFORateDisplay(Sender: TObject;
-  const Index: Integer; var PreDefined: string);
+  const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := FloatToStrF(Power(10, 4 * Parameter[Index] - 2), ffGeneral, 3, 3);
 end;
 
 procedure TRezFilterDataModule.ParameterAttackDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := FloatToStrF(-301.0301 / (SampleRate * log10(1 - FAtt)), ffGeneral, 3, 3);
 end;

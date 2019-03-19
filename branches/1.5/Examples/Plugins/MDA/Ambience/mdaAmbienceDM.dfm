@@ -7,7 +7,6 @@ object mdaAmbienceDataModule: TmdaAmbienceDataModule
   VendorName = 'Delphi ASIO & VST Project / mda'
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Small Space Ambience'
   IORatio = 1.000000000000000000
   UniqueID = 'mdaA'
@@ -19,7 +18,6 @@ object mdaAmbienceDataModule: TmdaAmbienceDataModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Size'
       LargeStepFloat = 2.000000000000000000
@@ -33,7 +31,6 @@ object mdaAmbienceDataModule: TmdaAmbienceDataModule
       OnParameterChange = ParamSizeChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'HF Damp'
       LargeStepFloat = 2.000000000000000000
@@ -46,7 +43,6 @@ object mdaAmbienceDataModule: TmdaAmbienceDataModule
       OnParameterChange = ParamHFDampChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Mix'
       LargeStepFloat = 2.000000000000000000
@@ -59,7 +55,6 @@ object mdaAmbienceDataModule: TmdaAmbienceDataModule
       OnParameterChange = ParamMixChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Output'
       LargeStepFloat = 2.000000000000000000
@@ -79,11 +74,9 @@ object mdaAmbienceDataModule: TmdaAmbienceDataModule
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
   OnProcess = VSTModuleProcess
-  OnProcess64Replacing = VSTModuleProcessDoubleReplacing
   OnProcess32Replacing = VSTModuleProcess
+  OnProcess64Replacing = VSTModuleProcessDoubleReplacing
   OnSuspend = VSTModuleSuspend
-  Left = 218
-  Top = 81
   Height = 150
   Width = 215
 end
