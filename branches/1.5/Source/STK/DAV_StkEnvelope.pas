@@ -37,7 +37,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-{$IFDEF FPC}LCLIntf, {$ELSE}Windows, {$ENDIF} DAV_Common, DAV_StkCommon;
+{$IFDEF FPC}LCLIntf, {$ELSE}Windows, {$ENDIF} DAV_Types, DAV_StkCommon;
 
 type
   TStkEnvelope = class(TStk)
@@ -77,7 +77,7 @@ type
 implementation
 
 uses
-  SysUtils;
+  SysUtils, DAV_Common;
 
 constructor TStkEnvelope.Create;
 begin

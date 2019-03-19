@@ -43,7 +43,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_Common, DAV_StkCommon, DAV_StkFilter;
+  DAV_Types, DAV_StkCommon, DAV_StkFilter;
 
 type
   TStkTwoZero = class(TStkFilter)
@@ -88,6 +88,9 @@ type
   end;
 
 implementation
+
+uses
+  DAV_Common;
 
 constructor TStkTwoZero.Create(const SampleRate: Single);
 var
