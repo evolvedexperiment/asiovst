@@ -46,7 +46,7 @@ type
   TStkWavePlayer = class(TStkLFO)
   private
     FOneShot: Boolean;
-    FSampleData: psingle;
+    FSampleData: PSingle;
     FLoopstart: Integer;
     FLoopend: Integer;
     FStart: Single;
@@ -139,15 +139,14 @@ procedure TStkWavePlayer.LoadFile(const FileName: TFileName);
 var
   ADC: TAudioDataCollection32;
 begin
-  ADC := TAudioDataCollection32.Create(Self);
+  ADC := TAudioDataCollection32.Create(nil);
   with ADC do
     try
       LoadFromFile(FileName);
       FSize := ADC.SampleFrames;
       FInvSize := 1 / FSize;
       GetMem(FSampleData, FSize * SizeOf(Single));
-      Move(ADC[0].ChannelDataPointer^[0], FSampleData^[0],
-        FSize * SizeOf(Single));
+      Move(ADC[0].ChannelDataPointer^[0], FSampleData^, FSize * SizeOf(Single));
       FLength := FSize * FSampleRateInv;
       FLoopstart := 0;
       FLoopend := FSize - 1;
@@ -164,12 +163,12 @@ function TStkWavePlayer.Tick: Single;
 var
   x, y: Longint;
   q: Single;
-  s1, s2: psingle;
+  s1, s2: PSingle;
 begin
-  phase := phase + (FFreq * FSampleRateInv);
+  Phase := Phase + (FFreq * FSampleRateInv);
   if FOneShot then
   begin
-    FIsFinished := (phase >= 1);
+    FIsFinished := (Phase >= 1);
     if FIsFinished then
     begin
       Result := 0;
@@ -177,9 +176,9 @@ begin
     end;
   end
   else
-    while (phase >= 1) do
-      phase := phase - 1;
-  q := (phase * (FEnd - FStart) + FStart);
+    while (Phase >= 1) do
+      Phase := Phase - 1;
+  q := (Phase * (FEnd - FStart) + FStart);
   if q > 1 then
     q := 1
   else if q < 0 then
@@ -187,11 +186,11 @@ begin
   q := q * FSize;
   x := round(q);
   q := q - x;
-  s1 := psingle(Longint(FSampleData) + 4 * x);
+  s1 := PSingle(Longint(FSampleData) + 4 * x);
   y := x + 1;
   if y > FLoopend then
     y := FLoopstart;
-  s2 := psingle(Longint(FSampleData) + 4 * y);
+  s2 := PSingle(Longint(FSampleData) + 4 * y);
   Result := s1^ * (1 - q) + s2^ * q;
 end;
 
@@ -215,7 +214,7 @@ end;
 
 procedure TStkWavePlayer.SetPos(const Value: Longint);
 begin
-  phase := Value * FInvSize;
+  Phase := Value * FInvSize;
 end;
 
 procedure TStkWavePlayer.SetRate(const Value: Single);

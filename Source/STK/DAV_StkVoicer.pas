@@ -55,7 +55,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_Common, DAV_StkCommon, DAV_StkInstrument, Math;
+  DAV_Types, DAV_StkCommon, DAV_StkInstrument, Math;
 
 type
   TStkVoice = class
@@ -174,7 +174,7 @@ type
 implementation
 
 uses
-  SysUtils;
+  SysUtils, DAV_Common;
 
 { TStkVoiceManager }
 
