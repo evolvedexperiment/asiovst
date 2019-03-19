@@ -52,8 +52,6 @@ object WeightingFiltersDataModule: TWeightingFiltersDataModule
   OnProcess = VSTModuleProcess
   OnProcess32Replacing = VSTModuleProcess
   OnSampleRateChange = VSTModuleSampleRateChange
-  Left = 744
-  Top = 233
   Height = 150
   Width = 215
 end

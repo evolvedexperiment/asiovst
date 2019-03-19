@@ -43,7 +43,7 @@ type
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
     procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParamDitherDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParamDitherDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
   private
     FWordLength : Integer;
     FBits       : Single;
@@ -68,7 +68,7 @@ uses
   Math;
 
 procedure TDitherDataModule.ParamDitherDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  case Round(Parameter[Index]) of
    0 : PreDefined := 'OFF';

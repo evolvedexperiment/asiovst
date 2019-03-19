@@ -6,9 +6,7 @@ object SplitterDataModule: TSplitterDataModule
   ProductName = 'DAV mda'
   VendorName = 'Delphi ASIO & VST Project / mda'
   PlugCategory = vpcEffect
-  CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Frequency/Level Splitter'
   IORatio = 1.000000000000000000
   UniqueID = 'mda7'
@@ -28,7 +26,6 @@ object SplitterDataModule: TSplitterDataModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Mode'
       LargeStepFloat = 1.000000000000000000
@@ -42,7 +39,6 @@ object SplitterDataModule: TSplitterDataModule
       OnCustomParameterDisplay = ParameterModeDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Frequency'
       LargeStepFloat = 2.000000000000000000
@@ -55,7 +51,6 @@ object SplitterDataModule: TSplitterDataModule
       OnCustomParameterDisplay = ParameterFrequencyDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Frequency Mode'
       LargeStepFloat = 1.000000000000000000
@@ -69,7 +64,6 @@ object SplitterDataModule: TSplitterDataModule
       OnCustomParameterDisplay = ParameterFreqLevelModeDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Level'
       LargeStepFloat = 2.000000000000000000
@@ -84,7 +78,6 @@ object SplitterDataModule: TSplitterDataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Level Mode'
       LargeStepFloat = 1.000000000000000000
@@ -98,7 +91,6 @@ object SplitterDataModule: TSplitterDataModule
       OnCustomParameterDisplay = ParameterFreqLevelModeDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Envelope'
       LargeStepFloat = 2.000000000000000000
@@ -112,7 +104,6 @@ object SplitterDataModule: TSplitterDataModule
       OnCustomParameterDisplay = ParameterEnvelopeDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Output'
       LargeStepFloat = 2.000000000000000000
@@ -126,13 +117,12 @@ object SplitterDataModule: TSplitterDataModule
       Units = 'dB'
       VSTModule = Owner
     end>
+  ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnProcess = VSTModuleProcess
   OnProcess32Replacing = VSTModuleProcess
   OnResume = VSTModuleResume
   OnSuspend = VSTModuleSuspend
-  Left = 188
-  Top = 77
   Height = 150
   Width = 215
 end

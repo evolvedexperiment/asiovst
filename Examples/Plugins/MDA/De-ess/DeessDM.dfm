@@ -6,9 +6,7 @@ object DeessDataModule: TDeessDataModule
   ProductName = 'DAV mda'
   VendorName = 'Delphi ASIO & VST Project / mda'
   PlugCategory = vpcEffect
-  CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'De-esser'
   IORatio = 1.000000000000000000
   UniqueID = 'mdaS'
@@ -20,7 +18,6 @@ object DeessDataModule: TDeessDataModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Threshold'
       LargeStepFloat = 2.000000000000000000
@@ -54,7 +51,6 @@ object DeessDataModule: TDeessDataModule
       OnParameterChange = ParamFilterChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'HF Drive'
       LargeStepFloat = 2.000000000000000000
@@ -70,12 +66,11 @@ object DeessDataModule: TDeessDataModule
       VSTModule = Owner
       OnParameterChange = ParamHFDriveChange
     end>
+  ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnProcess = VSTModuleProcess
-  OnProcess64Replacing = VSTModuleProcessDoubleReplacing
   OnProcess32Replacing = VSTModuleProcess
-  Left = 218
-  Top = 81
+  OnProcess64Replacing = VSTModuleProcessDoubleReplacing
   Height = 150
   Width = 215
 end

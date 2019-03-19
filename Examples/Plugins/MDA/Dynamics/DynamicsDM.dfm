@@ -8,7 +8,6 @@ object DynamicsDataModule: TDynamicsDataModule
   PlugCategory = vpcEffect
   CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend]
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Dynamics'
   IORatio = 1.000000000000000000
   UniqueID = 'mdaN'
@@ -20,7 +19,6 @@ object DynamicsDataModule: TDynamicsDataModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Threshold'
       LargeStepFloat = 2.000000000000000000
@@ -35,7 +33,6 @@ object DynamicsDataModule: TDynamicsDataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Ratio'
       LargeStepFloat = 2.000000000000000000
@@ -48,7 +45,6 @@ object DynamicsDataModule: TDynamicsDataModule
       OnCustomParameterDisplay = ParameterRatioDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Output'
       LargeStepFloat = 2.000000000000000000
@@ -61,7 +57,6 @@ object DynamicsDataModule: TDynamicsDataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Attack'
       LargeStepFloat = 2.000000000000000000
@@ -75,7 +70,6 @@ object DynamicsDataModule: TDynamicsDataModule
       OnCustomParameterDisplay = ParameterAttackDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Release'
       LargeStepFloat = 2.000000000000000000
@@ -89,7 +83,6 @@ object DynamicsDataModule: TDynamicsDataModule
       OnCustomParameterDisplay = ParameterReleaseDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Limiter'
       LargeStepFloat = 2.000000000000000000
@@ -107,7 +100,6 @@ object DynamicsDataModule: TDynamicsDataModule
       OnCustomParameterDisplay = ParameterLimiterDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Gate Threshold'
       LargeStepFloat = 2.000000000000000000
@@ -125,7 +117,6 @@ object DynamicsDataModule: TDynamicsDataModule
       OnCustomParameterDisplay = ParameterGateThresholdDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Gate Attack'
       LargeStepFloat = 2.000000000000000000
@@ -139,7 +130,6 @@ object DynamicsDataModule: TDynamicsDataModule
       OnCustomParameterDisplay = ParameterGateAttackDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Gate Release'
       LargeStepFloat = 2.000000000000000000
@@ -153,7 +143,6 @@ object DynamicsDataModule: TDynamicsDataModule
       OnCustomParameterDisplay = ParameterGateReleaseDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Mix'
       LargeStepFloat = 2.000000000000000000
@@ -165,12 +154,11 @@ object DynamicsDataModule: TDynamicsDataModule
       VSTModule = Owner
       OnCustomParameterDisplay = ParameterMixDisplay
     end>
+  ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnParameterChange = VSTModuleParameterChange
   OnProcess = VSTModuleProcess
   OnProcess32Replacing = VSTModuleProcess
-  Left = 218
-  Top = 81
   Height = 150
   Width = 215
 end

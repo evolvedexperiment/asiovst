@@ -42,8 +42,8 @@ type
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
     procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterOutputDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterGainDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterOutputDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterGainDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
   private
     FDriveL    : Single;
     FTrimL     : Single;
@@ -78,12 +78,12 @@ implementation
 uses
   Math;
 
-procedure TMultibandDataModule.ParameterGainDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+procedure TMultibandDataModule.ParameterGainDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := FloatToStrF(40 * Parameter[Index] - 20, ffGeneral, 2, 2);
 end;
 
-procedure TMultibandDataModule.ParameterOutputDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+procedure TMultibandDataModule.ParameterOutputDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  case Round(Parameter[Index]) of
   0 : PreDefined := 'Low';

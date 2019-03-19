@@ -6,9 +6,7 @@ object DubDelayDataModule: TDubDelayDataModule
   ProductName = 'DAV mda'
   VendorName = 'Delphi ASIO & VST Project / mda'
   PlugCategory = vpcEffect
-  CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Dynamics'
   IORatio = 1.000000000000000000
   UniqueID = 'mda'#223
@@ -20,7 +18,6 @@ object DubDelayDataModule: TDubDelayDataModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Threshold'
       LargeStepFloat = 2.000000000000000000
@@ -37,7 +34,6 @@ object DubDelayDataModule: TDubDelayDataModule
       OnParameterChange = ParameterThresholdChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Ratio'
       LargeStepFloat = 2.000000000000000000
@@ -50,7 +46,6 @@ object DubDelayDataModule: TDubDelayDataModule
       OnParameterChange = ParameterRatioChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Output'
       LargeStepFloat = 2.000000000000000000
@@ -64,7 +59,6 @@ object DubDelayDataModule: TDubDelayDataModule
       OnParameterChange = ParameterOutputChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Attack'
       LargeStepFloat = 2.000000000000000000
@@ -77,7 +71,6 @@ object DubDelayDataModule: TDubDelayDataModule
       OnParameterChange = ParameterAttackChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Release'
       LargeStepFloat = 2.000000000000000000
@@ -90,7 +83,6 @@ object DubDelayDataModule: TDubDelayDataModule
       OnParameterChange = ParameterReleaseChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Limiter'
       LargeStepFloat = 2.000000000000000000
@@ -103,7 +95,6 @@ object DubDelayDataModule: TDubDelayDataModule
       OnParameterChange = ParameterLimiterChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Gate Threshold'
       LargeStepFloat = 2.000000000000000000
@@ -116,7 +107,6 @@ object DubDelayDataModule: TDubDelayDataModule
       OnParameterChange = ParameterGateThresholdChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Gate Attack'
       LargeStepFloat = 2.000000000000000000
@@ -129,7 +119,6 @@ object DubDelayDataModule: TDubDelayDataModule
       OnParameterChange = ParameterGateAttackChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Gate Release'
       LargeStepFloat = 2.000000000000000000
@@ -142,7 +131,6 @@ object DubDelayDataModule: TDubDelayDataModule
       OnParameterChange = ParameterGateReleaseChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Mix'
       LargeStepFloat = 2.000000000000000000
@@ -154,12 +142,11 @@ object DubDelayDataModule: TDubDelayDataModule
       VSTModule = Owner
       OnParameterChange = ParameterMixChange
     end>
+  ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnParameterChange = VSTModuleParameterChange
   OnProcess = VSTModuleProcess
   OnProcess32Replacing = VSTModuleProcess
-  Left = 218
-  Top = 81
   Height = 150
   Width = 215
 end

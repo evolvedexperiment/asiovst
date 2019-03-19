@@ -47,11 +47,11 @@ type
     procedure VSTModuleSuspend(Sender: TObject);
     procedure ParameterBreathChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterMaxFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterMaxFrequencyDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterMaxFrequencyDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterPitchChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterPitchDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterPitchDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterTrackingChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterTrackingDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterTrackingDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterVoicedUnvoicedDetectorChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
     FVoiceInput: TVoiceInput;
@@ -94,7 +94,7 @@ begin
 end;
 
 procedure TVocInputDataModule.ParameterTrackingDisplay(Sender: TObject;
-  const Index: Integer; var PreDefined: string);
+  const Index: Integer; var PreDefined: AnsiString);
 begin
   case Round(Parameter[Index]) of
     0:
@@ -114,7 +114,7 @@ begin
 end;
 
 procedure TVocInputDataModule.ParameterPitchDisplay(Sender: TObject;
-  const Index: Integer; var PreDefined: string);
+  const Index: Integer; var PreDefined: AnsiString);
 begin
   if Assigned(FVoiceInput) then
     if FVoiceInput.Tracking = ttOff then
@@ -145,7 +145,7 @@ begin
 end;
 
 procedure TVocInputDataModule.ParameterMaxFrequencyDisplay(Sender: TObject;
-  const Index: Integer; var PreDefined: string);
+  const Index: Integer; var PreDefined: AnsiString);
 begin
   PreDefined := Midi2String(Parameter[4]);
 end;

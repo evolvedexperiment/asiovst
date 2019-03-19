@@ -50,8 +50,8 @@ type
     procedure ParameterMixChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterDepthModChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterRateChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterRateDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterDepthDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterRateDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterDepthDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterDepthChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterFeedbackChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleClose(Sender: TObject);
@@ -259,7 +259,7 @@ begin
 end;
 
 procedure TThruZeroDataModule.ParameterRateDisplay(Sender: TObject;
-  const Index: Integer; var PreDefined: string);
+  const Index: Integer; var PreDefined: AnsiString);
 begin
  if Parameter[0] < 0.01
   then PreDefined := '-'
@@ -267,7 +267,7 @@ begin
 end;
 
 procedure TThruZeroDataModule.ParameterDepthDisplay(Sender: TObject;
-  const Index: Integer; var PreDefined: string);
+  const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := FloatToStrF(1000 * FDepth / SampleRate, ffGeneral, 4, 4);
 end;

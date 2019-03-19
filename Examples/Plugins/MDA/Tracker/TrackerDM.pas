@@ -41,7 +41,7 @@ type
   TTrackerDataModule = class(TVSTModule)
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
     procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterModeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterModeDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure VSTModuleOpen(Sender: TObject);
   private
     FMode      : Integer;
@@ -66,10 +66,10 @@ implementation
 {$ENDIF}
 
 uses
-  Math;
+  Math, DAV_Math;
 
 procedure TTrackerDataModule.ParameterModeDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  case Round(Parameter[Index]) of
   0: PreDefined := 'SINE';
@@ -225,7 +225,7 @@ begin
    inc(n);
    bo := b2;
 
-   p := f_mod(p + dp, 2 * Pi);
+   p := FloatMod(p + dp, 2 * Pi);
    case mo of
      0 : x := sin(p);                 // Sine
      1 : if (sin(p) > 0)              // Square
@@ -233,7 +233,7 @@ begin
           else x := -0.5;
 
      2 : begin                        // Saw
-          sw := f_mod(sw + dsw, 2);
+          sw := FloatMod(sw + dsw, 2);
           x  := sw - 1;
          end;
      3 : x := x * sin(p);             // Ring

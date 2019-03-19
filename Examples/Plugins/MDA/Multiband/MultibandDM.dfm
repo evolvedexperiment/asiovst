@@ -6,9 +6,7 @@ object MultibandDataModule: TMultibandDataModule
   ProductName = 'DAV mda'
   VendorName = 'Delphi ASIO & VST Project / mda'
   PlugCategory = vpcEffect
-  CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Multi-Band Compressor'
   IORatio = 1.000000000000000000
   UniqueID = 'mdaM'
@@ -20,7 +18,6 @@ object MultibandDataModule: TMultibandDataModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Listen'
       LargeStepFloat = 1.000000000000000000
@@ -34,7 +31,6 @@ object MultibandDataModule: TMultibandDataModule
       OnCustomParameterDisplay = ParameterOutputDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'L <> M'
       LargeStepFloat = 2.000000000000000000
@@ -46,7 +42,6 @@ object MultibandDataModule: TMultibandDataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'M <> H'
       LargeStepFloat = 2.000000000000000000
@@ -58,7 +53,6 @@ object MultibandDataModule: TMultibandDataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'L Comp'
       LargeStepFloat = 2.000000000000000000
@@ -70,7 +64,6 @@ object MultibandDataModule: TMultibandDataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'M Comp'
       LargeStepFloat = 2.000000000000000000
@@ -82,7 +75,6 @@ object MultibandDataModule: TMultibandDataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'H Comp'
       LargeStepFloat = 2.000000000000000000
@@ -94,7 +86,6 @@ object MultibandDataModule: TMultibandDataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'L Out'
       LargeStepFloat = 2.000000000000000000
@@ -107,7 +98,6 @@ object MultibandDataModule: TMultibandDataModule
       OnCustomParameterDisplay = ParameterGainDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'M Out'
       LargeStepFloat = 2.000000000000000000
@@ -120,7 +110,6 @@ object MultibandDataModule: TMultibandDataModule
       OnCustomParameterDisplay = ParameterGainDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'H Out'
       LargeStepFloat = 2.000000000000000000
@@ -133,7 +122,6 @@ object MultibandDataModule: TMultibandDataModule
       OnCustomParameterDisplay = ParameterGainDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Attack'
       LargeStepFloat = 2.000000000000000000
@@ -145,7 +133,6 @@ object MultibandDataModule: TMultibandDataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Release'
       LargeStepFloat = 2.000000000000000000
@@ -157,7 +144,6 @@ object MultibandDataModule: TMultibandDataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Stereo'
       LargeStepFloat = 2.000000000000000000
@@ -169,7 +155,6 @@ object MultibandDataModule: TMultibandDataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Process'
       LargeStepFloat = 2.000000000000000000
@@ -179,12 +164,11 @@ object MultibandDataModule: TMultibandDataModule
       StepFloat = 1.000000000000000000
       VSTModule = Owner
     end>
+  ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnParameterChange = VSTModuleParameterChange
   OnProcess = VSTModuleProcess
   OnProcess32Replacing = VSTModuleProcess
-  Left = 188
-  Top = 77
   Height = 150
   Width = 215
 end

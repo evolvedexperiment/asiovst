@@ -42,7 +42,7 @@ type
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
-    procedure ParameterModeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterModeDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterOutputChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterRateChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterModeChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -66,9 +66,9 @@ implementation
 {$ENDIF}
 
 uses
-  Math;
+  Math, DAV_Common, DAV_Math;
 
-procedure TShepardDataModule.ParameterModeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+procedure TShepardDataModule.ParameterModeDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  case Round(Parameter[0]) of
   0: PreDefined := 'TONES';
@@ -110,7 +110,7 @@ begin
    FBuffer[1, FMax] := sin(FPos);
    for j := 0 to 7 do
     begin
-     x   := x + a * sin(f_mod(FPos, twopi));
+     x   := x + a * sin(FloatMod(FPos, twopi));
      a   := a * 0.5;
      FPos := FPos * 2;
     end;

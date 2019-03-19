@@ -51,8 +51,7 @@ type
     procedure ParameterFilterDisplay(
       Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
   private
-    FTransientProcessor : TStereoTransientProcessor;
-  public
+    FTransientProcessor: TStereoTransientProcessor;
   end;
 
 implementation

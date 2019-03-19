@@ -6,9 +6,7 @@ object RezFilterDataModule: TRezFilterDataModule
   ProductName = 'DAV mda'
   VendorName = 'Delphi ASIO & VST Project / mda'
   PlugCategory = vpcEffect
-  CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Resonant Filter'
   IORatio = 1.000000000000000000
   UniqueID = 'mdaF'
@@ -20,7 +18,6 @@ object RezFilterDataModule: TRezFilterDataModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Frequency'
       LargeStepFloat = 2.000000000000000000
@@ -32,7 +29,6 @@ object RezFilterDataModule: TRezFilterDataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Resonance'
       LargeStepFloat = 2.000000000000000000
@@ -44,7 +40,6 @@ object RezFilterDataModule: TRezFilterDataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Output'
       LargeStepFloat = 2.000000000000000000
@@ -60,7 +55,6 @@ object RezFilterDataModule: TRezFilterDataModule
       OnParameterChange = ParameterGainChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Env->VCF'
       LargeStepFloat = 2.000000000000000000
@@ -74,7 +68,6 @@ object RezFilterDataModule: TRezFilterDataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Attack'
       LargeStepFloat = 2.000000000000000000
@@ -87,7 +80,6 @@ object RezFilterDataModule: TRezFilterDataModule
       OnCustomParameterDisplay = ParameterAttackDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Release'
       LargeStepFloat = 2.000000000000000000
@@ -100,7 +92,6 @@ object RezFilterDataModule: TRezFilterDataModule
       OnCustomParameterDisplay = ParameterReleaseDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'LFO->VCF'
       LargeStepFloat = 2.000000000000000000
@@ -114,7 +105,6 @@ object RezFilterDataModule: TRezFilterDataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'LFO Rate'
       LargeStepFloat = 2.000000000000000000
@@ -127,7 +117,6 @@ object RezFilterDataModule: TRezFilterDataModule
       OnCustomParameterDisplay = ParameterLFORateDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Trigger'
       LargeStepFloat = 2.000000000000000000
@@ -140,7 +129,6 @@ object RezFilterDataModule: TRezFilterDataModule
       OnCustomParameterDisplay = ParameterTriggerDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Max. Frequency'
       LargeStepFloat = 2.000000000000000000
@@ -151,13 +139,12 @@ object RezFilterDataModule: TRezFilterDataModule
       Units = '%'
       VSTModule = Owner
     end>
+  ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnParameterChange = VSTModuleParameterChange
   OnProcess = VSTModuleProcess
   OnProcess32Replacing = VSTModuleProcess
   OnSuspend = VSTModuleSuspend
-  Left = 188
-  Top = 77
   Height = 150
   Width = 215
 end

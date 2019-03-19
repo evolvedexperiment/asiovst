@@ -47,7 +47,7 @@ type
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleResume(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
-    procedure ParameterCarrierDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterCarrierDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure VSTModuleSuspend(Sender: TObject);
     procedure ParameterCarierSelectChange(
       Sender: TObject; const Index: Integer; var Value: Single);
@@ -113,7 +113,7 @@ begin
  if Assigned(FCar[1]) then Dispose(FCar[1]);
 end;
 
-procedure TTalkBoxDataModule.ParameterCarrierDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+procedure TTalkBoxDataModule.ParameterCarrierDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  if Parameter[Index] < 0.5
   then PreDefined := 'Left'
