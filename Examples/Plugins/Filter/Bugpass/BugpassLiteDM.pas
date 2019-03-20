@@ -90,23 +90,6 @@ end;
 
 procedure TBugpassLiteDataModule.VSTModuleOpen(Sender: TObject);
 begin
-{$IFDEF Use_IPPS}
-  FFft := TFftReal2ComplexIPPSFloat32.Create(Round(Log2(BlockModeSize)));
-  FFft.DataOrder := doComplex;
-
-  ReallocateAlignedMemory(Pointer(FFilterFreq), (BlockModeSize div 2 + 1) * SizeOf(TComplex32));
-  ReallocateAlignedMemory(FSignalFreq, (BlockModeSize div 2 + 1) * SizeOf(TComplex32));
-  FillChar(FFilterFreq^[0], (BlockModeSize div 2 + 1) * SizeOf(TComplex32), 0);
-  FillChar(FSignalFreq^[0], (BlockModeSize div 2 + 1) * SizeOf(TComplex32), 0);
-{$ELSE} {$IFDEF Use_CUDA}
-  FFft := TFftReal2ComplexCUDA32.Create(Round(Log2(BlockModeSize)));
-  FFft.DataOrder := doPackedComplex;
-
-  ReallocateAlignedMemory(FFilterFreq, BlockModeSize * SizeOf(Single));
-  ReallocateAlignedMemory(FSignalFreq, BlockModeSize * SizeOf(Single));
-  FillChar(FFilterFreq^[0], BlockModeSize * SizeOf(Single), 0);
-  FillChar(FSignalFreq^[0], BlockModeSize * SizeOf(Single), 0);
-{$ELSE}
   FFft := TFftReal2ComplexNativeFloat32.Create(Round(Log2(BlockModeSize)));
   FFft.DataOrder := doPackedComplex;
 
@@ -114,7 +97,7 @@ begin
   ReallocateAlignedMemory(FSignalFreq, BlockModeSize * SizeOf(Single));
   FillChar(FFilterFreq^[0], BlockModeSize * SizeOf(Single), 0);
   FillChar(FSignalFreq^[0], BlockModeSize * SizeOf(Single), 0);
-{$ENDIF}{$ENDIF}
+
   ReallocateAlignedMemory(FFilterKernel, BlockModeSize * SizeOf(Single));
   ReallocateAlignedMemory(FSignalPadded, BlockModeSize * SizeOf(Single));
   FillChar(FFilterKernel^[0], BlockModeSize * SizeOf(Single), 0);
@@ -214,11 +197,6 @@ begin
       FillChar(FFilterKernel^[Half], Half * SizeOf(Single), 0);
 
       // calculate frequency
-{$IFDEF Use_IPPS}
-      FFft.PerformFFTCCS(FFilterFreq, FFilterKernel);
-{$ELSE}{$IFDEF Use_CUDA}
-      FFft.PerformFFT(FFilterFreq, FFilterKernel);
-{$ELSE}
       case FFft.DataOrder of
         doPackedRealImaginary:
           FFft.PerformFFTPackedReIm(PDAVSingleFixedArray(FFilterFreq), FFilterKernel);
@@ -227,7 +205,6 @@ begin
       else
         raise Exception.Create('not supported');
       end;
-{$ENDIF}{$ENDIF}
     finally
       FCriticalSection.Leave;
     end;
@@ -246,33 +223,6 @@ begin
     Half := BlockModeSize div 2;
     for Channel := 0 to numOutputs - 1 do
     begin
-{$IFDEF Use_IPPS}
-      FFft.PerformFFT(PDAVComplexSingleFixedArray(FSignalFreq),
-        @Inputs[Channel, 0]);
-
-      // DC & Nyquist
-      FSignalFreq^[0].Re := FFilterFreq^[0].Re * FSignalFreq^[0].Re;
-      FSignalFreq^[Half].Re := FFilterFreq^[Half].Re * FSignalFreq^[Half].Re;
-
-      for Bin := 1 to Half - 1 do
-        ComplexMultiplyInplace32(FSignalFreq^[Bin], FFilterFreq^[Bin]);
-
-      FFft.PerformIFFT(PDAVComplexSingleFixedArray(FSignalFreq),
-        @Outputs[Channel, 0]);
-
-{$ELSE}{$IFDEF Use_CUDA}
-      FFft.PerformFFT(FSignalFreq, @Inputs[Channel, 0]);
-
-      // DC & Nyquist
-      FSignalFreq^[0].Re := FFilterFreq^[0].Re * FSignalFreq^[0].Re;
-      FSignalFreq^[0].Im := FFilterFreq^[0].Im * FSignalFreq^[0].Im;
-      FSignalFreq^[Half].Re := FFilterFreq^[Half].Re * FSignalFreq^[Half].Re;
-
-      for Bin := 1 to Half - 1 do
-        ComplexMultiplyInplace(FSignalFreq^[Bin], FFilterFreq^[Bin]);
-
-      FFft.PerformIFFT(FSignalFreq, @Outputs[Channel, 0]);
-{$ELSE}
       case FFft.DataOrder of
         doPackedRealImaginary:
           begin
@@ -320,7 +270,6 @@ begin
       else
         raise Exception.Create('not supported');
       end;
-{$ENDIF}{$ENDIF}
     end;
   finally
     FCriticalSection.Leave;

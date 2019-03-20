@@ -166,7 +166,7 @@ type
 implementation
 
 uses
-  DAV_GuiBlend;
+  Types, DAV_GuiBlend;
 
 { TGuiStitchedImageCollection }
 

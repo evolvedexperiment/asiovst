@@ -61,7 +61,7 @@ type
 implementation
 
 uses
-  Math, DAV_Common, DAV_Approximations, RenaissanceBassCloneGUI;
+  Math, DAV_Common, DAV_Convert, DAV_Approximations, RenaissanceBassCloneGUI;
 
 {$IFDEF FPC}
 {$R *.lfm}

@@ -58,8 +58,8 @@ type
     procedure VSTModuleStopProcess(Sender: TObject);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: NativeUInt);
     procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
-    procedure CustomParameterDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure CustomParameterLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure CustomParameterDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure CustomParameterLabel(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     function VSTModuleCanDo(Sender: TObject; const CanDoText: AnsiString): Integer;
   end;
 
@@ -219,13 +219,13 @@ begin
 end;
 
 procedure TWrapperDataModule.CustomParameterDisplay(Sender: TObject;
-  const Index: Integer; var PreDefined: string);
+  const Index: Integer; var PreDefined: AnsiString);
 begin
   PreDefined := VstHost[0].GetParamDisplay(Index);
 end;
 
 procedure TWrapperDataModule.CustomParameterLabel(Sender: TObject;
-  const Index: Integer; var PreDefined: string);
+  const Index: Integer; var PreDefined: AnsiString);
 begin
   PreDefined := VstHost[0].GetParamLabel(Index);
 end;

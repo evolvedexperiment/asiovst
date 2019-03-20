@@ -89,7 +89,7 @@ type
 implementation
 
 uses
-  DAV_Common;
+  DAV_Common, DAV_Consts;
 
 { TStkDelayL }
 

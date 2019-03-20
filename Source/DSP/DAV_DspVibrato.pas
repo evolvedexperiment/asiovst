@@ -276,7 +276,7 @@ begin
 
   // store new data
   FBuffer32[FBufferPos] := Input;
-  inc(FBufferPos);
+  Inc(FBufferPos);
   if FBufferPos >= FRealBufSize then
   begin
     Move(FBuffer32[FRealBufSize - 4], FBuffer32[0], 4 * SizeOf(Single));
@@ -356,7 +356,7 @@ begin
 
   // store new data
   FBuffer64[FBufferPos] := Input;
-  inc(FBufferPos);
+  Inc(FBufferPos);
   if FBufferPos >= FRealBufSize then
   begin
     Move(FBuffer64[FRealBufSize - 4], FBuffer64[0], 4 * SizeOf(Double));

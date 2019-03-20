@@ -260,8 +260,8 @@ begin
     for Channel := 0 to 1 do
       for Sample := 0 to Min(FBlockSize, SampleFrames) - 1 do
         Outputs[Channel, Sample] := FastTanhContinousError4
-          (FMix * Inputs[Channel, Sample] + FMixInv * FVibrato[Channel]
-          .ProcessSample32(Inputs[Channel, Sample]))
+          (FMix * Inputs[Channel, Sample] + FMixInv *
+            FVibrato[Channel].ProcessSample32(Inputs[Channel, Sample]))
   finally
     FCriticalSection.Leave;
   end;

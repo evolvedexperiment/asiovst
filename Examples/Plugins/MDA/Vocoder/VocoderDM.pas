@@ -230,7 +230,7 @@ begin
     FFreq[0][7] := a;
     a := tmp;
 
-    tmp := abs(tmp);
+    tmp := Abs(tmp);
     FFreq[0][11] := FFreq[0][11] - FFreq[0][12] * (FFreq[0][11] - tmp); // High band envelope
     o := FFreq[0][11] * (ht * a + hh * (b - FFreq[0][3]));             // High band + High Thru
 
@@ -263,7 +263,7 @@ begin
         FFreq[i][10] := FFreq[i][ 9];
         FFreq[i][ 9] := tmp;
 
-        tmp := abs(tmp);
+        tmp := Abs(tmp);
         FFreq[i][11] := FFreq[i][11] - FFreq[i][12] * (FFreq[i][11] - tmp);
         oo := oo + FFreq[i][5] * FFreq[i][11];
       end;
@@ -276,11 +276,11 @@ begin
 
   FKOut := oo;
   FKVal := k and $1;
-  if abs(FFreq[0][11]) < 1E-10 then
+  if Abs(FFreq[0][11]) < 1E-10 then
     FFreq[0][11] := 0; // catch HF envelope denormal
 
   for i := 1 to nb - 1 do
-    if (abs(FFreq[i][3]) < 1E-10) or (abs(FFreq[i][7]) < 1E-10) then
+    if (Abs(FFreq[i][3]) < 1E-10) or (Abs(FFreq[i][7]) < 1E-10) then
       for k := 3 to 11 do
         FFreq[i][k] := 0; // catch reson & envelope denormals
 end;

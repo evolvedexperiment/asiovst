@@ -137,7 +137,7 @@ type
 implementation
 
 uses
-  SysUtils, DAV_Classes, DAV_Math, DAV_Approximations;
+  SysUtils, DAV_Classes, DAV_Math, DAV_Approximations, DAV_Convert, DAV_Consts;
 
 { TCustomMoogFilter }
 
@@ -203,7 +203,7 @@ begin
   inherited;
   FCoefficient := 2 * FThermalVoltage *
     (1 - Exp(-2 * Pi * Frequency * SampleRateReciprocal));
-  FScaleFactor := FGainFactor * sqr(dB_to_Amp(FResonance));
+  FScaleFactor := FGainFactor * Sqr(dB_to_Amp(FResonance));
 end;
 
 procedure TCustomSimpleClassicMoogFilter.Reset;

@@ -480,7 +480,7 @@ begin
   with TLA4029DataModule(Owner) do
   begin
     s := Power(10, DialRatio.Value);
-    if abs(Parameter[5] - s) > 1E-3 then
+    if Abs(Parameter[5] - s) > 1E-3 then
       Parameter[5] := s;
     UpdateRatio;
   end;

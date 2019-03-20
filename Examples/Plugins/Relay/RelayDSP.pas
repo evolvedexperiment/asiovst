@@ -2,7 +2,7 @@ unit RelayDSP;
 
 interface
 
-uses 
+uses
   Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
   DAV_DspRelay;
 
@@ -26,63 +26,63 @@ implementation
 {$R *.DFM}
 
 uses
-  DAV_Common, RelayGUI;
+  DAV_Common, DAV_Convert, RelayGUI;
 
 procedure TRelayModule.VSTModuleCreate(Sender: TObject);
 begin
- Assert(numInputs = numOutputs);
+  Assert(numInputs = numOutputs);
 end;
 
 procedure TRelayModule.VSTModuleOpen(Sender: TObject);
 var
-  RelayIndex : Integer;
+  RelayIndex: Integer;
 begin
- SetLength(FRelays, numInputs);
+  SetLength(FRelays, numInputs);
 
- for RelayIndex := 0 to numInputs - 1 do
+  for RelayIndex := 0 to numInputs - 1 do
   begin
-   FRelays[RelayIndex] := TDspRelay32.Create;
-   FRelays[RelayIndex].Upper := 0.5;
-   FRelays[RelayIndex].Lower := -0.5;
+    FRelays[RelayIndex] := TDspRelay32.Create;
+    FRelays[RelayIndex].Upper := 0.5;
+    FRelays[RelayIndex].Lower := -0.5;
   end;
 
- // set editor form class
- EditorFormClass := TFmRelay;
+  // set editor form class
+  EditorFormClass := TFmRelay;
 end;
 
 procedure TRelayModule.VSTModuleClose(Sender: TObject);
 var
-  RelayIndex : Integer;
+  RelayIndex: Integer;
 begin
- for RelayIndex := 0 to numInputs - 1
-  do FreeAndNil(FRelays[RelayIndex]);
+  for RelayIndex := 0 to numInputs - 1 do
+    FreeAndNil(FRelays[RelayIndex]);
 end;
 
-procedure TRelayModule.ParameterInputChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TRelayModule.ParameterInputChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
- FScaleFactor[0] := dB_to_Amp(Value);
+  FScaleFactor[0] := dB_to_Amp(Value);
 end;
 
-procedure TRelayModule.ParameterOutputChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TRelayModule.ParameterOutputChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
- FScaleFactor[1] := dB_to_Amp(Value);
+  FScaleFactor[1] := dB_to_Amp(Value);
 end;
 
 procedure TRelayModule.VSTModuleProcess(const Inputs,
   Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
-  ChannelIndex : Integer;
-  SampleIndex  : Integer;
+  ChannelIndex: Integer;
+  SampleIndex: Integer;
 begin
- for ChannelIndex := 0 to Length(FRelays) - 1 do
-  for SampleIndex := 0 to SampleFrames - 1 do
-   begin
-    Outputs[ChannelIndex, SampleIndex] := FScaleFactor[1] *
-      FRelays[ChannelIndex].ProcessSample32(FScaleFactor[0] *
-      Inputs[ChannelIndex, SampleIndex]);
-   end;
+  for ChannelIndex := 0 to Length(FRelays) - 1 do
+    for SampleIndex := 0 to SampleFrames - 1 do
+    begin
+      Outputs[ChannelIndex, SampleIndex] := FScaleFactor[1] *
+        FRelays[ChannelIndex].ProcessSample32(
+        FScaleFactor[0] * Inputs[ChannelIndex, SampleIndex]);
+    end;
 end;
 
 end.

@@ -181,7 +181,7 @@ implementation
 
 uses
   Math, SysUtils, DAV_Common, DAV_Strings, DAV_Approximations,
-  DAV_DspInterpolation;
+  DAV_DspInterpolation, DAV_Consts;
 
 resourcestring
   RCStrBuffersizePositive = 'Buffersize must be larger or equal than zero!';
@@ -453,10 +453,10 @@ begin
 
   // @CWB: there is no TFirstOrderAllpassFilter.Frequency
   // FAllpass.Frequency := Pos - SPos;
-  // Assert(abs(FAllpass.Frequency) < 1);
+  // Assert(Abs(FAllpass.Frequency) < 1);
 
   FAllpass.FractionalDelay := Pos - SPos;
-  Assert(abs(FAllpass.FractionalDelay) < 1);
+  Assert(Abs(FAllpass.FractionalDelay) < 1);
 
   Pos := FBufferInPos + Pos;
 
@@ -703,28 +703,30 @@ begin
     FBuffer[1, 0] := FCurrentInput;
 
     temp := FDiffusors[0].ProcessSample32
-      (FDiffusors[1].ProcessSample32(FDiffusors[2].ProcessSample32(FDiffusors[3]
-      .ProcessSample32(FCurrentInput))));
+      (FDiffusors[1].ProcessSample32(
+       FDiffusors[2].ProcessSample32(
+       FDiffusors[3].ProcessSample32(FCurrentInput))));
 
     FBuffer[0, 0] := FLastOutput[1] + temp;
     FBuffer[1, 0] := FLastOutput[0] + temp;
 
     FLastOutput[1] := FHighpass[0].ProcessSample64
       (FDelays[1].ProcessSample32(FDiffusors[4].ProcessSample32(FDecay *
-      FLowpass[0].ProcessSample64(FDelays[0].ProcessSample32(FModulatedDiffusors
-      [0].ProcessSample32(CDenorm32 + FBuffer[0, 0]))))));
+      FLowpass[0].ProcessSample64(FDelays[0].ProcessSample32(
+      FModulatedDiffusors[0].ProcessSample32(CDenorm32 + FBuffer[0, 0]))))));
     FLastOutput[0] := FHighpass[1].ProcessSample64
       (FDelays[3].ProcessSample32(FDiffusors[5].ProcessSample32(FDecay *
-      FLowpass[1].ProcessSample64(FDelays[2].ProcessSample32(FModulatedDiffusors
-      [1].ProcessSample32(CDenorm32 + FBuffer[1, 0]))))));
+      FLowpass[1].ProcessSample64(FDelays[2].ProcessSample32(
+      FModulatedDiffusors[1].ProcessSample32(CDenorm32 + FBuffer[1, 0]))))));
 
     FBuffer[0, 0] := 0.6 * (FDelays[2].Sample[266] + FDelays[2].Sample[2974] -
-      FDiffusors[5].Sample[1913] + FDelays[3].Sample[1996] - FDelays[0].Sample
-      [1990] - FDiffusors[4].Sample[187] - FDelays[1].Sample[1066]);
+      FDiffusors[5].Sample[1913] + FDelays[3].Sample[1996] -
+      FDelays[0].Sample[1990] - FDiffusors[4].Sample[187] - FDelays[1].Sample[1066]);
 
     FBuffer[1, 0] := 0.6 * (FDelays[0].Sample[333] + FDelays[0].Sample[3627] -
-      FDiffusors[4].Sample[1228] + FDelays[1].Sample[2673] - FDelays[2].Sample
-      [2111] - FDiffusors[5].Sample[335] - FDelays[3].Sample[121]);
+      FDiffusors[4].Sample[1228] + FDelays[1].Sample[2673] -
+      FDelays[2].Sample[2111] - FDiffusors[5].Sample[335] -
+      FDelays[3].Sample[121]);
   end;
   FCurrentOutput[0] := Hermite32_asm(1 - FResamplePos, @FBuffer[0, 0]);
   FCurrentOutput[1] := Hermite32_asm(1 - FResamplePos, @FBuffer[1, 0]);

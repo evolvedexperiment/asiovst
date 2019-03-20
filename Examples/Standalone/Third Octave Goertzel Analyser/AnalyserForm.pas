@@ -104,7 +104,8 @@ implementation
 {$R *.DFM}
 
 uses
-  Inifiles, Registry, DAV_Common, DAV_Math, DAV_ASIOConvert, DAV_DspDft;
+  Inifiles, Registry, DAV_Common, DAV_Convert, DAV_Math, DAV_ASIOConvert,
+  DAV_DspDft;
 
 procedure TFormAnalyser.FormCreate(Sender: TObject);
 var

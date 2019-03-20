@@ -304,7 +304,7 @@ type
 implementation
 
 uses
-  Math, SysUtils, DAV_Common, DAV_Math, DAV_Approximations;
+  Math, SysUtils, DAV_Common, DAV_Math, DAV_Approximations, DAV_Consts;
 
 { TCustomDitherNoiseShaper }
 

@@ -193,7 +193,7 @@ type
 implementation
 
 uses
-  Math, SysUtils, DAV_Common;
+  Math, SysUtils, DAV_Common, DAV_Consts;
 
 constructor TCustomSELightweightFiltersModule.Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
 begin
@@ -257,7 +257,7 @@ begin
   Output := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
 
   for Sample := 0 to SampleFrames - 1 do
-    Output^[Sample] := FFilter.ProcessSample64(Input[Sample] + cDenorm64);
+    Output^[Sample] := FFilter.ProcessSample64(Input[Sample] + CDenorm64);
 end;
 
 procedure TCustomSELightweightFiltersModule.SubProcessStatic(const BufferOffset,
@@ -405,9 +405,9 @@ begin
     begin
       FFilter.Frequency := 10000 * Freq[Sample];
       FFilter.Gain := 10 * Gain[Sample];
-      FFilter.Bandwidth := 0.1 + 9.9 * abs(BW[Sample]);
+      FFilter.Bandwidth := 0.1 + 9.9 * Abs(BW[Sample]);
     end;
-    Output^[Sample] := FFilter.ProcessSample64(Input[Sample] + cDenorm64);
+    Output^[Sample] := FFilter.ProcessSample64(Input[Sample] + CDenorm64);
   end;
 end;
 
@@ -765,14 +765,14 @@ procedure TShapeFilter.BandwidthChanged;
 var
   d: Double;
 begin
-  if abs(FShape) > 1 then
-    d := ln(1 + Power(FBandWidth, abs(FShape)))
+  if Abs(FShape) > 1 then
+    d := ln(1 + Power(FBandWidth, Abs(FShape)))
   else
     d := ln(1 + FBandWidth);
-  if abs(FShape) > 1 then
+  if Abs(FShape) > 1 then
     FAlpha := tan(FW0 * 0.5) * d / (cos(0.5 * FW0)) * 2
   else
-    FAlpha := tan(FW0 * 0.5) * d / (cos(0.5 * FW0)) * Power(2, abs(FShape));
+    FAlpha := tan(FW0 * 0.5) * d / (cos(0.5 * FW0)) * Power(2, Abs(FShape));
 end;
 
 procedure TShapeFilter.CalculateCoefficients;
@@ -916,9 +916,9 @@ begin
   begin
     FFilter.Frequency := 10000 * Freq[Sample];
     FFilter.Gain := 15 * Gain[Sample];
-    FFilter.Bandwidth := 0.1 + 9.9 * abs(BW[Sample]);
+    FFilter.Bandwidth := 0.1 + 9.9 * Abs(BW[Sample]);
     TShapeFilter(FFilter).Shape := Sym[Sample];
-    Output^[Sample] := FFilter.ProcessSample64(Input[Sample] + cDenorm64);
+    Output^[Sample] := FFilter.ProcessSample64(Input[Sample] + CDenorm64);
   end;
 end;
 

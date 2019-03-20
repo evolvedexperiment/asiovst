@@ -78,7 +78,8 @@ implementation
 {$ENDIF}
 
 uses
-  Math, {$IFDEF HAS_UNIT_ANSISTRINGS} AnsiStrings, {$ENDIF} DAV_Common, CTCGui;
+  Math, {$IFDEF HAS_UNIT_ANSISTRINGS} AnsiStrings, {$ENDIF} DAV_Common,
+  DAV_Convert, CTCGui;
 
 procedure TCTCDataModule.VSTModuleCreate(Sender: TObject);
 begin

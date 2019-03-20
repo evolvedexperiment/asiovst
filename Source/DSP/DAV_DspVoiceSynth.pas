@@ -84,7 +84,7 @@ type
 implementation
 
 uses
-  DAV_Common, DAV_Math, DAV_Approximations, DAV_DspDynamics;
+  DAV_Common, DAV_Math, DAV_Approximations, DAV_DspDynamics, DAV_Consts;
 
 { TCustomVoiceSynth }
 
@@ -162,10 +162,10 @@ function TCustomVoiceSynth.ProcessSample32(Input: Single): Single;
 begin
   inherited ProcessSample32(Input);
 
-  if abs(Input) > FLevel then
-    FLevel := FLevel + (abs(Input) - FLevel) * FAttackFactor
+  if Abs(Input) > FLevel then
+    FLevel := FLevel + (Abs(Input) - FLevel) * FAttackFactor
   else
-    FLevel := abs(Input) + (FLevel - abs(Input)) * FReleaseFactor;
+    FLevel := Abs(Input) + (FLevel - Abs(Input)) * FReleaseFactor;
 
   ComplexMultiplyInplace32(FCurrentPosition, FComplexAngle);
   Result := FLevel * FCurrentPosition.Re;
@@ -190,7 +190,7 @@ begin
 
     if FOneCrossingOnly and FIsAbove then
     begin
-      inc(FSamples);
+      Inc(FSamples);
       exit;
     end;
 
@@ -211,7 +211,7 @@ begin
       FComplexAngle.Re);
   end
   else
-    inc(FSamples);
+    Inc(FSamples);
 end;
 
 initialization

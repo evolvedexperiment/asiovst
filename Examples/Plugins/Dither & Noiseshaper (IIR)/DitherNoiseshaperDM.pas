@@ -221,8 +221,8 @@ begin
   try
     for ChannelIndex := 0 to Length(FDitherNoiseshaper) - 1 do
       for Sample := 0 to SampleFrames - 1 do
-        Outputs[ChannelIndex, Sample] := FDitherNoiseshaper[ChannelIndex]
-          .ProcessFloat(Inputs[ChannelIndex, Sample]);
+        Outputs[ChannelIndex, Sample] :=
+          FDitherNoiseshaper[ChannelIndex].ProcessFloat(Inputs[ChannelIndex, Sample]);
   finally
     FCriticalSection.Leave;
   end;
@@ -238,8 +238,8 @@ begin
   try
     for ChannelIndex := 0 to Length(FDitherNoiseshaper) - 1 do
       for Sample := 0 to SampleFrames - 1 do
-        Outputs[ChannelIndex, Sample] := FDitherNoiseshaper[ChannelIndex]
-          .ProcessFloat(Inputs[ChannelIndex, Sample]);
+        Outputs[ChannelIndex, Sample] :=
+          FDitherNoiseshaper[ChannelIndex].ProcessFloat(Inputs[ChannelIndex, Sample]);
   finally
     FCriticalSection.Leave;
   end;

@@ -812,7 +812,7 @@ begin
     d := 0.5 * (t + FInputDCs[0]);
     FInputDCs[0] := t;
 
-    d := abs(d);
+    d := Abs(d);
     FInputEnvs[0] := 0.99995 * FInputEnvs[0];
     if d > FInputEnvs[0] then
       FInputEnvs[0] := d;
@@ -822,7 +822,7 @@ begin
       FInputEnvs[1] := FInputEnvs[1] + 0.5 * (d - FInputEnvs[1]);
 
     t := FInputEnvs[0] / FInputEnvs[1] - 1;
-    d := abs(t - FInputDCs[1]);
+    d := Abs(t - FInputDCs[1]);
     FInputDCs[1] := t;
 
     if d > 0.15 then

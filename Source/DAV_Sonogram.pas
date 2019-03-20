@@ -36,9 +36,7 @@ interface
 
 uses
   Classes, Graphics, DAV_Types, DAV_Classes, DAV_Complex, DAV_GuiCommon,
-  DAV_DspBuildingBlocks, DAV_DspWindowFunctions, DAV_DspFftReal2Complex
-  {$IFDEF Use_IPPS}, DAV_DspFftReal2ComplexIPPS {$ENDIF}
-  {$IFDEF Use_CUDA}, DAV_DspFftReal2ComplexCUDA{$ENDIF};
+  DAV_DspBuildingBlocks, DAV_DspWindowFunctions, DAV_DspFftReal2Complex;
 
 type
   TCustomSonogram = class(TDspSampleRatePersistent)
@@ -96,6 +94,7 @@ type
   public
     constructor Create; override;
     destructor Destroy; override;
+
     procedure Reset; virtual;
 
     property CurrentSlice: Integer read FCurrentSlice;
@@ -200,7 +199,7 @@ type
 implementation
 
 uses
-  SysUtils, DAV_Common, DAV_Approximations, DAV_DspWindowing;
+  SysUtils, DAV_Common, DAV_Convert, DAV_Approximations, DAV_DspWindowing;
 
 constructor TCustomSonogram.Create;
 begin
@@ -491,14 +490,8 @@ begin
   with TBuildingBlocksCircular32(FBlockBuilder) do
     OnProcess := ProcessBlock;
 
-{$IFDEF Use_IPPS}
-  FFft := TFftReal2ComplexIPPSFloat32.Create(10);
-{$ELSE} {$IFDEF Use_CUDA}
-  FFft := TFftReal2ComplexCUDA32.Create(10);
-{$ELSE}
   FFft := TFftReal2ComplexNativeFloat32.Create(10);
   FFft.DataOrder := doPackedComplex;
-{$ENDIF}{$ENDIF}
   FFft.AutoScaleType := astDivideBySqrtN; // FwdByN;
   FFftOrder := 10;
 
@@ -618,14 +611,8 @@ begin
   with TBuildingBlocksCircular64(FBlockBuilder) do
     OnProcess := ProcessBlock;
 
-{$IFDEF Use_IPPS}
-  FFft := TFftReal2ComplexIPPSFloat64.Create(10);
-{$ELSE} {$IFDEF Use_CUDA}
-  FFft := TFftReal2ComplexCUDA64.Create(10);
-{$ELSE}
   FFft := TFftReal2ComplexNativeFloat64.Create(10);
   FFft.DataOrder := doPackedComplex;
-{$ENDIF}{$ENDIF}
   FFft.AutoScaleType := astDivideBySqrtN;
   FFftOrder := 10;
 

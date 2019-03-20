@@ -47,11 +47,9 @@ type
     procedure SetWidth(const Value: Integer); override;
     procedure SetHeight(const Value: Integer); override;
 
-    class function CanLoad(const FileName: TFileName): Boolean;
-      overload; override;
+    class function CanLoad(const FileName: TFileName): Boolean; overload; override;
     class function CanLoad(Stream: TStream): Boolean; overload; override;
-    class function CanHandleExtension(const FileName: TFileName)
-      : Boolean; override;
+    class function CanHandleExtension(const FileName: TFileName): Boolean; override;
 
     procedure AssignTo(Dest: TPersistent); override;
   public

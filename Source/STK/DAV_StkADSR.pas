@@ -135,12 +135,12 @@ end;
 
 procedure TStkADSR.SetAttackRate(const Value: Single);
 begin
-  FAttackRate := abs(Value);
+  FAttackRate := Abs(Value);
 end;
 
 procedure TStkADSR.SetDecayRate(const Value: Single);
 begin
-  FDecayRate := abs(Value);
+  FDecayRate := Abs(Value);
 end;
 
 procedure TStkADSR.SetSustainLevel(const Value: Single);
@@ -150,22 +150,22 @@ end;
 
 procedure TStkADSR.setReleaseRate(const Value: Single);
 begin
-  FReleaseRate := abs(Value);
+  FReleaseRate := Abs(Value);
 end;
 
 procedure TStkADSR.SetAttackTime(const Value: Single);
 begin
-  FAttackRate := 1.0 / abs(Value * SampleRate);
+  FAttackRate := 1.0 / Abs(Value * SampleRate);
 end;
 
 procedure TStkADSR.SetDecayTime(const Value: Single);
 begin
-  FDecayRate := 1.0 / abs(Value * SampleRate);
+  FDecayRate := 1.0 / Abs(Value * SampleRate);
 end;
 
 procedure TStkADSR.SetReleaseTime(const Value: Single);
 begin
-  FReleaseRate := 1.0 / abs(Value * SampleRate);
+  FReleaseRate := 1.0 / Abs(Value * SampleRate);
 end;
 
 procedure TStkADSR.SetAllTimes(const aTime, dTime, sLevel, rTime: Single);

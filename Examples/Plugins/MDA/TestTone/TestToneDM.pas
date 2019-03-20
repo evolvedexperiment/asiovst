@@ -350,7 +350,7 @@ begin
          begin
           s  := s + ds;
           x  := sin(ph);
-          ph := f_mod(ph + s, 2 * Pi);
+          ph := FloatMod(ph + s, 2 * Pi);
           if (s > sx) then
            begin
             l := 0;

@@ -164,7 +164,7 @@ implementation
 
 uses
   Math, SysUtils, DAV_GuiBlend, DAV_Math, DAV_Common, DAV_Complex,
-  DAV_Approximations;
+  DAV_Approximations, DAV_Consts;
 
 { TCustomGuiButton }
 

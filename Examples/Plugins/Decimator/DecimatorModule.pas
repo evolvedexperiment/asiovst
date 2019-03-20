@@ -84,7 +84,7 @@ implementation
 {$ENDIF}
 
 uses
-  Math, DAV_Common, DecimatorGUI;
+  Math, DAV_Common, DAV_Consts, DAV_Convert, DecimatorGUI;
 
 /// /////////////////////////////////////////////////////////////////////////////
 // Open / Close

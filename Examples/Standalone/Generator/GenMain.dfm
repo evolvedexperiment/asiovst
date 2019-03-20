@@ -231,6 +231,10 @@ object FormGenerator: TFormGenerator
     OnChange = PageControlSelectChange
     object TabSheetWhiteNoise: TTabSheet
       Caption = 'White Noise'
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object LabelWhiteNoiseGain: TLabel
         Left = 16
         Top = 24
@@ -278,6 +282,10 @@ object FormGenerator: TFormGenerator
     object TabSheetPinkNoise: TTabSheet
       Caption = 'Pink Noise'
       ImageIndex = 1
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object LabelPinkNoiseGain: TLabel
         Left = 16
         Top = 24
@@ -300,6 +308,10 @@ object FormGenerator: TFormGenerator
     object TabSheetSine: TTabSheet
       Caption = 'Sine'
       ImageIndex = 2
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       DesignSize = (
         305
         171)
@@ -439,6 +451,10 @@ object FormGenerator: TFormGenerator
     object TabSheetSweep: TTabSheet
       Caption = 'Sweep'
       ImageIndex = 3
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       DesignSize = (
         305
         171)
@@ -575,6 +591,10 @@ object FormGenerator: TFormGenerator
     object TabSheetWavFile: TTabSheet
       Caption = 'WAV-File'
       ImageIndex = 4
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object ButtonSelectWavFile: TButton
         Left = 64
         Top = 37

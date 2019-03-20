@@ -52,8 +52,8 @@ type
     procedure GuiEQSlide4Change(Sender: TObject);
     procedure GuiEQSlide2Change(Sender: TObject);
   private
-    FBackground      : TGuiCustomPixelMap;
-    FBackgroundColor : TPixel32;
+    FBackground : TGuiCustomPixelMap;
+    FBackgroundColor: TPixel32;
   public
     procedure RenderBackground;
   end;

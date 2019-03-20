@@ -40,6 +40,7 @@ object FormLunchBox: TFormLunchBox
     Top = 0
     Width = 429
     Height = 24
+    ButtonHeight = 19
     Caption = 'ToolBar'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -60,7 +61,7 @@ object FormLunchBox: TFormLunchBox
       Left = 8
       Top = 0
       Width = 19
-      Height = 22
+      Height = 19
       Caption = 'kit:'
       Layout = tlCenter
     end
@@ -95,7 +96,7 @@ object FormLunchBox: TFormLunchBox
       Left = 119
       Top = 0
       Width = 29
-      Height = 22
+      Height = 19
       Caption = 'BPM:'
       Layout = tlCenter
     end
@@ -103,7 +104,7 @@ object FormLunchBox: TFormLunchBox
       Left = 148
       Top = 0
       Width = 53
-      Height = 22
+      Height = 19
       MaxValue = 200
       MinValue = 50
       TabOrder = 1
@@ -124,7 +125,7 @@ object FormLunchBox: TFormLunchBox
       Left = 208
       Top = 0
       Width = 25
-      Height = 22
+      Height = 19
       Caption = 'Bar:'
       Layout = tlCenter
     end
@@ -132,7 +133,7 @@ object FormLunchBox: TFormLunchBox
       Left = 233
       Top = 0
       Width = 41
-      Height = 22
+      Height = 19
       MaxValue = 16
       MinValue = 1
       TabOrder = 2
@@ -153,7 +154,7 @@ object FormLunchBox: TFormLunchBox
       Left = 282
       Top = 0
       Width = 34
-      Height = 22
+      Height = 19
       Caption = 'Style:'
       Layout = tlCenter
     end

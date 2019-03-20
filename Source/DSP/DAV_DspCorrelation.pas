@@ -35,9 +35,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, DAV_Types, DAV_Complex, DAV_Classes, DAV_DspFftReal2Complex
-{$IFDEF Use_IPPS}, DAV_DspFftReal2ComplexIPPS{$ENDIF}
-{$IFDEF Use_CUDA}, DAV_DspFftReal2ComplexCUDA{$ENDIF};
+  Classes, DAV_Types, DAV_Complex, DAV_Classes, DAV_DspFftReal2Complex;
 
 type
   TCustomCorrelation = class(TDspPersistent)
@@ -60,13 +58,7 @@ type
 
   TCorrelation32 = class(TCustomCorrelation)
   private
-{$IFDEF Use_IPPS}
-    function GetFft: TFftReal2ComplexIPPSFloat32;
-{$ELSE} {$IFDEF Use_CUDA}
-    function GetFft: TFftReal2ComplexCUDA32;
-{$ELSE}
     function GetFft: TFftReal2ComplexNativeFloat32;
-{$ENDIF}{$ENDIF}
   protected
     FSignalFreq: PDAVComplexSingleFixedArray;
     FCorrelationFreq: PDAVComplexSingleFixedArray;
@@ -74,13 +66,7 @@ type
     procedure AssignTo(Dest: TPersistent); override;
     procedure FFTOrderChanged; override;
 
-{$IFDEF Use_IPPS}
-    property Fft: TFftReal2ComplexIPPSFloat32 read GetFft;
-{$ELSE} {$IFDEF Use_CUDA}
-    property Fft: TFftReal2ComplexCUDA32 read GetFft;
-{$ELSE}
     property Fft: TFftReal2ComplexNativeFloat32 read GetFft;
-{$ENDIF}{$ENDIF}
   public
     constructor Create; override;
     destructor Destroy; override;
@@ -100,11 +86,7 @@ type
 
   TCorrelation64 = class(TCustomCorrelation)
   private
-{$IFDEF Use_IPPS}
-    function GetFft: TFftReal2ComplexIPPSFloat64;
-{$ELSE}
     function GetFft: TFftReal2ComplexNativeFloat64;
-{$ENDIF}
   protected
     FSignalFreq: PDAVComplexDoubleFixedArray;
     FCorrelationFreq: PDAVComplexDoubleFixedArray;
@@ -112,11 +94,7 @@ type
     procedure FFTOrderChanged; override;
     procedure AssignTo(Dest: TPersistent); override;
 
-{$IFDEF Use_IPPS}
-    property Fft: TFftReal2ComplexIPPSFloat64 read GetFft;
-{$ELSE}
     property Fft: TFftReal2ComplexNativeFloat64 read GetFft;
-{$ENDIF}
   public
     constructor Create; override;
     destructor Destroy; override;
@@ -199,14 +177,8 @@ begin
   FSignalFreq := nil;
   FCorrelationFreq := nil;
 
-{$IFDEF Use_IPPS}
-  FFFT := TFftReal2ComplexIPPSFloat32.Create(6);
-{$ELSE} {$IFDEF Use_CUDA}
-  FFFT := TFftReal2ComplexCUDA32.Create(6);
-{$ELSE}
   FFFT := TFftReal2ComplexNativeFloat32.Create(6);
   FFFT.DataOrder := doPackedComplex;
-{$ENDIF}{$ENDIF}
   FFTOrderChanged;
 end;
 
@@ -229,27 +201,10 @@ begin
   FillChar(FCorrelationFreq^[0], (FFFTSizeHalf + 1) * SizeOf(TComplex32), 0);
 end;
 
-{$IFDEF Use_IPPS}
-
-function TCorrelation32.GetFft: TFftReal2ComplexIPPSFloat32;
-begin
-  Result := TFftReal2ComplexIPPSFloat32(FFFT);
-end;
-
-{$ELSE} {$IFDEF Use_CUDA}
-
-function TCorrelation32.GetFft: TFftReal2ComplexCUDA32;
-begin
-  Result := TFftReal2ComplexCUDA32(FFFT);
-end;
-
-{$ELSE}
-
 function TCorrelation32.GetFft: TFftReal2ComplexNativeFloat32;
 begin
   Result := TFftReal2ComplexNativeFloat32(FFFT);
 end;
-{$ENDIF}{$ENDIF}
 
 procedure TCorrelation32.AssignTo(Dest: TPersistent);
 var
@@ -317,12 +272,9 @@ begin
   FSignalFreq := nil;
   FCorrelationFreq := nil;
 
-{$IFDEF Use_IPPS}
-  FFFT := TFftReal2ComplexIPPSFloat64.Create(6);
-{$ELSE}
   FFFT := TFftReal2ComplexNativeFloat64.Create(6);
   FFFT.DataOrder := doPackedComplex;
-{$ENDIF}
+
   FFTOrderChanged;
 end;
 
@@ -346,20 +298,10 @@ begin
   FillChar(FCorrelationFreq^[0], (FFFTSizeHalf + 1) * SizeOf(TComplex64), 0);
 end;
 
-{$IFDEF Use_IPPS}
-
-function TCorrelation64.GetFft: TFftReal2ComplexIPPSFloat64;
-begin
-  Result := TFftReal2ComplexIPPSFloat64(FFFT);
-end;
-
-{$ELSE}
-
 function TCorrelation64.GetFft: TFftReal2ComplexNativeFloat64;
 begin
   Result := TFftReal2ComplexNativeFloat64(FFFT);
 end;
-{$ENDIF}
 
 procedure TCorrelation64.AssignTo(Dest: TPersistent);
 var

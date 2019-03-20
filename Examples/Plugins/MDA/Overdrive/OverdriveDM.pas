@@ -62,7 +62,7 @@ implementation
 {$ENDIF}
 
 uses
-  Math, DAV_Common;
+  Math, DAV_Common, DAV_Convert;
 
 procedure TOverdriveDataModule.ParameterDriveChange(Sender: TObject;
   const Index: Integer; var Value: Single);
@@ -125,11 +125,11 @@ begin
   end;
 
   // catch denormals
-  if abs(State[0]) > 1E-10 then
+  if Abs(State[0]) > 1E-10 then
     FState[0] := State[0]
   else
     FState[0] := 0;
-  if abs(State[1]) > 1E-10 then
+  if Abs(State[1]) > 1E-10 then
     FState[1] := State[1]
   else
     FState[1] := 0;

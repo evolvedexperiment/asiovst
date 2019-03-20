@@ -33,11 +33,7 @@ unit DAV_DspSpectralNoiseReduction;
 interface
 
 {$I ..\DAV_Compiler.inc}
-{$IFDEF Use_IPPS}
-{$DEFINE ComplexDataOrder}
-{$ELSE}
 {$DEFINE PackedComplexDataOrder}
-{$ENDIF}
 
 uses
   Classes, DAV_Types, DAV_Classes, DAV_Complex, DAV_DspSpectralEffects,
@@ -276,7 +272,8 @@ type
 implementation
 
 uses
-  Math, SysUtils, DAV_Common, DAV_BlockProcessing, DAV_Approximations;
+  Math, SysUtils, DAV_Common, DAV_BlockProcessing, DAV_Approximations,
+  DAV_Consts, DAV_Convert;
 
 { TCustomNoiseReduction32 }
 

@@ -79,7 +79,7 @@ implementation
 {$ENDIF}
 
 uses
-  DAV_Common, Math;
+  DAV_Common, DAV_Convert, Math;
 
 procedure TDetuneDataModule.VSTModuleOpen(Sender: TObject);
 begin

@@ -116,7 +116,7 @@ type
 implementation
 
 uses
-  SysUtils, DAV_Common;
+  SysUtils, DAV_Common, DAV_Convert, DAV_Consts;
 
 const
   CBufferSize = 1024;
@@ -348,7 +348,7 @@ begin
   // HF damping
   r := FHfDampState;
 
-  if (abs(FHfDampState) > 1E-10) then
+  if (Abs(FHfDampState) > 1E-10) then
   begin
     // Catch Denormals
     FFlushedBuffers := False;
@@ -403,7 +403,7 @@ begin
   // HF damping
   r := FHfDampState;
 
-  if (abs(FHfDampState) > 1E-10) then
+  if (Abs(FHfDampState) > 1E-10) then
   begin
     // Catch Denormals
     FFlushedBuffers := False;
@@ -475,7 +475,7 @@ begin
   // HF damping
   r := FHfDampState;
 
-  if (abs(FHfDampState) > 1E-10) then
+  if (Abs(FHfDampState) > 1E-10) then
   begin
     // Catch Denormals
     FFlushedBuffers := False;

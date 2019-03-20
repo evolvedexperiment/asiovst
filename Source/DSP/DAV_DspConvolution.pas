@@ -1125,13 +1125,7 @@ begin
   if Dest is TLowLatencyConvolutionStage32 then
     with TLowLatencyConvolutionStage32(Dest) do
     begin
-{$IFDEF Use_IPPS}
       FFFT.Assign(Self.FFFT);
-{$ELSE} {$IFDEF Use_CUDA}
-      FFFT.Assign(Self.FFFT);
-{$ELSE}
-      FFFT.Assign(Self.FFFT);
-{$ENDIF}{$ENDIF}
       FFFTSize := Self.FFFTSize;
       FFFTSizeHalf := Self.FFFTSizeHalf;
     end;
@@ -1820,13 +1814,7 @@ begin
   if Dest is TLowLatencyConvolutionStage64 then
     with TLowLatencyConvolutionStage64(Dest) do
     begin
-{$IFDEF Use_IPPS}
       FFFT.Assign(Self.FFFT);
-{$ELSE} {$IFDEF Use_CUDA}
-      FFFT.Assign(Self.FFFT);
-{$ELSE}
-      FFFT.Assign(Self.FFFT);
-{$ENDIF}{$ENDIF}
       FFFTSize := Self.FFFTSize;
       FFFTSizeHalf := Self.FFFTSizeHalf;
     end;

@@ -71,7 +71,7 @@ implementation
 {$ENDIF}
 
 uses
-  DAV_Common;
+  DAV_Common, DAV_Convert;
 
 procedure TChebyshevWaveshaperDataModule.VSTModuleCreate(Sender: TObject);
 var

@@ -85,7 +85,10 @@ contains
   DAV_Strings in '..\..\Source\DAV_Strings.pas',
   DAV_Types in '..\..\Source\DAV_Types.pas',
   DAV_VectorMath in '..\..\Source\DAV_VectorMath.pas',
-  DAV_WaveFileTypes in '..\..\Source\DAV_WaveFileTypes.pas';
+  DAV_WaveFileTypes in '..\..\Source\DAV_WaveFileTypes.pas',
+  DAV_XPlatform in '..\..\Source\DAV_XPlatform.pas',
+  DAV_Convert in '..\..\Source\DAV_Convert.pas',
+  DAV_Consts in '..\..\Source\DAV_Consts.pas';
 
 end.
 

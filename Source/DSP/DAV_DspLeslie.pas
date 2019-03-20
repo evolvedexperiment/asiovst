@@ -127,7 +127,7 @@ type
 implementation
 
 uses
-  Math, DAV_Common, DAV_Math;
+  Math, DAV_Common, DAV_Math, DAV_Convert, DAV_Consts;
 
 { TLeslieRotator }
 
@@ -402,9 +402,9 @@ begin
   FState[1] := FFilo * (FState[1] - FState[0]) + FState[0];
 
   // catch denormals
-  if (abs(FState[0]) < 1E-10) then
+  if (Abs(FState[0]) < 1E-10) then
     FState[0] := 0;
-  if (abs(FState[1]) < 1E-10) then
+  if (Abs(FState[1]) < 1E-10) then
     FState[1] := 0;
 
   // Volume

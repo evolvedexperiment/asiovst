@@ -257,7 +257,7 @@ begin
   begin
     BaseEnv := BaseStage / FBufferSize;
     FPitchShifterStage[0].FEnvelopePos := BaseEnv;
-    // Assert(abs(BaseEnv - FPitchShifterStage[0].FEnvelopePos) < 1E-3);
+    // Assert(Abs(BaseEnv - FPitchShifterStage[0].FEnvelopePos) < 1E-3);
     for i := 1 to FStages - 1 do
       with FPitchShifterStage[i] do
       begin
@@ -318,7 +318,7 @@ end;
 
 procedure TCustomDspGranularPitchShifter.CalculateEnvelopeOffset;
 begin
-  FEnvelopeOffset := abs(FSampleOffset / FBufferSize);
+  FEnvelopeOffset := Abs(FSampleOffset / FBufferSize);
 end;
 
 procedure TCustomDspGranularPitchShifter.GranularityChanged;
@@ -452,7 +452,7 @@ begin
       while p < 0 do
         p := p + FBufferSize;
 
-      v := FStageMix * (1 - abs(2 * FEnvelopePos - 1));
+      v := FStageMix * (1 - Abs(2 * FEnvelopePos - 1));
       FEnvelopePos := FEnvelopePos + FEnvelopeOffset;
       if FEnvelopePos >= 1 then
         FEnvelopePos := FEnvelopePos - 1;
@@ -570,7 +570,7 @@ begin
       while p < 0 do
         p := p + FBufferSize;
 
-      v := FStageMix * (1 - abs(2 * FEnvelopePos - 1));
+      v := FStageMix * (1 - Abs(2 * FEnvelopePos - 1));
       FEnvelopePos := FEnvelopePos + FEnvelopeOffset;
       if FEnvelopePos >= 1 then
         FEnvelopePos := FEnvelopePos - 1;

@@ -65,7 +65,7 @@ implementation
 {$ENDIF}
 
 uses
-  DAV_Common, Math;
+  DAV_Common, DAV_Convert, Math;
 
 procedure TDeessDataModule.ParamHFDriveChange(Sender: TObject;
   const Index: Integer; var Value: Single);
@@ -139,15 +139,15 @@ begin
     Outputs[0, Sample] := g;
     Outputs[1, Sample] := g;
   end;
-  if abs(f[0]) < 1E-10 then
+  if Abs(f[0]) < 1E-10 then
     FBuffer[0] := 0
   else
     FBuffer[0] := f[0];
-  if abs(f[1]) < 1E-10 then
+  if Abs(f[1]) < 1E-10 then
     FBuffer[1] := 0
   else
     FBuffer[1] := f[1];
-  if abs(en) < 1E-10 then
+  if Abs(en) < 1E-10 then
     FEnvelope := 0
   else
     FEnvelope := en;
@@ -191,17 +191,17 @@ begin
   end;
 
   // take care for denormal values
-  if abs(f[0]) < 1E-10 then
+  if Abs(f[0]) < 1E-10 then
     FBuffer[0] := 0
   else
     FBuffer[0] := f[0];
 
-  if abs(f[1]) < 1E-10 then
+  if Abs(f[1]) < 1E-10 then
     FBuffer[1] := 0
   else
     FBuffer[1] := f[1];
 
-  if abs(en) < 1E-10 then
+  if Abs(en) < 1E-10 then
     FEnvelope := 0
   else
     FEnvelope := en;

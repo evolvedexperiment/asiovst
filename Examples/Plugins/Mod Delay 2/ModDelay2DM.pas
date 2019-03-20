@@ -71,7 +71,7 @@ implementation
 {$ENDIF}
 
 uses
-  Math, DAV_Common, ModDelay2GUI;
+  Math, DAV_Common, DAV_Convert, ModDelay2GUI;
 
 procedure TModDelay2Module.VSTModuleCreate(Sender: TObject);
 begin

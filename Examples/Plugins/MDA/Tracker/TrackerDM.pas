@@ -255,7 +255,7 @@ begin
     Outputs[1, Sample] := dr * b + x;
   end;
 
-  if abs(b1) < 1E-10 then
+  if Abs(b1) < 1E-10 then
    begin
     FBuffer[0] := 0;
     FBuffer[1] := 0;

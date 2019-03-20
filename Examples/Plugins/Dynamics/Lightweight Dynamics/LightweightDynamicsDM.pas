@@ -94,7 +94,7 @@ implementation
 {$ENDIF}
 
 uses
-  Math, DAV_Common, DAV_Approximations, DAV_VSTModuleWithPrograms,
+  Math, DAV_Common, DAV_Consts, DAV_Approximations, DAV_VSTModuleWithPrograms,
   LightweightDynamicsGUI;
 
 procedure TLightweightDynamicsDataModule.VSTModuleOpen(Sender: TObject);
@@ -171,7 +171,7 @@ begin
     OnProcess := VSTModuleProcessGateCompressorLimiterSoftClip
   else
     OnProcess := VSTModuleProcessGateCompressorLimiter;
-  OnProcessReplacing := OnProcess;
+  OnProcess32Replacing := OnProcess;
 end;
 
 function TLightweightDynamicsDataModule.EvaluateCharacteristic

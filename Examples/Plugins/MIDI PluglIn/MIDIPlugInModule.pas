@@ -55,7 +55,7 @@ implementation
 {$ENDIF}
 
 uses
-  MIDIPlugInGUI;
+  DAV_Common, DAV_Math, MIDIPlugInGUI;
 
 procedure TMIDIModule.ParamTransposeChange(Sender: TObject;
   const Index: Integer; var Value: Single);

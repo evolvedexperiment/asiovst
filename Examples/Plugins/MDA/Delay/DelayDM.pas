@@ -191,7 +191,7 @@ begin
   end;
 
   FIntPos := i;
-  if abs(f0) < 1E-10 then
+  if Abs(f0) < 1E-10 then
     FFilter0 := 0
   else
     FFilter0 := f0; // trap denormals

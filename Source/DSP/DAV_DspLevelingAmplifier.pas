@@ -134,7 +134,7 @@ type
 implementation
 
 uses
-  Math, DAV_Common, DAV_Approximations;
+  Math, DAV_Common, DAV_Approximations, DAV_Convert;
 
 const
   Harms: array [0 .. 3] of Single = (1.4092750123E-07, -7.5166615806E-07,
@@ -186,11 +186,10 @@ begin
   Result := TranslatePeakToGain(InputLevel) * InputLevel;
 end;
 
-function TCustomLevelingAmplifier.CharacteristicCurve_dB(const InputLevel_dB
-  : Double): Double;
+function TCustomLevelingAmplifier.CharacteristicCurve_dB(
+  const InputLevel_dB: Double): Double;
 begin
-  Result := Amp_to_dB
-    (1E-30 + Abs(CharacteristicCurve(dB_to_Amp(InputLevel_dB))));
+  Result := Amp_to_dB(1E-30 + Abs(CharacteristicCurve(dB_to_Amp(InputLevel_dB))));
 end;
 
 function TCustomLevelingAmplifier.GetGainReductiondB: Double;

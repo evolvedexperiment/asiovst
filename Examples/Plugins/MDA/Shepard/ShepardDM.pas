@@ -66,128 +66,135 @@ implementation
 {$ENDIF}
 
 uses
-  Math, DAV_Common, DAV_Math;
+  Math, DAV_Common, DAV_Convert, DAV_Math;
 
 procedure TShepardDataModule.ParameterModeDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- case Round(Parameter[0]) of
-  0: PreDefined := 'TONES';
-  1: PreDefined := 'RING MOD';
-  2: PreDefined := 'TONES + IN';
- end;
+  case Round(Parameter[0]) of
+    0:
+      PreDefined := 'TONES';
+    1:
+      PreDefined := 'RING MOD';
+    2:
+      PreDefined := 'TONES + IN';
+  end;
 end;
 
-procedure TShepardDataModule.ParameterOutputChange(Sender: TObject; const Index: Integer; var Value: Single);
+procedure TShepardDataModule.ParameterOutputChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
- FOut := 0.4842 * dB_to_Amp(Value - 1);
+  FOut := 0.4842 * dB_to_Amp(Value - 1);
 end;
 
-procedure TShepardDataModule.ParameterRateChange(Sender: TObject; const Index: Integer; var Value: Single);
+procedure TShepardDataModule.ParameterRateChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
- FDRate := 1 + 10 * Power(0.01 * Value - 0.5, 3) / SampleRate;
+  FDRate := 1 + 10 * Power(0.01 * Value - 0.5, 3) / SampleRate;
 end;
 
-procedure TShepardDataModule.ParameterModeChange(Sender: TObject; const Index: Integer; var Value: Single);
+procedure TShepardDataModule.ParameterModeChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
- FMode := Round(Value);
+  FMode := Round(Value);
 end;
 
 procedure TShepardDataModule.VSTModuleOpen(Sender: TObject);
 var
-  i, j : Integer;
-  x, a : Single;
+  i, j: Integer;
+  x, a: Single;
 const
   Twopi = 6.2831853;
 begin
- FMax := 512 * SizeOf(Single);
- GetMem(FBuffer[0], FMax);
- GetMem(FBuffer[1], FMax);
- for i := 0 to FMax - 1 do
+  FMax := 512 * SizeOf(Single);
+  GetMem(FBuffer[0], FMax);
+  GetMem(FBuffer[1], FMax);
+  for i := 0 to FMax - 1 do
   begin
-   FPos := (2 * Pi * i / (FMax - 1)); //generate wavetables
-   x    := 0;
-   a    := 1;
-   FBuffer[1, FMax] := sin(FPos);
-   for j := 0 to 7 do
+    FPos := (2 * Pi * i / (FMax - 1)); // generate wavetables
+    x := 0;
+    a := 1;
+    FBuffer[1, FMax] := sin(FPos);
+    for j := 0 to 7 do
     begin
-     x   := x + a * sin(FloatMod(FPos, twopi));
-     a   := a * 0.5;
-     FPos := FPos * 2;
+      x := x + a * sin(FloatMod(FPos, Twopi));
+      a := a * 0.5;
+      FPos := FPos * 2;
     end;
     FBuffer[0, FMax] := x;
   end;
- i := 511;
- FBuffer[0, i] := 0;
- FBuffer[1, i] := 0; // wrap end for interpolation
- FPos  := 0;
- FRate := 1;
+  i := 511;
+  FBuffer[0, i] := 0;
+  FBuffer[1, i] := 0; // wrap end for interpolation
+  FPos := 0;
+  FRate := 1;
 
- // Initial Parameters
- Parameter[0] := 0.2; // Mode
- Parameter[1] := 0.7; // Rate
- Parameter[2] := 0.5; // Level
+  // Initial Parameters
+  Parameter[0] := 0.2; // Mode
+  Parameter[1] := 0.7; // Rate
+  Parameter[2] := 0.5; // Level
 end;
 
 procedure TShepardDataModule.VSTModuleClose(Sender: TObject);
 begin
- Dispose(FBuffer[0]);
- Dispose(FBuffer[1]);
+  Dispose(FBuffer[0]);
+  Dispose(FBuffer[1]);
 end;
 
 procedure TShepardDataModule.VSTModuleProcess(const Inputs,
   Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
-  Sample       : Integer;
-  a, b         : Single;
-  r, p, di     : Single;
-  x, m, i1, i2 : Integer;
+  Sample: Integer;
+  a, b: Single;
+  r, p, di: Single;
+  x, m, i1, i2: Integer;
 begin
- r := FRate;
- p := FPos;
- x := FMax;
- m := FMode;
+  r := FRate;
+  p := FPos;
+  x := FMax;
+  m := FMode;
 
- for Sample := 0 to SampleFrames - 1 do
+  for Sample := 0 to SampleFrames - 1 do
   begin
-   a := Inputs[0, Sample] + Inputs[1, Sample];
+    a := Inputs[0, Sample] + Inputs[1, Sample];
 
-   r := r * FDRate;
-   if r > 2 then
+    r := r * FDRate;
+    if r > 2 then
     begin
-     r := r * 0.5;
-     p := p * 0.5;
+      r := r * 0.5;
+      p := p * 0.5;
     end
-   else if r < 1 then
+    else if r < 1 then
     begin
-     r := r * 2;
-     p := p * 2;
-     if (p > x)
-      then p := p - x;
+      r := r * 2;
+      p := p * 2;
+      if (p > x) then
+        p := p - x;
     end;
 
-   p := p + r;
-   if (p > x)
-    then p := p - x;
+    p := p + r;
+    if (p > x) then
+      p := p - x;
 
-   i1 := Round(p); //interpolate position
-   i2 := i1 + 1;
-   di := i2 - p;
+    i1 := Round(p); // interpolate position
+    i2 := i1 + 1;
+    di := i2 - p;
 
-   b :=          di  * (FBuffer[0, i1] + (r - 2) * FBuffer[1, i1]);
-   b := b + (1 - di) * (FBuffer[0, i2] + (r - 2) * FBuffer[1, i2]);
-   b := b * FOut / r;
+    b := di * (FBuffer[0, i1] + (r - 2) * FBuffer[1, i1]);
+    b := b + (1 - di) * (FBuffer[0, i2] + (r - 2) * FBuffer[1, i2]);
+    b := b * FOut / r;
 
-   if (m > 0) then
-    if (m = 2)
-     then b := b + 0.5 * a
-     else b := b * a; //ring mod or add
+    if (m > 0) then
+      if (m = 2) then
+        b := b + 0.5 * a
+      else
+        b := b * a; // ring mod or add
 
-   Outputs[0, Sample] := b;
-   Outputs[1, Sample] := b;
+    Outputs[0, Sample] := b;
+    Outputs[1, Sample] := b;
   end;
 
- FPos  := p;
- FRate := r;
+  FPos := p;
+  FRate := r;
 end;
 
 end.

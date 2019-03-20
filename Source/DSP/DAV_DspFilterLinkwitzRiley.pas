@@ -70,7 +70,7 @@ type
 implementation
 
 uses
-  SysUtils;
+  SysUtils, DAV_Consts;
 
 { TLinkwitzRiley }
 

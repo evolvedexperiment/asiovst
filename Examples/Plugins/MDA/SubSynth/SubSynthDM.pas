@@ -80,7 +80,7 @@ implementation
 {$ENDIF}
 
 uses
-  Math, DAV_Common, DAV_Math;
+  Math, DAV_Common, DAV_Convert, DAV_Math;
 
 procedure TSubSynthDataModule.ParameterLevelChange(Sender: TObject;
   const Index: Integer; var Value: Single);

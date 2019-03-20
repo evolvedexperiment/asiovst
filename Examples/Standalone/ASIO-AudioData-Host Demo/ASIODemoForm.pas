@@ -57,7 +57,7 @@ implementation
 {$ENDIF}
 
 uses
-  SysUtils, Inifiles, DAV_Math, DAV_Common;
+  SysUtils, Inifiles, DAV_Math, DAV_Common, DAV_Convert;
 
 resourcestring
   RCStrPanorama = 'Panorama';

@@ -1,4 +1,4 @@
-unit NoiseReductionDM;
+﻿unit NoiseReductionDM;
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -37,9 +37,7 @@ interface
 uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} Classes, Forms,
   SyncObjs, DAV_Types, DAV_VSTModule, DAV_DspDelayLines,
-  DAV_DspSpectralNoiseReduction, DAV_DspWindowFunctions
-  {$IFDEF Use_IPPS}, DAV_DspWindowFunctionsAdvanced{$ENDIF},
-  DAV_VSTCustomModule;
+  DAV_DspSpectralNoiseReduction, DAV_DspWindowFunctions, DAV_VSTCustomModule;
 
 type
   TNoiseReductionModule = class(TVSTModule)
@@ -171,11 +169,7 @@ begin
   begin
    Parameter[0] := 13;
    Parameter[1] := 9;
-   {$IFDEF Use_IPPS}
-   Parameter[2] := 11;
-   {$ELSE}
    Parameter[2] := 4;
-   {$ENDIF}
    Parameter[3] := 100;
    Parameter[4] := 0;
    Parameter[5] := 0.01;

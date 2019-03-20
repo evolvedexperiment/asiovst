@@ -203,7 +203,7 @@ end;
 procedure TCustomModDelay.UpdateBuffer;
 begin
   // calculate buffer size in samples
-  FBufferSize := Round(0.001 * FDelay * abs(SampleRate));
+  FBufferSize := Round(0.001 * FDelay * Abs(SampleRate));
   FRealBufSize := FBufferSize + 8;
 
   // check and reset buffer position
@@ -496,7 +496,7 @@ begin
   Result := FMixFactors[0] * Input + FMixFactors[1] * Result;
 
   // advance buffer position
-  inc(FBufferPos);
+  Inc(FBufferPos);
   if FBufferPos >= FRealBufSize then
   begin
     Move(FBuffer64[FRealBufSize - 4], FBuffer64[0], 4 * SizeOf(Double));

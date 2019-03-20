@@ -38,7 +38,7 @@ uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, Messages, {$ENDIF} Classes,
   Forms, SyncObjs, DAV_Types, DAV_Complex, DAV_DspDelayLines,
   DAV_DspSpectralNoiseReduction, DAV_DspWindowFunctions,
-  DAV_VSTModule {$IFDEF Use_IPPS}, DAV_DspWindowFunctionsAdvanced{$ENDIF};
+  DAV_VSTModule;
 
 type
   TSpectralNoiseGateModule = class(TVSTModule)

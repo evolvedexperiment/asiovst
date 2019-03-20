@@ -98,7 +98,7 @@ implementation
 {$ENDIF}
 
 uses
-  Inifiles, DAV_Common, DAV_Math;
+  Inifiles, DAV_Common, DAV_Convert, DAV_Math;
 
 resourcestring
   RCStrNoASIODriverPresent = 'No ASIO Driver present! Application Terminated!';

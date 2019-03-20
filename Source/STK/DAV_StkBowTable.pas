@@ -121,7 +121,7 @@ begin
   // The input represents differential string vs. bow velocity.
   sample := Input + FOffSet; // add bias to input
   sample := sample * FSlope; // then scale it
-  FLastOutput := abs(sample) + 0.75;
+  FLastOutput := Abs(sample) + 0.75;
   FLastOutput := power(FLastOutput, -4.0);
 
   // Set minimum friction to 0.0

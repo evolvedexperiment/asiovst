@@ -38,9 +38,7 @@ uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
   Forms, SyncObjs, Dialogs, DAV_Types, DAV_Complex, 
   DAV_DspAnalogueFilterPrototypes, DAV_DspWindowFunctions, DAV_DspConvolution, 
-  DAV_DspFftReal2Complex,
-  {$IFDEF Use_IPPS}DAV_DspFftReal2ComplexIPPS, DAV_DspWindowFunctionsAdvanced,
-  {$ENDIF} {$IFDEF Use_CUDA}DAV_DspFftReal2ComplexCUDA, {$ENDIF} DAV_VSTModule;
+  DAV_DspFftReal2Complex, DAV_VSTModule;
 
 type
   TWeightingFiltersDataModule = class(TVSTModule)
@@ -51,11 +49,11 @@ type
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure StringToWindowParameter(Sender: TObject; const Index: Integer; const ParameterString: string; var Value: Single);
-    procedure ParameterWindowFunctionsDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterWindowFunctionsDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterWindowFunctionsChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterTypeChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterTypeDisplay(
-      Sender: TObject; const Index: Integer; var PreDefined: string);
+      Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
   private
     FFilterKernel      : PDAVSingleFixedArray;
     FSignalPadded      : PDAVSingleFixedArray;
@@ -68,13 +66,7 @@ type
     FIRSize            : Integer;
     FAnaloguePrototype : TCustomAnalogueWeightingFilterPrototype;
 
-    {$IFDEF Use_IPPS}
-    FFft             : TFftReal2ComplexIPPSFloat32;
-    {$ELSE} {$IFDEF Use_CUDA}
-    FFft             : TFftReal2ComplexCUDA32;
-    {$ELSE}
     FFft             : TFftReal2ComplexNativeFloat32;
-    {$ENDIF}{$ENDIF}
     procedure CalculateFilterKernel;
   public
   end;
@@ -126,28 +118,14 @@ begin
    InitialDelay := Latency;
   end;
 
- {$IFDEF Use_IPPS}
- FFft := TFftReal2ComplexIPPSFloat32.Create(Round(Log2(FIRSize)));
-
- ReallocMem(FFilterFreq, (FIRSize div 2 + 1) * SizeOf(TComplex32));
- ReallocMem(FSignalFreq, (FIRSize div 2 + 1) * SizeOf(TComplex32));
- FillChar(FFilterFreq^[0], (FIRSize div 2 + 1) * SizeOf(TComplex32), 0);
- FillChar(FSignalFreq^[0], (FIRSize div 2 + 1) * SizeOf(TComplex32), 0);
- {$ELSE} {$IFDEF Use_CUDA}
  FFft := TFftReal2ComplexCUDA32.Create(Round(Log2(FIRSize)));
 
- ReallocMem(FFilterFreq, FIRSize * SizeOf(Single));
- ReallocMem(FSignalFreq, FIRSize * SizeOf(Single));
- FillChar(FFilterFreq^[0], FIRSize * SizeOf(Single), 0);
- FillChar(FSignalFreq^[0], FIRSize * SizeOf(Single), 0);
- {$ELSE}
  FFft := TFftReal2ComplexNativeFloat32.Create(Round(Log2(FIRSize)));
 
  ReallocMem(FFilterFreq, FIRSize * SizeOf(Single));
  ReallocMem(FSignalFreq, FIRSize * SizeOf(Single));
  FillChar(FFilterFreq^[0], FIRSize * SizeOf(Single), 0);
  FillChar(FSignalFreq^[0], FIRSize * SizeOf(Single), 0);
- {$ENDIF}{$ENDIF}
 
  ReallocMem(FFilterKernel, FIRSize * SizeOf(Single));
  ReallocMem(FSignalPadded, FIRSize * SizeOf(Single));
@@ -180,7 +158,7 @@ begin
 end;
 
 procedure TWeightingFiltersDataModule.ParameterWindowFunctionsDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := GWindowFunctions[Round(Parameter[Index])].GetWindowFunctionName;
 end;
@@ -221,7 +199,7 @@ begin
 end;
 
 procedure TWeightingFiltersDataModule.ParameterTypeDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 const
   CTypeNames : array [0..3] of string = ('A', 'B', 'C', 'D');
 begin
@@ -292,13 +270,7 @@ begin
   ComplexMultiplyInplace(FFilterFreq[h], Cmplx[1]);
 
   // calculate frequency
-  {$IFDEF Use_IPPS}
-  FFft.PerformIFFTCCS(FFilterFreq, FFilterKernel);
-  {$ELSE}{$IFDEF Use_CUDA}
-  FFft.PerformIFFTCCS(FFilterFreq, FFilterKernel);
-  {$ELSE}
   FFft.PerformIFFTPackedComplex(FFilterFreq, FFilterKernel);
-  {$ENDIF}{$ENDIF}
 
   if Assigned(FWindowFunction) then
    with FWindowFunction do

@@ -69,7 +69,7 @@ implementation
 {$ENDIF}
 
 uses
-  DAV_Common, DAV_Math, DAV_Approximations, DAV_VSTModuleWithDsp,
+  DAV_Common, DAV_Consts, DAV_Math, DAV_Approximations, DAV_VSTModuleWithDsp,
   OversampledTanhGUI;
 
 procedure TOversampledTanhModule.VSTModuleCreate(Sender: TObject);
@@ -198,8 +198,8 @@ begin
           Buffer[1] := ProcessSample32(FastTanhContinousError4(Buffer[1]) -
             CDenorm32);
         end;
-        Outputs[Channel][Sample] := FDownSampler2x[Channel]
-          .ProcessSample32(Buffer);
+        Outputs[Channel][Sample] :=
+          FDownSampler2x[Channel].ProcessSample32(Buffer);
       end;
   finally
     FCriticalSection.Leave;

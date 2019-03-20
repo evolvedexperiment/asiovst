@@ -231,7 +231,7 @@ end;
 function TVariableDelay32Linear.ProcessSample32(Input: Single): Single;
 begin
   FBuffer[FBufferPos] := Input;
-  inc(FBufferPos);
+  Inc(FBufferPos);
   if FBufferPos >= FBufferSize then
     FBufferPos := 1;
 
@@ -303,7 +303,7 @@ end;
 function TVariableDelay32Hermite.ProcessSample32(Input: Single): Single;
 begin
   FBuffer[FBufferPos] := Input;
-  inc(FBufferPos);
+  Inc(FBufferPos);
   if FBufferPos >= FBufferSize then
     FBufferPos := 2;
 
@@ -359,7 +359,7 @@ end;
 function TVariableDelay32Allpass.ProcessSample32(Input: Single): Single;
 begin
   FBuffer[FBufferPos] := Input;
-  inc(FBufferPos);
+  Inc(FBufferPos);
   if FBufferPos >= FBufferSize then
     FBufferPos := 0;
   Result := FAllpassFilter.ProcessSample64(FBuffer[FBufferPos]);

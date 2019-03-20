@@ -209,7 +209,7 @@ begin
    Outputs[1, Sample] := b[9];
   end;
 
- if (abs(b[1]) < 1E-10) then 
+ if (Abs(b[1]) < 1E-10) then
   begin
    FBuffer[0] := 0;
    FBuffer[1] := 0;

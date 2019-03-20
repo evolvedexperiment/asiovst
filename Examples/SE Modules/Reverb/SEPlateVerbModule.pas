@@ -261,7 +261,7 @@ begin
 
   for Sample := 0 to SampleFrames - 1 do
   begin
-    Mono := abs(FPlateReverb.ProcessSample32(Inp^[Sample]));
+    Mono := Abs(FPlateReverb.ProcessSample32(Inp^[Sample]));
     OutL^[Sample] := Mix[0] * Inp^[Sample] + Mix[1] * FPlateReverb.OutputLeft;
     OutR^[Sample] := Mix[0] * Inp^[Sample] + Mix[1] * FPlateReverb.OutputRight;
     if Mono > FPeak then

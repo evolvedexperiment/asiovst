@@ -42,7 +42,7 @@ procedure InvMDCT(Input: PDAV1024SingleArray; Output: PDAV1024SingleArray; Block
 implementation
 
 uses
-  DAV_Common;
+  DAV_Common, DAV_Consts;
 
 const
   CWin: array[0..3, 0..35] of Single = (

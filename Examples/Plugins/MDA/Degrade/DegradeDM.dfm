@@ -6,9 +6,7 @@ object DegradeDataModule: TDegradeDataModule
   ProductName = 'DAV mda'
   VendorName = 'Delphi ASIO & VST Project / mda'
   PlugCategory = vpcEffect
-  CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Degrade'
   IORatio = 1.000000000000000000
   UniqueID = 'mdaC'
@@ -20,7 +18,6 @@ object DegradeDataModule: TDegradeDataModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Headroom'
       LargeStepFloat = 2.000000000000000000
@@ -32,7 +29,6 @@ object DegradeDataModule: TDegradeDataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Quantize'
       LargeStepFloat = 2.000000000000000000
@@ -44,7 +40,6 @@ object DegradeDataModule: TDegradeDataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Rate'
       LargeStepFloat = 2.000000000000000000
@@ -56,7 +51,6 @@ object DegradeDataModule: TDegradeDataModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'PostFilter'
       LargeStepFloat = 2.000000000000000000
@@ -69,7 +63,6 @@ object DegradeDataModule: TDegradeDataModule
       OnParameterChange = ParameterPostFilterChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Non-Linear'
       LargeStepFloat = 2.000000000000000000
@@ -82,7 +75,6 @@ object DegradeDataModule: TDegradeDataModule
       OnParameterChange = ParameterNonLinearChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Output'
       LargeStepFloat = 2.000000000000000000
@@ -94,12 +86,11 @@ object DegradeDataModule: TDegradeDataModule
       VSTModule = Owner
       OnParameterChange = ParameterOutputChange
     end>
+  ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnParameterChange = VSTModuleParameterChange
   OnProcess = VSTModuleProcess
   OnProcess32Replacing = VSTModuleProcess
-  Left = 218
-  Top = 81
   Height = 150
   Width = 215
 end

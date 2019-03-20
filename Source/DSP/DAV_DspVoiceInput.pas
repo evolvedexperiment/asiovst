@@ -149,7 +149,7 @@ begin
 
   if (o < 0) then
     Result := Result + '-';
-  Result := Result + AnsiChar(48 + (abs(o) mod 10));
+  Result := Result + AnsiChar(48 + (Abs(o) mod 10));
 end;
 
 { TCustomVoiceInput }
@@ -286,9 +286,9 @@ begin
     (FLowpassState[1] - FLowpassState[0]);
 
   // fundamental level
-  FLowEnv := FLowEnv - FLowFreq * 0.1 * (FLowEnv - abs(FLowpassState[0]));
+  FLowEnv := FLowEnv - FLowFreq * 0.1 * (FLowEnv - Abs(FLowpassState[0]));
 
-  Result := abs((Input + 0.03) * FVUv);
+  Result := Abs((Input + 0.03) * FVUv);
 
   // overall level (+ constant so >f0 when quiet)
   FHighEnv := FHighEnv - FLowFreq * 0.1 * (FHighEnv - Result);
@@ -335,10 +335,10 @@ begin
     FSawPhase := FSawPhase - 1;
 
   // catch denormals
-  if (abs(FHighEnv) < 1E-10) then
+  if (Abs(FHighEnv) < 1E-10) then
     FHighEnv := 0;
 
-  if (abs(FLowpassState[1]) < 1E-10) then
+  if (Abs(FLowpassState[1]) < 1E-10) then
   begin
     FLowBuffer[0] := 0;
     FLowBuffer[1] := 0;

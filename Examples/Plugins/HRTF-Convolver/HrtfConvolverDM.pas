@@ -143,8 +143,7 @@ begin
   FreeAndNil(FConvolution[1]);
 end;
 
-function THrtfConvolverDataModule.GetConvolution(Index: Integer)
-  : TLowLatencyConvolution32;
+function THrtfConvolverDataModule.GetConvolution(Index: Integer): TLowLatencyConvolution32;
 begin
   if Index in [0 .. 1] then
     Result := FConvolution[Index]

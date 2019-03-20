@@ -72,7 +72,7 @@ implementation
 {$ENDIF}
 
 uses
-  Math, DAV_Common, DAV_VSTCustomModule;
+  Math, DAV_Common, DAV_Convert, DAV_VSTCustomModule;
 
 procedure TModDelayModule.VSTModuleCreate(Sender: TObject);
 begin

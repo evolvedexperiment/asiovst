@@ -82,7 +82,7 @@ implementation
 {$ENDIF}
 
 uses
-  DAV_Common, Math;
+  DAV_Common, DAV_Convert, Math;
 
 procedure TDubDelayDataModule.ParameterReleaseChange(Sender: TObject;
   const Index: Integer; var Value: Single);

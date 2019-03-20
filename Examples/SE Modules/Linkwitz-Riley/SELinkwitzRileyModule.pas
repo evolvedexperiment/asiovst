@@ -107,7 +107,7 @@ type
 implementation
 
 uses
-  SysUtils, DAV_Common;
+  SysUtils, DAV_Common, DAV_Consts;
 
 constructor TSELinkwitzRileyModule.Create(
   SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
@@ -337,7 +337,7 @@ begin
   OutHi := PDAVSingleFixedArray(@FOutHiBuffer[BufferOffset]);
 
   for Sample := 0 to SampleFrames - 1 do
-    FFilter.ProcessSample32(Input[Sample] + cDenorm32, OutLo^[Sample],
+    FFilter.ProcessSample32(Input[Sample] + CDenorm32, OutLo^[Sample],
       OutHi^[Sample]);
 end;
 
@@ -447,7 +447,7 @@ begin
   for Sample := 0 to SampleFrames - 1 do
   begin
     FFilter.Frequency := 10000 * Freq^[Sample];
-    FFilter.ProcessSample32(Input[Sample] + cDenorm32, OutLo^[Sample],
+    FFilter.ProcessSample32(Input[Sample] + CDenorm32, OutLo^[Sample],
       OutHi^[Sample]);
   end;
 end;

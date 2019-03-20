@@ -183,7 +183,7 @@ end;
 
 function TStkSitar.Tick: Single;
 begin
-  if (abs(FTargetDelay - FDelay) > 0.001) then
+  if Abs(FTargetDelay - FDelay) > 0.001 then
   begin
     if (FTargetDelay < FDelay) then
       FDelay := FDelay * 0.99999

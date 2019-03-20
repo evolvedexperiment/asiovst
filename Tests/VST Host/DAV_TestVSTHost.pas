@@ -4034,9 +4034,9 @@ begin
             // find peak delta
             Delta[Ndx] := 0;
             for Sample := 0 to BlockSize - 1 do
-              if abs(FOutput[0]^[Sample] - Buffer[Ndx]^[Sample]) > Delta[Ndx]
+              if Abs(FOutput[0]^[Sample] - Buffer[Ndx]^[Sample]) > Delta[Ndx]
               then
-                Delta[Ndx] := abs(FOutput[0]^[Sample] - Buffer[Ndx]^[Sample]);
+                Delta[Ndx] := Abs(FOutput[0]^[Sample] - Buffer[Ndx]^[Sample]);
 
             Move(FOutput[0]^[0], Buffer[Ndx]^[0], FBlockSize * SizeOf(Single));
 
@@ -4049,8 +4049,8 @@ begin
           // find peak
           Peak := 0;
           for Sample := 0 to BlockSize - 1 do
-            if abs(Buffer[Ndx]^[Sample]) > Peak then
-              Peak := abs(Buffer[Ndx]^[Sample]);
+            if Abs(Buffer[Ndx]^[Sample]) > Peak then
+              Peak := Abs(Buffer[Ndx]^[Sample]);
 
           // test peak
           if Peak = 0 then
@@ -4069,8 +4069,8 @@ begin
 
         Peak := 0;
         for Sample := 0 to BlockSize - 1 do
-          if abs(Buffer[0]^[Sample] - Buffer[1]^[Sample]) > Peak then
-            Peak := abs(Buffer[0]^[Sample] - Buffer[1]^[Sample]);
+          if Abs(Buffer[0]^[Sample] - Buffer[1]^[Sample]) > Peak then
+            Peak := Abs(Buffer[0]^[Sample] - Buffer[1]^[Sample]);
 
         if Peak < 1E-2 then
           Fail('The plugin seems to be samplerate dependent');

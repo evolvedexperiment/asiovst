@@ -265,7 +265,7 @@ procedure RegisterWindowFunctions(AClasses: array of TWindowFunctionClass);
 implementation
 
 uses
-  Math, SysUtils, DAV_Common, DAV_Math, DAV_BlockProcessing;
+  Math, SysUtils, DAV_Common, DAV_Math, DAV_BlockProcessing, DAV_Consts;
 
 resourcestring
   RCStrWindowDuplicate = 'Window function registered twice!';

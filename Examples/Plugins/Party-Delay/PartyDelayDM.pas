@@ -103,7 +103,7 @@ implementation
 {$ENDIF}
 
 uses
-  DAV_Common, DAV_Math, DAV_Complex, DAV_Approximations,
+  DAV_Common, DAV_Convert, DAV_Math, DAV_Complex, DAV_Approximations,
   DAV_VSTModuleWithPrograms, PartyDelayGui;
 
 procedure TPartyDelayDataModule.VSTModuleCreate(Sender: TObject);

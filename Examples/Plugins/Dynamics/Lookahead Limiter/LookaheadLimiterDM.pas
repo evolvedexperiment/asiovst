@@ -88,7 +88,7 @@ implementation
 {$ENDIF}
 
 uses
-  Math, {$IFDEF HAS_UNIT_ANSISTRINGS} AnsiStrings, {$ENDIF},
+  Math, {$IFDEF HAS_UNIT_ANSISTRINGS} AnsiStrings, {$ENDIF}
   DAV_Approximations, DAV_Common, DAV_VSTModuleWithPrograms,
   LookaheadLimiterGUI;
 
@@ -464,7 +464,7 @@ begin
  try
   for Sample := 0 to SampleFrames - 1 do
    begin
-    Temp := abs(Inputs[0, Sample]);
+    Temp := Abs(Inputs[0, Sample]);
     if Abs(Inputs[1, Sample]) > Temp
      then Temp := Abs(Inputs[1, Sample]);
 

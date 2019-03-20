@@ -176,7 +176,7 @@ begin
   if (a > 0) then
     a := a * 2;
   a := Power(3, a);
-  b := Power(abs(x), a);
+  b := Power(Abs(x), a);
   if (x < 0) then
     b := -b;
   Result := -sin(b * pi);

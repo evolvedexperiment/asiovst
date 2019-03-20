@@ -208,7 +208,7 @@ type
 implementation
 
 uses
-  Math, SysUtils, DAV_Common;
+  Math, SysUtils, DAV_Common, DAV_Consts;
 
 constructor TCustomSEFiltersModule.Create(
   SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
@@ -274,7 +274,7 @@ begin
   Output := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
 
   for Sample := 0 to SampleFrames - 1 do
-    Output^[Sample] := FFilter.ProcessSample64(Input[Sample] + cDenorm64);
+    Output^[Sample] := FFilter.ProcessSample64(Input[Sample] + CDenorm64);
 end;
 
 procedure TCustomSEFiltersModule.SubProcessStatic(const BufferOffset,
@@ -422,8 +422,8 @@ begin
   begin
     FFilter.Frequency := 10000 * Freq[Sample];
     FFilter.Gain := 10 * Gain[Sample];
-    FFilter.Bandwidth := 0.1 + 9.9 * abs(BW[Sample]);
-    Output^[Sample] := FFilter.ProcessSample64(Input[Sample] + cDenorm64);
+    FFilter.Bandwidth := 0.1 + 9.9 * Abs(BW[Sample]);
+    Output^[Sample] := FFilter.ProcessSample64(Input[Sample] + CDenorm64);
   end;
 end;
 
@@ -847,9 +847,9 @@ begin
   begin
     FFilter.Frequency := 10000 * Freq[Sample];
     FFilter.Gain := 15 * Gain[Sample];
-    FFilter.Bandwidth := 0.1 + 9.9 * abs(BW[Sample]);
+    FFilter.Bandwidth := 0.1 + 9.9 * Abs(BW[Sample]);
     TBasicShapeFilter(FFilter).Shape := Sym[Sample];
-    Output^[Sample] := FFilter.ProcessSample64(Input[Sample] + cDenorm64);
+    Output^[Sample] := FFilter.ProcessSample64(Input[Sample] + CDenorm64);
   end;
 end;
 
@@ -1007,7 +1007,7 @@ begin
 
   for Sample := 0 to SampleFrames - 1 do
     Output^[Sample] := FFilterCascade.ProcessSample64
-      (Input[Sample] + cDenorm64);
+      (Input[Sample] + CDenorm64);
 end;
 
 procedure TFilterCascadeModule.SubProcessStatic(const BufferOffset,

@@ -84,7 +84,7 @@ implementation
 {$ENDIF}
 
 uses
-  Math, DAV_Common, DAV_Approximations, XSynthGUI;
+  Math, DAV_Common, DAV_Consts, DAV_Convert, DAV_Approximations, XSynthGUI;
 
 procedure TVSTSSModule.VSTModuleOpen(Sender: TObject);
 begin

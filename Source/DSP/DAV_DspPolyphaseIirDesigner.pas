@@ -285,7 +285,7 @@ begin
     Result := Result + q_i1;
     j := -j;
     Inc(i);
-  until abs(q_i1) <= 1E-100;
+  until Abs(q_i1) <= 1E-100;
 end;
 
 class function TPolyphaseIirDesigner.ComputeACCDen(const Q: Double;
@@ -305,7 +305,7 @@ begin
     Result := Result + q_i2;
     j := -j;
     Inc(i);
-  until abs(q_i2) <= 1E-100;
+  until Abs(q_i2) <= 1E-100;
 end;
 
 end.

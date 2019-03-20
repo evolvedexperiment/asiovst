@@ -399,7 +399,7 @@ end;
 
 function TTriangleOscillator.ProcessSample32: Single;
 begin
-  Result := 2 * abs(inherited ProcessSample32) - 1;
+  Result := 2 * Abs(inherited ProcessSample32) - 1;
 end;
 
 { TRectangleOscillator }

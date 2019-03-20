@@ -1357,7 +1357,7 @@ end;
 procedure TCustomAsioHostBasic.SetSampleRate(Value: Double);
 begin
   // check for a valid samplerate
-  Value := abs(Value);
+  Value := Abs(Value);
   if (Value = 0) or (Value > 1048575) then
     Value := 44100;
 

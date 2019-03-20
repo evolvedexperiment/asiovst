@@ -117,7 +117,7 @@ implementation
 {$ENDIF}
 
 uses
-  Math, DAV_Common, PartyDelayDM;
+  Math, DAV_Common, DAV_Convert, PartyDelayDM;
 
 procedure TFmPartyDelay.FormShow(Sender: TObject);
 begin

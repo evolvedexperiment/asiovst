@@ -1484,6 +1484,7 @@ object FmParametriQLite: TFmParametriQLite
     YAxis.UpperLevel = 18.000000000000000000
     YAxis.Granularity = 10.000000000000000000
     YAxis.MaximumGridLines = 4
+    YAxis.MouseActions = []
     Color = 1447701
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 12106167

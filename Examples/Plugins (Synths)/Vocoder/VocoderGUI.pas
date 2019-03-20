@@ -119,8 +119,7 @@ var
 const
   CVeloDiv: Single = 1/128;
 begin
-  Note := KeyToNote(Key);
-  if Note = -1 then
+  if not KeyToNote(Key, Note) then
     Exit;
 
   Assert(Owner is TVSTSSModule);
@@ -148,8 +147,7 @@ var
   i: Integer;
   Note: Byte;
 begin
-  Note := KeyToNote(Key);
-  if Note = -1 then
+  if not KeyToNote(Key, Note) then
     Exit;
 
   TVSTSSModule(Owner).MidiNoteOff(0, Note, 100);

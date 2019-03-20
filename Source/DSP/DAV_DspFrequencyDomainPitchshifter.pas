@@ -36,8 +36,6 @@ interface
 
 uses
   Classes, DAV_Types, DAV_Classes, DAV_ClassesFft, DAV_Complex,
-{$IFDEF Use_IPPS}DAV_DspFftReal2ComplexIPPS, {$ENDIF}
-{$IFDEF Use_CUDA}DAV_DspFftReal2ComplexCUDA, {$ENDIF}
   DAV_DspFftReal2Complex, DAV_DspWindowFunctions;
 
 type
@@ -61,13 +59,7 @@ type
   TCustomFrequencyDomainPitchShifter32 = class
     (TCustomFrequencyDomainPitchShifter)
   private
-{$IFDEF Use_IPPS}
-    function GetFft: TFftReal2ComplexIPPSFloat32;
-{$ELSE} {$IFDEF Use_CUDA}
-    function GetFft: TFftReal2ComplexCUDA32;
-{$ELSE}
     function GetFft: TFftReal2ComplexNativeFloat32;
-{$ENDIF}{$ENDIF}
   protected
     FSignalFreq: PDAVComplexSingleFixedArray;
     FInputBuffer: PDAVSingleFixedArray;
@@ -91,13 +83,7 @@ type
       overload; virtual;
     // procedure PerformSpectralEffect(Spectum: PDAVComplexSingleFixedArray); overload; virtual;
 
-{$IFDEF Use_IPPS}
-    property Fft: TFftReal2ComplexIPPSFloat32 read GetFft;
-{$ELSE} {$IFDEF Use_CUDA}
-    property Fft: TFftReal2ComplexCUDA32 read GetFft;
-{$ELSE}
     property Fft: TFftReal2ComplexNativeFloat32 read GetFft;
-{$ENDIF}{$ENDIF}
   public
     constructor Create; override;
     destructor Destroy; override;
@@ -193,14 +179,8 @@ begin
 
   FSignalFreq := nil;
 
-{$IFDEF Use_IPPS}
-  FFft := TFftReal2ComplexIPPSFloat32.Create(6);
-{$ELSE} {$IFDEF Use_CUDA}
-  FFft := TFftReal2ComplexCUDA32.Create(6);
-{$ELSE}
   FFft := TFftReal2ComplexNativeFloat32.Create(6);
   FFft.DataOrder := doPackedComplex;
-{$ENDIF}{$ENDIF}
   FFTOrderChanged;
 end;
 
@@ -252,29 +232,11 @@ begin
   FillChar(FSynFreq^[0], Fft.FFTSize * SizeOf(Single), 0);
 end;
 
-{$IFDEF Use_IPPS}
-
-function TCustomFrequencyDomainPitchShifter32.GetFft
-  : TFftReal2ComplexIPPSFloat32;
-begin
-  Result := TFftReal2ComplexIPPSFloat32(FFft);
-end;
-
-{$ELSE} {$IFDEF Use_CUDA}
-
-function TCustomFrequencyDomainPitchShifter32.GetFft: TFftReal2ComplexCUDA32;
-begin
-  Result := TFftReal2ComplexCUDA32(FFft);
-end;
-
-{$ELSE}
-
 function TCustomFrequencyDomainPitchShifter32.GetFft
   : TFftReal2ComplexNativeFloat32;
 begin
   Result := TFftReal2ComplexNativeFloat32(FFft);
 end;
-{$ENDIF}{$ENDIF}
 
 procedure TCustomFrequencyDomainPitchShifter32.ProcessBlock(const Input,
   Output: PDAVSingleFixedArray; const SampleFrames: Integer);

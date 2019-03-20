@@ -658,7 +658,7 @@ function CheckValidVstPlugin(const FileName: TFilename): Boolean;
 implementation
 
 uses
-  {$IFDEF MSWINDOWS} Registry, {$ENDIF} DAV_Common;
+  {$IFDEF MSWINDOWS} Registry, {$ENDIF} DAV_Common, DAV_Consts;
 
 {$IFDEF DELPHI10_UP} {$region 'Resource Strings'} {$ENDIF}
 resourcestring

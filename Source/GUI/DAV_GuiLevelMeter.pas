@@ -923,7 +923,7 @@ begin
       Pen.Color := HLSToRGB(H, L, S);
       MoveTo(ClipRect.Left, y);
       LineTo(ClipRect.Right, y);
-      inc(y, fLineWidth);
+      Inc(y, fLineWidth);
     end;
   end;
 end;

@@ -179,7 +179,7 @@ type
 implementation
 
 uses
-  SysUtils, DAV_Common;
+  SysUtils, DAV_Common, DAV_Consts;
 
 destructor TSECustomChebyshev2FilterModule.Destroy;
 begin
@@ -361,7 +361,7 @@ begin
         Pin[1].TransmitStatusChange(SampleClock, Pin[0].Status);
       end;
     pinFrequency:
-      FFilter.Frequency := 1E-5 + abs(1000 * FFrequency);
+      FFilter.Frequency := 1E-5 + Abs(1000 * FFrequency);
     pinOrder:
       FFilter.Order := FOrder;
     pinCorrectFrequency:
@@ -387,7 +387,7 @@ begin
   // sampleFrames = how many samples to process (can vary). repeat (loop) that many times
   begin
     // do the actual processing (multiplying the two input samples together)
-    Output^[Sample] := FFilter.ProcessSample64(Input[Sample] + cDenorm64);
+    Output^[Sample] := FFilter.ProcessSample64(Input[Sample] + CDenorm64);
   end;
 end;
 
@@ -549,9 +549,9 @@ begin
 
   for Sample := 0 to SampleFrames - 1 do
   begin
-    FFilter.Frequency := 1E-5 + abs(10000 * Freq[Sample]);
+    FFilter.Frequency := 1E-5 + Abs(10000 * Freq[Sample]);
     FFilter.Stopband := 10 * Stopband[Sample];
-    Output^[Sample] := FFilter.ProcessSample64(Input[Sample] + cDenorm64);
+    Output^[Sample] := FFilter.ProcessSample64(Input[Sample] + CDenorm64);
   end;
 end;
 
@@ -566,7 +566,7 @@ begin
   Input := PDAVSingleFixedArray(@FInput1Buffer[BufferOffset]);
   Output := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
   for Sample := 0 to SampleFrames - 1 do
-    Output^[Sample] := FFilter.ProcessSample64(Input[Sample] + cDenorm64);
+    Output^[Sample] := FFilter.ProcessSample64(Input[Sample] + CDenorm64);
 end;
 
 { TSEAutomatebleChebyshev2FilterLPModule }
@@ -622,10 +622,10 @@ begin
   begin
     if (Sample div 2 = 0) then
     begin
-      FFilter.Frequency := 1E-5 + abs(10000 * Freq[Sample]);
+      FFilter.Frequency := 1E-5 + Abs(10000 * Freq[Sample]);
       FFilter.Stopband := 10 * Stopband[Sample];
     end;
-    Output^[Sample] := FFilter.ProcessSample64(Input[Sample] + cDenorm64);
+    Output^[Sample] := FFilter.ProcessSample64(Input[Sample] + CDenorm64);
   end;
 end;
 

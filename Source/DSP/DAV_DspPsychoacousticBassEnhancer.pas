@@ -242,7 +242,7 @@ type
 implementation
 
 uses
-  SysUtils, DAV_Common, DAV_DspInterpolation;
+  SysUtils, DAV_Common, DAV_DspInterpolation, DAV_Convert;
 
 { TCustomPsychoAcousticBassEnhancer }
 

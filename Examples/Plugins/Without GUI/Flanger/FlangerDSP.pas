@@ -133,7 +133,7 @@ begin
   if Index in [0 .. 1] then
     Result := FVibrato[Index]
   else
-    raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
+    raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
 end;
 
 procedure TFlangerModule.ParamSpeedChange(Sender: TObject; const Index: Integer;

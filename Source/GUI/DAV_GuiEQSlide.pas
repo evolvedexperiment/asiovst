@@ -199,7 +199,7 @@ type
 implementation
 
 uses
-  Math, DAV_Common, DAV_GuiBlend, DAV_Approximations;
+  Math, DAV_Common, DAV_GuiBlend, DAV_Approximations, DAV_Consts;
 
 { TCustomGuiEQSlideAxis }
 

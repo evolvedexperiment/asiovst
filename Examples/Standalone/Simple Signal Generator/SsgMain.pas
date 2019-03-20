@@ -98,7 +98,7 @@ implementation
 {$ENDIF}
 
 uses
-  SysUtils, Inifiles, DAV_Common, DAV_Math, DAV_Approximations;
+  SysUtils, Inifiles, DAV_Common, DAV_Math, DAV_Approximations, DAV_Convert;
 
 procedure TFormASIO.FormCreate(Sender: TObject);
 begin

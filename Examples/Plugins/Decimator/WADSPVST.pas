@@ -99,7 +99,8 @@ procedure Quit(This_Mod : PWinAmpDSPModule); cdecl;
 
 implementation
 
-uses Math, SyncObjs, DAV_Types, DAV_VSTEffect;
+uses
+  Math, SyncObjs, DAV_Common, DAV_Types, DAV_VSTEffect, DAV_Approximations;
 
 var
   WADSPHeader  : TWinAmpDSPheader =
@@ -182,75 +183,91 @@ const
   DivFak16 : Single = 1/$8000;   MulFak16:Single = $7FFF;
   DivFak24 : Single = 1/$800000; MulFak24:Single = $7FFFFF;
 begin
- CriticalSection.Enter;
- try
-  if Assigned(This_Mod^.UserData^) then
-   case BitPerSample of
-    8: with This_Mod^.UserData^ do if Assigned(VstHost) then
-         if VstHost[0].Active then
-          begin
-           VstHost[0].SetBlockSizeAndSampleRate(NumSamples,sRate);
-           ch := max(VstHost[0].numInputs,VstHost[0].numOutputs);
-           ch := max(nCh,ch);
-           SetLength(TmpData,ch);
-           for i := 0 to ch-1 do
-            begin
-             SetLength(TmpData[i],NumSamples);
-             if i<nCh then
-              for j := 0 to NumSamples-1 do TmpData[i,j] := PShortIntArray(Samples)^[j*nCh+i]*DivFak8;
-            end;
+  CriticalSection.Enter;
+  try
+    if Assigned(This_Mod^.UserData^) then
+      case BitPerSample of
+        8:
+          with This_Mod^.UserData^ do
+            if Assigned(VstHost) then
+              if VstHost[0].Active then
+              begin
+                VstHost[0].SetBlockSizeAndSampleRate(NumSamples, sRate);
+                ch := max(VstHost[0].numInputs, VstHost[0].numOutputs);
+                ch := max(nCh, ch);
+                SetLength(TmpData, ch);
+                for i := 0 to ch - 1 do
+                begin
+                  SetLength(TmpData[i], NumSamples);
+                  if i < nCh then
+                    for j := 0 to NumSamples - 1 do
+                      TmpData[i, j] := PShortIntArray(Samples)^[j * nCh + i] * DivFak8;
+                end;
 
-           VstHost[0].ProcessReplacing(@TmpData[0],@TmpData[0], NumSamples);
-           for i := 0 to ch-1 do if i<nCh then
-            for j := 0 to NumSamples-1
-             do PShortIntArray(Samples)^[j*nCh+i] := Round(f_Limit(1.9*Tanh2b(TmpData[i,j]))*MulFak8);
-          end;
-    16: with This_Mod^.UserData^ do if Assigned(VstHost) then
-         if VstHost[0].Active then
-          begin
-           VstHost[0].SetBlockSizeAndSampleRate(NumSamples,sRate);
-           ch := max(VstHost[0].numInputs,VstHost[0].numOutputs);
-           ch := max(nCh,ch);
-           SetLength(TmpData,ch);
-           for i := 0 to ch-1 do
-            begin
-             SetLength(TmpData[i],NumSamples);
-             if i<nCh then
-              for j := 0 to NumSamples-1 do TmpData[i,j] := PSmallIntArray(Samples)^[j*nCh+i]*DivFak16;
-            end;
+                VstHost[0].Process32Replacing(@TmpData[0], @TmpData[0], NumSamples);
+                for i := 0 to ch - 1 do
+                  if i < nCh then
+                    for j := 0 to NumSamples - 1 do
+                      PShortIntArray(Samples)^[j * nCh + i] :=
+                        Round(Limit(1.9 * FastTanh2Like3Term(TmpData[i, j])) * MulFak8);
+              end;
+        16:
+          with This_Mod^.UserData^ do
+            if Assigned(VstHost) then
+              if VstHost[0].Active then
+              begin
+                VstHost[0].SetBlockSizeAndSampleRate(NumSamples, sRate);
+                ch := max(VstHost[0].numInputs, VstHost[0].numOutputs);
+                ch := max(nCh, ch);
+                SetLength(TmpData, ch);
+                for i := 0 to ch - 1 do
+                begin
+                  SetLength(TmpData[i], NumSamples);
+                  if i < nCh then
+                    for j := 0 to NumSamples - 1 do
+                      TmpData[i, j] := PSmallIntArray(Samples)^[j * nCh + i] * DivFak16;
+                end;
 
-           VstHost[0].ProcessReplacing(@TmpData[0],@TmpData[0], NumSamples);
-           for i := 0 to ch-1 do if i<nCh then
-            for j := 0 to NumSamples-1
-             do PSmallIntArray(Samples)^[j*nCh+i] := Round(f_Limit(1.9*Tanh2b(TmpData[i,j]))*MulFak16);
-          end;
-    24: with This_Mod^.UserData^ do if Assigned(VstHost) then
-         if VstHost[0].Active then
-          begin
-           VstHost[0].SetBlockSizeAndSampleRate(NumSamples,sRate);
-           ch := max(VstHost[0].numInputs,VstHost[0].numOutputs);
-           ch := max(nCh,ch);
-           SetLength(TmpData,ch);
-           for i := 0 to ch-1 do
-            begin
-             SetLength(TmpData[i],NumSamples);
-             if i<nCh then
-              for j := 0 to NumSamples-1
-               do TmpData[i,j] := ((ShortInt(P3ByteArray(Samples)^[j*nCh+i][2]) shl 16) +
-                                 (P3ByteArray(Samples)^[j*nCh+i][1] shl 8)  +
-                                 (P3ByteArray(Samples)^[j*nCh+i][0] )) * DivFak24;
-            end;
-           VstHost[0].ProcessReplacing(@TmpData[0],@TmpData[0], NumSamples);
+                VstHost[0].Process32Replacing(@TmpData[0], @TmpData[0],
+                  NumSamples);
+                for i := 0 to ch - 1 do
+                  if i < nCh then
+                    for j := 0 to NumSamples - 1 do
+                      PSmallIntArray(Samples)^[j * nCh + i] :=
+                        Round(Limit(1.9 * FastTanh2Like3Term(TmpData[i, j])) * MulFak16);
+              end;
+        24:
+          with This_Mod^.UserData^ do
+            if Assigned(VstHost) then
+              if VstHost[0].Active then
+              begin
+                VstHost[0].SetBlockSizeAndSampleRate(NumSamples, sRate);
+                ch := max(VstHost[0].numInputs, VstHost[0].numOutputs);
+                ch := max(nCh, ch);
+                SetLength(TmpData, ch);
+                for i := 0 to ch - 1 do
+                begin
+                  SetLength(TmpData[i], NumSamples);
+                  if i < nCh then
+                    for j := 0 to NumSamples - 1 do
+                      TmpData[i, j] :=
+                        ((ShortInt(P3ByteArray(Samples)^[j * nCh + i][2]) shl 16) +
+                         (P3ByteArray(Samples)^[j * nCh + i][1] shl 8) +
+                         (P3ByteArray(Samples)^[j * nCh + i][0])) * DivFak24;
+                end;
+                VstHost[0].Process32Replacing(@TmpData[0], @TmpData[0],
+                  NumSamples);
 
-           for i := 0 to ch-1 do if i<nCh then
-            for j := 0 to NumSamples-1 do
-             begin
-              Temp := Round(f_Limit(1.9*Tanh2b(TmpData[i,j]))*MulFak24);
-              P3ByteArray(Samples)^[j*nCh+i][2] := (Temp shr 16) and $FF;
-              P3ByteArray(Samples)^[j*nCh+i][1] := (Temp shr 8 ) and $FF;
-              P3ByteArray(Samples)^[j*nCh+i][0] := (Temp       ) and $FF;
-             end;
-          end;
+                for i := 0 to ch - 1 do
+                  if i < nCh then
+                    for j := 0 to NumSamples - 1 do
+                    begin
+                      Temp := Round(Limit(1.9 * FastTanh2Like3Term(TmpData[i, j])) * MulFak24);
+                      P3ByteArray(Samples)^[j * nCh + i][2] := (Temp shr 16) and $FF;
+                      P3ByteArray(Samples)^[j * nCh + i][1] := (Temp shr 8) and $FF;
+                      P3ByteArray(Samples)^[j * nCh + i][0] := (Temp) and $FF;
+                    end;
+              end;
       end;
     Result := NumSamples;
   finally
@@ -357,7 +374,7 @@ begin
 
       DecimatorModule := TVSTDecimator.Create(Application);
       DecimatorModule.Effect^.user := DecimatorModule;
-      DecimatorModule.AudioMaster := AudioMaster;
+      DecimatorModule.AudioMaster := GAudioMaster;
       LoadFromVSTEffect(DecimatorModule.Effect);
 
       Active := True;

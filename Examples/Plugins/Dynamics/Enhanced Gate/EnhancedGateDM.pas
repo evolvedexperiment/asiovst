@@ -326,8 +326,8 @@ begin
       Outputs[SampleIndex, ChannelIndex] := FEnhancedGates[SampleIndex].ProcessSample64(
         Inputs[SampleIndex, ChannelIndex]);
       FLevels[SampleIndex] := 0.99 * FLevels[SampleIndex];
-      if abs(Inputs[SampleIndex, ChannelIndex]) > FLevels[SampleIndex] then
-        FLevels[SampleIndex] := abs(Inputs[SampleIndex, ChannelIndex]);
+      if Abs(Inputs[SampleIndex, ChannelIndex]) > FLevels[SampleIndex] then
+        FLevels[SampleIndex] := Abs(Inputs[SampleIndex, ChannelIndex]);
     end;
 end;
 
@@ -347,10 +347,10 @@ procedure TEnhancedGateDataModule.VSTModuleSampleRateChange(Sender: TObject;
 var
   Channel: Integer;
 begin
-  if abs(SampleRate) > 0 then
+  if Abs(SampleRate) > 0 then
     for Channel := 0 to CNrChannels - 1 do
       if Assigned(FEnhancedGates[Channel]) then
-        FEnhancedGates[Channel].SampleRate := abs(SampleRate);
+        FEnhancedGates[Channel].SampleRate := Abs(SampleRate);
 end;
 
 end.

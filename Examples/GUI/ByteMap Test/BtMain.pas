@@ -83,140 +83,139 @@ uses
 
 procedure TFmBytemapTest.FormCreate(Sender: TObject);
 begin
- {$IFDEF DIB}
- FGuiBitmap := TGuiByteMapDIB.Create;
- {$ELSE}
- FGuiBitmap := TGuiByteMapMemory.Create;
- {$ENDIF}
-
- with FGuiBitmap do
+{$IFDEF DIB}
+  FGuiBitmap := TGuiByteMapDIB.Create;
+{$ELSE}
+  FGuiBitmap := TGuiByteMapMemory.Create;
+{$ENDIF}
+  with FGuiBitmap do
   begin
-   Width := PaintBox.Width;
-   Height := PaintBox.Height;
+    Width := PaintBox.Width;
+    Height := PaintBox.Height;
   end;
 
- PaintBox.ControlStyle := PaintBox.ControlStyle + [csOpaque];
+  PaintBox.ControlStyle := PaintBox.ControlStyle + [csOpaque];
 
- {$IFDEF FPC}
- ControlStyle := ControlStyle + [csOpaque];
- DoubleBuffered := True;
- {$ENDIF}
+{$IFDEF FPC}
+  ControlStyle := ControlStyle + [csOpaque];
+  DoubleBuffered := True;
+{$ENDIF}
 end;
 
 procedure TFmBytemapTest.FormDestroy(Sender: TObject);
 begin
- FreeAndNil(FGuiBitmap);
+  FreeAndNil(FGuiBitmap);
 end;
 
 procedure TFmBytemapTest.PaintBoxPaint(Sender: TObject);
 begin
- FGuiBitmap.PaintTo(PaintBox.Canvas);
+  FGuiBitmap.PaintTo(PaintBox.Canvas);
 end;
 
 procedure TFmBytemapTest.RenderFillRectBitmap;
 var
-  Data  : Byte;
-  Level : Integer;
-  X, Y  : Integer;
+  Data: Byte;
+  Level: Integer;
+  X, Y: Integer;
 begin
- with FGuiBitmap do
-  for Level := 0 to 10 do
-   begin
-    Data := Random($FF);
-    X := Random(Width);
-    Y := Random(Height);
-    FillRect(Rect(X, Y, X + Random(Width - 1 - X), Y + Random(Height - 1 - Y)), Data);
-   end;
+  with FGuiBitmap do
+    for Level := 0 to 10 do
+    begin
+      Data := Random($FF);
+      X := Random(Width);
+      Y := Random(Height);
+      FillRect(Rect(X, Y, X + Random(Width - 1 - X), Y + Random(Height - 1 - Y)), Data);
+    end;
 end;
 
 procedure TFmBytemapTest.RenderFrameRectBitmap;
 var
-  Data  : Byte;
-  Level : Integer;
-  X, Y  : Integer;
+  Data: Byte;
+  Level: Integer;
+  X, Y: Integer;
 begin
- with FGuiBitmap do
-  for Level := 0 to 10 do
-   begin
-    Data := Random($FF);
-    X := Random(Width);
-    Y := Random(Height);
-    FrameRect(Rect(X, Y, X + Random(Width - X), Y + Random(Height - Y)), Data);
-   end;
+  with FGuiBitmap do
+    for Level := 0 to 10 do
+    begin
+      Data := Random($FF);
+      X := Random(Width);
+      Y := Random(Height);
+      FrameRect(Rect(X, Y, X + Random(Width - X), Y + Random(Height - Y)), Data);
+    end;
 end;
 
 procedure TFmBytemapTest.RenderLineBitmap;
 var
-  Data  : Byte;
-  Level : Integer;
+  Data: Byte;
+  Level: Integer;
 begin
- with FGuiBitmap do
-  for Level := 0 to 10 do
-   begin
-    Data := Random($FF);
-    Line(Random(Width), Random(Height), Random(Width), Random(Height), Data);
-   end;
+  with FGuiBitmap do
+    for Level := 0 to 10 do
+    begin
+      Data := Random($FF);
+      Line(Random(Width), Random(Height), Random(Width), Random(Height), Data);
+    end;
 end;
 
 procedure TFmBytemapTest.RenderLineCircleBitmap;
 var
-  Data   : Byte;
-  Level  : Integer;
-  Index  : Integer;
-  Center : TPoint;
-  X, Y   : Single;
+  Data: Byte;
+  Level: Integer;
+  Index: Integer;
+  Center: TPoint;
+  X, Y: Single;
 begin
- with FGuiBitmap do
-  for Level := 0 to 10 do
-   begin
-    Center.X := Width div 2;
-    Center.Y := Height div 2;
-    for Index := 0 to 35 do
-     begin
-      Data := Random($FF);
-      GetSinCos(Pi * Index / 18, X, Y);
-      Line(Center.X, Center.Y, Round(Center.X * (1 + 0.9 * X )),
-        Round(Center.Y * (1 + 0.9 * Y)), Data);
-     end;
-   end;
+  with FGuiBitmap do
+    for Level := 0 to 10 do
+    begin
+      Center.X := Width div 2;
+      Center.Y := Height div 2;
+      for Index := 0 to 35 do
+      begin
+        Data := Random($FF);
+        GetSinCos(Pi * Index / 18, X, Y);
+        Line(Center.X, Center.Y, Round(Center.X * (1 + 0.9 * X)),
+          Round(Center.Y * (1 + 0.9 * Y)), Data);
+      end;
+    end;
 end;
 
 procedure TFmBytemapTest.BtCountTestClick(Sender: TObject);
 var
-  i : Integer;
+  i: Integer;
 begin
- i := 0;
- while i < 1 shl 16 do
-  try
-   with TGuiByteMapMemory.Create do
-    begin
-     Width := 100;
-     Height := 100;
+  i := 0;
+  while i < 1 shl 16 do
+    try
+      with TGuiByteMapMemory.Create do
+      begin
+        Width := 100;
+        Height := 100;
+      end;
+      Inc(i);
+    except
+      raise Exception.CreateFmt('Only %d bitmaps created', [i]);
     end;
-   Inc(i);
-  except
-   raise Exception.CreateFmt('Only %d bitmaps created', [i]);
-  end;
 end;
 
 procedure TFmBytemapTest.BtPaintTestClick(Sender: TObject);
 begin
- ClearBitmap;
- RenderLineCircleBitmap;
-// RenderFillRectBitmap;
-// RenderFrameRectBitmap;
- PaintBox.Invalidate;
+  ClearBitmap;
+  RenderLineCircleBitmap;
+  // RenderFillRectBitmap;
+  // RenderFrameRectBitmap;
+  PaintBox.Invalidate;
 end;
 
 procedure TFmBytemapTest.BtSaveClick(Sender: TObject);
 begin
- RenderLineCircleBitmap;
- FGuiBitmap.SaveToFile('Test.bmp');
+  RenderLineCircleBitmap;
+  FGuiBitmap.SaveToFile('Test.bmp');
 end;
 
 procedure TFmBytemapTest.ClearBitmap;
 begin
- FGuiBitmap.Clear;
+  FGuiBitmap.Clear;
 end;
 
 end.

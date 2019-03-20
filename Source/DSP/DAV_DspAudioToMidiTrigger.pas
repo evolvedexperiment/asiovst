@@ -106,7 +106,7 @@ type
 implementation
 
 uses
-  SysUtils, DAV_Common, DAV_Strings;
+  SysUtils, DAV_Common, DAV_Strings, DAV_Convert;
 
 { TCustomAudio2MidiTrigger }
 
@@ -288,10 +288,10 @@ begin
 
   // check if interval is over
   if (FSampleCount >= 0) then
-    if (abs(Result) > FThresholdFactor) then
+    if (Abs(Result) > FThresholdFactor) then
     begin
       if Assigned(FOnTrigger) then
-        FOnTrigger(Self, Amp_to_dB(abs(Result)));
+        FOnTrigger(Self, Amp_to_dB(Abs(Result)));
 
       // reset sample count
       FSampleCount := FSampleInterval;
@@ -319,10 +319,10 @@ begin
 
   // check if interval is over
   if (FSampleCount >= 0) then
-    if (abs(Result) > FThresholdFactor) then
+    if (Abs(Result) > FThresholdFactor) then
     begin
       if Assigned(FOnTrigger) then
-        FOnTrigger(Self, Amp_to_dB(abs(Result)));
+        FOnTrigger(Self, Amp_to_dB(Abs(Result)));
 
       // reset sample count
       FSampleCount := FSampleInterval;

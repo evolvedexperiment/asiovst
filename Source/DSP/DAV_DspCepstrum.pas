@@ -35,9 +35,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, DAV_Types, DAV_Complex, DAV_Classes, DAV_DspFftReal2Complex
-{$IFDEF Use_IPPS}, DAV_DspFftReal2ComplexIPPS{$ENDIF}
-{$IFDEF Use_CUDA}, DAV_DspFftReal2ComplexCUDA{$ENDIF};
+  Classes, DAV_Types, DAV_Complex, DAV_Classes, DAV_DspFftReal2Complex;
 
 type
   TCustomCepstrum = class(TDspPersistent)
@@ -61,13 +59,7 @@ type
 
   TPowerCepstrum32 = class(TCustomPowerCepstrum)
   private
-{$IFDEF Use_IPPS}
-    function GetFft: TFftReal2ComplexIPPSFloat32;
-{$ELSE} {$IFDEF Use_CUDA}
-    function GetFft: TFftReal2ComplexCUDA32;
-{$ELSE}
     function GetFft: TFftReal2ComplexNativeFloat32;
-{$ENDIF}{$ENDIF}
   protected
     FSignalFreq: PDAVComplexSingleFixedArray;
     FFreqSignal: PDAVSingleFixedArray;
@@ -75,13 +67,7 @@ type
     procedure AssignTo(Dest: TPersistent); override;
     procedure FFTOrderChanged; override;
 
-{$IFDEF Use_IPPS}
-    property Fft: TFftReal2ComplexIPPSFloat32 read GetFft;
-{$ELSE} {$IFDEF Use_CUDA}
-    property Fft: TFftReal2ComplexCUDA32 read GetFft;
-{$ELSE}
     property Fft: TFftReal2ComplexNativeFloat32 read GetFft;
-{$ENDIF}{$ENDIF}
   public
     constructor Create; override;
     destructor Destroy; override;
@@ -95,22 +81,14 @@ type
 
   TPowerCepstrum64 = class(TCustomCepstrum)
   private
-{$IFDEF Use_IPPS}
-    function GetFft: TFftReal2ComplexIPPSFloat64;
-{$ELSE}
     function GetFft: TFftReal2ComplexNativeFloat64;
-{$ENDIF}
   protected
     FSignalFreq: PDAVComplexDoubleFixedArray;
     FFreqSignal: PDAVDoubleFixedArray;
 
     procedure FFTOrderChanged; override;
 
-{$IFDEF Use_IPPS}
-    property Fft: TFftReal2ComplexIPPSFloat64 read GetFft;
-{$ELSE}
     property Fft: TFftReal2ComplexNativeFloat64 read GetFft;
-{$ENDIF}
   public
     constructor Create; override;
     destructor Destroy; override;
@@ -180,14 +158,9 @@ constructor TPowerCepstrum32.Create;
 begin
   inherited;
 
-{$IFDEF Use_IPPS}
-  FFFT := TFftReal2ComplexIPPSFloat32.Create(6);
-{$ELSE} {$IFDEF Use_CUDA}
-  FFFT := TFftReal2ComplexCUDA32.Create(6);
-{$ELSE}
   FFFT := TFftReal2ComplexNativeFloat32.Create(6);
   FFFT.DataOrder := doPackedComplex;
-{$ENDIF}{$ENDIF}
+
   FFTOrderChanged;
 end;
 
@@ -214,27 +187,10 @@ begin
   FillChar(FFreqSignal, FFFTSize * SizeOf(Single), 0);
 end;
 
-{$IFDEF Use_IPPS}
-
-function TPowerCepstrum32.GetFft: TFftReal2ComplexIPPSFloat32;
-begin
-  Result := TFftReal2ComplexIPPSFloat32(FFFT);
-end;
-
-{$ELSE} {$IFDEF Use_CUDA}
-
-function TPowerCepstrum32.GetFft: TFftReal2ComplexCUDA32;
-begin
-  Result := TFftReal2ComplexCUDA32(FFFT);
-end;
-
-{$ELSE}
-
 function TPowerCepstrum32.GetFft: TFftReal2ComplexNativeFloat32;
 begin
   Result := TFftReal2ComplexNativeFloat32(FFFT);
 end;
-{$ENDIF}{$ENDIF}
 
 procedure TPowerCepstrum32.CalculateCepstrum(const Signal: PDAVSingleFixedArray;
   const Cepstrum: PDAVComplexSingleFixedArray);
@@ -242,11 +198,11 @@ var
   i: Integer;
 begin
   Fft.PerformFFT(FSignalFreq, Signal);
-  FFreqSignal[0] := 2 * FastLog2MinError4(abs(FSignalFreq[0].Re));
+  FFreqSignal[0] := 2 * FastLog2MinError4(Abs(FSignalFreq[0].Re));
   for i := 1 to FFFTSizeHalf - 1 do
     FFreqSignal[i] := FastLog2MinError4(sqr(FSignalFreq[i].Re) +
       sqr(FSignalFreq[i].Im));
-  FFreqSignal[FFFTSizeHalf] := 2 * FastLog2MinError4(abs(FSignalFreq[0].Re));
+  FFreqSignal[FFFTSizeHalf] := 2 * FastLog2MinError4(Abs(FSignalFreq[0].Re));
   Fft.PerformFFT(Cepstrum, FFreqSignal);
 end;
 
@@ -256,14 +212,8 @@ constructor TPowerCepstrum64.Create;
 begin
   inherited;
 
-{$IFDEF Use_IPPS}
-  FFFT := TFftReal2ComplexIPPSFloat32.Create(6);
-{$ELSE} {$IFDEF Use_CUDA}
-  FFFT := TFftReal2ComplexCUDA32.Create(6);
-{$ELSE}
   FFFT := TFftReal2ComplexNativeFloat32.Create(6);
   FFFT.DataOrder := doPackedComplex;
-{$ENDIF}{$ENDIF}
   FFTOrderChanged;
 end;
 
@@ -285,27 +235,10 @@ begin
   FillChar(FFreqSignal, FFFTSize * SizeOf(Double), 0);
 end;
 
-{$IFDEF Use_IPPS}
-
-function TPowerCepstrum64.GetFft: TFftReal2ComplexIPPSFloat64;
-begin
-  Result := TFftReal2ComplexIPPSFloat64(FFFT);
-end;
-
-{$ELSE} {$IFDEF Use_CUDA}
-
-function TPowerCepstrum64.GetFft: TFftReal2ComplexCUDA64;
-begin
-  Result := TFftReal2ComplexCUDA64(FFFT);
-end;
-
-{$ELSE}
-
 function TPowerCepstrum64.GetFft: TFftReal2ComplexNativeFloat64;
 begin
   Result := TFftReal2ComplexNativeFloat64(FFFT);
 end;
-{$ENDIF}{$ENDIF}
 
 procedure TPowerCepstrum64.CalculateCepstrum(const Signal: PDAVDoubleFixedArray;
   const Cepstrum: PDAVComplexDoubleFixedArray);
@@ -313,11 +246,11 @@ var
   i: Integer;
 begin
   Fft.PerformFFT(FSignalFreq, Signal);
-  FFreqSignal[0] := 2 * FastLog2MinError4(abs(FSignalFreq[0].Re));
+  FFreqSignal[0] := 2 * FastLog2MinError4(Abs(FSignalFreq[0].Re));
   for i := 1 to FFFTSizeHalf - 1 do
     FFreqSignal[i] := FastLog2MinError4(sqr(FSignalFreq[i].Re) +
       sqr(FSignalFreq[i].Im));
-  FFreqSignal[FFFTSizeHalf] := 2 * FastLog2MinError4(abs(FSignalFreq[0].Re));
+  FFreqSignal[FFFTSizeHalf] := 2 * FastLog2MinError4(Abs(FSignalFreq[0].Re));
   Fft.PerformFFT(Cepstrum, FFreqSignal);
 end;
 
