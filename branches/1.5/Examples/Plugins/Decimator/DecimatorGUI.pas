@@ -122,7 +122,7 @@ implementation
 {$ENDIF}
 
 uses
-  DAV_Common, DecimatorModule;
+  DAV_Common, DAV_Convert, DAV_Consts, DecimatorModule;
 
 procedure TVSTGUI.FormCreate(Sender: TObject);
 begin

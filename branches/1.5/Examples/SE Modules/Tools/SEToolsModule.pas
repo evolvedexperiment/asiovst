@@ -1294,7 +1294,7 @@ procedure TSEAbsoluteSingleModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
   inherited;
   if CurrentPin.PinID = 0 then
-    FFloatOut := abs(FFloatIn);
+    FFloatOut := Abs(FFloatIn);
 end;
 
 { TSEAbsoluteDoubleModule }
@@ -1350,7 +1350,7 @@ procedure TSEAbsoluteDoubleModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
   inherited;
   if CurrentPin.PinID = 0 then
-    FDoubleOut := abs(FDoubleIn);
+    FDoubleOut := Abs(FDoubleIn);
 end;
 
 { TSEModuloSingleModule }

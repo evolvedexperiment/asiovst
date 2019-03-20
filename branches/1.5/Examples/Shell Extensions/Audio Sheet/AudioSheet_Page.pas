@@ -110,7 +110,7 @@ begin
        DC := DC / MaximumTime;
        SignalMemo.Lines.Add('Channel ' + IntToStr(i + 1) + ' DC: '
                             + FloatToStrF(DC, ffGeneral, 3, 2) + ' (= '
-                            + FloatToStrF(Amp_to_dB(abs(DC)), ffGeneral, 3, 2) + 'dB)');
+                            + FloatToStrF(Amp_to_dB(Abs(DC)), ffGeneral, 3, 2) + 'dB)');
 
        RMS[1] := sqr(MFTimeDomain[i].Data[(MaximumTime div 2)]);
        for j := (MaximumTime div 2) + 1 to MaximumTime - 1
@@ -118,9 +118,9 @@ begin
        MFTimeDomain.IsImpulseResponse := RMS[0] > 0.5 * RMS[1];
 
        MFFFTRealDouble.Do_FFT_only(@MFFreqDomain[i].Data[0], @MFTimeDomain[i].Data[0]);
-       if abs(RMS[0] - RMS[1]) < 0.1 then
+       if Abs(RMS[0] - RMS[1]) < 0.1 then
          MFFFTRealDouble.RescaleA_Only(@MFFreqDomain[i].Data[0]);
-       if (abs(RMS[0] - RMS[1]) < 0.05) and (Count = 1) then
+       if (Abs(RMS[0] - RMS[1]) < 0.05) and (Count = 1) then
         begin
          cd := 1;
          c := 0;

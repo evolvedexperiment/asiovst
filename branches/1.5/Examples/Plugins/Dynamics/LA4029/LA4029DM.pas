@@ -1,4 +1,4 @@
-unit LA4029DM;
+﻿unit LA4029DM;
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -34,9 +34,9 @@ interface
 
 {$I DAV_Compiler.inc}
 
-uses 
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
-  Forms, DAV_Types, DAV_VSTModule, DAV_DspDynamics, DAV_DspLevelingAmplifier, 
+uses
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
+  Forms, DAV_Types, DAV_VSTModule, DAV_DspDynamics, DAV_DspLevelingAmplifier,
   DAV_DspFilterButterworth;
 
 type
@@ -105,335 +105,359 @@ uses
 
 procedure TLA4029DataModule.VSTModuleOpen(Sender: TObject);
 begin
- FLA4029s  := TLevelingAmplifier.Create;
- FHighpass := TButterworthHighpassFilter.Create;
- with FHighpass do
+  FLA4029s := TLevelingAmplifier.Create;
+  FHighpass := TButterworthHighpassFilter.Create;
+  with FHighpass do
   begin
-   SampleRate := Samplerate;
-   Order      := 1;
-   SetFilterValues(5, 0);
+    SampleRate := SampleRate;
+    Order := 1;
+    SetFilterValues(5, 0);
   end;
 
- Parameter[ 0] :=   0;
- Parameter[ 1] :=   0;
- Parameter[ 2] :=   0;
- Parameter[ 3] :=   1;
- Parameter[ 4] := 100;
- Parameter[ 5] :=  10;
- Parameter[ 6] :=   5;
- Parameter[ 7] := 100;
- Parameter[ 8] :=   0;
- Parameter[ 9] :=  50;
- Parameter[10] :=  10;
- Parameter[11] :=   1;
+  Parameter[0] := 0;
+  Parameter[1] := 0;
+  Parameter[2] := 0;
+  Parameter[3] := 1;
+  Parameter[4] := 100;
+  Parameter[5] := 10;
+  Parameter[6] := 5;
+  Parameter[7] := 100;
+  Parameter[8] := 0;
+  Parameter[9] := 50;
+  Parameter[10] := 10;
+  Parameter[11] := 1;
 end;
 
 procedure TLA4029DataModule.VSTModuleClose(Sender: TObject);
 begin
- FreeAndNil(FLA4029s);
- FreeAndNil(FHighpass);
+  FreeAndNil(FLA4029s);
+  FreeAndNil(FHighpass);
 end;
 
-procedure TLA4029DataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: NativeUInt);
+procedure TLA4029DataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
+  ParentWindow: NativeUInt);
 begin
- GUI := TFmLA4029.Create(Self);
+  GUI := TFmLA4029.Create(Self);
 end;
 
 procedure TLA4029DataModule.SKLInputChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if Assigned(FLA4029s)
-  then FLA4029s.Input_dB := Value;
+  if Assigned(FLA4029s) then
+    FLA4029s.Input_dB := Value;
 
- // update GUI if necessary
- if EditorForm is TFmLA4029 then
-  with EditorForm as TFmLA4029 do
-   if DialInput.Value <> Value then
-    begin
-     DialInput.Value := Value;
-     UpdateInput;
-    end;
+  // update GUI if necessary
+  if EditorForm is TFmLA4029 then
+    with EditorForm as TFmLA4029 do
+      if DialInput.Value <> Value then
+      begin
+        DialInput.Value := Value;
+        UpdateInput;
+      end;
 end;
 
-procedure TLA4029DataModule.SKLOutputChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TLA4029DataModule.SKLOutputChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
- if Assigned(FLA4029s)
-  then FLA4029s.Output_dB := Value;
+  if Assigned(FLA4029s) then
+    FLA4029s.Output_dB := Value;
 
- // update GUI if necessary
- if EditorForm is TFmLA4029 then
-  with EditorForm as TFmLA4029 do
-   if DialOutput.Value <> Value then
-    begin
-     DialOutput.Value := Value;
-     UpdateOutput;
-    end;
+  // update GUI if necessary
+  if EditorForm is TFmLA4029 then
+    with EditorForm as TFmLA4029 do
+      if DialOutput.Value <> Value then
+      begin
+        DialOutput.Value := Value;
+        UpdateOutput;
+      end;
 end;
 
-procedure TLA4029DataModule.SKLSKFBChange(Sender: TObject; const Index: Integer; var Value: Single);
+procedure TLA4029DataModule.SKLSKFBChange(Sender: TObject; const Index: Integer;
+  var Value: Single);
 begin
- if Assigned(FLA4029s)
-  then FLA4029s.Knee := 0.1 * Value;
+  if Assigned(FLA4029s) then
+    FLA4029s.Knee := 0.1 * Value;
 
- // update GUI if necessary
- if EditorForm is TFmLA4029 then
-  with EditorForm as TFmLA4029 do
-   if DialKnee.Value <> Value then
-    begin
-     DialKnee.Value := Value;
-     UpdateKnee;
-    end;
+  // update GUI if necessary
+  if EditorForm is TFmLA4029 then
+    with EditorForm as TFmLA4029 do
+      if DialKnee.Value <> Value then
+      begin
+        DialKnee.Value := Value;
+        UpdateKnee;
+      end;
 end;
 
-procedure TLA4029DataModule.SKLRatioChange(Sender: TObject; const Index: Integer; var Value: Single);
+procedure TLA4029DataModule.SKLRatioChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
- if Assigned(FLA4029s)
-  then FLA4029s.Ratio := 1 / Value;
+  if Assigned(FLA4029s) then
+    FLA4029s.Ratio := 1 / Value;
 
- // update GUI if necessary
- if EditorForm is TFmLA4029 then
-  with EditorForm as TFmLA4029 do
-   if DialRatio.Value <> Log10(Value) then
-    begin
-     DialRatio.Value := Log10(Value);
-     UpdateRatio;
-    end;
+  // update GUI if necessary
+  if EditorForm is TFmLA4029 then
+    with EditorForm as TFmLA4029 do
+      if DialRatio.Value <> Log10(Value) then
+      begin
+        DialRatio.Value := Log10(Value);
+        UpdateRatio;
+      end;
 end;
 
-procedure TLA4029DataModule.SKLReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
+procedure TLA4029DataModule.SKLReleaseChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
- if Assigned(FLA4029s)
-  then FLA4029s.Release_ms := Value;
+  if Assigned(FLA4029s) then
+    FLA4029s.Release_ms := Value;
 
- // update GUI if necessary
- if EditorForm is TFmLA4029 then
-  with EditorForm as TFmLA4029 do
-   if DialRelease.Value <> Log10(Value) then
-    begin
-     DialRelease.Value := Log10(Value);
-     UpdateRelease;
-    end;
+  // update GUI if necessary
+  if EditorForm is TFmLA4029 then
+    with EditorForm as TFmLA4029 do
+      if DialRelease.Value <> Log10(Value) then
+      begin
+        DialRelease.Value := Log10(Value);
+        UpdateRelease;
+      end;
 end;
 
-procedure TLA4029DataModule.ParamOnOffChange(Sender: TObject; const Index: Integer; var Value: Single);
+procedure TLA4029DataModule.ParamOnOffChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
- if Value < 0.5 then
+  if Value < 0.5 then
   begin
-   OnProcess := VSTModuleProcess;
-   OnProcess32Replacing := VSTModuleProcess;
-   OnProcess64Replacing := VSTModuleProcessDoubleReplacing;
+    OnProcess := VSTModuleProcess;
+    OnProcess32Replacing := VSTModuleProcess;
+    OnProcess64Replacing := VSTModuleProcessDoubleReplacing;
   end
- else
+  else
   begin
-   OnProcess := VSTModuleProcessBypass;
-   OnProcess32Replacing := VSTModuleProcessBypass;
-   OnProcess64Replacing := VSTModuleProcessDoubleReplacingBypass;
+    OnProcess := VSTModuleProcessBypass;
+    OnProcess32Replacing := VSTModuleProcessBypass;
+    OnProcess64Replacing := VSTModuleProcessDoubleReplacingBypass;
   end;
 end;
 
-procedure TLA4029DataModule.ParamAttackLabel(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+procedure TLA4029DataModule.ParamAttackLabel(Sender: TObject;
+  const Index: Integer; var PreDefined: AnsiString);
 begin
- if Parameter[Index] < 1 then PreDefined := 'µs';
+  if Parameter[Index] < 1 then
+    PreDefined := 'µs';
 end;
 
 procedure TLA4029DataModule.CalculateLevelFallOff;
 begin
- if FLevelFallOff_ms <> 0
-  then FLevelFallOffFactor := exp(-ln2 / (FLevelFallOff_ms * 0.001 * SampleRate));
+  if FLevelFallOff_ms <> 0 then
+    FLevelFallOffFactor := exp(-ln2 / (FLevelFallOff_ms * 0.001 * SampleRate));
 end;
 
 function TLA4029DataModule.GetGRReduction: Double;
 begin
- if Assigned(FLA4029s)
-  then Result := FLA4029s.GainReductionFactor
-  else Result := 1;
+  if Assigned(FLA4029s) then
+    Result := FLA4029s.GainReductionFactor
+  else
+    Result := 1;
 end;
 
 function TLA4029DataModule.GetGRReduction_dB: Double;
 begin
- if Assigned(FLA4029s)
-  then Result := FLA4029s.GainReduction_dB
-  else Result := 0;
+  if Assigned(FLA4029s) then
+    Result := FLA4029s.GainReduction_dB
+  else
+    Result := 0;
 end;
 
 function TLA4029DataModule.GetInLevel_dB: Double;
 begin
- Result := Amp_to_dB(FInLevel);
+  Result := Amp_to_dB(FInLevel);
 end;
 
 function TLA4029DataModule.GetOutLevel_dB: Double;
 begin
- Result := Amp_to_dB(FOutLevel);
+  Result := Amp_to_dB(FOutLevel);
 end;
 
-procedure TLA4029DataModule.ParamVUMeterChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TLA4029DataModule.ParamVUMeterChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
- // update GUI
- if Assigned(EditorForm) then
-  with EditorForm as TFmLA4029 do
-   begin
-    UpdateLevelState;
-   end;
+  // update GUI
+  if Assigned(EditorForm) then
+    with EditorForm as TFmLA4029 do
+    begin
+      UpdateLevelState;
+    end;
 end;
 
-procedure TLA4029DataModule.ParamOnOffDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+procedure TLA4029DataModule.ParamOnOffDisplay(Sender: TObject;
+  const Index: Integer; var PreDefined: AnsiString);
 begin
- if Parameter[Index] < 0.5
-  then PreDefined := 'On'
-  else PreDefined := 'Off';
+  if Parameter[Index] < 0.5 then
+    PreDefined := 'On'
+  else
+    PreDefined := 'Off';
 end;
 
-procedure TLA4029DataModule.ParamVUSpeedChange(Sender: TObject; const Index: Integer; var Value: Single);
+procedure TLA4029DataModule.ParamVUSpeedChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
- LevelFallOff_ms := Value;
+  LevelFallOff_ms := Value;
 end;
 
-procedure TLA4029DataModule.ParamHPOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
+procedure TLA4029DataModule.ParamHPOrderChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
- Assert(Round(Value) >= 0);
- if Assigned(FHighpass)
-  then FHighpass.Order := Round(Value);
+  Assert(Round(Value) >= 0);
+  if Assigned(FHighpass) then
+    FHighpass.Order := Round(Value);
 end;
 
-procedure TLA4029DataModule.ParamHPOrderDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+procedure TLA4029DataModule.ParamHPOrderDisplay(Sender: TObject;
+  const Index: Integer; var PreDefined: AnsiString);
 begin
- PreDefined := IntToStr(Round(Parameter[Index]));
+  PreDefined := IntToStr(Round(Parameter[Index]));
 end;
 
-procedure TLA4029DataModule.ParamHPFreqChange(Sender: TObject; const Index: Integer; var Value: Single);
+procedure TLA4029DataModule.ParamHPFreqChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
- if Assigned(FHighpass)
-  then FHighpass.Frequency := Value;
+  if Assigned(FHighpass) then
+    FHighpass.Frequency := Value;
 end;
 
-procedure TLA4029DataModule.ParamVUMeterDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+procedure TLA4029DataModule.ParamVUMeterDisplay(Sender: TObject;
+  const Index: Integer; var PreDefined: AnsiString);
 begin
- case Round(Parameter[Index]) of
-  0: Predefined := 'Input';
-  1: Predefined := 'Gain Reduction';
-  2: Predefined := 'Output';
- end;
+  case Round(Parameter[Index]) of
+    0:
+      PreDefined := 'Input';
+    1:
+      PreDefined := 'Gain Reduction';
+    2:
+      PreDefined := 'Output';
+  end;
 end;
 
-procedure TLA4029DataModule.ParamMixChange(Sender: TObject; const Index: Integer; var Value: Single);
+procedure TLA4029DataModule.ParamMixChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
- FMix[0] := sqrt(0.01 * Value);
- FMix[1] := 1 - FMix[0];
+  FMix[0] := sqrt(0.01 * Value);
+  FMix[1] := 1 - FMix[0];
 
- // update GUI
- if Assigned(EditorForm) then
-  with EditorForm as TFmLA4029 do
-   begin
-    UpdateMix;
-   end;
+  // update GUI
+  if Assigned(EditorForm) then
+    with EditorForm as TFmLA4029 do
+    begin
+      UpdateMix;
+    end;
 end;
 
-procedure TLA4029DataModule.ParamAttackDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+procedure TLA4029DataModule.ParamAttackDisplay(Sender: TObject;
+  const Index: Integer; var PreDefined: AnsiString);
 begin
- if Parameter[Index] < 1
-  then PreDefined := FloatToStrF(1E3 * Parameter[Index], ffFixed, 3, 1)
-  else PreDefined := FloatToStrF(      Parameter[Index], ffFixed, 3, 1);
+  if Parameter[Index] < 1 then
+    PreDefined := FloatToStrF(1E3 * Parameter[Index], ffFixed, 3, 1)
+  else
+    PreDefined := FloatToStrF(Parameter[Index], ffFixed, 3, 1);
 end;
 
 procedure TLA4029DataModule.ParamRatioDisplay(Sender: TObject;
   const Index: Integer; var PreDefined: AnsiString);
 begin
- PreDefined := '1:' + PreDefined;
+  PreDefined := '1:' + PreDefined;
 end;
 
 procedure TLA4029DataModule.SetLevelFallOff_ms(const Value: Double);
 begin
- if FLevelFallOff_ms <> Value then
+  if FLevelFallOff_ms <> Value then
   begin
-   FLevelFallOff_ms := Value;
-   CalculateLevelFallOff;
+    FLevelFallOff_ms := Value;
+    CalculateLevelFallOff;
   end;
 end;
 
-procedure TLA4029DataModule.SKLAttackChange(Sender: TObject; const Index: Integer; var Value: Single);
+procedure TLA4029DataModule.SKLAttackChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
- if Assigned(FLA4029s)
-  then FLA4029s.Attack_ms := Value;
+  if Assigned(FLA4029s) then
+    FLA4029s.Attack_ms := Value;
 
- // update GUI if necessary
- if EditorForm is TFmLA4029 then
-  with EditorForm as TFmLA4029 do
-   if DialAttack.Value <> Log10(Value) then
-    begin
-     DialAttack.Value := Log10(Value);
-     UpdateAttack;
-    end;
+  // update GUI if necessary
+  if EditorForm is TFmLA4029 then
+    with EditorForm as TFmLA4029 do
+      if DialAttack.Value <> Log10(Value) then
+      begin
+        DialAttack.Value := Log10(Value);
+        UpdateAttack;
+      end;
 end;
 
 function SimpleDiode(x: Single): Single;
 begin
- Result := 0.5 * (abs(x) + x);
+  Result := 0.5 * (abs(x) + x);
 end;
 
-procedure TLA4029DataModule.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
+procedure TLA4029DataModule.VSTModuleProcess(const Inputs,
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
-  i : Integer;
-  d : Double;
+  i: Integer;
+  d: Double;
 begin
- for i := 0 to SampleFrames - 1 do
+  for i := 0 to SampleFrames - 1 do
   begin
-   d := Inputs[0, i] + Inputs[1, i];
-   FInLevel := FLevelFallOffFactor * (FInLevel + SimpleDiode(abs(d) - FInLevel));
-   FLA4029s.Sidechain(FHighpass.ProcessSample64(d));
+    d := Inputs[0, i] + Inputs[1, i];
+    FInLevel := FLevelFallOffFactor * (FInLevel + SimpleDiode(abs(d) - FInLevel));
+    FLA4029s.Sidechain(FHighpass.ProcessSample64(d));
 
-   Outputs[0, i] := FMix[0] * FLA4029s.ProcessSample64(Inputs[0, i]) + FMix[1] * Inputs[0, i];
-   Outputs[1, i] := FMix[0] * FLA4029s.ProcessSample64(Inputs[1, i]) + FMix[1] * Inputs[1, i];
+    Outputs[0, i] := FMix[0] * FLA4029s.ProcessSample64(Inputs[0, i]) + FMix[1] * Inputs[0, i];
+    Outputs[1, i] := FMix[0] * FLA4029s.ProcessSample64(Inputs[1, i]) + FMix[1] * Inputs[1, i];
 
-   d := Outputs[0, i] + Outputs[1, i];
-   FOutLevel := FLevelFallOffFactor * (FOutLevel + SimpleDiode(d - FOutLevel));
+    d := Outputs[0, i] + Outputs[1, i];
+    FOutLevel := FLevelFallOffFactor * (FOutLevel + SimpleDiode(d - FOutLevel));
   end;
 end;
 
-procedure TLA4029DataModule.VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
+procedure TLA4029DataModule.VSTModuleProcessDoubleReplacing(const Inputs,
+  Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
 var
-  i : Integer;
-  d : Double;
+  i: Integer;
+  d: Double;
 begin
- for i := 0 to SampleFrames - 1 do
+  for i := 0 to SampleFrames - 1 do
   begin
-   d := Inputs[0, i] + Inputs[1, i];
-   FInLevel := FLevelFallOffFactor * (FInLevel + SimpleDiode(abs(d) - FInLevel));
-   FLA4029s.Sidechain(FHighpass.ProcessSample64(d));
+    d := Inputs[0, i] + Inputs[1, i];
+    FInLevel := FLevelFallOffFactor * (FInLevel + SimpleDiode(abs(d) - FInLevel));
+    FLA4029s.Sidechain(FHighpass.ProcessSample64(d));
 
-   Outputs[0, i] := FMix[0] * FLA4029s.ProcessSample64(Inputs[0, i]) + FMix[1] * Inputs[0, i];
-   Outputs[1, i] := FMix[0] * FLA4029s.ProcessSample64(Inputs[1, i]) + FMix[1] * Inputs[1, i];
+    Outputs[0, i] := FMix[0] * FLA4029s.ProcessSample64(Inputs[0, i]) + FMix[1] * Inputs[0, i];
+    Outputs[1, i] := FMix[0] * FLA4029s.ProcessSample64(Inputs[1, i]) + FMix[1] * Inputs[1, i];
 
-   d := Outputs[0, i] + Outputs[1, i];
-   FOutLevel := FLevelFallOffFactor * (FOutLevel + SimpleDiode(d - FOutLevel));
+    d := Outputs[0, i] + Outputs[1, i];
+    FOutLevel := FLevelFallOffFactor * (FOutLevel + SimpleDiode(d - FOutLevel));
   end;
 end;
 
-procedure TLA4029DataModule.VSTModuleProcessBypass(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
+procedure TLA4029DataModule.VSTModuleProcessBypass(const Inputs,
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 begin
- Move(Inputs[0, 0], Outputs[0, 0], SampleFrames * SizeOf(Single));
- Move(Inputs[1, 0], Outputs[1, 0], SampleFrames * SizeOf(Single));
+  Move(Inputs[0, 0], Outputs[0, 0], SampleFrames * SizeOf(Single));
+  Move(Inputs[1, 0], Outputs[1, 0], SampleFrames * SizeOf(Single));
 end;
 
 procedure TLA4029DataModule.VSTModuleProcessDoubleReplacingBypass(const Inputs,
   Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
 begin
- Move(Inputs[0, 0], Outputs[0, 0], SampleFrames * SizeOf(Double));
- Move(Inputs[1, 0], Outputs[1, 0], SampleFrames * SizeOf(Double));
+  Move(Inputs[0, 0], Outputs[0, 0], SampleFrames * SizeOf(Double));
+  Move(Inputs[1, 0], Outputs[1, 0], SampleFrames * SizeOf(Double));
 end;
 
 procedure TLA4029DataModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 begin
- if Abs(SampleRate) > 0 then
+  if abs(SampleRate) > 0 then
   begin
-   if Assigned(FLA4029s)
-    then FLA4029s.SampleRate := SampleRate;
-   if Assigned(FHighpass)
-    then FHighpass.SampleRate := SampleRate;
-   CalculateLevelFallOff;
+    if Assigned(FLA4029s) then
+      FLA4029s.SampleRate := SampleRate;
+    if Assigned(FHighpass) then
+      FHighpass.SampleRate := SampleRate;
+    CalculateLevelFallOff;
   end;
 end;
 

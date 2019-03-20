@@ -293,7 +293,7 @@ type
 implementation
 
 uses
-  Math, DAV_Math, DAV_Strings;
+  Math, DAV_Math, DAV_Strings, DAV_Convert;
 
 resourcestring
   RCStrFixedOrder = 'The order of a biquad filter can not be changed';

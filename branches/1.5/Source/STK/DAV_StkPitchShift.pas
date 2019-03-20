@@ -142,7 +142,7 @@ begin
     FDelay[1] := FDelay[1] + 1000;
   FDelayLine[0].Delay := Round(FDelay[0]);
   FDelayLine[1].Delay := Round(FDelay[1]);
-  FEnv[1] := abs(FDelay[0] - 512) * 0.002;
+  FEnv[1] := Abs(FDelay[0] - 512) * 0.002;
   FEnv[0] := 1.0 - FEnv[1];
   FLastOutput := FEnv[0] * FDelayLine[0].Tick(Input);
   FLastOutput := FLastOutput + FEnv[1] * FDelayLine[1].Tick(Input);

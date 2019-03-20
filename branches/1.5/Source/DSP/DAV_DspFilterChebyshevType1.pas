@@ -131,22 +131,17 @@ type
 implementation
 
 uses
-  Math, SysUtils, DAV_Classes, DAV_Common, DAV_Math, DAV_Approximations;
-
-const
-  CHalf32: Single = 0.5;
-  CHalf64: Double = 0.5;
+  Math, SysUtils, DAV_Classes, DAV_Common, DAV_Math, DAV_Approximations,
+  DAV_Convert, DAV_Consts;
 
 {$IFDEF HandleDenormals}
-
 var
   DenormRandom: Single;
-
-const
-  CDenorm32: Single = 1E-24;
-  CDenorm64: Double = 1E-34;
+  CDenorm32: Single;
+  CDenorm64: Double;
 {$ENDIF}
-  { TCustomChebyshev1Filter }
+
+{ TCustomChebyshev1Filter }
 
 constructor TCustomChebyshev1Filter.Create(const Order: Integer = 0);
 begin
@@ -1117,6 +1112,11 @@ begin
 end;
 
 initialization
+
+{$IFDEF HandleDenormals}
+  CDenorm32 := DAV_Consts.CDenorm32;
+  CDenorm64 := DAV_Consts.CDenorm64;
+{$ENDIF}
 
 RegisterDspProcessors32([TChebyshev1LowpassFilter, TChebyshev1HighpassFilter,
   TChebyshev1LowpassFilterAutomatable, TChebyshev1HighpassFilterAutomatable]);

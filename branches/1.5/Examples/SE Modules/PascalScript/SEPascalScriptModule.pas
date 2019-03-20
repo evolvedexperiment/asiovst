@@ -180,7 +180,7 @@ begin
   if Assigned(FSEProcessSample) then
     for Sample := 0 to SampleFrames - 1 do
     begin
-      d := Input^[Sample] + cDenorm64;
+      d := Input^[Sample] + CDenorm64;
       FSEProcessSample(0, d);
       Output^[Sample] := d;
     end;

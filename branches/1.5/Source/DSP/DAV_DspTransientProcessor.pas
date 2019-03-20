@@ -131,7 +131,7 @@ type
 implementation
 
 uses
-  Math, DAV_Common;
+  Math, DAV_Common, DAV_Convert;
 
 const
   CSampleRateScaling: Single = 2.2675736961451247165532879818594E-5;
@@ -334,7 +334,7 @@ var
 begin
   FState := FFilterOut * FState + FFilterIn * Input;
   Result := FState + FFilterState * Input;
-  Gain := abs(Input);
+  Gain := Abs(Input);
 
   if Gain > FEnv[0] then
     FEnv[0] := FEnv[0] + FAttackFactors[0] * (Gain - FEnv[0])
@@ -375,7 +375,7 @@ begin
   FState[1] := FFilterOut * FState[1] + FFilterIn * InRight;
   OutLeft := FState[0] + FFilterState * InLeft;
   OutRight := FState[1] + FFilterState * InRight;
-  Mono := abs(InLeft + InRight);
+  Mono := Abs(InLeft + InRight);
 
   if Mono > FEnv[0] then
     FEnv[0] := FEnv[0] + FAttackFactors[0] * (Mono - FEnv[0])

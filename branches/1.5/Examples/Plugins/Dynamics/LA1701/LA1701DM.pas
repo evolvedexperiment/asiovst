@@ -99,7 +99,8 @@ implementation
 {$ENDIF}
 
 uses
-  Dialogs, Math, EditorFrm, DAV_Common, DAV_Math, DAV_DspFilter;
+  Dialogs, Math, EditorFrm, DAV_Common, DAV_Consts, DAV_Convert, DAV_Math,
+  DAV_DspFilter;
 
 procedure TLA1701DataModule.VSTModuleOpen(Sender: TObject);
 begin
@@ -243,7 +244,7 @@ end;
 procedure TLA1701DataModule.CalculateLevelFallOff;
 begin
   if FLevelFallOff_ms <> 0 then
-    FLevelFallOffFactor := exp(-ln2 / (FLevelFallOff_ms * 0.001 * SampleRate));
+    FLevelFallOffFactor := exp(-CLn2 / (FLevelFallOff_ms * 0.001 * SampleRate));
 end;
 
 function TLA1701DataModule.GetGRReduction: Double;
@@ -417,7 +418,7 @@ begin
   for i := 0 to SampleFrames - 1 do
   begin
     d := Inputs[0, i] + Inputs[1, i];
-    FInLevel := FLevelFallOffFactor * (FInLevel + SimpleDiode(abs(d) - FInLevel));
+    FInLevel := FLevelFallOffFactor * (FInLevel + SimpleDiode(Abs(d) - FInLevel));
     FLA1701s.Sidechain(FHighpass.ProcessSample64(d));
 
     Outputs[0, i] := FMix[0] * FLA1701s.ProcessSample64(Inputs[0, i]) + FMix[1] * Inputs[0, i];

@@ -77,8 +77,8 @@ implementation
 {$ENDIF}
 
 uses
-  Math, DAV_Common, DAV_Math, DAV_HalfFloat, DAV_DspInterpolation,
-  DAV_VSTCustomModule, ConvoFxGUI;
+  Math, DAV_Common, DAV_Consts, DAV_Convert, DAV_Math, DAV_HalfFloat,
+  DAV_DspInterpolation, DAV_VSTCustomModule, ConvoFxGUI;
 
 procedure TConvoFxDataModule.VSTModuleCreate(Sender: TObject);
 begin

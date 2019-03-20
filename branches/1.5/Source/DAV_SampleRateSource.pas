@@ -91,11 +91,11 @@ end;
 
 procedure TCustomSampleRateSource.SetSampleRate(const Value: Double);
 begin
-  if FSampleRate <> abs(Value) then
+  if FSampleRate <> Abs(Value) then
   begin
     if Value = 0 then
       raise Exception.Create(RCStrInvalidSampleRate);
-    FSampleRate := abs(Value);
+    FSampleRate := Abs(Value);
     SampleRateChanged;
   end;
 end;

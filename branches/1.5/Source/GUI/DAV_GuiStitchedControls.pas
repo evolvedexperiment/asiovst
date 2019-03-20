@@ -132,7 +132,7 @@ type
 implementation
 
 uses
-  DAV_Common, DAV_Strings, DAV_GuiBlend;
+  Contnrs, DAV_Common, DAV_Strings, DAV_GuiBlend;
 
 resourcestring
   RCStrGlyphCountMustBePositive = 'The glyph count must be positive';

@@ -96,7 +96,7 @@ type
     MenuItemMain: TMenuItem;
     MenuItemIExit: TMenuItem;
     MenuItemShowMIDIWAVWindow: TMenuItem;
-    N1: TMenuItem;   
+    N1: TMenuItem;
     N2: TMenuItem;
     N3: TMenuItem;
     N5: TMenuItem;
@@ -271,7 +271,7 @@ implementation
 
 uses
   Math, Inifiles, Dialogs, ShellAPI, DAV_Common, DAV_AudioData,
-  DAV_AudioFileWAV, DAV_AudioFileAIFF, DAV_AudioFileAU,
+  DAV_AudioFileWAV, DAV_AudioFileAIFF, DAV_AudioFileAU, DAV_XPlatform,
   OptionsForm, PlayerForm;
 
 function EnumNamesFunc(hModule: THandle; lpType, lpName: PChar; lParam: DWORD): Boolean; stdcall;
@@ -1312,9 +1312,9 @@ begin
   FMDataCnt := 0;
   for Note := 0 to 127 do AddMidiData($80, Note, 0);
   for Ch := 0 to 15 do AddMidiData($B0 + Ch, 123, 0);
- finally 
+ finally
   FDataSection.Release;
- end; 
+ end;
 end;
 
 procedure TFormMiniHost.MenuItemLoadPresetClick(Sender: TObject);
@@ -1370,71 +1370,68 @@ procedure TFormMiniHost.MenuItemSavePresetClick(Sender: TObject);
 var
   s2: string;
 begin
- MenuItemPanicClick(nil);
- Sleep(2);
- with TSaveDialog.Create(Self) do
-  try
-   DefaultExt := '.fxp';
-   FileName := '*.fxp';
-   Filter := 'preset files (*.fxp)|*.fxp';
-   Title := 'Select a preset';
-   InitialDir := FDirPreset;
-   Options := [ofForceShowHidden];
+  MenuItemPanicClick(nil);
+  Sleep(2);
+  with TSaveDialog.Create(Self) do
+    try
+      DefaultExt := '.fxp';
+      FileName := '*.fxp';
+      Filter := 'preset files (*.fxp)|*.fxp';
+      Title := 'Select a preset';
+      InitialDir := FDirPreset;
+      Options := [ofForceShowHidden];
 {$IFNDEF FPC}
-   Ctl3D := False;
+      Ctl3D := False;
 {$ENDIF}
-
-   s2 := PresetBox.Items[PresetBox.ItemIndex];
-   s2 := Copy(s2, 6, Length(s2) - 5);
+      s2 := PresetBox.Items[PresetBox.ItemIndex];
+      s2 := Copy(s2, 6, Length(s2) - 5);
 {$IFNDEF FPC}
-   FileName := MakeGoodFileName(s2) + '.fxp';
+      FileName := MakeGoodFileName(s2) + '.fxp';
 {$ENDIF}
-
-   if Execute then
-    begin
-     VSTHost[0].SavePreset(FileName);
-     FDirPreset := ExtractFileDir(FileName);
+      if Execute then
+      begin
+        VSTHost[0].SavePreset(FileName);
+        FDirPreset := ExtractFileDir(FileName);
+      end;
+    finally
+      Free;
     end;
-  finally
-   Free;
-  end;
 end;
 
 procedure TFormMiniHost.MenuItemLoadBankClick(Sender: TObject);
 begin
- TimerWaveFile.Enabled := False;
- Sleep(2);
- with TOpenDialog.Create(Self) do
-  try
-   DefaultExt := '.fxb';
-   FileName := '*.fxb';
-   Filter := 'bank files (*.fxb)|*.fxb';
-   Title := 'Select a bank';
-   InitialDir := FDirPreset;
+  TimerWaveFile.Enabled := False;
+  Sleep(2);
+  with TOpenDialog.Create(Self) do
+    try
+      DefaultExt := '.fxb';
+      FileName := '*.fxb';
+      Filter := 'bank files (*.fxb)|*.fxb';
+      Title := 'Select a bank';
+      InitialDir := FDirPreset;
 
-   Options := [ofFileMustExist, ofForceShowHidden];
-   {$IFNDEF FPC}
-   Ctl3D := False;
-   {$ENDIF}
-
-   if Execute then
-    begin
-     FDirPreset := ExtractFileDir(FileName);
-     try
-      VSTHost[0].LoadBank(FileName);
-     except
-      MessageDlg('ERROR: Bank file not for this plugin (or file is corrupted)!', mtError, [mbOK], 0);
+      Options := [ofFileMustExist, ofForceShowHidden];
+{$IFNDEF FPC}
+      Ctl3D := False;
+{$ENDIF}
+      if Execute then
+      begin
+        FDirPreset := ExtractFileDir(FileName);
+        try
+          VSTHost[0].LoadBank(FileName);
+        except
+          MessageDlg('ERROR: Bank file not for this plugin (or file is corrupted)!', mtError, [mbOK], 0);
+          TimerWaveFile.Enabled := True;
+        end;
+        BuildPresetList;
+      end;
+    finally
+      Free;
+      FCurProg := 0;
+      VSTHost[0].CurrentProgram := 0;
+      PresetBox.ItemIndex := 0;
       TimerWaveFile.Enabled := True;
-     end;
-     BuildPresetList;
     end;
-  finally
-   Free;
-   FCurProg := 0;
-   VSTHost[0].CurrentProgram := 0;
-   PresetBox.ItemIndex := 0;
-   TimerWaveFile.Enabled := True;
-  end;
 end;
 
 procedure TFormMiniHost.MenuItemSaveBankClick(Sender: TObject);

@@ -130,8 +130,8 @@ begin
   try
     for Channel := 0 to Length(FSpectralDelayFilters) - 1 do
       for Sample := 0 to SampleFrames - 1 do
-        Outputs[Channel, Sample] := FSpectralDelayFilters[Channel]
-          .ProcessSample64(Inputs[Channel, Sample]);
+        Outputs[Channel, Sample] :=
+          FSpectralDelayFilters[Channel].ProcessSample64(Inputs[Channel, Sample]);
   finally
     FCriticalSection.Leave;
   end;

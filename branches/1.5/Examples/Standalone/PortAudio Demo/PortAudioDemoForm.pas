@@ -88,7 +88,7 @@ implementation
 {$ENDIF}
 
 uses
-  SysUtils, Inifiles, DAV_Common, DAV_Math;
+  SysUtils, Inifiles, DAV_Common, DAV_Math, DAV_Convert;
 
 resourcestring
   RCStrNoPortAudioDriverPresent =

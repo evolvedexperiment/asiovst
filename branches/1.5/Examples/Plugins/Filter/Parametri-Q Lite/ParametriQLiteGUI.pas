@@ -245,8 +245,8 @@ type
 implementation
 
 uses
-  DAV_Common, DAV_GuiCommon, DAV_Approximations, DAV_VSTModuleWithPrograms,
-  ParametriQLiteDM;
+  DAV_Common, DAV_Consts, DAV_GuiCommon, DAV_Approximations,
+  DAV_VSTModuleWithPrograms, ParametriQLiteDM;
 
 {$IFDEF FPC}
 {$R *.lfm}

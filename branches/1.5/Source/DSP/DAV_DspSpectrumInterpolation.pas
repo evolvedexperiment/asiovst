@@ -78,29 +78,29 @@ uses
 function QuadraticPeakPosition(const Data: TDAV3SingleArray): Single; overload;
 {$IFDEF useinlining} inline; {$ENDIF}
 begin
-  Result := (abs(Data[2]) - abs(Data[0])) /
-    (2 * (2 * abs(Data[1]) - abs(Data[0]) - abs(Data[2])));
+  Result := (Abs(Data[2]) - Abs(Data[0])) /
+    (2 * (2 * Abs(Data[1]) - Abs(Data[0]) - Abs(Data[2])));
 end;
 
 function QuadraticPeakPosition(const Data: TDAV3DoubleArray): Double; overload;
 {$IFDEF useinlining} inline; {$ENDIF}
 begin
-  Result := (abs(Data[2]) - abs(Data[0])) /
-    (2 * (2 * abs(Data[1]) - abs(Data[0]) - abs(Data[2])));
+  Result := (Abs(Data[2]) - Abs(Data[0])) /
+    (2 * (2 * Abs(Data[1]) - Abs(Data[0]) - Abs(Data[2])));
 end;
 
 function BarycentricPeakPosition(const Data: TDAV3SingleArray): Single;
   overload; {$IFDEF useinlining} inline; {$ENDIF}
 begin
-  Result := (abs(Data[2]) - abs(Data[0])) /
-    (abs(Data[0]) + abs(Data[1]) + abs(Data[2]))
+  Result := (Abs(Data[2]) - Abs(Data[0])) /
+    (Abs(Data[0]) + Abs(Data[1]) + Abs(Data[2]))
 end;
 
 function BarycentricPeakPosition(const Data: TDAV3DoubleArray): Double;
   overload; {$IFDEF useinlining} inline; {$ENDIF}
 begin
-  Result := (abs(Data[2]) - abs(Data[0])) /
-    (abs(Data[0]) + abs(Data[1]) + abs(Data[2]))
+  Result := (Abs(Data[2]) - Abs(Data[0])) /
+    (Abs(Data[0]) + Abs(Data[1]) + Abs(Data[2]))
 end;
 
 function QuinnEstimator1(const Prev, Peak, Next: TComplex32): Single; overload;
@@ -249,14 +249,14 @@ function JainEstimator(const Prev, Peak, Next: Single): Single; overload;
 var
   Temp: Single;
 begin
-  if abs(Prev) > abs(Next) then
+  if Abs(Prev) > Abs(Next) then
   begin
-    Temp := abs(Peak) / abs(Prev);
+    Temp := Abs(Peak) / Abs(Prev);
     Result := Temp / (1 + Temp);
   end
   else
   begin
-    Temp := abs(Next) / abs(Peak);
+    Temp := Abs(Next) / Abs(Peak);
     Result := Temp / (1 + Temp);
   end;
 end;
@@ -266,14 +266,14 @@ function JainEstimator(const Prev, Peak, Next: Double): Double; overload;
 var
   Temp: Double;
 begin
-  if abs(Prev) > abs(Next) then
+  if Abs(Prev) > Abs(Next) then
   begin
-    Temp := abs(Peak) / abs(Prev);
+    Temp := Abs(Peak) / Abs(Prev);
     Result := Temp / (1 + Temp);
   end
   else
   begin
-    Temp := abs(Next) / abs(Peak);
+    Temp := Abs(Next) / Abs(Peak);
     Result := Temp / (1 + Temp);
   end;
 end;
@@ -283,14 +283,14 @@ function JainEstimator(const Data: TDAV3SingleArray): Single; overload;
 var
   Temp: Single;
 begin
-  if abs(Data[0]) > abs(Data[2]) then
+  if Abs(Data[0]) > Abs(Data[2]) then
   begin
-    Temp := abs(Data[1]) / abs(Data[0]);
+    Temp := Abs(Data[1]) / Abs(Data[0]);
     Result := Temp / (1 + Temp);
   end
   else
   begin
-    Temp := abs(Data[2]) / abs(Data[1]);
+    Temp := Abs(Data[2]) / Abs(Data[1]);
     Result := Temp / (1 + Temp);
   end;
 end;
@@ -300,14 +300,14 @@ function JainEstimator(const Data: TDAV3DoubleArray): Double; overload;
 var
   Temp: Double;
 begin
-  if abs(Data[0]) > abs(Data[2]) then
+  if Abs(Data[0]) > Abs(Data[2]) then
   begin
-    Temp := abs(Data[1]) / abs(Data[0]);
+    Temp := Abs(Data[1]) / Abs(Data[0]);
     Result := Temp / (1 + Temp);
   end
   else
   begin
-    Temp := abs(Data[2]) / abs(Data[1]);
+    Temp := Abs(Data[2]) / Abs(Data[1]);
     Result := Temp / (1 + Temp);
   end;
 end;

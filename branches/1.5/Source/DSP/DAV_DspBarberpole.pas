@@ -352,7 +352,7 @@ begin
         if p >= FBufferSize then
           p := p - FBufferSize;
 
-        v := sqr((1 - abs(1 - 2 * FStagePosition^[i])));
+        v := sqr((1 - Abs(1 - 2 * FStagePosition^[i])));
         Result := Result + v * m * Hermite32_asm(d, @FBuffer32[p]);
 
         FStagePosition^[i] := FStagePosition^[i] + FOffset;
@@ -375,7 +375,7 @@ begin
         else if p >= FBufferSize then
           p := p - FBufferSize;
 
-        v := sqr((1 - abs(1 - 2 * FStagePosition^[i])));
+        v := sqr((1 - Abs(1 - 2 * FStagePosition^[i])));
         Result := Result + v * m * Hermite32_asm(d, @FBuffer32[p]);
 
         FStagePosition^[i] := FStagePosition^[i] + FOffset;
@@ -395,7 +395,7 @@ begin
         if p >= FBufferSize then
           p := p - FBufferSize;
 
-        v := (2 * (i mod 2) - 1) * sqr((1 - abs(1 - 2 * FStagePosition^[i])));
+        v := (2 * (i mod 2) - 1) * sqr((1 - Abs(1 - 2 * FStagePosition^[i])));
         Result := Result + v * m * Hermite32_asm(d, @FBuffer32[p]);
 
         FStagePosition^[i] := FStagePosition^[i] + FOffset;
@@ -416,7 +416,7 @@ begin
         if p < 0 then
           p := p + FBufferSize;
 
-        v := (2 * (i mod 2) - 1) * sqr((1 - abs(1 - 2 * FStagePosition^[i])));
+        v := (2 * (i mod 2) - 1) * sqr((1 - Abs(1 - 2 * FStagePosition^[i])));
         Result := Result + v * m * Hermite32_asm(d, @FBuffer32[p]);
 
         FStagePosition^[i] := FStagePosition^[i] + FOffset;
@@ -427,7 +427,7 @@ begin
 
   // store new data
   FBuffer32[FBufferPos] := Input;
-  inc(FBufferPos);
+  Inc(FBufferPos);
   if FBufferPos >= FRealBufSize then
   begin
     Move(FBuffer32[FRealBufSize - 4], FBuffer32[0], 4 * SizeOf(Single));
@@ -503,7 +503,7 @@ begin
         if p >= FBufferSize then
           p := p - FBufferSize;
 
-        v := sqr((1 - abs(1 - 2 * FStagePosition^[i])));
+        v := sqr((1 - Abs(1 - 2 * FStagePosition^[i])));
         Result := Result + v * m * Hermite64_asm(d, @FBuffer64[p]);
 
         FStagePosition^[i] := FStagePosition^[i] + FOffset;
@@ -526,7 +526,7 @@ begin
         else if p >= FBufferSize then
           p := p - FBufferSize;
 
-        v := sqr((1 - abs(1 - 2 * FStagePosition^[i])));
+        v := sqr((1 - Abs(1 - 2 * FStagePosition^[i])));
         Result := Result + v * m * Hermite64_asm(d, @FBuffer64[p]);
 
         FStagePosition^[i] := FStagePosition^[i] + FOffset;
@@ -546,7 +546,7 @@ begin
         if p >= FBufferSize then
           p := p - FBufferSize;
 
-        v := (2 * (i mod 2) - 1) * sqr((1 - abs(1 - 2 * FStagePosition^[i])));
+        v := (2 * (i mod 2) - 1) * sqr((1 - Abs(1 - 2 * FStagePosition^[i])));
         Result := Result + v * m * Hermite64_asm(d, @FBuffer64[p]);
 
         FStagePosition^[i] := FStagePosition^[i] + FOffset;
@@ -567,7 +567,7 @@ begin
         if p < 0 then
           p := p + FBufferSize;
 
-        v := (2 * (i mod 2) - 1) * sqr((1 - abs(1 - 2 * FStagePosition^[i])));
+        v := (2 * (i mod 2) - 1) * sqr((1 - Abs(1 - 2 * FStagePosition^[i])));
         Result := Result + v * m * Hermite64_asm(d, @FBuffer64[p]);
 
         FStagePosition^[i] := FStagePosition^[i] + FOffset;
@@ -578,7 +578,7 @@ begin
 
   // store new data
   FBuffer64[FBufferPos] := Input;
-  inc(FBufferPos);
+  Inc(FBufferPos);
   if FBufferPos >= FRealBufSize then
   begin
     Move(FBuffer64[FRealBufSize - 4], FBuffer64[0], 4 * SizeOf(Double));

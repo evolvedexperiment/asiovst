@@ -313,7 +313,8 @@ implementation
 {$ENDIF}
 
 uses
-  Math, SysUtils, DAV_Common, DAV_Strings, DAV_Math, DAV_DspDFT;
+  Math, SysUtils, DAV_Common, DAV_Strings, DAV_Math, DAV_DspDFT, DAV_Convert,
+  DAV_Consts;
 
 { TCustomFilter }
 

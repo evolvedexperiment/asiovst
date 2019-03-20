@@ -264,7 +264,7 @@ begin
         k := k + ld
       end;
     end;
-    if abs(denom) < 0.00001 then
+    if Abs(denom) < 0.00001 then
       denom := 0.00001;
     ad[i] := 1.0 / denom;
   end;
@@ -325,7 +325,7 @@ begin
   for i := 0 to r do
   begin
     c := xc - x[i];
-    if abs(c) < 1.0E-7 then
+    if Abs(c) < 1.0E-7 then
     begin
       numer := y[i];
       denom := 1;
@@ -450,7 +450,7 @@ begin
     alt := True;
     for j := 1 to k - 1 do
     begin
-      if abs(E[foundExt[j]]) < abs(E[foundExt[l]]) then
+      if Abs(E[foundExt[j]]) < Abs(E[foundExt[l]]) then
         l := j; // new smallest error.
       if up and (E[foundExt[j]] < 0.0) then
         up := False // switch to a minima
@@ -468,7 +468,7 @@ begin
     // If there's only one extremal and all are alternating,
     // delete the smallest of the first / last extremals.
     if alt and (extra = 1) then
-      if abs(E[foundExt[k - 1]]) < abs(E[foundExt[0]]) then
+      if Abs(E[foundExt[k - 1]]) < Abs(E[foundExt[0]]) then
         l := foundExt[k - 1] // Delete last extremal
       else
         l := foundExt[0]; // Delete first extremal
@@ -576,11 +576,11 @@ var
   i: Integer;
   min, max, current: Double;
 begin
-  min := abs(E[Ext[0]]);
+  min := Abs(E[Ext[0]]);
   max := min;
   for i := 1 to r do
   begin
-    current := abs(E[Ext[i]]);
+    current := Abs(E[Ext[i]]);
     if current < min then
       min := current;
     if current > max then

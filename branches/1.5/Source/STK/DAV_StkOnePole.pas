@@ -109,7 +109,7 @@ begin
   a[0] := 1.0;
   a[1] := -0.9;
   // Normalize coefficients for peak unity gain.
-  b := (1.0 - abs(thePole));
+  b := (1.0 - Abs(thePole));
   a[1] := -thePole;
   inherited setCoefficients(1, @b, 2, @a);
 end;
@@ -137,7 +137,7 @@ end;
 procedure TStkOnePole.SetPole(const Value: Single);
 begin
   // Normalize coefficients for peak unity gain.
-  FB^[0] := (1.0 - abs(Value));
+  FB^[0] := (1.0 - Abs(Value));
   PDAV4SingleArray(FA)^[1] := -Value;
 end;
 

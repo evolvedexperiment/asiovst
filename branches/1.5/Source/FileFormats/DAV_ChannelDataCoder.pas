@@ -827,7 +827,7 @@ begin
     SignInt := 0;
 
   // If the number is negative, make it positive (now it's a magnitude)
-  Input := abs(Input);
+  Input := Abs(Input);
 
   // The magnitude must fit in 15 bits to avoid overflow
   if (Input > 1) then

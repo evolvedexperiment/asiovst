@@ -80,22 +80,18 @@ type
   TGuiCustomFileFormatClass = class of TGuiCustomFileFormat;
 
 procedure RegisterGraphicFileFormat(FileFormatClass: TGuiCustomFileFormatClass);
-procedure RegisterGraphicFileFormats(FileFormatClasses
-  : array of TGuiCustomFileFormatClass);
-function FindGraphicFileFormatByExtension(Extension: TFileName)
-  : TGuiCustomFileFormatClass;
-function FindGraphicFileFormatByFileName(FileName: TFileName)
-  : TGuiCustomFileFormatClass;
-function FindGraphicFileFormatByStream(Stream: TStream)
-  : TGuiCustomFileFormatClass;
+procedure RegisterGraphicFileFormats(FileFormatClasses: array of TGuiCustomFileFormatClass);
+function FindGraphicFileFormatByExtension(Extension: TFileName): TGuiCustomFileFormatClass;
+function FindGraphicFileFormatByFileName(FileName: TFileName): TGuiCustomFileFormatClass;
+function FindGraphicFileFormatByStream(Stream: TStream): TGuiCustomFileFormatClass;
 
 implementation
 
 var
   GGraphicFileFormatClasses: array of TGuiCustomFileFormatClass;
 
-function IsGraphicFileFormatRegistered(FileFormatClass
-  : TGuiCustomFileFormatClass): Boolean;
+function IsGraphicFileFormatRegistered(
+  FileFormatClass: TGuiCustomFileFormatClass): Boolean;
 var
   FileFormatClassIndex: Integer;
 begin

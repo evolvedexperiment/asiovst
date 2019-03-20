@@ -75,7 +75,7 @@ implementation
 {$ENDIF}
 
 uses
-  Math, DAV_Common, DAV_VSTCustomModule, PlateReverbGUI;
+  Math, DAV_Common, DAV_Consts, DAV_VSTCustomModule, PlateReverbGUI;
 
 procedure TPlateReverbVST.VSTModuleCreate(Sender: TObject);
 begin
@@ -255,8 +255,7 @@ begin
     for SampleIndex := 0 to SampleFrames - 1 do
     begin
       FState := FPlateReverb.ProcessSample32(FCrossover * FState +
-        (1 - FCrossover) * (inputs[0, SampleIndex] + inputs[1, SampleIndex])
-        * CHalf32);
+        (1 - FCrossover) * (inputs[0, SampleIndex] + inputs[1, SampleIndex]) * CHalf32);
 
       // Calculate output MIXING with anything already there
       Outputs[0, SampleIndex] := Outputs[0, SampleIndex] + FMix[0] *
@@ -279,8 +278,7 @@ begin
     for SampleIndex := 0 to SampleFrames - 1 do
     begin
       FState := FPlateReverb.ProcessSample32(FCrossover * FState +
-        (1 - FCrossover) * (inputs[0, SampleIndex] + inputs[1, SampleIndex])
-        * CHalf32);
+        (1 - FCrossover) * (inputs[0, SampleIndex] + inputs[1, SampleIndex]) * CHalf32);
 
       // Calculate output REPLACING with anything already there
       Outputs[0, SampleIndex] := FMix[0] * inputs[0, SampleIndex] + FMix[1] *

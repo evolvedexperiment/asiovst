@@ -303,7 +303,7 @@ end;
 
 function TanhApprox(Input: Double): Double;
 begin
- Result := abs(Input) + sqr(Input) * (1 + 1.41645 * sqr(Input));
+ Result := Abs(Input) + sqr(Input) * (1 + 1.41645 * sqr(Input));
  Result := Result / (1 + Result);
  if Input < 0
   then Result := -Result;
@@ -319,14 +319,14 @@ function TTanhWaveshaperModule.FastTanhToguAudioLineWaveshaper(
   Input: Double): Double;
 begin
  Input := 2 * FGain * Input;
- Result := Input / (abs(Input) + 2 / (2.12 - 1.44 * abs(Input) + sqr(Input)));
+ Result := Input / (Abs(Input) + 2 / (2.12 - 1.44 * Abs(Input) + sqr(Input)));
 end;
 
 function TTanhWaveshaperModule.FastTanhTALtoastWaveshaper(
   Input: Double): Double;
 begin
  Input := 2 * FGain * Input;
- Result := Input / (abs(Input) + 4.3448473351 / (0.11932825377 - 0.15402606842 * abs(Input) + sqr(Input)));
+ Result := Input / (Abs(Input) + 4.3448473351 / (0.11932825377 - 0.15402606842 * Abs(Input) + sqr(Input)));
 end;
 
 function TTanhWaveshaperModule.FastTanhMrToast3TermWaveshaper(

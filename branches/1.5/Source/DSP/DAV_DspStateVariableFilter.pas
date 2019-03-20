@@ -68,7 +68,7 @@ type
 implementation
 
 uses
-  SysUtils, DAV_Common;
+  SysUtils, DAV_Common, DAV_Consts;
 
 constructor TSVF.Create;
 begin

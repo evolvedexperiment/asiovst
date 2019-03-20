@@ -36,8 +36,6 @@ interface
 
 uses
   Classes, DAV_Types, DAV_Classes, DAV_ClassesFft, DAV_Complex,
-{$IFDEF Use_IPPS}DAV_DspFftReal2ComplexIPPS, {$ENDIF}
-{$IFDEF Use_CUDA}DAV_DspFftReal2ComplexCUDA, {$ENDIF}
   DAV_DspFftReal2Complex;
 
 type
@@ -51,13 +49,7 @@ type
 
   TCustomSpectralAnalysis32 = class(TCustomSpectralAnalysis)
   private
-{$IFDEF Use_IPPS}
-    function GetFft: TFftReal2ComplexIPPSFloat32;
-{$ELSE} {$IFDEF Use_CUDA}
-    function GetFft: TFftReal2ComplexCUDA32;
-{$ELSE}
     function GetFft: TFftReal2ComplexNativeFloat32;
-{$ENDIF}{$ENDIF}
   protected
     FSignalFreq: PDAVComplexSingleFixedArray;
     FInputBuffer: PDAVSingleFixedArray;
@@ -69,13 +61,7 @@ type
     procedure PerformAnalysis(Spectum: PDAVComplexSingleFixedArray); overload;
       virtual; abstract;
 
-{$IFDEF Use_IPPS}
-    property Fft: TFftReal2ComplexIPPSFloat32 read GetFft;
-{$ELSE} {$IFDEF Use_CUDA}
-    property Fft: TFftReal2ComplexCUDA32 read GetFft;
-{$ELSE}
     property Fft: TFftReal2ComplexNativeFloat32 read GetFft;
-{$ENDIF}{$ENDIF}
   public
     constructor Create; override;
     destructor Destroy; override;
@@ -89,11 +75,7 @@ type
 
   TCustomSpectralAnalysis64 = class(TCustomSpectralAnalysis)
   private
-{$IFDEF Use_IPPS}
-    function GetFft: TFftReal2ComplexIPPSFloat64;
-{$ELSE}
     function GetFft: TFftReal2ComplexNativeFloat64;
-{$ENDIF}
   protected
     FSignalFreq: PDAVComplexDoubleFixedArray;
     FInputBuffer: PDAVDoubleFixedArray;
@@ -105,11 +87,7 @@ type
     procedure PerformAnalysis(Spectum: PDAVComplexDoubleFixedArray); overload;
       virtual; abstract;
 
-{$IFDEF Use_IPPS}
-    property Fft: TFftReal2ComplexIPPSFloat64 read GetFft;
-{$ELSE}
     property Fft: TFftReal2ComplexNativeFloat64 read GetFft;
-{$ENDIF}
   public
     constructor Create; override;
     destructor Destroy; override;
@@ -161,14 +139,9 @@ begin
 
   FSignalFreq := nil;
 
-{$IFDEF Use_IPPS}
-  FFft := TFftReal2ComplexIPPSFloat32.Create(6);
-{$ELSE} {$IFDEF Use_CUDA}
-  FFft := TFftReal2ComplexCUDA32.Create(6);
-{$ELSE}
   FFft := TFftReal2ComplexNativeFloat32.Create(6);
   FFft.DataOrder := doPackedComplex;
-{$ENDIF}{$ENDIF}
+
   FFTOrderChanged;
 end;
 
@@ -203,27 +176,10 @@ begin
   FillChar(FSignalFreq^[0], (FFFTSizeHalf + 1) * SizeOf(TComplex32), 0);
 end;
 
-{$IFDEF Use_IPPS}
-
-function TCustomSpectralAnalysis32.GetFft: TFftReal2ComplexIPPSFloat32;
-begin
-  Result := TFftReal2ComplexIPPSFloat32(FFft);
-end;
-
-{$ELSE} {$IFDEF Use_CUDA}
-
-function TCustomSpectralAnalysis32.GetFft: TFftReal2ComplexCUDA32;
-begin
-  Result := TFftReal2ComplexCUDA32(FFft);
-end;
-
-{$ELSE}
-
 function TCustomSpectralAnalysis32.GetFft: TFftReal2ComplexNativeFloat32;
 begin
   Result := TFftReal2ComplexNativeFloat32(FFft);
 end;
-{$ENDIF}{$ENDIF}
 
 procedure TCustomSpectralAnalysis32.PerformAnalysis
   (SignalIn: PDAVSingleFixedArray);
@@ -304,12 +260,8 @@ begin
 
   FSignalFreq := nil;
 
-{$IFDEF Use_IPPS}
-  FFft := TFftReal2ComplexIPPSFloat64.Create(6);
-{$ELSE}
   FFft := TFftReal2ComplexNativeFloat64.Create(6);
   FFft.DataOrder := doPackedComplex;
-{$ENDIF}
   FFTOrderChanged;
 end;
 
@@ -344,20 +296,10 @@ begin
   FillChar(FSignalFreq^[0], (FFFTSizeHalf + 1) * SizeOf(TComplex64), 0);
 end;
 
-{$IFDEF Use_IPPS}
-
-function TCustomSpectralAnalysis64.GetFft: TFftReal2ComplexIPPSFloat64;
-begin
-  Result := TFftReal2ComplexIPPSFloat64(FFft);
-end;
-
-{$ELSE}
-
 function TCustomSpectralAnalysis64.GetFft: TFftReal2ComplexNativeFloat64;
 begin
   Result := TFftReal2ComplexNativeFloat64(FFft);
 end;
-{$ENDIF}
 
 procedure TCustomSpectralAnalysis64.PerformAnalysis
   (SignalIn: PDAVDoubleFixedArray);

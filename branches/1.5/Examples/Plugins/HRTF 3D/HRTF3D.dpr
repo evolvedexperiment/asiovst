@@ -10,6 +10,7 @@ library HRTF3D;
 
 uses
   FastMM4,
+  madLinkDisAsm,
   {$IFDEF UseFastMove}
   FastMove,
   {$ENDIF }

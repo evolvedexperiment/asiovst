@@ -131,7 +131,7 @@ type
 implementation
 
 uses
-  DAV_Complex, DAV_Approximations;
+  DAV_Complex, DAV_Approximations, DAV_Consts;
 
 { TCustomGuiPixelPrimitive }
 

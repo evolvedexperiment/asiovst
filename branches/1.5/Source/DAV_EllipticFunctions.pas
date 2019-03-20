@@ -1258,12 +1258,12 @@ begin
 
   (* Thanks to Brian Fitzgerald <fitzgb@mml0.meche.rpi.edu>
     for pointing out an instability near odd multiples of Pi/2. *)
-  if abs(t) > 10 then
+  if Abs(t) > 10 then
   begin
     (* Transform the amplitude *)
     e := 1 / (b * t);
     (* ... but avoid multiple recursions. *)
-    if abs(e) < 10 then
+    if Abs(e) < 10 then
     begin
       e := ArcTan(e);
       Result := Ex + m * sin(lphi) * sin(e) -
@@ -1277,7 +1277,7 @@ begin
   e := 0.0;
   md := 0;
 
-  while abs(c / a) > CMachEP do
+  while Abs(c / a) > CMachEP do
   begin
     Result := b / a;
     lphi := lphi + ArcTan(t * Result) + md * Pi;
@@ -1352,7 +1352,7 @@ begin
   a := 1 - m;
   if a = 0 then
   begin
-    if abs(Phi) >= PiO2 then
+    if Abs(Phi) >= PiO2 then
     begin
       // mtherr('IncompleteEllipticIntegral1stKind', SING);
       Result := (MaxNum);
@@ -1384,13 +1384,13 @@ begin
 
   b := Sqrt(a);
   t := tan(Phi);
-  if abs(t) > 10 then
+  if Abs(t) > 10 then
   begin
     (* Transform the amplitude *)
     e := 1 / (b * t);
 
     (* ... but avoid multiple recursions. *)
-    if abs(e) < 10 then
+    if Abs(e) < 10 then
     begin
       e := ArcTan(e);
       if (npio2 = 0) then
@@ -1405,7 +1405,7 @@ begin
   d := 1;
   md := 0;
 
-  while abs(c / a) > CMachEP do
+  while Abs(c / a) > CMachEP do
   begin
     Result := b / a;
     Phi := Phi + ArcTan(t * Result) + md * Pi;
@@ -1617,7 +1617,7 @@ begin
   twon := 1;
   i := 0;
 
-  while abs(c[i] / a[i]) > CMachEP do
+  while Abs(c[i] / a[i]) > CMachEP do
   begin
     if (i > 7) then
     begin
@@ -1749,7 +1749,7 @@ begin
   Result := CompleteEllipticIntegral1stKind(Sqrt(m)) - Result;
 
   (*
-    Assert(abs(m) < 1);
+    Assert(Abs(m) < 1);
     Result := 0;
     for i := 0 to Steps - 1 do
     begin

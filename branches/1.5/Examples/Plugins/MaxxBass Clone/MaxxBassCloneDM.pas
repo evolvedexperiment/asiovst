@@ -70,7 +70,7 @@ type
 implementation
 
 uses
-  Math, DAV_Common, DAV_Approximations, MaxxBassCloneGUI;
+  Math, DAV_Common, DAV_Convert, DAV_Approximations, MaxxBassCloneGUI;
 
 {$IFDEF FPC}
 {$R *.lfm}

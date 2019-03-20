@@ -168,7 +168,7 @@ type
 implementation
 
 uses
-  Math, DAV_Common, DAV_GuiBlend;
+  Math, Types, DAV_Common, DAV_GuiBlend;
 
 resourcestring
   RCStrOutOfRange = 'Value must be between %d and %d';

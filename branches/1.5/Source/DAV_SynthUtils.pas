@@ -74,52 +74,53 @@ type
     property List: PPointerList read FList;
   end;
 
-function KeyToNote(Key: Integer): Integer;
+function KeyToNote(const Key: Integer; var Note: Byte): Boolean;
 
 implementation
 
 uses
   SysUtils;
 
-function KeyToNote(Key: Integer): Integer;
+function KeyToNote(const Key: Integer; var Note: Byte): Boolean;
 begin
+  Result := True;
   case Key of
     89:
-      Result := 60;
+      Note := 60;
     83:
-      Result := 61;
+      Note := 61;
     88:
-      Result := 62;
+      Note := 62;
     68:
-      Result := 63;
+      Note := 63;
     67:
-      Result := 64;
+      Note := 64;
     86:
-      Result := 65;
+      Note := 65;
     71:
-      Result := 66;
+      Note := 66;
     66:
-      Result := 67;
+      Note := 67;
     72:
-      Result := 68;
+      Note := 68;
     78:
-      Result := 69;
+      Note := 69;
     74:
-      Result := 70;
+      Note := 70;
     77:
-      Result := 71;
+      Note := 71;
     188:
-      Result := 72;
+      Note := 72;
     81:
-      Result := 72;
+      Note := 72;
     87:
-      Result := 74;
+      Note := 74;
     69:
-      Result := 76;
+      Note := 76;
     82:
-      Result := 77;
+      Note := 77;
     else
-      Result := -1;
+      Result := True;
   end;
 end;
 

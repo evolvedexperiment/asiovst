@@ -203,7 +203,7 @@ implementation
 {$ENDIF}
 
 uses
-  Math, DAV_Common, MBCDM;
+  Math, DAV_Common, DAV_Convert, MBCDM;
 
 procedure TFmMBC.FormCreate(Sender: TObject);
 begin

@@ -234,7 +234,8 @@ type
 implementation
 
 uses
-  SysUtils, Math, DAV_Math, DAV_Common, DAV_Approximations, DAV_DspWindowing;
+  SysUtils, Math, DAV_Math, DAV_Common, DAV_Approximations, DAV_DspWindowing,
+  DAV_Consts;
 
 { TCustomDownsampledTuner }
 
@@ -396,7 +397,7 @@ begin
 
     if FOneCrossingOnly and FIsAbove then
     begin
-      inc(FSamples);
+      Inc(FSamples);
       exit;
     end;
 
@@ -631,10 +632,10 @@ procedure TCustomAdvancedTuner.ProcessDownsampled(DownSampled: Single);
 var
   Offset: Single;
 begin
-  if abs(DownSampled) > FLevel then
-    FLevel := FLevel + (abs(DownSampled) - FLevel) * FAttackFactor
+  if Abs(DownSampled) > FLevel then
+    FLevel := FLevel + (Abs(DownSampled) - FLevel) * FAttackFactor
   else
-    FLevel := abs(DownSampled) + (FLevel - abs(DownSampled)) * FReleaseFactor;
+    FLevel := Abs(DownSampled) + (FLevel - Abs(DownSampled)) * FReleaseFactor;
 
   if (DownSampled < FThreshold * FLevel) = FIsAbove then
   begin
@@ -953,9 +954,9 @@ end;
 
 procedure TCustomYinTuner.SetThreshold(const Value: Single);
 begin
-  if FThreshold <> abs(Value) then
+  if FThreshold <> Abs(Value) then
   begin
-    FThreshold := abs(Value);
+    FThreshold := Abs(Value);
     ThresholdChanged;
   end;
 end;

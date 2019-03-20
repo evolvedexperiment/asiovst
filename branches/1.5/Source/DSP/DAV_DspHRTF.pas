@@ -2096,7 +2096,7 @@ begin
   InnerAngles[2] := GetSphericTriangleAngleNoCos(PntA[2], AngleA[1], AngleA[0]);
 
   // check position lies inside the triangle
-  Assert(abs((InnerAngles[0] + InnerAngles[1] + InnerAngles[2]) - 2 * Pi) < 1E-5);
+  Assert(Abs((InnerAngles[0] + InnerAngles[1] + InnerAngles[2]) - 2 * Pi) < 1E-5);
 
   // half angles (part 1)
   HalfAngles[0, 0] := GetSphericTriangleAngleNoCos(AngleA[0], AngleA[2], PntA[1]);
@@ -2114,9 +2114,9 @@ begin
   TotalAngle[2] := GetSphericTriangleAngleNoCos(PntA[2], PntA[0], PntA[1]); // gamma
 
   // check position lies inside the triangle
-  Assert(abs((HalfAngles[0, 1] + HalfAngles[1, 2]) - TotalAngle[0]) < 1E-3);
-  Assert(abs((HalfAngles[0, 2] + HalfAngles[1, 0]) - TotalAngle[1]) < 1E-3);
-  Assert(abs((HalfAngles[0, 0] + HalfAngles[1, 1]) - TotalAngle[2]) < 1E-3);
+  Assert(Abs((HalfAngles[0, 1] + HalfAngles[1, 2]) - TotalAngle[0]) < 1E-3);
+  Assert(Abs((HalfAngles[0, 2] + HalfAngles[1, 0]) - TotalAngle[1]) < 1E-3);
+  Assert(Abs((HalfAngles[0, 0] + HalfAngles[1, 1]) - TotalAngle[2]) < 1E-3);
 
 
   // calculate side parts
@@ -2386,11 +2386,11 @@ begin
               HrirPos[1] := Hrirs[1].Position;
               MinimumAngle := GetOrthodromicAngle2D(Hrirs[1].Position,
                 SpherePos);
-              inc(i);
+              Inc(i);
               break;
             end
             else
-              inc(i);
+              Inc(i);
           while i < FHrirList.Count do
           begin
             CurrentAngle := GetOrthodromicAngle2D(TCustomHrir(FHrirList[i])
@@ -2403,7 +2403,7 @@ begin
               MinimumAngle := GetOrthodromicAngle2D(Hrirs[1].Position,
                 SpherePos);
             end;
-            inc(i);
+            Inc(i);
           end;
         end;
 
@@ -2422,11 +2422,11 @@ begin
               HrirPos[1] := Hrirs[1].Position;
               MinimumAngle := GetOrthodromicAngle2D(Hrirs[1].Position,
                 SpherePos);
-              inc(i);
+              Inc(i);
               break;
             end
             else
-              inc(i);
+              Inc(i);
           while i < FHrirList.Count do
           begin
             CurrentAngle := GetOrthodromicAngle2D(TCustomHrir(FHrirList[i])
@@ -2439,7 +2439,7 @@ begin
               MinimumAngle := GetOrthodromicAngle2D(Hrirs[1].Position,
                 SpherePos);
             end;
-            inc(i);
+            Inc(i);
           end;
         end;
 
@@ -2940,7 +2940,7 @@ begin
     if FChunkList[i] is TCustomHrir then
       FChunkList.Delete(i)
     else
-      inc(i);
+      Inc(i);
 end;
 
 procedure TCustomHrtfs.ClearInformationChunks;

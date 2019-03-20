@@ -140,7 +140,7 @@ type
 implementation
 
 uses
-  SysUtils, Math, DAV_Approximations, DAV_Common, DAV_Math;
+  SysUtils, Math, DAV_Approximations, DAV_Common, DAV_Convert, DAV_Math;
 
 { TCustomDspLookaheadLimiter }
 
@@ -240,7 +240,7 @@ begin
     Temp[0] := -CHalf32 * (FastLog2ContinousError5(FPeak) - FThrshlddB);
     Temp[1] := ;
     FGain   := FastPower2MinError3(Temp[0] - Temp[1]);
-    Temp[1] := 2 * Temp[1] / (Temp[1] - abs(Temp[0]));
+    Temp[1] := 2 * Temp[1] / (Temp[1] - Abs(Temp[0]));
     FReleaseFactor := FastPower2MinError3(Temp[1] * FReleaseSampleCycle);
   *)
 end;

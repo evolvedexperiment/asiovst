@@ -103,7 +103,7 @@ implementation
 {$ENDIF}
 
 uses
-  Math, SysUtils, DAV_Complex, DAV_Math;
+  Math, SysUtils, DAV_Complex, DAV_Math, DAV_Convert;
 
 constructor TCustomBesselFilter.Create(const Order: Integer = 0);
 begin

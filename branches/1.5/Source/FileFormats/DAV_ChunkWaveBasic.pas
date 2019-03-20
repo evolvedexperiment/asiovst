@@ -1650,7 +1650,7 @@ var
 begin
   Result := SizeOf(AssociatedDataListRecord);
   for i := 0 to FChunkList.Count - 1 do
-    inc(Result, FChunkList[i].ChunkSize + 8); // Chunk Size + Chunk Frame (8)
+    Inc(Result, FChunkList[i].ChunkSize + 8); // Chunk Size + Chunk Frame (8)
 end;
 
 class function TAssociatedDataListChunk.GetClassChunkName: TChunkName;

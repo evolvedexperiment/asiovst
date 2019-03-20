@@ -33,13 +33,11 @@ unit ConvolutionDM;
 interface
 
 {$I DAV_Compiler.inc}
-{-$DEFINE Use_IPPS}
 
 uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
   Forms, DAV_Types, DAV_Complex, DAV_DspFftReal2Complex, DAV_VSTModule,
-  {$IFDEF Use_IPPS}DAV_DspFftReal2ComplexIPPS, {$ENDIF} DAV_AudioFileWAV,
-  DAV_AudioFileAIFF, DAV_AudioFileAU, DAV_AudioData;
+  DAV_AudioFileWAV, DAV_AudioFileAIFF, DAV_AudioFileAU, DAV_AudioData;
 
 type
   TConvolutionDataModule = class(TVSTModule)
@@ -53,11 +51,7 @@ type
     FSignalTime: array of PDAVSingleFixedArray;
     FBuffer: PDAVSingleFixedArray;
     FSemaphore: Integer;
-{$IFDEF Use_IPPS}
-    FFft: TFftReal2ComplexIPPSFloat32;
-{$ELSE}
     FFft: TFftReal2ComplexNativeFloat32;
-{$ENDIF}
     FIRSize: Integer;
     FFFTSize: Integer;
     FFFTSizeHalf: Integer;
@@ -127,14 +121,10 @@ var
 begin
   i := 1 + CeilLog2(FIRSize);
   if not Assigned(FFft) then
-{$IFDEF Use_IPPS}
-    FFft := TFftReal2ComplexIPPSFloat32.Create(i)
-{$ELSE}
   begin
     FFft := TFftReal2ComplexNativeFloat32.Create(i);
     FFft.DataOrder := doPackedComplex;
   end
-{$ENDIF}
   else
     FFft.Order := i;
 

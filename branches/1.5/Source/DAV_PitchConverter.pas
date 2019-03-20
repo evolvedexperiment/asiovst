@@ -126,7 +126,7 @@ function TPitchConverter.CyclesPerSampleToMidi(Value: Double): Integer;
 begin
   if Value < 0 then
     Value := 0;
-  Result := abs(Round(12 * log2(Value / FGlobalTuneA4) + 69));
+  Result := Abs(Round(12 * log2(Value / FGlobalTuneA4) + 69));
   if Result > 127 then
     Result := -1;
 end;

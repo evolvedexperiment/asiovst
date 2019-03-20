@@ -84,7 +84,7 @@ implementation
 {$ENDIF}
 
 uses
-  Math, DAV_Common, DAV_Strings, DAV_Approximations, DAV_VSTModuleWithPrograms,
+  Math, DAV_Common, DAV_Consts, DAV_Strings, DAV_Approximations, DAV_VSTModuleWithPrograms,
   LightweightFeedbackCompressorGUI;
 
 procedure TLightweightFeedbackCompressorDataModule.VSTModuleOpen(Sender: TObject);

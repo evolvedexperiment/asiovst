@@ -37,9 +37,7 @@ interface
 uses
   {$IFDEF FPC}LCLIntf, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, Forms,
   SyncObjs, DAV_Types, DAV_Complex, DAV_MemoryUtils,
-  DAV_DspFftReal2Complex, {$IFDEF Use_IPPS}DAV_DspFftReal2ComplexIPPS, {$ENDIF}
-  {$IFDEF Use_CUDA}DAV_DspFftReal2ComplexCUDA, {$ENDIF}
-  DAV_DspConvolution, DAV_VSTModule;
+  DAV_DspFftReal2Complex, DAV_DspConvolution, DAV_VSTModule;
 
 type
   TPhaseAdjustmentModule = class(TVSTModule)
@@ -63,13 +61,7 @@ type
     FUpdateKernelNecessary: Boolean;
     FImpulseResponse: PDAVSingleFixedArray;
     FFilterFreq: PDAVComplexSingleFixedArray;
-{$IFDEF Use_IPPS}
-    FFft: TFftReal2ComplexIPPSFloat32;
-{$ELSE} {$IFDEF Use_CUDA}
-    FFft: TFftReal2ComplexCUDA32;
-{$ELSE}
     FFft: TFftReal2ComplexNativeFloat32;
-{$ENDIF}{$ENDIF}
     FStereoConvolution: TLowLatencyConvolutionStereo32;
     procedure CalculateFilterKernel;
     procedure PhaseChanged; virtual;
@@ -112,22 +104,11 @@ begin
   // set initial delay
   InitialDelay := FStereoConvolution.Latency + FIRSize div 2;
 
-{$IFDEF Use_IPPS}
-  FFft := TFftReal2ComplexIPPSFloat32.Create(Round(Log2(2 * FIRSize)));
-
-  ReallocateAlignedMemory(FFilterFreq, (FIRSize + 1) * SizeOf(TComplex32));
-  FillChar(FFilterFreq^[0], (FIRSize + 1) * SizeOf(TComplex32), 0);
-{$ELSE} {$IFDEF Use_CUDA}
-  FFft := TFftReal2ComplexCUDA32.Create(Round(Log2(2 * FIRSize)));
-
-  ReallocateAlignedMemory(FFilterFreq, FIRSize * SizeOf(TComplex32));
-  FillChar(FFilterFreq^[0], FIRSize * SizeOf(Single), 0);
-{$ELSE}
   FFft := TFftReal2ComplexNativeFloat32.Create(Round(Log2(2 * FIRSize)));
 
   ReallocateAlignedMemory(FFilterFreq, FIRSize * SizeOf(TComplex32));
   FillChar(FFilterFreq^[0], FIRSize * SizeOf(Single), 0);
-{$ENDIF}{$ENDIF}
+
   // allocate memory for impulse response
   ReallocateAlignedMemory(FImpulseResponse, 2 * FIRSize * SizeOf(Single));
   FillChar(FImpulseResponse^[0], 2 * FIRSize * SizeOf(Single), 0);
@@ -247,11 +228,6 @@ begin
     FFilterFreq[FIRSize].Re := 1;
     FFilterFreq[FIRSize].Im := 0;
 
-{$IFDEF Use_IPPS}
-    FFft.PerformiFFTCCS(FFilterFreq, FImpulseResponse);
-{$ELSE}{$IFDEF Use_CUDA}
-    FFft.PerformiFFT(FFilterFreq, FImpulseResponse);
-{$ELSE}
     // calculate frequency
     case FFft.DataOrder of
       doPackedRealImaginary:
@@ -262,7 +238,6 @@ begin
     else
       raise Exception.Create('not supported');
     end;
-{$ENDIF}{$ENDIF}
 
     Move(FImpulseResponse^[0], FImpulseResponse^[FIRSize div 2], (FIRSize div 2) * SizeOf(Single));
     Move(FImpulseResponse^[3 * FIRSize div 2], FImpulseResponse^[0], (FIRSize div 2) * SizeOf(Single));

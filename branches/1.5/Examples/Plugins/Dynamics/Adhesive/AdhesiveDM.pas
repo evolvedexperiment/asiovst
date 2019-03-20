@@ -86,7 +86,8 @@ implementation
 {$ENDIF}
 
 uses
-  Math, DAV_Common, DAV_Approximations, DAV_VSTModuleWithPrograms, AdhesiveGUI;
+  Math, DAV_Common, DAV_Convert, DAV_Consts, DAV_Approximations,
+  DAV_VSTModuleWithPrograms, AdhesiveGUI;
 
 procedure TAdhesiveDataModule.VSTModuleOpen(Sender: TObject);
 var
@@ -408,13 +409,13 @@ procedure TAdhesiveDataModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 begin
   // skip invalid samplerates
-  if abs(SampleRate) <= 0 then
+  if Abs(SampleRate) <= 0 then
     exit;
 
   if Assigned(FCompressor) then
-    FCompressor.SampleRate := abs(SampleRate);
+    FCompressor.SampleRate := Abs(SampleRate);
   if Assigned(FFilter) then
-    FFilter.SampleRate := abs(SampleRate);
+    FFilter.SampleRate := Abs(SampleRate);
 end;
 
 end.

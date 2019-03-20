@@ -388,7 +388,7 @@ end;
 
 procedure TComboDataModule.BiasChanged;
 begin
-  FBias := 6 * Parameter[2] / (1000 + abs(1.5 * Parameter[1]));
+  FBias := 6 * Parameter[2] / (1000 + Abs(1.5 * Parameter[1]));
 end;
 
 procedure TComboDataModule.TrimChanged;
@@ -504,8 +504,8 @@ begin
 
       if FIsSoftClipping then
       begin
-        OutP[0] := InP[0] / (1 + abs(InP[0]));
-        OutP[1] := InP[1] / (1 + abs(InP[1]));
+        OutP[0] := InP[0] / (1 + Abs(InP[0]));
+        OutP[1] := InP[1] / (1 + Abs(InP[1]));
       end
       else
       begin
@@ -567,7 +567,7 @@ begin
           (drv * (FRndAmt * random + Inputs[0, Sample] + Inputs[1,
           Sample] + bi));
 
-        OutP[0] := InP[0] / (1 + abs(InP[0]));
+        OutP[0] := InP[0] / (1 + Abs(InP[0]));
 
         FBuffer[0]^[bp] := OutP[0];
         OutP[0] := OutP[0] + (m[0] * FBuffer[0]^[(bp + d[0]) mod 1000]) +
@@ -632,11 +632,11 @@ begin
     end;
   end;
   FBufferPosition := bp;
-  if (abs(FilterState[0, 0]) < 1E-10) then
+  if (Abs(FilterState[0, 0]) < 1E-10) then
     FillChar(FFilterState[0, 0], 5 * SizeOf(Double), 0)
   else
     Move(FilterState[0, 0], FFilterState[0, 0], 5 * SizeOf(Double));
-  if (abs(FilterState[1, 0]) < 1E-10) or (not FStereo) then
+  if (Abs(FilterState[1, 0]) < 1E-10) or (not FStereo) then
     FillChar(FFilterState[1, 0], 5 * SizeOf(Double), 0)
   else
     Move(FilterState[1, 0], FFilterState[1, 0], 5 * SizeOf(Double));
@@ -686,8 +686,8 @@ begin
 
       if FIsSoftClipping then
       begin
-        OutP[0] := InP[0] / (1 + abs(InP[0]));
-        OutP[1] := InP[1] / (1 + abs(InP[1]));
+        OutP[0] := InP[0] / (1 + Abs(InP[0]));
+        OutP[1] := InP[1] / (1 + Abs(InP[1]));
       end
       else
       begin
@@ -748,7 +748,7 @@ begin
         InP[0] := FHighPass[0].ProcessSample64
           (drv * (Inputs[0, Sample] + Inputs[1, Sample] + bi));
 
-        OutP[0] := InP[0] / (1 + abs(InP[0]));
+        OutP[0] := InP[0] / (1 + Abs(InP[0]));
 
         FBuffer[0]^[bp] := OutP[0];
         OutP[0] := OutP[0] + (m[0] * FBuffer[0]^[(bp + d[0]) mod 1000]) +
@@ -812,11 +812,11 @@ begin
     end;
   end;
   FBufferPosition := bp;
-  if (abs(FilterState[0, 0]) < 1E-10) then
+  if (Abs(FilterState[0, 0]) < 1E-10) then
     FillChar(FFilterState[0, 0], 5 * SizeOf(Double), 0)
   else
     Move(FilterState[0, 0], FFilterState[0, 0], 5 * SizeOf(Double));
-  if (abs(FilterState[1, 0]) < 1E-10) or (not FStereo) then
+  if (Abs(FilterState[1, 0]) < 1E-10) or (not FStereo) then
     FillChar(FFilterState[1, 0], 5 * SizeOf(Double), 0)
   else
     Move(FilterState[1, 0], FFilterState[1, 0], 5 * SizeOf(Double));
@@ -825,12 +825,12 @@ end;
 procedure TComboDataModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 begin
-  if abs(SampleRate) > 0 then
+  if Abs(SampleRate) > 0 then
   begin
     if Assigned(FHighPass[0]) then
-      FHighPass[0].SampleRate := abs(SampleRate);
+      FHighPass[0].SampleRate := Abs(SampleRate);
     if Assigned(FHighPass[1]) then
-      FHighPass[1].SampleRate := abs(SampleRate);
+      FHighPass[1].SampleRate := Abs(SampleRate);
     ModelTypeChanged;
   end;
 end;

@@ -108,7 +108,7 @@ implementation
 {$ENDIF}
 
 uses
-{$IFDEF HAS_UNIT_ANSISTRINGS} AnsiStrings, {$ENDIF} DAV_Common,
+{$IFDEF HAS_UNIT_ANSISTRINGS} AnsiStrings, {$ENDIF} DAV_Common, DAV_Convert,
   DAV_GuiCommon, DAV_VSTModuleWithPrograms, CTCDM;
 
 procedure TFmCTC.FormCreate(Sender: TObject);

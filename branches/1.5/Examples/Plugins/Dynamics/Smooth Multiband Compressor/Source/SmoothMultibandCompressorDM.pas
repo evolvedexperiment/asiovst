@@ -103,7 +103,7 @@ implementation
 {$ENDIF}
 
 uses
-  Math, Graphics, DAV_Common, DAV_Strings, DAV_Approximations,
+  Math, Graphics, DAV_Common, DAV_Convert, DAV_Strings, DAV_Approximations,
   DAV_VSTModuleWithPrograms, SmoothMultibandCompressorGUI;
 
 procedure TSmoothMultibandCompressorDataModule.VSTModuleOpen(Sender: TObject);

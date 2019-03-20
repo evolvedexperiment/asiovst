@@ -74,7 +74,7 @@ implementation
 {$ENDIF}
 
 uses
-  BugpassLiteDM, DAV_Common, DAV_VSTModuleWithPrograms;
+  BugpassLiteDM, DAV_Common, DAV_Convert, DAV_VSTModuleWithPrograms;
 
 procedure TFmBugpassLite.FormCreate(Sender: TObject);
 begin
@@ -131,9 +131,9 @@ procedure TFmBugpassLite.FrequencyBarMouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
   with TBugpassLiteDataModule(Owner), FrequencyBar do
-    if abs(X - FreqLogToLinear(Parameter[0]) * Width) < 5 then
+    if Abs(X - FreqLogToLinear(Parameter[0]) * Width) < 5 then
       FMouseEdit := meLow
-    else if abs(X - FreqLogToLinear(Parameter[1]) * Width) < 5 then
+    else if Abs(X - FreqLogToLinear(Parameter[1]) * Width) < 5 then
       FMouseEdit := meHigh
     else
       FMouseEdit := meNone;

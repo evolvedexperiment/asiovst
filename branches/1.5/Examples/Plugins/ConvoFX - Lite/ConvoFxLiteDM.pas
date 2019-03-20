@@ -101,13 +101,13 @@ implementation
 {$ENDIF}
 
 uses
-  Math, DAV_Common, DAV_Math, DAV_HalfFloat, DAV_DspInterpolation,
+  Math, DAV_Common, DAV_Consts, DAV_Convert, DAV_Math, DAV_HalfFloat, DAV_DspInterpolation,
   ConvoFXLiteGUI;
 
 { TImpulseResponseUpdateThread }
 
-constructor TImpulseResponseUpdateThread.Create(ConvoFXLiteDataModule
-  : TConvoFXLiteDataModule);
+constructor TImpulseResponseUpdateThread.Create(
+  ConvoFXLiteDataModule: TConvoFXLiteDataModule);
 begin
   FConvoFXLiteDataModule := ConvoFXLiteDataModule;
   inherited Create(True);

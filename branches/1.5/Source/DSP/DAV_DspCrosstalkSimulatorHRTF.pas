@@ -36,9 +36,7 @@ interface
 
 uses
   Classes, DAV_Types, DAV_Classes, DAV_DspCrosstalkSimulator,
-  DAV_DspConvolution, {$IFDEF Use_IPPS}DAV_DspFftReal2ComplexIPPS, {$ENDIF}
-  DAV_DspFftReal2Complex, {$IFDEF Use_CUDA}DAV_DspFftReal2ComplexCUDA, {$ENDIF}
-  DAV_DspHrtf;
+  DAV_DspConvolution, DAV_DspFftReal2Complex, DAV_DspHrtf;
 
 type
   TCustomHrtfCrosstalkSimulator = class(TCustomCrosstalkSimulator)
@@ -209,13 +207,7 @@ var
   Frq: array [0 .. 1] of PDAVComplexSingleFixedArray;
   Sz: Integer;
   Ord: Integer;
-{$IFDEF Use_IPPS}
-  Fft: TFftReal2ComplexIPPSFloat32;
-{$ELSE} {$IFDEF Use_CUDA}
-  Fft: TFftReal2ComplexCUDA32;
-{$ELSE}
   Fft: TFftReal2ComplexNativeFloat32;
-{$ENDIF}{$ENDIF}
 begin
   Sz := FHrtf.MaximumHrirSize;
   GetMem(IR[0], Sz * SizeOf(Single));
@@ -229,14 +221,9 @@ begin
     FConvolution[0].FFTOrder := Ord;
     FConvolution[1].FFTOrder := Ord;
 
-{$IFDEF Use_IPPS}
-    Fft := TFftReal2ComplexIPPSFloat32.Create(Ord + 1);
-{$ELSE} {$IFDEF Use_CUDA}
-    Fft := TFftReal2ComplexCUDA32.Create(Ord + 1);
-{$ELSE}
     Fft := TFftReal2ComplexNativeFloat32.Create(Ord + 1);
     Fft.DataOrder := doPackedComplex;
-{$ENDIF}{$ENDIF}
+
     // deconvolution
     GetMem(Frq[0], ((Sz div 2) + 1) * SizeOf(Single));
     GetMem(Frq[1], ((Sz div 2) + 1) * SizeOf(Single));

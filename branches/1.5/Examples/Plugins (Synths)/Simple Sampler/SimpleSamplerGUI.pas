@@ -90,8 +90,7 @@ var
 const
   VeloDiv: Single = 1/128;
 begin
-  Note := KeyToNote(Key);
-  if Note = -1 then
+  if not KeyToNote(Key, Note) then
     Exit;
 
   with (Owner as TVSTSSModule) do
@@ -117,8 +116,7 @@ var
   i: Integer;
   Note: Byte;
 begin
-  Note := KeyToNote(Key);
-  if Note = -1 then
+  if not KeyToNote(Key, Note) then
     Exit;
 
   with (Owner as TVSTSSModule) do

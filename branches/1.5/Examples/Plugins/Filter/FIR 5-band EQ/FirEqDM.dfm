@@ -1,5 +1,4 @@
 object FirEQDataModule: TFirEQDataModule
-  OldCreateOrder = True
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
   Version = '1.0'
@@ -413,8 +412,6 @@ object FirEQDataModule: TFirEQDataModule
   OnProcess = VSTModuleProcess
   OnProcess32Replacing = VSTModuleProcess
   OnSampleRateChange = VSTModuleSampleRateChange
-  Left = 558
-  Top = 122
   Height = 150
   Width = 215
 end

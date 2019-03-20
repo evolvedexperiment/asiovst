@@ -108,7 +108,7 @@ begin
   a := 1.0;
 
   // Normalize coefficients for unity gain.
-  b[0] := 1.0 / (1.0 + abs(theZero));
+  b[0] := 1.0 / (1.0 + Abs(theZero));
   b[1] := -theZero * b[0];
   inherited setCoefficients(2, @b, 1, @a);
 end;
@@ -136,7 +136,7 @@ end;
 procedure TStkOneZero.SetZero(const Value: Single);
 begin
   // Normalize coefficients for unity gain.
-  FB^[0] := 1.0 / (1.0 + abs(Value));
+  FB^[0] := 1.0 / (1.0 + Abs(Value));
   PDAV4SingleArray(FB)^[1] := -Value * FB^[0];
 end;
 

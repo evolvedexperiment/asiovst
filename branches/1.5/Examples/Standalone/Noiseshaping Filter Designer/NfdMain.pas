@@ -86,18 +86,13 @@ implementation
 {$ENDIF}
 
 uses
-  Math, DAV_Common;
+  Math, DAV_Common, DAV_Convert, DAV_Consts;
 
 procedure TFormNoiseshapingFilterDesigner.FormCreate(Sender: TObject);
 begin
-{$IFDEF Use_IPPS}
-  FFFT := TFftReal2ComplexIPPSFloat32.Create(9);
-{$ELSE} {$IFDEF Use_CUDA}
-  FFFT := TFftReal2ComplexCUDA32.Create(9);
-{$ELSE}
   FFFT := TFftReal2ComplexNativeFloat32.Create(9);
   FFFT.DataOrder := doPackedComplex;
-{$ENDIF}{$ENDIF}
+
   // impulse response buffer
   GetMem(FImpResp, FFFT.FFTSize * SizeOf(Single));
   FillChar(FImpResp^[0], FFFT.FFTSize * SizeOf(Single), 0);
@@ -248,12 +243,12 @@ var
   BinNo: Integer;
 begin
   // calculate magnitude
-  FMagnitude[0] := Amp_to_dB(CDenorm32 + abs(FFreqResp[0].Re));
+  FMagnitude[0] := Amp_to_dB(CDenorm32 + Abs(FFreqResp[0].Re));
   for BinNo := 1 to FFFT.BinCount - 2 do
     FMagnitude[BinNo] := SqrAmp2dB(CDenorm32 + sqr(FFreqResp[BinNo].Re) +
       sqr(FFreqResp[BinNo].Im));
   FMagnitude[FFFT.BinCount - 1] :=
-    Amp_to_dB(CDenorm32 + abs(FFreqResp[FFFT.BinCount - 1].Re));
+    Amp_to_dB(CDenorm32 + Abs(FFreqResp[FFFT.BinCount - 1].Re));
 end;
 
 function TFormNoiseshapingFilterDesigner.DiffEvolCalcSharpCosts(Sender: TObject;
@@ -293,7 +288,7 @@ begin
     end;
   end;
   Avg := Result / Round(RelFrq);
-  Result := 2 * Avg + 2 * Max - Min + abs(Above - Below);
+  Result := 2 * Avg + 2 * Max - Min + Abs(Above - Below);
 end;
 
 function TFormNoiseshapingFilterDesigner.DiffEvolCalcSoftCosts(Sender: TObject;
@@ -348,20 +343,20 @@ begin
   end;
 
   Avg := Result / Weights;
-  Result := 2 * Avg + 1.7 * Max - Min + abs(Above - Below);
+  Result := 2 * Avg + 1.7 * Max - Min + Abs(Above - Below);
 
   // penalties
   MaxCoeff := 0;
   for Coeff := 0 to Length(Population) - 1 do
-    if abs(Population[Coeff]) > MaxCoeff then
-      MaxCoeff := abs(Population[Coeff]);
+    if Abs(Population[Coeff]) > MaxCoeff then
+      MaxCoeff := Abs(Population[Coeff]);
   if MaxCoeff > 6 then
     Result := 1000 + Result;
 
   for Coeff := 1 to Length(Population) - 1 do
-    if abs(Population[Coeff - 1]) < abs(Population[Coeff]) then
-      Result := Result + 10 * abs(abs(Population[Coeff - 1]) -
-        abs(Population[Coeff]));
+    if Abs(Population[Coeff - 1]) < Abs(Population[Coeff]) then
+      Result := Result + 10 * Abs(Abs(Population[Coeff - 1]) -
+        Abs(Population[Coeff]));
 end;
 
 end.

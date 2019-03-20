@@ -26,7 +26,7 @@ implementation
 {$ENDIF}
 
 uses
-  {$IFDEF HAS_UNIT_ANSISTRINGS} AnsiStrings, {$ENDIF} DAV_Common;
+  {$IFDEF HAS_UNIT_ANSISTRINGS} AnsiStrings, {$ENDIF} DAV_Common, DAV_Convert;
 
 procedure TGainedDifferenceModule.VSTModuleOpen(Sender: TObject);
 begin

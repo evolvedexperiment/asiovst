@@ -4,7 +4,6 @@ library mdaThruZero;
 uses
   FastMM4,
   FastMove,
-  {$ENDIF}
   DAV_WinAmp,
   DAV_VSTEffect,
   DAV_VSTBasicModule,

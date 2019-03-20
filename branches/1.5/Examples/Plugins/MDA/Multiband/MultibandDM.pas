@@ -204,19 +204,19 @@ begin
    m  := b2 - l;
    h  := a - b2;
 
-   tmp1 := abs(l);  //l
+   tmp1 := Abs(l);  //l
    if (tmp1 > g1)
     then g1 := g1 + a1 * (tmp1 - g1)
     else g1 := g1 * r1;
    tmp1 := 1 / (1 + d1 * g1);
 
-   tmp2 := abs(m);
+   tmp2 := Abs(m);
    if (tmp2 > g2)
     then g2 := g2 + a2 * (tmp2 - g2)
     else g2 := g2 * r2;
    tmp2 := 1 / (1 + d2 * g2);
 
-   tmp3 := abs(h);
+   tmp3 := Abs(h);
    if (tmp3 > g3)
     then g3 := g3 + a3 * (tmp3 - g3)
     else g3 := g3 * r3;
@@ -236,7 +236,7 @@ begin
   if (g2 < 1E-10) then FGainM := 0 else FGainM := g2;
   if (g3 < 1E-10) then FGainH := 0 else FGainH := g3;
 
-  if (abs(b1) < 1E-10) then
+  if (Abs(b1) < 1E-10) then
    begin
     FFeedback[0] := 0;
     FFeedback[1] := 0;
@@ -251,7 +251,7 @@ begin
 
 (*
  // do not use this code, it's just an example on how a VCA would look like
- fGain := (1 / (1 + d1 * abs(l)) ); //VCAs
+ fGain := (1 / (1 + d1 * Abs(l)) ); //VCAs
  if (g1 > fGain)
   then g1 := g1 - a1 * (g1 - g)
   else g1 := g1 + r1 * (g - g1);

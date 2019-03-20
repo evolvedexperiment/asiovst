@@ -111,7 +111,7 @@ type
 implementation
 
 uses
-  SysUtils, DAV_Common;
+  SysUtils, DAV_Common, DAV_Consts;
 
 resourcestring
   RCStrStagesLargeZero = 'Stages must be larger than 0!';

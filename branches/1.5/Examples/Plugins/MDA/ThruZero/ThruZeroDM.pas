@@ -189,7 +189,7 @@ begin
     Outputs[1, Sample] := b;
   end;
 
- if abs(f1) > 1E-10 then
+ if Abs(f1) > 1E-10 then
   begin
    FFeedback[1] := f1;
    FFeedback[2] := f2;

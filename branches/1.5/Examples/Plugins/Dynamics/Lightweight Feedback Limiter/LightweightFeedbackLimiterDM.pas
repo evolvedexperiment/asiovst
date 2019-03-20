@@ -83,8 +83,8 @@ implementation
 {$ENDIF}
 
 uses
-  Math, DAV_Common, DAV_Approximations, LightweightFeedbackLimiterGUI,
-  DAV_VSTModuleWithPrograms;
+  Math, DAV_Common, DAV_Consts, DAV_Strings, DAV_Approximations,
+  DAV_VSTModuleWithPrograms, LightweightFeedbackLimiterGUI;
 
 procedure TLightweightFeedbackLimiterDataModule.VSTModuleOpen(Sender: TObject);
 var
@@ -255,7 +255,7 @@ begin
           OnProcess := VSTModuleProcessStereoSoftClip;
       end;
   end;
-  OnProcessReplacing := OnProcess;
+  OnProcess32Replacing := OnProcess;
 end;
 
 procedure TLightweightFeedbackLimiterDataModule.ParameterAutoMakeUpGainChange

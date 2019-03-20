@@ -329,12 +329,12 @@ begin
   begin
     BandSignal := FAnalysisFilters[Band].ProcessSample64(Input + 1E-32);
 
-    if abs(BandSignal) > FAnalysisPeak[Band] then
+    if Abs(BandSignal) > FAnalysisPeak[Band] then
       FAnalysisPeak[Band] := FAnalysisPeak[Band] +
-        (abs(BandSignal) - FAnalysisPeak[Band]) * FAttackFactor
+        (Abs(BandSignal) - FAnalysisPeak[Band]) * FAttackFactor
     else
-      FAnalysisPeak[Band] := abs(BandSignal) +
-        (FAnalysisPeak[Band] - abs(BandSignal)) * FReleaseFactor;
+      FAnalysisPeak[Band] := Abs(BandSignal) +
+        (FAnalysisPeak[Band] - Abs(BandSignal)) * FReleaseFactor;
   end;
 
   // process vocoded signal
@@ -343,8 +343,7 @@ begin
     Result := Result + FSynthesisFilters[Band].ProcessSample64
       (FAnalysisPeak[Band] * Carrier);
 
-  Result := FVolFactors[2] * Result + FVolFactors[1] * Carrier + FVolFactors
-    [0] * Input;
+  Result := FVolFactors[2] * Result + FVolFactors[1] * Carrier + FVolFactors[0] * Input;
 end;
 
 procedure TSimpleThirdOctaveVocoder.SampleRateChanged;
@@ -485,10 +484,10 @@ begin
 
       BandSignal := AnalysisHighpass.ProcessSample64(Lowpassed + 1E-32);
 
-      if abs(BandSignal) > Peak then
-        Peak := Peak + (abs(BandSignal) - Peak) * FAttackFactor
+      if Abs(BandSignal) > Peak then
+        Peak := Peak + (Abs(BandSignal) - Peak) * FAttackFactor
       else
-        Peak := abs(BandSignal) + (Peak - abs(BandSignal)) * FReleaseFactor;
+        Peak := Abs(BandSignal) + (Peak - Abs(BandSignal)) * FReleaseFactor;
 
       Lowpassed := AnalysisLowpass.ProcessSample64(Lowpassed + 1E-32);
     end;
@@ -504,8 +503,7 @@ begin
     do Result := Result + FSynthesisFilters[i].ProcessSample64(FAnalysisPeak[i] * Carrier);
   *)
 
-  Result := FVolFactors[2] * Result + FVolFactors[1] * Carrier + FVolFactors
-    [0] * Input;
+  Result := FVolFactors[2] * Result + FVolFactors[1] * Carrier + FVolFactors[0] * Input;
 end;
 
 procedure TBarkScaleVocoder.SampleRateChanged;
@@ -665,10 +663,10 @@ begin
       Lowpassed := AnalysisLowpass.ProcessSample64(Lowpassed + 1E-32);
       BandSignal := AnalysisHighpass.ProcessSample64(Lowpassed + 1E-32);
 
-      if abs(BandSignal) > Peak then
-        Peak := Peak + (abs(BandSignal) - Peak) * FAttackFactor
+      if Abs(BandSignal) > Peak then
+        Peak := Peak + (Abs(BandSignal) - Peak) * FAttackFactor
       else
-        Peak := abs(BandSignal) + (Peak - abs(BandSignal)) * FReleaseFactor;
+        Peak := Abs(BandSignal) + (Peak - Abs(BandSignal)) * FReleaseFactor;
     end;
   Inc(FDownSampler);
   if FDownSampler >= FDownSampleMax then
@@ -680,8 +678,7 @@ begin
     Result := Result + FSynthesisFilters[Band].ProcessSample64
       (FVocoderBands[Band].Peak * Carrier);
 
-  Result := FVolFactors[2] * Result + FVolFactors[1] * Carrier + FVolFactors
-    [0] * Input;
+  Result := FVolFactors[2] * Result + FVolFactors[1] * Carrier + FVolFactors[0] * Input;
 end;
 
 procedure TVocoder.SampleRateChanged;

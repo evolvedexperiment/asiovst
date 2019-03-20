@@ -38,7 +38,7 @@ uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} Messages,
   SysUtils, Classes, Graphics, Controls, Forms, Dialogs, ExtCtrls, StdCtrls,
   DAV_Types, DAV_VSTHost, DAV_Sonogram, DAV_DspWindowFunctions,
-  DAV_DspWindowFunctionsAdvanced, DAV_DspSweepOscillator;
+  DAV_DspSweepOscillator;
 
 type
   TFmSonogram = class(TForm)
@@ -86,7 +86,7 @@ begin
     Bitmap.Height := PbSonogram.Height;
     FFTOrder := 12;
     OverlapFactor := 16;
-    WindowClass := TWindowFunctionLawrey6T;
+    WindowClass := TWindowFunctionLanczos;
   end;
 
   FSweepOsc := TRangeSweepOscillator64.Create;

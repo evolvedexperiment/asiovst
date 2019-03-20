@@ -105,7 +105,7 @@ type
 implementation
 
 uses
-  SysUtils, DAV_Common, DAV_Approximations;
+  SysUtils, DAV_Common, DAV_Approximations, DAV_Consts;
 
 resourcestring
   RCStrOrderMustBeLarger0 = 'Order must be larger than 0!';

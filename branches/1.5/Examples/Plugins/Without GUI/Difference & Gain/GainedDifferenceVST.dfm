@@ -34,8 +34,6 @@ object GainedDifferenceModule: TGainedDifferenceModule
   OnOpen = VSTModuleOpen
   OnProcess = VSTModuleProcess
   OnProcess32Replacing = VSTModuleProcess
-  Left = 299
-  Top = 51
   Height = 150
   Width = 215
 end

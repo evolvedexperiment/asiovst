@@ -593,7 +593,7 @@ begin
       FArrowButtonWidth := 12 + Round(0.5 * FBorderWidth) + FArrowWidth;
     taCenter:
       FArrowButtonWidth := Max(Max(FArrowWidth, Round(0.5 * FBorderRadius)) + 4,
-        abs(Font.Height)) + Round(0.5 * FBorderWidth);
+        Abs(Font.Height)) + Round(0.5 * FBorderWidth);
     taRightJustify:
       FArrowButtonWidth := 12 + Round(0.5 * FBorderWidth) + FArrowWidth;
   end;

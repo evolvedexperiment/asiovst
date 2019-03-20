@@ -35,7 +35,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
   Forms, DAV_Types, DAV_VSTModule, DAV_DspDynamics, DAV_DspLightweightDynamics;
 
 type
@@ -83,8 +83,8 @@ implementation
 {$ENDIF}
 
 uses
-  Math, DAV_Common, DAV_Approximations, DAV_VSTModuleWithPrograms,
-  LightweightLimiterGUI;
+  Math, DAV_Common, DAV_Consts, DAV_Strings, DAV_Approximations,
+  DAV_VSTModuleWithPrograms, LightweightLimiterGUI;
 
 procedure TLightweightLimiterDataModule.VSTModuleOpen(Sender: TObject);
 var
@@ -264,9 +264,10 @@ end;
 
 function TLightweightLimiterDataModule.GetLightweightLimiter(Index: Integer): TCustomKneeLimiter;
 begin
- if Index in [0..Length(FLightweightLimiter) - 1]
-  then Result := FLightweightLimiter[Index]
-  else raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
+ if Index in [0 .. Length(FLightweightLimiter) - 1] then
+    Result := FLightweightLimiter[Index]
+  else
+    raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
 end;
 
 procedure TLightweightLimiterDataModule.ParameterAttackChange(

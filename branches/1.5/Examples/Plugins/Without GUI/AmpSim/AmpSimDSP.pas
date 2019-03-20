@@ -99,7 +99,7 @@ implementation
 
 uses
 {$IFDEF DELPHI14_UP} AnsiStrings, {$ENDIF} Math, Controls,
-  DAV_VSTEffect, DAV_Common;
+  DAV_VSTEffect, DAV_Common, DAV_Convert;
 
 procedure TAmpSimModule.VSTModuleOpen(Sender: TObject);
 begin

@@ -77,7 +77,7 @@ type
 implementation
 
 uses
-  SysUtils, DAV_Common, DAV_Math, DAV_StkFilter;
+  SysUtils, DAV_Common, DAV_Consts, DAV_Math, DAV_StkFilter;
 
 const
   CLength: array [0 .. 8] of Integer = (1777, 1847, 1993, 2137, 389, 127, 43,

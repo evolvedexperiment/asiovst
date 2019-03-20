@@ -112,8 +112,8 @@ implementation
 {$ENDIF}
 
 uses
-  Math, DAV_Common, DAV_Approximations, DAV_VSTModuleWithPrograms,
-  SidechainCompressorGUI;
+  Math, DAV_Common, DAV_Consts, DAV_Strings, DAV_Convert, DAV_Approximations,
+  DAV_VSTModuleWithPrograms, SidechainCompressorGUI;
 
 procedure TSidechainCompressorDataModule.VSTModuleCreate(Sender: TObject);
 begin

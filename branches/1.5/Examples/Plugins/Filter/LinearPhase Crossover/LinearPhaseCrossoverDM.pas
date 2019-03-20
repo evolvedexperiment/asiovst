@@ -33,18 +33,16 @@ unit LinearPhaseCrossoverDM;
 interface
 
 {$I DAV_Compiler.inc}
-{$DEFINE Use_IPPS}
-{.$DEFINE Use_CUDA}
 
 uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} Messages,
   SysUtils, Classes, Forms, SyncObjs, DAV_Types, DAV_Complex,
-  DAV_DspFftReal2Complex, {$IFDEF Use_IPPS}DAV_DspFftReal2ComplexIPPS, {$ENDIF}
-  {$IFDEF Use_CUDA}DAV_DspFftReal2ComplexCUDA, {$ENDIF} DAV_VSTModule;
+  DAV_DspFftReal2Complex, DAV_VSTModule;
 
 type
   TLinearPhaseCrossoverModule = class(TVSTModule)
     procedure VSTModuleCreate(Sender: TObject);
+    procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
@@ -54,20 +52,13 @@ type
     procedure ParameterOrderDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterFrequencyDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterFrequencyLabel(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
-    procedure VSTModuleDestroy(Sender: TObject);
   private
     FFilterKernel    : PDAVSingleFixedArray;
     FSignalPadded    : PDAVSingleFixedArray;
     FFilterFreq      : array [0..1] of PDAVComplexSingleFixedArray;
     FSignalFreq      : array [0..1] of PDAVComplexSingleFixedArray;
     FCriticalSection : TCriticalSection;
-    {$IFDEF Use_IPPS}
-    FFft             : TFftReal2ComplexIPPSFloat32;
-    {$ELSE} {$IFDEF Use_CUDA}
-    FFft             : TFftReal2ComplexCUDA32;
-    {$ELSE}
     FFft             : TFftReal2ComplexNativeFloat32;
-    {$ENDIF}{$ENDIF}
     procedure CalculateFilterKernel;
   end;
 
@@ -84,161 +75,99 @@ uses
 
 procedure TLinearPhaseCrossoverModule.VSTModuleCreate(Sender: TObject);
 begin
- FCriticalSection := TCriticalSection.Create;
- FFilterKernel    := nil;
- FSignalPadded    := nil;
- FFilterFreq[0]   := nil;
- FFilterFreq[1]   := nil;
- FSignalFreq[0]   := nil;
- FSignalFreq[1]   := nil;
- BlockModeOverlap := BlockModeSize div 2;
+  FCriticalSection := TCriticalSection.Create;
+  FFilterKernel := nil;
+  FSignalPadded := nil;
+  FFilterFreq[0] := nil;
+  FFilterFreq[1] := nil;
+  FSignalFreq[0] := nil;
+  FSignalFreq[1] := nil;
+  BlockModeOverlap := BlockModeSize div 2;
 end;
 
 procedure TLinearPhaseCrossoverModule.VSTModuleDestroy(Sender: TObject);
 begin
- FreeAndNil(FCriticalSection);
+  FreeAndNil(FCriticalSection);
 end;
 
 procedure TLinearPhaseCrossoverModule.VSTModuleOpen(Sender: TObject);
 begin
- {$IFDEF Use_IPPS}
- FFft := TFftReal2ComplexIPPSFloat32.Create(Round(Log2(BlockModeSize)));
+  FFft := TFftReal2ComplexNativeFloat32.Create(Round(Log2(BlockModeSize)));
 
- ReallocMem(FFilterFreq[0], (BlockModeSize div 2 + 1) * SizeOf(TComplex32));
- ReallocMem(FFilterFreq[1], (BlockModeSize div 2 + 1) * SizeOf(TComplex32));
- ReallocMem(FSignalFreq[0], (BlockModeSize div 2 + 1) * SizeOf(TComplex32));
- ReallocMem(FSignalFreq[1], (BlockModeSize div 2 + 1) * SizeOf(TComplex32));
- FillChar(FFilterFreq[0]^[0], (BlockModeSize div 2 + 1) * SizeOf(TComplex32), 0);
- FillChar(FFilterFreq[1]^[0], (BlockModeSize div 2 + 1) * SizeOf(TComplex32), 0);
- FillChar(FSignalFreq[0]^[0], (BlockModeSize div 2 + 1) * SizeOf(TComplex32), 0);
- FillChar(FSignalFreq[1]^[0], (BlockModeSize div 2 + 1) * SizeOf(TComplex32), 0);
- {$ELSE} {$IFDEF Use_CUDA}
- FFft := TFftReal2ComplexCUDA32.Create(Round(Log2(BlockModeSize)));
+  ReallocMem(FFilterFreq[0], BlockModeSize * SizeOf(Single));
+  ReallocMem(FFilterFreq[1], BlockModeSize * SizeOf(Single));
+  ReallocMem(FSignalFreq[0], BlockModeSize * SizeOf(Single));
+  ReallocMem(FSignalFreq[1], BlockModeSize * SizeOf(Single));
+  FillChar(FFilterFreq[0]^[0], BlockModeSize * SizeOf(Single), 0);
+  FillChar(FFilterFreq[1]^[0], BlockModeSize * SizeOf(Single), 0);
+  FillChar(FSignalFreq[0]^[0], BlockModeSize * SizeOf(Single), 0);
+  FillChar(FSignalFreq[1]^[0], BlockModeSize * SizeOf(Single), 0);
 
- ReallocMem(FFilterFreq[0], BlockModeSize * SizeOf(Single));
- ReallocMem(FFilterFreq[1], BlockModeSize * SizeOf(Single));
- ReallocMem(FSignalFreq[0], BlockModeSize * SizeOf(Single));
- ReallocMem(FSignalFreq[1], BlockModeSize * SizeOf(Single));
- FillChar(FFilterFreq[0]^[0], BlockModeSize * SizeOf(Single), 0);
- FillChar(FFilterFreq[1]^[0], BlockModeSize * SizeOf(Single), 0);
- FillChar(FSignalFreq[0]^[0], BlockModeSize * SizeOf(Single), 0);
- FillChar(FSignalFreq[1]^[0], BlockModeSize * SizeOf(Single), 0);
- {$ELSE}
- FFft := TFftReal2ComplexNativeFloat32.Create(Round(Log2(BlockModeSize)));
+  ReallocMem(FFilterKernel, BlockModeSize * SizeOf(Single));
+  ReallocMem(FSignalPadded, BlockModeSize * SizeOf(Single));
+  FillChar(FFilterKernel^[0], BlockModeSize * SizeOf(Single), 0);
+  FillChar(FSignalPadded^[0], BlockModeSize * SizeOf(Single), 0);
 
- ReallocMem(FFilterFreq[0], BlockModeSize * SizeOf(Single));
- ReallocMem(FFilterFreq[1], BlockModeSize * SizeOf(Single));
- ReallocMem(FSignalFreq[0], BlockModeSize * SizeOf(Single));
- ReallocMem(FSignalFreq[1], BlockModeSize * SizeOf(Single));
- FillChar(FFilterFreq[0]^[0], BlockModeSize * SizeOf(Single), 0);
- FillChar(FFilterFreq[1]^[0], BlockModeSize * SizeOf(Single), 0);
- FillChar(FSignalFreq[0]^[0], BlockModeSize * SizeOf(Single), 0);
- FillChar(FSignalFreq[1]^[0], BlockModeSize * SizeOf(Single), 0);
- {$ENDIF}{$ENDIF}
+  FFft.AutoScaleType := astDivideInvByN;
+  FFft.DataOrder := doPackedComplex;
+  CalculateFilterKernel;
 
- ReallocMem(FFilterKernel, BlockModeSize * SizeOf(Single));
- ReallocMem(FSignalPadded, BlockModeSize * SizeOf(Single));
- FillChar(FFilterKernel^[0], BlockModeSize * SizeOf(Single), 0);
- FillChar(FSignalPadded^[0], BlockModeSize * SizeOf(Single), 0);
-
- FFft.AutoScaleType := astDivideInvByN;
- FFft.DataOrder := doPackedComplex;
- CalculateFilterKernel;
-
- Parameter[0] := 1000;
- Parameter[1] := 2;
+  Parameter[0] := 1000;
+  Parameter[1] := 2;
 end;
 
 procedure TLinearPhaseCrossoverModule.VSTModuleClose(Sender: TObject);
 begin
- Dispose(FFilterKernel);
- Dispose(FSignalPadded);
- Dispose(FFilterFreq[0]);
- Dispose(FFilterFreq[1]);
- Dispose(FSignalFreq[0]);
- Dispose(FSignalFreq[1]);
- FreeAndNil(FFft);
+  Dispose(FFilterKernel);
+  Dispose(FSignalPadded);
+  Dispose(FFilterFreq[0]);
+  Dispose(FFilterFreq[1]);
+  Dispose(FSignalFreq[0]);
+  Dispose(FSignalFreq[1]);
+  FreeAndNil(FFft);
 end;
 
 procedure TLinearPhaseCrossoverModule.VSTModuleProcess(const Inputs,
   Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
-  Bin     : Integer;
-  Half    : Integer;
+  Bin: Integer;
+  Half: Integer;
 begin
- Half := BlockModeSize div 2;
- FCriticalSection.Enter;
- try
-  begin
-   {$IFDEF Use_IPPS}
-   FFft.PerformFFTCCS(PDAVComplexSingleFixedArray(FSignalFreq[0]), @Inputs[0, 0]);
+  Half := BlockModeSize div 2;
+  FCriticalSection.Enter;
+  try
+    begin
+      FFft.PerformFFTPackedComplex(FSignalFreq[0], @Inputs[0, 0]);
 
-   // DC & Nyquist
-   FSignalFreq[1]^[0].Re := FFilterFreq[0]^[0].Re * FSignalFreq[0]^[0].Re;
-   FSignalFreq[1]^[0].Im := FFilterFreq[0]^[0].Im * FSignalFreq[0]^[0].Im;
-   FSignalFreq[1]^[Half].Re := FFilterFreq[0]^[Half].Re * FSignalFreq[0]^[Half].Re;
+      // DC & Nyquist
+      FSignalFreq[1]^[0].Re := FFilterFreq[0]^[0].Re * FSignalFreq[0]^[0].Re;
+      FSignalFreq[1]^[0].Im := FFilterFreq[0]^[0].Im * FSignalFreq[0]^[0].Im;
+      FSignalFreq[1]^[Half].Re := FFilterFreq[0]^[Half].Re * FSignalFreq[0]^[Half].Re;
 
-   for Bin := 1 to Half - 1
-    do FSignalFreq[1]^[Bin] := ComplexMultiply32(FSignalFreq[0]^[Bin], FFilterFreq[0]^[Bin]);
+      for Bin := 1 to Half - 1
+      do FSignalFreq[1]^[Bin] := ComplexMultiply32(FSignalFreq[0]^[Bin], FFilterFreq[0]^[Bin]);
 
-   FFft.PerformIFFTCCS(PDAVComplexSingleFixedArray(FSignalFreq[1]), @Outputs[0, 0]);
+      FFft.PerformIFFTPackedComplex(FSignalFreq[1], @Outputs[0, 0]);
 
-   // DC & Nyquist
-   FSignalFreq[0]^[0].Re := FFilterFreq[1]^[0].Re * FSignalFreq[0]^[0].Re;
-   FSignalFreq[0]^[0].Im := FFilterFreq[1]^[0].Im * FSignalFreq[0]^[0].Im;
-   FSignalFreq[0]^[Half].Re := FFilterFreq[1]^[Half].Re * FSignalFreq[0]^[Half].Re;
+      // DC & Nyquist
+      FSignalFreq[0]^[0].Re := FFilterFreq[1]^[0].Re * FSignalFreq[0]^[0].Re;
+      FSignalFreq[0]^[0].Im := FFilterFreq[1]^[0].Im * FSignalFreq[0]^[0].Im;
+      FSignalFreq[0]^[Half].Re := FFilterFreq[1]^[Half].Re * FSignalFreq[0]^[Half].Re;
 
-   for Bin := 1 to Half - 1
-    do ComplexMultiplyInplace32(FSignalFreq[0]^[Bin], FFilterFreq[1]^[Bin]);
+      for Bin := 1 to Half - 1
+      do ComplexMultiplyInplace32(FSignalFreq[0]^[Bin], FFilterFreq[1]^[Bin]);
 
-   FFft.PerformIFFTCCS(PDAVComplexSingleFixedArray(FSignalFreq[0]), @Outputs[1, 0]);
-
-   {$ELSE}{$IFDEF Use_CUDA}
-
-   FFft.PerformFFT(FSignalFreq[0], @Inputs[Channel, 0]);
-
-   // DC & Nyquist
-   FSignalFreq[0]^[0].Re := FFilterFreq[0]^[0].Re * FSignalFreq[0]^[0].Re;
-   FSignalFreq[0]^[0].Im := FFilterFreq[0]^[0].Im * FSignalFreq[0]^[0].Im;
-   FSignalFreq[0]^[Half].Re := FFilterFreq[0]^[Half].Re * FSignalFreq[0]^[Half].Re;
-
-   for Bin := 1 to Half - 1
-    do ComplexMultiplyInplace32(FSignalFreq[0]^[Bin], FFilterFreq[0]^[Bin]);
-
-   FFft.PerformIFFT(FSignalFreq, @Outputs[Channel, 0]);
-   {$ELSE}
-   FFft.PerformFFTPackedComplex(FSignalFreq[0], @Inputs[0, 0]);
-
-   // DC & Nyquist
-   FSignalFreq[1]^[0].Re := FFilterFreq[0]^[0].Re * FSignalFreq[0]^[0].Re;
-   FSignalFreq[1]^[0].Im := FFilterFreq[0]^[0].Im * FSignalFreq[0]^[0].Im;
-   FSignalFreq[1]^[Half].Re := FFilterFreq[0]^[Half].Re * FSignalFreq[0]^[Half].Re;
-
-   for Bin := 1 to Half - 1
-    do FSignalFreq[1]^[Bin] := ComplexMultiply32(FSignalFreq[0]^[Bin], FFilterFreq[0]^[Bin]);
-
-   FFft.PerformIFFTPackedComplex(FSignalFreq[1], @Outputs[0, 0]);
-
-   // DC & Nyquist
-   FSignalFreq[0]^[0].Re := FFilterFreq[1]^[0].Re * FSignalFreq[0]^[0].Re;
-   FSignalFreq[0]^[0].Im := FFilterFreq[1]^[0].Im * FSignalFreq[0]^[0].Im;
-   FSignalFreq[0]^[Half].Re := FFilterFreq[1]^[Half].Re * FSignalFreq[0]^[Half].Re;
-
-   for Bin := 1 to Half - 1
-    do ComplexMultiplyInplace32(FSignalFreq[0]^[Bin], FFilterFreq[1]^[Bin]);
-
-   FFft.PerformIFFTPackedComplex(FSignalFreq[0], @Outputs[1, 0]);
-   {$ENDIF}{$ENDIF}
+      FFft.PerformIFFTPackedComplex(FSignalFreq[0], @Outputs[1, 0]);
+    end;
+  finally
+    FCriticalSection.Leave;
   end;
- finally
-  FCriticalSection.Leave;
- end;
 end;
 
 procedure TLinearPhaseCrossoverModule.ParameterOrderDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- PreDefined := AnsiString(IntToStr(Round(Parameter[Index])));
+  PreDefined := AnsiString(IntToStr(Round(Parameter[Index])));
 end;
 
 procedure TLinearPhaseCrossoverModule.ParameterFrequencyDisplay(
@@ -246,97 +175,84 @@ procedure TLinearPhaseCrossoverModule.ParameterFrequencyDisplay(
 var
   Freq : Single;
 begin
- Freq := Parameter[Index];
- if Freq >= 1000
-  then PreDefined := AnsiString(FloatToStrF(1E-3 * Freq, ffGeneral, 3, 3));
+  Freq := Parameter[Index];
+  if Freq >= 1000 then
+    PreDefined := AnsiString(FloatToStrF(1E-3 * Freq, ffGeneral, 3, 3));
 end;
 
-procedure TLinearPhaseCrossoverModule.ParameterFrequencyLabel(
-  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+procedure TLinearPhaseCrossoverModule.ParameterFrequencyLabel(Sender: TObject;
+  const Index: Integer; var PreDefined: AnsiString);
 begin
- if Parameter[Index] >= 1000
-  then PreDefined := 'kHz';
+  if Parameter[Index] >= 1000 then
+    PreDefined := 'kHz';
 end;
 
-procedure TLinearPhaseCrossoverModule.ParameterFrequencyChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TLinearPhaseCrossoverModule.ParameterFrequencyChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
- CalculateFilterKernel;
+  CalculateFilterKernel;
 end;
 
 procedure TLinearPhaseCrossoverModule.CalculateFilterKernel;
 var
-  i, h, q : Integer;
-  n       : Double;
-  CutOff  : Double;
+  i, h, q: Integer;
+  n: Double;
+  CutOff: Double;
 begin
- if Assigned(FFilterKernel) then
+  if Assigned(FFilterKernel) then
   begin
-   FCriticalSection.Enter;
-   try
-    CutOff := Parameter[0] / SampleRate;
-    h := BlockModeSize div 2;
-    q := BlockModeSize div 4;
+    FCriticalSection.Enter;
+    try
+      CutOff := Parameter[0] / SampleRate;
+      h := BlockModeSize div 2;
+      q := BlockModeSize div 4;
 
-    // Generate sinc delayed by (N-1)/2
-    for i := 0 to h - 1 do
-     if (i = q)
-      then FFilterKernel^[i] := 2.0 * CutOff
-      else
-       begin
-        n := PI * (i - q);
-        FFilterKernel^[i] := sin(2.0 * Cutoff * n) / n;
-       end;
-    ApplyHanningWindow(FFilterKernel, h);
-    FillChar(FFilterKernel^[h], h * SizeOf(Single), 0);
+      // Generate sinc delayed by (N-1)/2
+      for i := 0 to h - 1 do
+        if (i = q) then
+          FFilterKernel^[i] := 2.0 * CutOff
+        else
+        begin
+          n := PI * (i - q);
+          FFilterKernel^[i] := sin(2.0 * CutOff * n) / n;
+        end;
+      ApplyHanningWindow(FFilterKernel, h);
+      FillChar(FFilterKernel^[h], h * SizeOf(Single), 0);
 
-    // calculate frequency
-    {$IFDEF Use_IPPS}
-    FFft.PerformFFTCCS(FFilterFreq[0], FFilterKernel);
-    {$ELSE}{$IFDEF Use_CUDA}
-    FFft.PerformFFTCCS(FFilterFreq[0], FFilterKernel);
-    {$ELSE}
-    FFft.PerformFFTPackedComplex(FFilterFreq[0], FFilterKernel);
-    {$ENDIF}{$ENDIF}
+      // calculate frequency
+      FFft.PerformFFTPackedComplex(FFilterFreq[0], FFilterKernel);
+      // Generate sinc delayed by (N-1)/2
+      for i := 0 to h - 1 do
+        if (i = q) then
+          FFilterKernel^[i] := 1 - 2.0 * CutOff
+        else
+        begin
+          n := PI * (i - q);
+          FFilterKernel^[i] := -sin(2.0 * CutOff * n) / n;
+        end;
+      ApplyHanningWindow(FFilterKernel, h);
+      FillChar(FFilterKernel^[h], h * SizeOf(Single), 0);
 
-    // Generate sinc delayed by (N-1)/2
-    for i := 0 to h - 1 do
-     if (i = q)
-      then FFilterKernel^[i] := 1 - 2.0 * CutOff
-      else
-       begin
-        n := PI * (i - q);
-        FFilterKernel^[i] := -sin(2.0 * Cutoff * n) / n;
-       end;
-    ApplyHanningWindow(FFilterKernel, h);
-    FillChar(FFilterKernel^[h], h * SizeOf(Single), 0);
-
-    // calculate frequency
-    {$IFDEF Use_IPPS}
-    FFft.PerformFFTCCS(FFilterFreq[1], FFilterKernel);
-    {$ELSE}{$IFDEF Use_CUDA}
-    FFft.PerformFFTCCS(FFilterFreq[1], FFilterKernel);
-    {$ELSE}
-    FFft.PerformFFTPackedComplex(FFilterFreq[1], FFilterKernel);
-    {$ENDIF}{$ENDIF}
-   finally
-    FCriticalSection.Leave;
-   end;
+      // calculate frequency
+      FFft.PerformFFTPackedComplex(FFilterFreq[1], FFilterKernel);
+    finally
+      FCriticalSection.Leave;
+    end;
   end;
 end;
 
-procedure TLinearPhaseCrossoverModule.ParameterOrderChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TLinearPhaseCrossoverModule.ParameterOrderChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
- Value := 10;
-// if Assigned(FLinearPhaseCrossover)
-//  then FLinearPhaseCrossover.Order := Round(Value);
+  Value := 10;
+  // if Assigned(FLinearPhaseCrossover)
+  // then FLinearPhaseCrossover.Order := Round(Value);
 end;
 
 procedure TLinearPhaseCrossoverModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 begin
- CalculateFilterKernel;
+  CalculateFilterKernel;
 end;
 
 end.

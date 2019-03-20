@@ -34,7 +34,7 @@ interface
 
 {$I DAV_Compiler.inc}
 
-uses 
+uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, DAV_Types, DAV_VSTModule;
 
 type
@@ -74,16 +74,21 @@ implementation
 {$ENDIF}
 
 uses
-  Math, DAV_Common;
+  Math, DAV_Common, DAV_Convert;
 
-procedure TSplitterDataModule.ParameterModeDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+procedure TSplitterDataModule.ParameterModeDisplay(Sender: TObject;
+  const Index: Integer; var PreDefined: AnsiString);
 begin
- case Round(Parameter[Index]) of
-  0 : PreDefined := 'NORMAL';
-  1 : PreDefined := 'INVERSE';
-  2 : PreDefined := 'NORM/INV';
-  3 : PreDefined := 'INV/NORM';
- end;
+  case Round(Parameter[Index]) of
+    0:
+      PreDefined := 'NORMAL';
+    1:
+      PreDefined := 'INVERSE';
+    2:
+      PreDefined := 'NORM/INV';
+    3:
+      PreDefined := 'INV/NORM';
+  end;
 end;
 
 procedure TSplitterDataModule.ParameterEnvelopeDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
@@ -93,7 +98,7 @@ end;
 
 procedure TSplitterDataModule.ParameterFrequencyDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- PreDefined := FloatToStrF(FFreqDisp, ffGeneral, 5, 5); 
+ PreDefined := FloatToStrF(FFreqDisp, ffGeneral, 5, 5);
 end;
 
 procedure TSplitterDataModule.ParameterEnvelopeChange(Sender: TObject; const Index: Integer; var Value: Single);

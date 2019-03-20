@@ -193,7 +193,7 @@ var
 implementation
 
 uses
-  Math, IniFiles, DAV_Common;
+  Math, IniFiles, DAV_Common, DAV_Convert;
 
 {$IFDEF FPC}
 {$R *.lfm}

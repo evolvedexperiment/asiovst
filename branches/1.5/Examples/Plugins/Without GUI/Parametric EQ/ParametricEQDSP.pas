@@ -87,7 +87,7 @@ implementation
 {$ENDIF}
 
 uses
-  DAV_Common, DAV_Strings, DAV_Approximations, DAV_VSTModuleWithPrograms;
+  DAV_Common, DAV_Consts, DAV_Convert, DAV_Strings, DAV_Approximations, DAV_VSTModuleWithPrograms;
 
 procedure TParametricEQDataModule.VSTModuleCreate(Sender: TObject);
 begin
@@ -224,7 +224,7 @@ begin
         end
         else
       else
-        raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
+        raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
 end;
 
 function TParametricEQDataModule.GetDownSampler(Index: Integer)
@@ -233,7 +233,7 @@ begin
   if (Index >= 0) and (Index < Length(FFilters)) then
     Result := FDownSampler[0]
   else
-    raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
+    raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
 end;
 
 function TParametricEQDataModule.GetFilter(Index: Integer): TCustomIIRFilter;
@@ -241,7 +241,7 @@ begin
   if (Index >= 0) and (Index < Length(FFilters[0])) then
     Result := FFilters[0, Index]
   else
-    raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
+    raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
 end;
 
 function TParametricEQDataModule.GetFilterClass(Index: Integer)
@@ -250,7 +250,7 @@ begin
   if (Index >= 0) and (Index < Length(FFilters[0])) then
     Result := TBandwidthIIRFilterClass(FFilters[0, Index].ClassType)
   else
-    raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
+    raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
 end;
 
 function TParametricEQDataModule.GetInputPeakLevel: Single;
@@ -281,7 +281,7 @@ begin
   if (Index >= 0) and (Index < Length(FFilters)) then
     Result := FUpSampler[0]
   else
-    raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
+    raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
 end;
 
 procedure TParametricEQDataModule.ParameterInputChange(Sender: TObject;

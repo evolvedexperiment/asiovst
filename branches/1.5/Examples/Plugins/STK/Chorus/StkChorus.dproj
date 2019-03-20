@@ -5,7 +5,7 @@
         <Config Condition="'$(Config)'==''">Debug</Config>
         <FrameworkType>VCL</FrameworkType>
         <MainSource>StkChorus.dpr</MainSource>
-        <Platform Condition="'$(Platform)'==''">Win64</Platform>
+        <Platform Condition="'$(Platform)'==''">Win32</Platform>
         <ProjectGuid>{6B3AF6D2-A6D7-444B-A486-CB09F1CE6D4F}</ProjectGuid>
         <ProjectVersion>18.3</ProjectVersion>
         <TargetedPlatforms>3</TargetedPlatforms>

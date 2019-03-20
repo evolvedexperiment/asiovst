@@ -89,12 +89,6 @@ const
   CEmptyHomogeneousMatrix64: TDAVMatrix64 = ((0, 0, 0, 0), (0, 0, 0, 0),
     (0, 0, 0, 0), (0, 0, 0, 0));
 
-  C2PI: Single = 6.283185307;
-  CInv2PI: Single = 1 / 6.283185307;
-  CInv360: Single = 1 / 360;
-  C180: Single = 180;
-  C360: Single = 360;
-
 function VectorMake(const x, y, z, w: Single): TDAVVector32; overload;
 procedure SetVector(var Value: TDAVVector32; const x, y, z, w: Single); overload;
 procedure SetVector(var Value: TDAVVector32; const vSrc: TDAVVector32); overload;
@@ -206,7 +200,7 @@ var
 implementation
 
 uses
-  SysUtils, DAV_Common, DAV_Math;
+  SysUtils, DAV_Common, DAV_Math, DAV_Consts;
 
 const
 {$IFNDEF PUREPASCAL}
@@ -858,10 +852,10 @@ begin
   Stop := NormalizeAngle(Stop);
   Delta := Stop - Start;
   if Delta > PI then
-    Delta := -delta - C2PI
+    Delta := -delta - CTwoPI32
   else // positive Delta, Angle on opposite side, becomes negative i.e. changes direction
     if Delta < -PI then
-      Delta := Delta + C2PI;
+      Delta := Delta + CTwoPI32;
   // negative Delta, Angle on opposite side, becomes positive i.e. changes direction
   Result := Start + Delta * t;
 end;
@@ -872,7 +866,7 @@ begin
   Angle2 := NormalizeAngle(Angle2);
   Result := Abs(Angle2 - Angle1);
   if Result > PI then
-    Result := C2PI - Result;
+    Result := CTwoPI32 - Result;
 end;
 
 function VectorLerp(const v1, v2: TDAVVector32; t: Single): TDAVVector32;
@@ -2057,7 +2051,7 @@ end;
 
 function NormalizeAngle(Angle: Single): Single;
 begin
-  Result := Angle - Int(Angle * CInv2PI) * C2PI;
+  Result := Angle - Int(Angle * CInv2PI) * CTwoPI32;
   if Result > PI then
     Result := Result - 2 * PI
   else if Result < -PI then

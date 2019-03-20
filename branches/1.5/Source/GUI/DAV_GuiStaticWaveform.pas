@@ -388,7 +388,7 @@ var
 begin
   Result := 0;
   for i := 0 to Length(FWaveData[Channel]) - 1 do
-    Result := Max(Result, abs(FWaveData[Channel][i]));
+    Result := Max(Result, Abs(FWaveData[Channel][i]));
 end;
 
 procedure TCustomGuiStaticWaveform.DrawMedian(YOffset: Integer);
@@ -448,7 +448,7 @@ begin
     else
       begin
         LastCenter := (OldMaxPos.Y + OldMinPos.Y) div 2;
-        if abs(NewMax.Y - LastCenter) < abs(NewMin.Y - LastCenter) then
+        if Abs(NewMax.Y - LastCenter) < Abs(NewMin.Y - LastCenter) then
         begin
           LineTo(NewMax.X, NewMax.Y);
           if NewMin.Y <> NewMax.Y then

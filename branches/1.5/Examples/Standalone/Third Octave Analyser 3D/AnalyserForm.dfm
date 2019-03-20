@@ -77,7 +77,7 @@ object FmAnalyser: TFmAnalyser
   object CbChannel: TComboBox
     Left = 92
     Top = 32
-    Width = 246
+    Width = 233
     Height = 21
     Style = csDropDownList
     TabOrder = 2
@@ -91,7 +91,6 @@ object FmAnalyser: TFmAnalyser
     Default = True
     Enabled = False
     TabOrder = 3
-    OnClick = BtAnalyseClick
   end
   object RbFast: TRadioButton
     Left = 50
@@ -133,6 +132,17 @@ object FmAnalyser: TFmAnalyser
     Value = 0
     OnChange = SeFullscaleGainChange
   end
+  object GLSceneViewer: TGLSceneViewer
+    Left = 8
+    Top = 96
+    Width = 430
+    Height = 222
+    Camera = DefaultCamera
+    Buffer.BackgroundColor = 789774
+    FieldOfView = 100.000000000000000000
+    PenAsTouch = False
+    TabOrder = 8
+  end
   object ASIOHost: TAsioHost
     AsioTime.SamplePos = 0
     AsioTime.Speed = 1.000000000000000000
@@ -151,5 +161,26 @@ object FmAnalyser: TFmAnalyser
     OnTimer = TimerTimer
     Left = 281
     Top = 24
+  end
+  object BarGraphScene: TGLScene
+    Left = 216
+    Top = 160
+    object LightSource: TGLLightSource
+      Ambient.Color = {8716793F08AC3C3F1B2FDD3C0000803F}
+      ConstAttenuation = 1.000000000000000000
+      Diffuse.Color = {54E3453F9A99193FAAF1D23E0000803F}
+      Position.Coordinates = {000000000000803F0000A0400000803F}
+      Specular.Color = {0000803F0000003F000000000000803F}
+      SpotCutOff = 180.000000000000000000
+    end
+    object DefaultCamera: TGLCamera
+      DepthOfView = 100.000000000000000000
+      FocalLength = 93.140060424804680000
+      TargetObject = GLDummyCube
+      Position.Coordinates = {000000000000803F0000A0400000803F}
+    end
+    object GLDummyCube: TGLDummyCube
+      CubeSize = 1.000000000000000000
+    end
   end
 end

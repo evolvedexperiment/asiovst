@@ -62,8 +62,7 @@ type
     constructor Create; override;
     function TranslatePeakToGain(const PeakLevel: Double): Double; override;
     function ProcessSample64(Input: Double): Double; override;
-    function CharacteristicCurve_dB(const InputLevel_dB: Double)
-      : Double; override;
+    function CharacteristicCurve_dB(const InputLevel_dB: Double): Double; override;
     procedure InputSample(const Input: Double); override;
     function GainSample(const Input: Double): Double; override;
   published
@@ -91,8 +90,7 @@ type
     constructor Create; override;
     function TranslatePeakToGain(const PeakLevel: Double): Double; override;
     function ProcessSample64(Input: Double): Double; override;
-    function CharacteristicCurve_dB(const InputLevel_dB: Double)
-      : Double; override;
+    function CharacteristicCurve_dB(const InputLevel_dB: Double): Double; override;
     procedure InputSample(const Input: Double); override;
     function GainSample(const Input: Double): Double; override;
     procedure Reset; override;
@@ -121,8 +119,7 @@ type
     constructor Create; override;
     function TranslatePeakToGain(const PeakLevel: Double): Double; override;
     function ProcessSample64(Input: Double): Double; override;
-    function CharacteristicCurve_dB(const InputLevel_dB: Double)
-      : Double; override;
+    function CharacteristicCurve_dB(const InputLevel_dB: Double): Double; override;
     procedure InputSample(const Input: Double); override;
     function GainSample(const Input: Double): Double; override;
   published
@@ -150,8 +147,7 @@ type
     constructor Create; override;
     function TranslatePeakToGain(const PeakLevel: Double): Double; override;
     function ProcessSample64(Input: Double): Double; override;
-    function CharacteristicCurve_dB(const InputLevel_dB: Double)
-      : Double; override;
+    function CharacteristicCurve_dB(const InputLevel_dB: Double): Double; override;
     procedure InputSample(const Input: Double); override;
     function GainSample(const Input: Double): Double; override;
   published
@@ -180,8 +176,7 @@ type
     constructor Create; override;
     function TranslatePeakToGain(const PeakLevel: Double): Double; override;
     function ProcessSample64(Input: Double): Double; override;
-    function CharacteristicCurve_dB(const InputLevel_dB: Double)
-      : Double; override;
+    function CharacteristicCurve_dB(const InputLevel_dB: Double): Double; override;
     procedure InputSample(const Input: Double); override;
     function GainSample(const Input: Double): Double; override;
   published
@@ -213,8 +208,7 @@ type
     procedure Reset; override;
     function TranslatePeakToGain(const PeakLevel: Double): Double; override;
     function ProcessSample64(Input: Double): Double; override;
-    function CharacteristicCurve_dB(const InputLevel_dB: Double)
-      : Double; override;
+    function CharacteristicCurve_dB(const InputLevel_dB: Double): Double; override;
     procedure InputSample(const Input: Double); override;
     function GainSample(const Input: Double): Double; override;
   published
@@ -225,7 +219,7 @@ type
 implementation
 
 uses
-  SysUtils, Math, DAV_Approximations;
+  SysUtils, Math, DAV_Consts, DAV_Approximations;
 
 resourcestring
   RCStrAttackTimeInvalid = 'Attack time must be larger than zero!';
@@ -291,8 +285,7 @@ begin
   FThrshlddB := Threshold_dB * CdBtoAmpExpGain32;
 end;
 
-function TLightweightSoftKneeLimiter.TranslatePeakToGain(const PeakLevel
-  : Double): Double;
+function TLightweightSoftKneeLimiter.TranslatePeakToGain(const PeakLevel: Double): Double;
 begin
   Result := PeakLevel;
   Result := FastLog2ContinousError5(Result) - FThrshlddB;
@@ -320,7 +313,7 @@ procedure TLightweightSoftKneeLimiter.InputSample(const Input: Double);
 var
   Temp: Single;
 begin
-  Temp := CDenorm32 + abs(Input);
+  Temp := CDenorm32 + Abs(Input);
 
   if Temp > FPeak then
     FPeak := FPeak + (Temp - FPeak) * FAttackFactor
@@ -337,7 +330,7 @@ var
   CastedSingle: Single;
   IntCast: Integer absolute CastedSingle;
   asm
-    // Temp := CDenorm32 + abs(Input);
+    // Temp := CDenorm32 + Abs(Input);
     MOV     EDX, EAX               // EDX = Self
     FLD     Input
     FABS
@@ -439,7 +432,7 @@ function TLightweightSoftKneeLimiter.ProcessSample64(Input: Double): Double;
 var
   Temp: Single;
 begin
-  Temp := CDenorm32 + abs(Input);
+  Temp := CDenorm32 + Abs(Input);
 
   if Temp > FPeak then
     FPeak := FPeak + (Temp - FPeak) * FAttackFactor
@@ -458,7 +451,7 @@ var
   CastedSingle: Single;
   IntCast: Integer absolute CastedSingle;
   asm
-    // Temp := CDenorm32 + abs(Input);
+    // Temp := CDenorm32 + Abs(Input);
     MOV     EDX, EAX               // EDX = Self
     FLD     Input
     FABS
@@ -674,7 +667,7 @@ procedure TLightweightSoftKneeFeedbackLikeLimiter.InputSample
 var
   Temp: array [0 .. 1] of Single;
 begin
-  Temp[0] := CDenorm32 + abs(Input);
+  Temp[0] := CDenorm32 + Abs(Input);
 
   if Temp[0] > FPeak then
     FPeak := FPeak + (Temp[0] - FPeak) * FAttackFactor
@@ -696,7 +689,7 @@ var
   CastedSingle: Single;
   IntCast: Integer absolute CastedSingle;
   asm
-    // Temp := CDenorm32 + abs(Input);
+    // Temp := CDenorm32 + Abs(Input);
     MOV     EDX, EAX               // EDX = Self
     FLD     Input
     FABS
@@ -979,7 +972,7 @@ procedure TLightweightSoftKneeCompressor.InputSample(const Input: Double);
 var
   Temp: Single;
 begin
-  Temp := CDenorm32 + abs(Input);
+  Temp := CDenorm32 + Abs(Input);
 
   if Temp > FPeak then
     FPeak := FPeak + (Temp - FPeak) * FAttackFactor
@@ -996,7 +989,7 @@ var
   CastedSingle: Single;
   IntCast: Integer absolute CastedSingle;
   asm
-    // Temp := CDenorm32 + abs(Input);
+    // Temp := CDenorm32 + Abs(Input);
     MOV   EDX, EAX               // EDX = Self
     FLD   Input
     FABS
@@ -1210,7 +1203,7 @@ procedure TLightweightSoftKneeUpwardCompressor.InputSample(const Input: Double);
 var
   Temp: Single;
 begin
-  Temp := CDenorm32 + abs(Input);
+  Temp := CDenorm32 + Abs(Input);
 
   if Temp > FPeak then
     FPeak := FPeak + (Temp - FPeak) * FAttackFactor
@@ -1226,7 +1219,7 @@ var
   CastedSingle: Single;
   IntCast: Integer absolute CastedSingle;
   asm
-    // Temp := CDenorm32 + abs(Input);
+    // Temp := CDenorm32 + Abs(Input);
     MOV   EDX, EAX               // EDX = Self
     FLD   Input
     FABS
@@ -1460,7 +1453,7 @@ begin
   Temp := FRatioFactor * (FastLog2ContinousError5(FPeak) - FThrshlddB);
   FGain := FastPower2MinError3(Temp - FastSqrtBab2(Sqr(Temp) + FKneeFactor));
 
-  FPrevAbsSample := abs(FGain * Input);
+  FPrevAbsSample := Abs(FGain * Input);
 end;
 {$ELSE}
 
@@ -1468,7 +1461,7 @@ var
   CastedSingle: Single;
   IntCast: Integer absolute CastedSingle;
   asm
-    // Temp := CDenorm32 + abs(Input);
+    // Temp := CDenorm32 + Abs(Input);
     MOV   EDX, EAX               // EDX = Self
     FLD   [EDX.FPrevAbsSample]
     FABS
@@ -1706,7 +1699,7 @@ procedure TLightweightSoftKneeFeedbackLikeCompressor.InputSample
 var
   Temp: array [0 .. 1] of Single;
 begin
-  Temp[0] := CDenorm32 + abs(Input);
+  Temp[0] := CDenorm32 + Abs(Input);
 
   if Temp[0] > FPeak then
     FPeak := FPeak + (Temp[0] - FPeak) * FAttackFactor
@@ -1726,7 +1719,7 @@ var
   CastedSingle: Single;
   IntCast: Integer absolute CastedSingle;
   asm
-    // Temp := CDenorm32 + abs(Input);
+    // Temp := CDenorm32 + Abs(Input);
     MOV   EDX, EAX               // EDX = Self
     FLD   Input
     FABS

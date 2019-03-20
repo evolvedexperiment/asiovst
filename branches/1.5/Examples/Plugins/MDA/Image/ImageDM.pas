@@ -88,7 +88,7 @@ implementation
 {$ENDIF}
 
 uses
-  DAV_Common;
+  DAV_Common, DAV_Convert;
 
 procedure TImageDataModule.ParamModeDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);

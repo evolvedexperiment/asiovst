@@ -81,7 +81,7 @@ type
 implementation
 
 uses
-  SysUtils, DAV_Common, DAV_DspPolyphaseFilter;
+  SysUtils, DAV_Common, DAV_Consts, DAV_DspPolyphaseFilter;
 
 { TCustomTransformatorSimulation }
 

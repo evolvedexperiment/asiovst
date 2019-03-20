@@ -690,24 +690,6 @@ var
   TanSixthPi64, TanTwelfthPi64: Double;
 
 const
-  CMinusOneThird: Double = -1 / 3;
-  CMinusTwoThird: Double = -2 / 3;
-  CTwo32: Single = 2;
-  CTwo64: Double = 2;
-  CTwoDivPi32: Single = 2.0 / Pi;
-  CTwoDivPi64: Double = 2.0 / Pi;
-  CPiHalf32: Single = Pi * 0.5;
-  CPiHalf64: Double = Pi * 0.5;
-  CThreeHalfPi32: Single = 1.5 * Pi; // pi times 3/2, used in tan routines
-  CThreeHalfPi64: Double = 1.5 * Pi; // pi times 3/2, used in tan routines
-  CFourDivPi32: Single = 4.0 / Pi; // 4 / pi, used in tan routines
-  CFourDivPi64: Double = 4.0 / Pi; // 4 / pi, used in tan routines
-  CFourthPi32: Single = Pi * 0.25; // pi / 4.0, used in tan routines
-  CFourthPi64: Double = Pi * 0.25; // pi / 4.0, used in tan routines
-  CSixthPi32: Single = Pi / 6.0; // pi/6.0, used in atan routines
-  CSixthPi64: Double = Pi / 6.0; // pi/6.0, used in atan routines
-  CTwelfthPi32: Single = Pi / 12.0; // pi/12.0, used in atan routines
-  CTwelfthPi64: Double = Pi / 12.0; // pi/12.0, used in atan routines
   CdBtoAmpExpGain32: Single = 1.6609640474436811739351597147447E-1;
   // 1.5051499783199059760686944736225E-2;
   CdBtoAmpExpGain64: Double = 1.6609640474436811739351597147447E-1;
@@ -803,7 +785,7 @@ const
 implementation
 
 uses
-  Math, SysUtils, DAV_Math;
+  Math, SysUtils, DAV_Math, DAV_Consts;
 
 { Trigonomic Approximations }
 
@@ -3155,7 +3137,7 @@ end;
 
 function FastInvSqrt(Value: Double): Double; overload;
 var
-  IntCst: Int64 absolute Result;
+  IntCst: UInt64 absolute Result;
 begin
   Result := Value;
   IntCst := ($BFCDD90BCFBC61B4 - IntCst) shr 1;

@@ -108,7 +108,7 @@ type
 implementation
 
 uses
-  SysUtils, Math, DAV_Common;
+  SysUtils, Math, DAV_Common, DAV_Convert;
 
 resourcestring
   RCStrPeriodTooShort = 'Period must be longer than the length';

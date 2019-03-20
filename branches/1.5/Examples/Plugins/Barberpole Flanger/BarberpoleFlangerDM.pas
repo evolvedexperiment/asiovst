@@ -151,7 +151,7 @@ begin
   if Index in [0 .. 1] then
     Result := FBarberpole[Index]
   else
-    raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
+    raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
 end;
 
 procedure TBarberpoleFlangerModule.ParamSpeedChange(Sender: TObject;

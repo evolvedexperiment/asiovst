@@ -37,8 +37,6 @@ interface
 uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
   Forms, SyncObjs, DAV_Types, DAV_DspFilterButterworth, DAV_DspConvolution, 
-  {$IFDEF Use_IPPS}DAV_DspFftReal2ComplexIPPS, DAV_DspWindowFunctionsAdvanced,
-  {$ENDIF} {$IFDEF Use_CUDA}DAV_DspFftReal2ComplexCUDA, {$ENDIF}
   DAV_DspFftReal2Complex, DAV_DspDelayLines, DAV_VSTModule;
 
 type
@@ -159,13 +157,7 @@ end;
 procedure TLinearPhaseFromIIRDataModule.MakeMinimumPhase(
   FilterKernel: PDAVSingleFixedArray; KernelSize: Cardinal);
 var
-  {$IFDEF Use_IPPS}
-  Fft         : TFftReal2ComplexIPPSFloat32;
-  {$ELSE} {$IFDEF Use_CUDA}
-  Fft         : TFftReal2ComplexCUDA32;
-  {$ELSE}
   Fft         : TFftReal2ComplexNativeFloat32;
-  {$ENDIF}{$ENDIF}
   TimeDomain  : PDAVSingleFixedArray;
   FreqDomain  : PDAVComplexSingleFixedArray;
   Order       : Cardinal;
@@ -177,21 +169,6 @@ begin
 
  Assert(KernelSize < TempSize);
 
- {$IFDEF Use_IPPS}
- Fft := TFftReal2ComplexIPPSFloat32.Create(Order + 1);
-
- GetMem(TimeDomain, TempSize * SizeOf(Single));
- GetMem(FreqDomain, 2 * ((1 shl Order) + 1) * SizeOf(TComplex32));
- FillChar(TimeDomain^[0], TempSize * SizeOf(Single), 0);
- FillChar(FreqDomain^[0], (1 shl Order + 1) * SizeOf(TComplex32), 0);
- {$ELSE} {$IFDEF Use_CUDA}
- Fft := TFftReal2ComplexCUDA32.Create(Order + 1);
-
- GetMem(TimeDomain, TempSize * SizeOf(Single));
- GetMem(FreqDomain, TempSize * SizeOf(Single));
- FillChar(TimeDomain^[0], TempSize * SizeOf(Single), 0);
- FillChar(FreqDomain^[0], TempSize * SizeOf(Single), 0);
- {$ELSE}
  Fft := TFftReal2ComplexNativeFloat32.Create(Order + 1);
  Fft.DataOrder := doPackedComplex;
 
@@ -199,7 +176,6 @@ begin
  GetMem(FreqDomain, TempSize * SizeOf(Single));
  FillChar(TimeDomain^[0], TempSize * SizeOf(Single), 0);
  FillChar(FreqDomain^[0], TempSize * SizeOf(Single), 0);
- {$ENDIF}{$ENDIF}
 
  with FFT do
   try
@@ -260,7 +236,7 @@ begin
     FilterKernel[Sample] := FButterworthFilter.ProcessSample64(0.0);
     Peak := 0.9 * Peak;
     if Abs(FilterKernel[Sample]) > Peak
-     then Peak := abs(FilterKernel[Sample]);
+     then Peak := Abs(FilterKernel[Sample]);
    end;
 
   while (Peak > 1E-7) and (KernelSize < 1 shl 16) do

@@ -74,7 +74,7 @@ implementation
 {$ENDIF}
 
 uses
-  Math, DAV_Common;
+  Math, DAV_Math, DAV_Common, DAV_Convert;
 
 procedure TRezFilterDataModule.ParameterGainChange(Sender: TObject;
   const Index: Integer; var Value: Single);
@@ -135,7 +135,7 @@ begin
  if FFreqMax > (0.013 * Parameter[9])
   then FFreqMax := 0.013 * Parameter[9];
 
- FFreqEnv := abs(2 * sqr(0.005 * Parameter[3]));
+ FFreqEnv := Abs(2 * sqr(0.005 * Parameter[3]));
  FAtt     := Power(10, -0.01 - 4.0 * Parameter[4]);
  FRel     := 1 - Power(10, -2.00 - 4.0 * Parameter[5]);
 
@@ -192,7 +192,7 @@ begin
      begin
       a := Inputs[0, Sample] + Inputs[1, Sample];
 
-      i := abs(a); //envelope
+      i := Abs(a); //envelope
       if i > e
        then e := e + at * (i - e)
        else e := e * re;
@@ -227,7 +227,7 @@ begin
      begin
       a := Inputs[0, Sample] + Inputs[1, Sample];
 
-      i := abs(a);  // Envelope
+      i := Abs(a);  // Envelope
 
       if i > e
        then e := i
@@ -272,7 +272,7 @@ begin
     end;
   end;
 
-  if (abs(b0) < 1E-10) then
+  if (Abs(b0) < 1E-10) then
    begin
     FBuffer[0] := 0;
     FBuffer[1] := 0;
@@ -286,7 +286,7 @@ begin
    end;
 
  FState         := bl;
- FPhi           := f_mod(ph, 2 * Pi);
+ FPhi           := FloatMod(ph, 2 * Pi);
  FEnv           := e;
  FEnv2          := e2;
  FTriggerAttack := ta;
@@ -295,9 +295,9 @@ end;
 
 procedure TRezFilterDataModule.VSTModuleSuspend(Sender: TObject);
 begin
- FBuffer[0] := 0;
- FBuffer[1] := 0;
- FBuffer[2] := 0;
+  FBuffer[0] := 0;
+  FBuffer[1] := 0;
+  FBuffer[2] := 0;
 end;
 
 end.

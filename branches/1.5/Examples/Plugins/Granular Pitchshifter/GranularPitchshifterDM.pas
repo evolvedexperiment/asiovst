@@ -139,7 +139,7 @@ begin
   if Index in [0 .. 1] then
     Result := FGranularPitchShifter[Index]
   else
-    raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
+    raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
 end;
 
 procedure TGranularPitchShifterModule.ParamSemitonesChange(Sender: TObject;
@@ -221,8 +221,8 @@ begin
   try
     for Channel := 0 to 1 do
       for Sample := 0 to SampleFrames - 1 do
-        Outputs[Channel, Sample] := FGranularPitchShifter[Channel]
-          .ProcessSample32(Inputs[Channel, Sample]);
+        Outputs[Channel, Sample] :=
+          FGranularPitchShifter[Channel].ProcessSample32(Inputs[Channel, Sample]);
   finally
     FCriticalSection.Leave;
   end;

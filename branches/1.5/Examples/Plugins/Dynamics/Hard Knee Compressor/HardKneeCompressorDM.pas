@@ -143,8 +143,7 @@ begin
       UpdateAttack;
 end;
 
-function THardKneeCompressorDataModule.GetCompressor(Index: Integer)
-  : TSimpleCompressor;
+function THardKneeCompressorDataModule.GetCompressor(Index: Integer): TSimpleCompressor;
 begin
   if Index in [0 .. 1] then
     Result := FSimpleCompressors[Index]

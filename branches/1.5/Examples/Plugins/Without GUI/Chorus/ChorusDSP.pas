@@ -183,7 +183,7 @@ begin
   if Index in [0 .. 1] then
     Result := FChorus[Index]
   else
-    raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
+    raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
 end;
 
 procedure TChorusModule.ParamSpeedChange(Sender: TObject; const Index: Integer;

@@ -75,7 +75,7 @@ implementation
 {$ENDIF}
 
 uses
-  SysUtils, Inifiles, DAV_Common;
+  SysUtils, Inifiles, DAV_Common, DAV_Convert;
 
 procedure TFormASIONoiseGenerator.FormCreate(Sender: TObject);
 begin

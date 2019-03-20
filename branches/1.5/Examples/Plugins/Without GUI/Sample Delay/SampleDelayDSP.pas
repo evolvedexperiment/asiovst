@@ -171,7 +171,7 @@ end;
 
 procedure TSampleDelayVST.CalculateFeedfactor;
 begin
-  FFeedFactor := FFeedbackSign * abs(FFeedback);
+  FFeedFactor := FFeedbackSign * Abs(FFeedback);
 end;
 
 procedure TSampleDelayVST.ParameterInvFBDisplay(Sender: TObject;

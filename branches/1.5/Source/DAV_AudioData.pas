@@ -620,8 +620,8 @@ begin
     exit;
 
   for Sample := 0 to SampleCount - 1 do
-    if abs(FChannelData^[Sample]) > Result then
-      Result := abs(FChannelData^[Sample]);
+    if Abs(FChannelData^[Sample]) > Result then
+      Result := Abs(FChannelData^[Sample]);
 end;
 
 function TAudioData32.GetRMS: Double;
@@ -694,7 +694,7 @@ var
 begin
   for Sample := 0 to SampleCount - 1 do
     FChannelData^[Sample] := Sign(FChannelData^[Sample]) *
-      Power(abs(FChannelData^[Sample]), Exponent);
+      Power(Abs(FChannelData^[Sample]), Exponent);
 end;
 
 procedure TAudioData32.Rectify;
@@ -702,7 +702,7 @@ var
   Sample: Integer;
 begin
   for Sample := 0 to SampleCount - 1 do
-    FChannelData^[Sample] := abs(FChannelData^[Sample]);
+    FChannelData^[Sample] := Abs(FChannelData^[Sample]);
 end;
 
 procedure TAudioData32.RemoveDC;
@@ -806,8 +806,8 @@ begin
     exit;
 
   for Sample := 0 to SampleCount - 1 do
-    if abs(FChannelData^[Sample]) > Result then
-      Result := abs(FChannelData^[Sample]);
+    if Abs(FChannelData^[Sample]) > Result then
+      Result := Abs(FChannelData^[Sample]);
 end;
 
 function TAudioData64.GetRMS: Double;
@@ -880,7 +880,7 @@ var
 begin
   for Sample := 0 to SampleCount - 1 do
     FChannelData^[Sample] := Sign(FChannelData^[Sample]) *
-      Power(abs(FChannelData^[Sample]), Exponent);
+      Power(Abs(FChannelData^[Sample]), Exponent);
 end;
 
 procedure TAudioData64.Rectify;
@@ -888,7 +888,7 @@ var
   Sample: Integer;
 begin
   for Sample := 0 to SampleCount - 1 do
-    FChannelData^[Sample] := abs(FChannelData^[Sample]);
+    FChannelData^[Sample] := Abs(FChannelData^[Sample]);
 end;
 
 procedure TAudioData64.RemoveDC;

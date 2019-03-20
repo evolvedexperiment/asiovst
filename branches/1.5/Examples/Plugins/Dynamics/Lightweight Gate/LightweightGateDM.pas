@@ -35,7 +35,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
   Forms, DAV_Types, DAV_VSTModule, DAV_DspDynamics, DAV_DspLightweightDynamics;
 
 type
@@ -75,8 +75,8 @@ implementation
 {$ENDIF}
 
 uses
-  Math, DAV_Common, DAV_Approximations, DAV_VSTModuleWithPrograms,
-  LightweightGateGUI;
+  Math, DAV_Common, DAV_Consts, DAV_Strings, DAV_Approximations,
+  DAV_VSTModuleWithPrograms, LightweightGateGUI;
 
 procedure TLightweightGateDataModule.VSTModuleOpen(Sender: TObject);
 var
@@ -94,209 +94,211 @@ const
     (0.3, 4.4, -37, 0.1, 9),
     (0.8, 5.6, -41, 0.1, 5));
 begin
- for Channel := 0 to Length(FLightweightGate) - 1 do
+  for Channel := 0 to Length(FLightweightGate) - 1 do
   begin
-   FLightweightGate[Channel] := TLightweightSoftKneeCompressor.Create;
-   FLightweightGate[Channel].SampleRate := SampleRate;
+    FLightweightGate[Channel] := TLightweightSoftKneeCompressor.Create;
+    FLightweightGate[Channel].SampleRate := SampleRate;
   end;
 
- Parameter[0] := 1.5;
- Parameter[1] := 7.5;
- Parameter[2] := -20;
- Parameter[3] := 0.2;
- Parameter[4] := 6;
+  Parameter[0] := 1.5;
+  Parameter[1] := 7.5;
+  Parameter[2] := -20;
+  Parameter[3] := 0.2;
+  Parameter[4] := 6;
 
- Programs[0].SetParameters(FParameter);
- for Channel := 1 to numPrograms - 1
-  do Programs[Channel].SetParameters(CPresets[Channel]);
+  Programs[0].SetParameters(FParameter);
+  for Channel := 1 to numPrograms - 1 do
+    Programs[Channel].SetParameters(CPresets[Channel]);
 end;
 
 procedure TLightweightGateDataModule.VSTModuleClose(Sender: TObject);
 begin
- FreeAndNil(FLightweightGate[0]);
- FreeAndNil(FLightweightGate[1]);
+  FreeAndNil(FLightweightGate[0]);
+  FreeAndNil(FLightweightGate[1]);
 end;
 
 procedure TLightweightGateDataModule.VSTModuleEditOpen(Sender: TObject;
   var GUI: TForm; ParentWindow: NativeUInt);
 begin
- GUI := TFmLightweightGate.Create(Self);
+  GUI := TFmLightweightGate.Create(Self);
 end;
 
-function TLightweightGateDataModule.EvaluateCharacteristic(
-  const Input: Single): Single;
+function TLightweightGateDataModule.EvaluateCharacteristic
+  (const Input: Single): Single;
 begin
- Result := FLightweightGate[0].CharacteristicCurve_dB(Input);
+  Result := FLightweightGate[0].CharacteristicCurve_dB(Input);
 end;
 
 function TLightweightGateDataModule.GetLightweightGate(Index: Integer): TCustomKneeCompressor;
 begin
- if Index in [0..Length(FLightweightGate) - 1]
-  then Result := FLightweightGate[Index]
-  else raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
+  if Index in [0 .. Length(FLightweightGate) - 1] then
+    Result := FLightweightGate[Index]
+  else
+    raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
 end;
 
-procedure TLightweightGateDataModule.ParameterAttackChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TLightweightGateDataModule.ParameterAttackChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
- if Assigned(FLightweightGate[0]) then
+  if Assigned(FLightweightGate[0]) then
   begin
-   FLightweightGate[0].Attack := Value;
-   if Assigned(FLightweightGate[1])
-    then FLightweightGate[1].Attack := FLightweightGate[0].Attack;
+    FLightweightGate[0].Attack := Value;
+    if Assigned(FLightweightGate[1]) then
+      FLightweightGate[1].Attack := FLightweightGate[0].Attack;
   end;
 
- // update GUI
- if EditorForm is TFmLightweightGate
-  then TFmLightweightGate(EditorForm).UpdateAttack;
+  // update GUI
+  if EditorForm is TFmLightweightGate then
+    TFmLightweightGate(EditorForm).UpdateAttack;
 end;
 
-procedure TLightweightGateDataModule.ParameterReleaseChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TLightweightGateDataModule.ParameterReleaseChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
- if Assigned(FLightweightGate[0]) then
+  if Assigned(FLightweightGate[0]) then
   begin
-   FLightweightGate[0].Release := Value;
-   if Assigned(FLightweightGate[1])
-    then FLightweightGate[1].Release := FLightweightGate[0].Release;
+    FLightweightGate[0].Release := Value;
+    if Assigned(FLightweightGate[1]) then
+      FLightweightGate[1].Release := FLightweightGate[0].Release;
   end;
 
- // update GUI
- if EditorForm is TFmLightweightGate
-  then TFmLightweightGate(EditorForm).UpdateRelease;
+  // update GUI
+  if EditorForm is TFmLightweightGate then
+    TFmLightweightGate(EditorForm).UpdateRelease;
 end;
 
-procedure TLightweightGateDataModule.ParameterThresholdChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TLightweightGateDataModule.ParameterThresholdChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
- if Assigned(FLightweightGate[0]) then
+  if Assigned(FLightweightGate[0]) then
   begin
-   FLightweightGate[0].Threshold_dB := Value;
-   if Assigned(FLightweightGate[1])
-    then FLightweightGate[1].Threshold_dB := Value;
+    FLightweightGate[0].Threshold_dB := Value;
+    if Assigned(FLightweightGate[1]) then
+      FLightweightGate[1].Threshold_dB := Value;
   end;
 
- // update GUI
- if EditorForm is TFmLightweightGate
-  then TFmLightweightGate(EditorForm).UpdateThreshold;
+  // update GUI
+  if EditorForm is TFmLightweightGate then
+    TFmLightweightGate(EditorForm).UpdateThreshold;
 end;
 
-procedure TLightweightGateDataModule.ParameterRatioChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TLightweightGateDataModule.ParameterRatioChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
- if Assigned(FLightweightGate[0]) then
+  if Assigned(FLightweightGate[0]) then
   begin
-   FLightweightGate[0].Ratio := Value;
-   if Assigned(FLightweightGate[1])
-    then FLightweightGate[1].Ratio := Value;
+    FLightweightGate[0].Ratio := Value;
+    if Assigned(FLightweightGate[1]) then
+      FLightweightGate[1].Ratio := Value;
   end;
 
- // update GUI
- if EditorForm is TFmLightweightGate
-  then TFmLightweightGate(EditorForm).UpdateRatio;
+  // update GUI
+  if EditorForm is TFmLightweightGate then
+    TFmLightweightGate(EditorForm).UpdateRatio;
 end;
 
-procedure TLightweightGateDataModule.ParameterKneeChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TLightweightGateDataModule.ParameterKneeChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
- if Assigned(FLightweightGate[0]) then
+  if Assigned(FLightweightGate[0]) then
   begin
-   FLightweightGate[0].Knee_dB := Value;
-   if Assigned(FLightweightGate[1])
-    then FLightweightGate[1].Knee_dB := Value;
+    FLightweightGate[0].Knee_dB := Value;
+    if Assigned(FLightweightGate[1]) then
+      FLightweightGate[1].Knee_dB := Value;
   end;
 
- // update GUI
- if EditorForm is TFmLightweightGate
-  then TFmLightweightGate(EditorForm).UpdateKnee;
+  // update GUI
+  if EditorForm is TFmLightweightGate then
+    TFmLightweightGate(EditorForm).UpdateKnee;
 end;
 
-procedure TLightweightGateDataModule.ParameterMixChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TLightweightGateDataModule.ParameterMixChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
- Value := 100;
+  Value := 100;
 end;
 
-procedure TLightweightGateDataModule.ParameterTimeLabel(
-  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+procedure TLightweightGateDataModule.ParameterTimeLabel(Sender: TObject;
+  const Index: Integer; var PreDefined: AnsiString);
 var
-  Val : Single;
+  Val: Single;
 begin
- Val := Parameter[Index];
- if Val < 1
-  then PreDefined := 'µs' else
- if Val >= 1000
-  then PreDefined := 's';
+  Val := Parameter[Index];
+  if Val < 1 then
+    PreDefined := 'µs'
+  else if Val >= 1000 then
+    PreDefined := 's';
 end;
 
-procedure TLightweightGateDataModule.ParameterTimeDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+procedure TLightweightGateDataModule.ParameterTimeDisplay(Sender: TObject;
+  const Index: Integer; var PreDefined: AnsiString);
 var
-  Val : Single;
+  Val: Single;
 begin
- Val := Parameter[Index];
- if Val < 1
-  then PreDefined := FloatToStrF(RoundTo(1E3 * Val, -2), ffGeneral, 3, 3) else
- if Val < 1000
-  then PreDefined := FloatToStrF(RoundTo(Val, -2), ffGeneral, 3, 3)
-  else PreDefined := FloatToStrF(RoundTo(1E-3 * Val, -2), ffGeneral, 3, 3);
+  Val := Parameter[Index];
+  if Val < 1 then
+    PreDefined := FloatToStrF(RoundTo(1E3 * Val, -2), ffGeneral, 3, 3)
+  else if Val < 1000 then
+    PreDefined := FloatToStrF(RoundTo(Val, -2), ffGeneral, 3, 3)
+  else
+    PreDefined := FloatToStrF(RoundTo(1E-3 * Val, -2), ffGeneral, 3, 3);
 end;
 
-procedure TLightweightGateDataModule.ParameterThresholdDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+procedure TLightweightGateDataModule.ParameterThresholdDisplay(Sender: TObject;
+  const Index: Integer; var PreDefined: AnsiString);
 begin
- PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
+  PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
 end;
 
-procedure TLightweightGateDataModule.ParameterRatioDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+procedure TLightweightGateDataModule.ParameterRatioDisplay(Sender: TObject;
+  const Index: Integer; var PreDefined: AnsiString);
 begin
- PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
+  PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
 end;
 
-procedure TLightweightGateDataModule.ParameterKneeDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+procedure TLightweightGateDataModule.ParameterKneeDisplay(Sender: TObject;
+  const Index: Integer; var PreDefined: AnsiString);
 begin
- PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
+  PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
 end;
 
 procedure TLightweightGateDataModule.VSTModuleProcessStereo(const Inputs,
   Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
-  Sample : Integer;
+  Sample: Integer;
 begin
- for Sample := 0 to SampleFrames - 1 do
+  for Sample := 0 to SampleFrames - 1 do
   begin
-   Outputs[0, Sample] := FLightweightGate[0].ProcessSample64(Inputs[0, Sample]);
-   Outputs[1, Sample] := FLightweightGate[1].ProcessSample64(Inputs[1, Sample]);
+    Outputs[0, Sample] := FLightweightGate[0].ProcessSample64(Inputs[0, Sample]);
+    Outputs[1, Sample] := FLightweightGate[1].ProcessSample64(Inputs[1, Sample]);
   end;
 end;
 
 procedure TLightweightGateDataModule.VSTModuleProcess(const Inputs,
   Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
-  Sample : Integer;
-  Temp   : Single;
+  Sample: Integer;
+  Temp: Single;
 begin
- for Sample := 0 to SampleFrames - 1 do
-  with FLightweightGate[0] do
-   begin
-    ProcessSample64(CHalf32 * (Inputs[0, Sample] + Inputs[1, Sample]));
-    Temp := GainReductionFactor;
-    Outputs[0, Sample] := Temp * Inputs[0, Sample];
-    Outputs[1, Sample] := Temp * Inputs[1, Sample];
-   end;
+  for Sample := 0 to SampleFrames - 1 do
+    with FLightweightGate[0] do
+    begin
+      ProcessSample64(CHalf32 * (Inputs[0, Sample] + Inputs[1, Sample]));
+      Temp := GainReductionFactor;
+      Outputs[0, Sample] := Temp * Inputs[0, Sample];
+      Outputs[1, Sample] := Temp * Inputs[1, Sample];
+    end;
 end;
 
 procedure TLightweightGateDataModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 begin
- if Abs(SampleRate) <> 0 then
+  if Abs(SampleRate) <> 0 then
   begin
-   if Assigned(FLightweightGate[0])
-    then FLightweightGate[0].SampleRate := SampleRate;
-   if Assigned(FLightweightGate[1])
-    then FLightweightGate[1].SampleRate := SampleRate;
+    if Assigned(FLightweightGate[0]) then
+      FLightweightGate[0].SampleRate := SampleRate;
+    if Assigned(FLightweightGate[1]) then
+      FLightweightGate[1].SampleRate := SampleRate;
   end;
 end;
 

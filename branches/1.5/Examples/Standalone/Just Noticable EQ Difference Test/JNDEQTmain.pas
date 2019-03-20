@@ -223,7 +223,7 @@ implementation
 
 uses
   IniFiles, Math, Mapi, ShellApi, AnsiStrings, System.ZLib, DAV_GuiCommon,
-  DAV_Common, DAV_Approximations, JNDEQTaudio, JNDEQTsurvey;
+  DAV_Common, DAV_Convert, DAV_Approximations, JNDEQTaudio, JNDEQTsurvey;
 
 procedure TFormJNDEQT.FormCreate(Sender: TObject);
 var
@@ -1215,8 +1215,8 @@ begin
   else
     for ChannelIndex := 0 to Length(FAudioBuffer[0]) - 1 do
       for SampleIndex := 0 to AsioHost.BufferSize - 1 do
-        FAudioBuffer[0, ChannelIndex, SampleIndex] := FHighpass[ChannelIndex]
-          .ProcessSample64(FPinkNoise[ChannelIndex].ProcessSample64);
+        FAudioBuffer[0, ChannelIndex, SampleIndex] :=
+          FHighpass[ChannelIndex].ProcessSample64(FPinkNoise[ChannelIndex].ProcessSample64);
 
   // apply peak release
   for BandIndex := Length(FAudioBuffer) - 1 downto 0 do

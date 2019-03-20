@@ -55,50 +55,12 @@ procedure Flip32(var Value);
 procedure Flip64(var Value);
 procedure Flip80(var Value);
 
-
-{ Convert }
-
-function ms2Samples(const ms, SampleRate: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-function Samples2ms(const Samples, SampleRate: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-function Sync2Samples(const SyncFactor, BPM, SampleRate: Single): Integer; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-function GetSyncFactor(const BaseFactor: Single; const Dotted, Triads: Boolean): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-function Compare4(S1, S2 : PAnsiChar): Boolean; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-
-function FrequencyToBark(Frequency: Single): Single; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-function FrequencyToBark(Frequency: Double): Double; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-function Frequency2CriticalBandwidth(Frequency: Single): Single; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-function Frequency2CriticalBandwidth(Frequency: Double): Double; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-
-function GermaniumDiode(Voltage: Double): Double;
-function SiliconDiode(Voltage: Double): Double;
-procedure Exchange8(var ValueA, ValueB);
-procedure Exchange16(var ValueA, ValueB);
-procedure Exchange32(var ValueA, ValueB);
-
 function BitCount(Value: Integer): Integer; overload;
 function BitCount(Value: Int64): Int64; overload;
 
-// dB stuff
-function dB_to_Amp(const Value: Single): Single; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-function dB_to_Amp(const Value: Double): Double; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-function SqrAmp2dB(const Value: Single): Single; overload;
-function SqrAmp2dB(const Value: Double): Double; overload;
-function Amp_to_dB(const Value: Single): Single; overload;
-function Amp_to_dB(const Value: Double): Double; overload;
-{$IFNDEF FPC}
-procedure Amp_to_dB(var v: TDAV4SingleArray); overload; // TODO: move to VectorMath!
-{$ENDIF}
-
-// scale logarithmically from 20 Hz to 20 kHz
-function FreqLinearToLog(const Value: Single): Single; overload;
-function FreqLinearToLog(const Value: Double): Double; overload;
-function FreqLogToLinear(const Value: Single): Single; overload;
-function FreqLogToLinear(const Value: Double): Double; overload;
-
-function ScaleLinearToLog(const Value: Single; const Min, Max: Single): Single; overload;
-function ScaleLinearToLog(const Value: Double; const Min, Max: Double): Single; overload;
-function ScaleLogToLinear(const Value: Single; const Min, Max: Single): Single; overload;
-function ScaleLogToLinear(const Value: Double; const Min, Max: Double): Double; overload;
+procedure Exchange8(var ValueA, ValueB);
+procedure Exchange16(var ValueA, ValueB);
+procedure Exchange32(var ValueA, ValueB);
 
 
 { Limit & Clip, Min & Max }
@@ -154,36 +116,25 @@ function FastRound(Sample: Single): Integer; overload;
 function FastRound(Sample: Double): Integer; overload;
 {$ENDIF}
 
+function GermaniumDiode(Voltage: Double): Double;
+function SiliconDiode(Voltage: Double): Double;
+
 function OnOff(const Value: Single): Boolean;
 function unDenormalize(const Value: Single): Single;
 procedure DontRaiseExceptionsAndSetFPUcodeword;
 
 { String Stuff & Messages }
 
-{$IFNDEF FPC}
-{$IFDEF MSWINDOWS}
-function GetApplicationFilename: string; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-function GetApplicationDirectory: string; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-{$ENDIF}
-
 {$IFNDEF DELPHI12_UP}
 type
   TSysCharSet = set of AnsiChar;
 
 function CharInSet(C: AnsiChar; const CharSet: TSysCharSet): Boolean; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-
-{$IFDEF MSWINDOWS}
-procedure Msg(b: Boolean); overload;
-procedure Msg(m: string; m2: string = ''); overload;
-procedure Msg(i: Integer); overload;
-procedure Msg(s: Single); overload;
-procedure Msg(m: string; i: Integer); overload;
-{$ENDIF}
 {$ENDIF}
 
+function Compare4(S1, S2 : PAnsiChar): Boolean; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
 function SplitString(S: String; Delimiter: AnsiChar): TStrArray;
 function MakeGoodFileName(s: string): string;
-{$ENDIF}
 
 function FloatWithUnit(const Value: Double): string;
 function FloatToString(Value: Extended; Digits: Integer = -1): string;
@@ -196,37 +147,10 @@ function MethodToProcedure(Method: TMethod): Pointer; overload;
 {$ENDIF}
 {$ENDIF}
 
-const
-  CDenorm32          : Single = 1E-24;
-  CTwoPI32           : Single = 2 * Pi;
-  CFourPI32          : Single = 4 * Pi;
-  CHalf32            : Single = 0.5;
-  CQuarter32         : Single = 0.25;
-  CTen32             : Single = 10;
-  CTwenty32          : Single = 20;
-  COneTwelfth32      : Single = 1 / 12;
-  CMinusOneSixteenth : Single = -0.0625;
-  CTwoMulTwo2Neg32   : Single = ((2.0/$10000) / $10000);  // 2^-32
-
-  CDenorm64          : Double = 1E-34;
-  CTwoPI64           : Double = 2 * Pi;
-  CFourPI64          : Double = 4 * Pi;
-  CHalf64            : Double = 0.5;
-  CQuarter64         : Double = 0.25;
-  CTen64             : Double = 10;
-  CTwenty64          : Double = 20;
-
-  CMaxLongInt        : Integer =  $7FFFFFFF;
-  CMinLongInt        : Integer = -$7FFFFFFF - 1;
-  CMaxInt64          : Int64 =  9223372036854775807;
-  CMinInt64          : Int64 = -9223372036854775807 - 1;
-  CMaxSingle         : Single = 3.40282346638528860e+38;
-  CMinusHalf32       : Single = -0.5;
-
 implementation
 
 uses
-  Math, SysUtils;
+  Math, SysUtils, DAV_Consts;
 
 { Byte Ordering }
 
@@ -405,139 +329,6 @@ begin
   end;
 end;
 
-
-{ Convert }
-
-function ms2Samples(const ms, SampleRate: Single): Single;
-begin
-  Result := ms * SampleRate * 0.001;
-end;
-
-function Samples2ms(const Samples, SampleRate: Single): Single;
-begin
-  Result := Samples * 1000 / SampleRate;
-end;
-
-function Sync2Samples(const SyncFactor, BPM, SampleRate: Single): Integer;
-begin
-  Result := Round(SyncFactor * SampleRate * 60 / BPM);
-end;
-
-function GetSyncFactor(const BaseFactor: Single; const Dotted, Triads: Boolean): Single;
-begin
-  Result := BaseFactor;
-  if Dotted then
-    Result := Result * 1.5;
-  if Triads then
-    Result := Result / 3;
-end;
-
-function Compare4(S1, S2: PAnsiChar): Boolean;
-var
-  i, Diff : Byte;
-begin
-  Result := True;
-  for i := 0 to 3 do
-  begin
-    Diff := Byte(S1[i]) - Byte(S2[i]);
-    if not (Diff in [0, 32, 224]) then
-      Exit(False);
-  end;
-end;
-
-
-////////////////////////////////////////////////////////////////////////
-//                                                                    //
-// see for example "Zwicker: Psychoakustik, 1982; ISBN 3-540-11401-7  //
-//                                                                    //
-// input: freq in hz                                                  //
-// output: barks                                                      //
-//                                                                    //
-////////////////////////////////////////////////////////////////////////
-
-function FrequencyToBark(Frequency: Single): Single;
-begin
-  if (Frequency < 0) then
-    Frequency := 0;
-  Frequency := Frequency * 0.001;
-  Result := 13.0 * ArcTan(0.76 * Frequency) +
-    3.5 * ArcTan(Sqr(Frequency * 0.1333333333333333));
-end;
-
-function FrequencyToBark(Frequency: Double): Double;
-begin
-  if (Frequency < 0) then
-    Frequency := 0;
-  Frequency := Frequency * 0.001;
-  Result := 13.0 * ArcTan(0.76 * Frequency) +
-    3.5 * ArcTan(Sqr(Frequency / 7.5));
-end;
-
-
-////////////////////////////////////////////////////////////////////////
-//                                                                    //
-// see for example "Zwicker: Psychoakustik, 1982; ISBN 3-540-11401-7  //
-//                                                                    //
-// input: freq in hz                                                  //
-// output: critical band width                                        //
-//                                                                    //
-////////////////////////////////////////////////////////////////////////
-
-function Frequency2CriticalBandwidth(Frequency: Single): Single;
-begin
-  Result := 25 + 75 * Power(1 + 1.4 * Sqr(Frequency * 0.001), 0.69);
-end;
-
-function Frequency2CriticalBandwidth(Frequency: Double): Double;
-begin
-  Result := 25 + 75 * Power(1 + 1.4 * Sqr(Frequency * 0.001), 0.69);
-end;
-
-
-function GermaniumDiode(Voltage: Double): Double;
-begin
-  Result := 0.085 * (Voltage + Abs(Voltage)) * sqr(Voltage) * Voltage
-end;
-
-function SiliconDiode(Voltage: Double): Double;
-begin
-  Result := 40.6728602E-9 * (Exp(17.7493332 * (Voltage + 0.3)) - 1);
-end;
-
-
-/////////////////////////
-//                     //
-// Exchange two values //
-//                     //
-/////////////////////////
-
-procedure Exchange8(var ValueA, ValueB);
-var
-  Temp : Byte;
-begin
-  Temp := Byte(ValueA);
-  Byte(ValueA) := Byte(ValueB);
-  Byte(ValueB) := Temp;
-end;
-
-procedure Exchange16(var ValueA, ValueB);
-var
-  Temp : Word;
-begin
-  Temp := Word(ValueA);
-  Word(ValueA) := Word(ValueB);
-  Word(ValueB) := Temp;
-end;
-
-procedure Exchange32(var ValueA, ValueB);
-var
-  Temp : Integer;
-begin
-  Temp := Integer(ValueA);
-  Integer(ValueA) := Integer(ValueB);
-  Integer(ValueB) := Temp;
-end;
-
 function BitCount(Value: Integer): Integer;
 {$IFDEF PUREPASCAL}
 begin
@@ -575,237 +366,38 @@ begin
   Result := (Value * $0101010101010101) shr 56;
 end;
 
+/////////////////////////
+//                     //
+// Exchange two values //
+//                     //
+/////////////////////////
 
-////////////////////////////////////////////////////
-//                                                //
-// Convert a value in dB's to a linear amplitude  //
-//                                                //
-////////////////////////////////////////////////////
-
-function dB_to_Amp(const Value: Single): Single;
+procedure Exchange8(var ValueA, ValueB);
+var
+  Temp : Byte;
 begin
-  if (Value > -400.0) then
-    Result := Exp(Value * 0.11512925464970228420089957273422) //Power(10, g / 20) //Power(2, g * 0.015051499783199059760686944736225)
-  else
-    Result := 0;
+  Temp := Byte(ValueA);
+  Byte(ValueA) := Byte(ValueB);
+  Byte(ValueB) := Temp;
 end;
 
-function dB_to_Amp(const Value: Double): Double;
+procedure Exchange16(var ValueA, ValueB);
+var
+  Temp : Word;
 begin
-  if (Value > -1000.0) then
-    Result := Exp(Value * 0.11512925464970228420089957273422) //Power(10, g / 20) //Power(2, g * 0.015051499783199059760686944736225)
-  else
-    Result := 0;
-end;                                                             // e^(x) = 2^(log2(e^x)) = 2^(x / ln(2))
-
-
-///////////////////////////////////////////////////////////
-//                                                       //
-// Convert a squared value in dB's to a linear amplitude //
-//                                                       //
-///////////////////////////////////////////////////////////
-
-{$IFDEF CPUx86_64}
-{$DEFINE PUREPASCAL}
-{$ENDIF}
-
-function SqrAmp2dB(const Value: Single): Single;
-{$IFDEF PUREPASCAL}
-begin
-  Result := 10 * Log10(Value);
-{$ELSE}
-asm
-    FLDLG2
-    FLD     Value
-    FYL2X
-    FMUL    CTen32
-{$ENDIF}
+  Temp := Word(ValueA);
+  Word(ValueA) := Word(ValueB);
+  Word(ValueB) := Temp;
 end;
 
-function SqrAmp2dB(const Value: Double): Double;
-{$IFDEF PUREPASCAL}
+procedure Exchange32(var ValueA, ValueB);
+var
+  Temp : Integer;
 begin
-  Result := 10 * Log10(Value);
-{$ELSE}
-asm
-    FLDLG2
-    FLD     Value
-    FYL2X
-    FMUL    CTen64
-{$ENDIF}
+  Temp := Integer(ValueA);
+  Integer(ValueA) := Integer(ValueB);
+  Integer(ValueB) := Temp;
 end;
-
-function Amp_to_dB(const Value: Single): Single;
-{$IFDEF PUREPASCAL}
-begin
-  Result := CTwenty32 * Log10(Value);
-{$ELSE}
-asm
-    FLDLG2
-    FLD Value
-    FYL2X
-    FMUL CTwenty32
-{$ENDIF}
-end;
-
-function Amp_to_dB(const Value: Double): Double;
-{$IFDEF PUREPASCAL}
-begin
-  Result := CTwenty64 * Log10(Value);
-{$ELSE}
-asm
-    FLDLG2
-    FLD Value
-    FYL2X
-    FMUL CTwenty64
-{$ENDIF}
-end;
-
-procedure Amp_to_dB(var v: TDAV4SingleArray);
-{$IFDEF PUREPASCAL}
-begin
-  v[0] := Amp_to_dB(v[0]);
-  v[1] := Amp_to_dB(v[1]);
-  v[2] := Amp_to_dB(v[2]);
-  v[3] := Amp_to_dB(v[3]);
-{$ELSE}
-asm
-    FLDLG2
-    FLD    [EAX].Single
-    FYL2X
-    FMUL   CTwenty32.Double
-    FSTP   [EAX].Single
-    FLDLG2
-    FLD    [EAX + 4].Single
-    FYL2X
-    FMUL   CTwenty32.Double
-    FSTP   [EAX + 4].Single
-    FLDLG2
-    FLD    [EAX + 8].Single
-    FYL2X
-    FMUL   CTwenty32.Double
-    FSTP   [EAX + 8].Single
-    FLDLG2
-    FLD    [EAX + 12].Single
-    FYL2X
-    FMUL   CTwenty32.Double
-    FSTP   [EAX + 12].Single
-{$ENDIF}
-end;
-
-
-//////////////////////////////////////////////
-//                                          //
-// scale logarithmicly from 20 Hz to 20 kHz //
-//                                          //
-//////////////////////////////////////////////
-
-function FreqLinearToLog(const Value: Single): Single;
-{$IFDEF PUREPASCAL}
-begin
-  Result := CTwenty32 * Exp(value * 6.907755279);
-{$ELSE}
-const
-  fltl2: Single = 6.907755279;
-asm
-    FLD     Value.Single
-    FMUL    fltl2
-    FLDL2E
-    FMUL
-    FLD     ST(0)
-    FRNDINT
-    FSUB    ST(1), ST
-    FXCH    ST(1)
-    F2XM1
-    FLD1
-    FADD
-    FSCALE
-    FSTP    ST(1)
-    FMUL    CTwenty64.Double
-{$ENDIF}
-end;
-
-function FreqLinearToLog(const Value: Double): Double;
-{$IFDEF PUREPASCAL}
-begin
-//  Result := 20 * Exp(Value * ln(20000 / 20));
-  Result := CTwenty64 * Exp(Value * 6.907755279);
-{$ELSE}
-const
-  fltl2: Double = 6.907755279;
-asm
-    FLD     Value.Double
-    FMUL    fltl2
-    FLDL2E
-    FMUL
-    FLD     ST(0)
-    FRNDINT
-    FSUB    ST(1), ST
-    FXCH    ST(1)
-    F2XM1
-    FLD1
-    FADD
-    FSCALE
-    FSTP    ST(1)
-    FMUL    CTwenty64.Double
-{$ENDIF}
-end;
-
-function FreqLogToLinear(const Value: Single): Single;
-const
-  fltl1 : Single = 0.05;
-  fltl2 : Single = 1.44764826019E-1;
-{$IFDEF PUREPASCAL}
-begin
-//  Result := Ln(Value / 20) / ln(20000 / 20);
-  Result := Ln(Value * fltl1) * fltl2;
-{$ELSE}
-asm
-    FLDLN2
-    FLD     Value.Single
-    FMUL    fltl1
-    FYL2X
-    FMUL    fltl2
-{$ENDIF}
-end;
-
-function FreqLogToLinear(const Value: Double): Double;
-const
-  fltl1 : Double = 0.05;
-  fltl2 : Double = 1.44764826019E-1;
-{$IFDEF PUREPASCAL}
-begin
-  Result := Ln(Value * fltl1) * fltl2;
-{$ELSE}
-asm
-    FLDLN2
-    FLD     Value.Double
-    FMUL    fltl1
-    FYL2X
-    FMUL    fltl2
-{$ENDIF}
-end;
-
-function ScaleLinearToLog(const Value: Single; const Min, Max: Single): Single;
-begin
-  Result := Min * Exp(Value * ln(Max / Min));
-end;
-
-function ScaleLinearToLog(const Value: Double; const Min, Max: Double): Single; overload;
-begin
-  Result := Min * Exp(Value * ln(Max / Min));
-end;
-
-function ScaleLogToLinear(const Value: Single; const Min, Max: Single): Single; overload;
-begin
-  Result := ln(Value / Min) / ln(Max / Min);
-end;
-
-function ScaleLogToLinear(const Value: Double; const Min, Max: Double): Double; overload;
-begin
-  Result := ln(Value / Min - Max / Min);
-end;
-
 
 
 { Limit & Clip, Min & Max }
@@ -1323,6 +915,16 @@ begin
   Result := 1 - ((Intcast shr 31) shl 1);
 end;
 
+function GermaniumDiode(Voltage: Double): Double;
+begin
+  Result := 0.085 * (Voltage + Abs(Voltage)) * sqr(Voltage) * Voltage
+end;
+
+function SiliconDiode(Voltage: Double): Double;
+begin
+  Result := 40.6728602E-9 * (Exp(17.7493332 * (Voltage + 0.3)) - 1);
+end;
+
 function OnOff(const Value: Single): Boolean;
 begin
   Result := Value > 0.5
@@ -1441,64 +1043,27 @@ end;
 
 { String Functions }
 
-{$IFNDEF FPC}
-{$IFDEF MSWINDOWS}
-function GetApplicationFilename: string;
-var
-  s : PAnsiChar;
-begin
-  GetMem(s, $7FF);
-  GetModuleFileNameA(hInstance, s, SizeOf(s));
-  Result := ExtractFilename(string(StrPas(s)));
-end;
-
-function GetApplicationDirectory: string;
-var
-  s : PAnsiChar;
-begin
-  GetMem(s, $7FF);
-  GetModuleFilenameA(hInstance, s, SizeOf(s));
-  Result := ExtractFileDir(string(StrPas(s)));
-end;
-{$ENDIF}
-
 {$IFNDEF DELPHI12_UP}
 function CharInSet(C: AnsiChar; const CharSet: TSysCharSet): Boolean;
 begin
   Result := C in CharSet;
 end;
-
-{$IFDEF MSWINDOWS}
-procedure Msg(b: Boolean);
-begin
-  if b then
-    Msg('TRUE')
-  else
-    Msg('FALSE');
-end;
-
-procedure Msg(m: string; m2: string = '');
-begin
-  MessageBox(0, PChar(m), PChar(m2), MB_OK);
-end;
-
-procedure Msg(i: Integer);
-begin
-  Msg(IntToStr(i));
-end;
-
-procedure Msg(s: Single);
-begin
-  Msg(FloatToStrF(s, ffFixed, 3, 3));
-end;
-
-procedure Msg(m: string; i:Integer);
-begin
-  MessageBox(0, PChar(m + ' ' + IntToStr(i)), '', MB_OK);
-end;
 {$ENDIF}
-{$ENDIF}
+
 {$WARNINGS ON}
+
+function Compare4(S1, S2: PAnsiChar): Boolean;
+var
+  i, Diff : Byte;
+begin
+  Result := True;
+  for i := 0 to 3 do
+  begin
+    Diff := Byte(S1[i]) - Byte(S2[i]);
+    if not (Diff in [0, 32, 224]) then
+      Exit(False);
+  end;
+end;
 
 function SplitString(S: String; Delimiter: AnsiChar): TStrArray;
 var
@@ -1532,7 +1097,6 @@ begin
     else
       Result := Result + '-';
 end;
-{$ENDIF}
 
 function FloatWithUnit(const Value: Double): string;
 begin

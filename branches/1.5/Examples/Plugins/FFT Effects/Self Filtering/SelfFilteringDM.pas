@@ -36,8 +36,7 @@ interface
 
 uses
   Windows, Messages, Classes, Forms, SyncObjs, DAV_Types, DAV_Complex,
-  DAV_DspSpectralFilters, DAV_VSTModule, DAV_DspWindowFunctions 
-  {$IFDEF Use_IPPS}, DAV_DspWindowFunctionsAdvanced{$ENDIF};
+  DAV_DspSpectralFilters, DAV_VSTModule, DAV_DspWindowFunctions;
 
 type
   TSpectralSelfFilterModule = class(TVSTModule)
@@ -54,8 +53,8 @@ type
     procedure ParameterFftOrderChange(
       Sender: TObject; const Index: Integer; var Value: Single);
   private
-    FCriticalSection : TCriticalSection;
-    FSpectralFilter  : array of TPeakSelfFiltering32;
+    FCriticalSection: TCriticalSection;
+    FSpectralFilter: array of TPeakSelfFiltering32;
   public
   end;
 

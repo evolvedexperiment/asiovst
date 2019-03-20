@@ -94,7 +94,7 @@ implementation
 {$R *.DFM}
 
 uses
-  Inifiles, Registry, DAV_Common;
+  Inifiles, Registry, DAV_Common, DAV_Consts, DAV_Convert;
 
 procedure TFormAnalyser.FormCreate(Sender: TObject);
 var
@@ -387,17 +387,15 @@ procedure TFormAnalyser.BSNormal(Sender: TObject; const InBuffer, OutBuffer: TDA
 var
   i,j: Integer;
   d,z: Double;
-const
-  cDenorm = 1E-32;
 begin
   for i := 0 to ASIOHost.BufferSize - 1 do
   begin
     d := InBuffer[FChannelNr,i];
     for j := 0 to CNumFrequencies - 1 do
     begin
-      d := FFilterArray[j].Lowpass.ProcessSample64(d + cDenorm);
-      z := FFilterArray[j].Highpass.ProcessSample64(d + cDenorm);
-      FFilterArray[j].RMS := FSpeedConst[0] * FFilterArray[j].RMS + FSpeedConst[1] * Amp_to_dB(abs(z));
+      d := FFilterArray[j].Lowpass.ProcessSample64(d + CDenorm64);
+      z := FFilterArray[j].Highpass.ProcessSample64(d + CDenorm64);
+      FFilterArray[j].RMS := FSpeedConst[0] * FFilterArray[j].RMS + FSpeedConst[1] * Amp_to_dB(Abs(z));
     end;
   end;
   UpdateBarGraph;
@@ -413,8 +411,6 @@ procedure TFormAnalyser.BSDownSampled(Sender: TObject; const InBuffer,
 var
   i, j: Integer;
   d, z, s: Double;
-const
-  cDenorm = 1E-32;
 begin
   for i := 0 to ASIOHost.BufferSize - 1 do
   begin
@@ -424,11 +420,11 @@ begin
       if (FDownSampleCount mod FFilterArray[j].Downsampling) <> 0 then
         Break;
 
-      d := FFilterArray[j].Lowpass.ProcessSample64(d + cDenorm);
-      z := FFilterArray[j].Highpass.ProcessSample64(d + cDenorm);
+      d := FFilterArray[j].Lowpass.ProcessSample64(d + CDenorm32);
+      z := FFilterArray[j].Highpass.ProcessSample64(d + CDenorm32);
 
       s := IntPower(FSpeedConst[0], 8 * FFilterArray[j].Downsampling + 1);
-      FFilterArray[j].RMS := s * FFilterArray[j].RMS + (1 - s) * Amp_to_dB(abs(z));
+      FFilterArray[j].RMS := s * FFilterArray[j].RMS + (1 - s) * Amp_to_dB(Abs(z));
     end;
     Inc(FDownSampleCount);
     if FDownSampleCount >= FDownSampleMax then

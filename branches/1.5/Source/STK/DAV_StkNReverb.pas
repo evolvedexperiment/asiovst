@@ -127,7 +127,7 @@ begin
     if (Delay and 1) = 0 then
       Delay := Delay + 1;
     while (not IsPrime(Delay)) do
-      inc(Delay, 2);
+      Inc(Delay, 2);
     FInternalLengths[i] := Delay;
   end;
 end;

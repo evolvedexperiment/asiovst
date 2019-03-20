@@ -134,41 +134,7 @@ end;
 procedure TSELowLatencyConvolutionModule.Open;
 var
   SingleImpulse: Single;
-{$IFDEF Use_IPPS}
-{$IFNDEF Registered}
-  VSTHostParams: TSECallVstHostParams;
-  RegisteredName: array [0 .. 99] of AnsiChar;
-  ID: Integer;
-{$ENDIF}
-{$ENDIF}
 begin
-{$IFDEF Use_IPPS}
-{$IFNDEF Registered}
-  try
-    FillChar(RegisteredName[0], SizeOf(RegisteredName), 0);
-    CallHost(SEAudioMasterGetRegisteredName, 0, 0, @RegisteredName);
-  except
-    RegisteredName := '';
-  end;
-
-  if (RegisteredName <> 'Treck.de') and (RegisteredName <> 'Boris Kovalev') and
-    (RegisteredName <> 'Victor Pavia') and (RegisteredName <> 'Bruno Bordi') and
-    (RegisteredName <> 'Xhun Audio') and
-    (RegisteredName <> 'Andromeda Audio & Video Design') then
-    try
-      ID := $29A2A826;
-      if CSepMagic <> (ID shl 1) then
-        raise Exception.Create(RCStrSynthEditOnly);
-      VSTHostParams.Opcode := 32;
-
-      if CallHost(SEAudioMasterCallVstHost, 0, 0, @VSTHostParams) <> -1 then
-        raise Exception.Create(RCStrSynthEditOnly)
-    except
-      // on E: Exception do ShowMessage(E.Message);
-      raise;
-    end;
-{$ENDIF}
-{$ENDIF}
   inherited Open;
 
   SingleImpulse := 1;
@@ -230,18 +196,6 @@ begin
 
     with Properties^ do
     begin
-{$IFDEF Use_IPPS}
-      if ContainedIRs.Count > 0 then
-      begin
-        Name := 'Low Latency Resource Convolution Module (IPP based)';
-        ID := 'IPP ResLL Convolution Module';
-      end
-      else
-      begin
-        Name := 'Low Latency Convolution Module (IPP based)';
-        ID := 'IPP Low Latency Convolution Module';
-      end;
-{$ELSE}
       if ContainedIRs.Count > 0 then
       begin
         Name := 'Low Latency Convolution Module';
@@ -252,7 +206,6 @@ begin
         Name := 'Low Latency Resource Convolution Module';
         ID := 'DAV ResLL Convolution Module';
       end;
-{$ENDIF}
       About := 'by Christian-W. Budde';
       SdkVersion := CSeSdkVersion;
     end;

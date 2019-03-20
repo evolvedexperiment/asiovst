@@ -126,7 +126,7 @@ type
 implementation
 
 uses
-  DAV_Common;
+  DAV_Common, DAV_Consts;
 
 {$IFDEF HandleDenormals}
 var
@@ -1879,12 +1879,11 @@ begin
   FPhase := 1 - FPhase;
 end;
 {$ENDIF}
+
 {$IFDEF HandleDenormals}
-
 initialization
-
-CDenorm32 := DAV_Common.CDenorm32;
-CDenorm64 := DAV_Common.CDenorm64;
+  CDenorm32 := DAV_Consts.CDenorm32;
+  CDenorm64 := DAV_Consts.CDenorm64;
 {$ENDIF}
 
 end.

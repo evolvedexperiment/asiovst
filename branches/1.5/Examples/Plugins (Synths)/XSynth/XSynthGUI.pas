@@ -61,7 +61,7 @@ implementation
 {$R *.DFM}
 
 uses
-  DAV_Common, DAV_SynthUtils, XSynthModule, XSynthVoice;
+  DAV_Common, DAV_Convert, DAV_SynthUtils, XSynthModule, XSynthVoice;
 
 procedure TVSTGUI.MidiKeysNoteOn(Sender: TObject; KeyNo: Byte;
   Velocity: Single);
@@ -184,8 +184,7 @@ var
 const
   CVeloDiv: Single = 1 / 128;
 begin
-  Note := KeyToNote(Key);
-  if Note = -1 then
+  if not KeyToNote(Key, Note) then
     Exit;
 
   Assert(Owner is TVSTSSModule);
@@ -213,8 +212,7 @@ var
   i: Integer;
   Note: Byte;
 begin
-  Note := KeyToNote(Key);
-  if Note = -1 then
+  if not KeyToNote(Key, Note) then
     Exit;
 
   Assert(Owner is TVSTSSModule);

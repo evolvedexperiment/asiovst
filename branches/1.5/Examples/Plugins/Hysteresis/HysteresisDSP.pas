@@ -25,7 +25,7 @@ implementation
 {$R *.DFM}
 
 uses
-  DAV_Common, HysteresisGUI;
+  DAV_Common, DAV_Convert, HysteresisGUI;
 
 procedure THysteresisModule.VSTModuleCreate(Sender: TObject);
 begin

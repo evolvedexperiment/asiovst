@@ -778,7 +778,7 @@ begin
         MoveTo(0, Round((1 - FScaleFactor * MinVal) * HlfHght));
         XPixelPosAsInt := 0;
         XPixelPosAsSingle := 0;
-        inc(Sample);
+        Inc(Sample);
 
         while Sample < SampleCount do
         begin
@@ -800,7 +800,7 @@ begin
             else
             begin
               o := PenPos.Y - HlfHght;
-              if abs(o - MinVal * HlfHght) > abs(o - MaxVal * HlfHght) then
+              if Abs(o - MinVal * HlfHght) > Abs(o - MaxVal * HlfHght) then
               begin
                 LineTo(XPixelPosAsInt,
                   Round((1 - FScaleFactor * MinVal) * HlfHght));
@@ -818,7 +818,7 @@ begin
             MinVal := ChannelDataPointer^[Sample];
             MaxVal := MinVal;
           end;
-          inc(Sample);
+          Inc(Sample);
         end;
       end;
   end;

@@ -147,7 +147,7 @@ type
 implementation
 
 uses
-  SysUtils, DAV_DspFilter, DAV_Common;
+  SysUtils, DAV_DspFilter, DAV_Common, DAV_Consts;
 
 constructor TSEButterworthModule.Create(SEAudioMaster: TSE2audioMasterCallback;
   Reserved: Pointer);
@@ -201,7 +201,7 @@ begin
   // sampleFrames = how many samples to process (can vary). repeat (loop) that many times
   begin
     // do the actual processing (multiplying the two input samples together)
-    Output^[Sample] := FFilter.ProcessSample64(Input[Sample] + cDenorm64);
+    Output^[Sample] := FFilter.ProcessSample64(Input[Sample] + CDenorm64);
   end;
 end;
 
@@ -536,7 +536,7 @@ begin
   // sampleFrames = how many samples to process (can vary). repeat (loop) that many times
   begin
     FFilter.Frequency := 1E-5 + abs(10000 * Freq[Sample]);
-    Output^[Sample] := FFilter.ProcessSample64(Input[Sample] + cDenorm64);
+    Output^[Sample] := FFilter.ProcessSample64(Input[Sample] + CDenorm64);
   end;
 end;
 
@@ -603,7 +603,7 @@ begin
   // sampleFrames = how many samples to process (can vary). repeat (loop) that many times
   begin
     FFilter.Frequency := 1E-5 + abs(10000 * Freq[Sample]);
-    Output^[Sample] := FFilter.ProcessSample64(Input[Sample] + cDenorm64);
+    Output^[Sample] := FFilter.ProcessSample64(Input[Sample] + CDenorm64);
   end;
 end;
 
@@ -675,7 +675,7 @@ begin
   begin
     if Sample mod 2 = 0 then
       FFilter.Frequency := 1E-5 + abs(10000 * Freq[Sample]);
-    Output^[Sample] := FFilter.ProcessSample64(Input[Sample] + cDenorm64);
+    Output^[Sample] := FFilter.ProcessSample64(Input[Sample] + CDenorm64);
   end;
 end;
 
@@ -748,7 +748,7 @@ begin
   begin
     if Sample mod 2 = 0 then
       FFilter.Frequency := 1E-5 + abs(10000 * Freq[Sample]);
-    Output^[Sample] := FFilter.ProcessSample64(Input[Sample] + cDenorm64);
+    Output^[Sample] := FFilter.ProcessSample64(Input[Sample] + CDenorm64);
   end;
 end;
 

@@ -85,7 +85,8 @@ implementation
 {$ENDIF}
 
 uses
-  ParametriQLiteGUI, DAV_Strings, DAV_Common, DAV_Approximations, DAV_VSTModuleWithPrograms;
+  DAV_Strings, DAV_Convert, DAV_Consts, DAV_Common, DAV_Approximations,
+  DAV_VSTModuleWithPrograms, ParametriQLiteGUI;
 
 procedure TParametriQLiteDataModule.VSTModuleOpen(Sender: TObject);
 var
@@ -269,7 +270,7 @@ begin
       FFilters[Channel, Index].Assign(OldFilter);
       if Assigned(OldFilter) then FreeAndNil(OldFilter);
      end else
-   else raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
+   else raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
 end;
 
 procedure TParametriQLiteDataModule.ParameterFrequencyChange(
@@ -291,14 +292,14 @@ function TParametriQLiteDataModule.GetDownSampler(
 begin
  if (Index >= 0) and (Index < Length(FFilters))
   then Result := FDownSampler[0]
-  else raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
+  else raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
 end;
 
 function TParametriQLiteDataModule.GetFilter(Index: Integer): TCustomIIRFilter;
 begin
  if (Index >= 0) and (Index < Length(FFilters[0]))
   then Result := FFilters[0, Index]
-  else raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
+  else raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
 end;
 
 function TParametriQLiteDataModule.GetFilterClass(
@@ -306,7 +307,7 @@ function TParametriQLiteDataModule.GetFilterClass(
 begin
  if (Index >= 0) and (Index < Length(FFilters[0]))
   then Result := TBandwidthIIRFilterClass(FFilters[0, Index].ClassType)
-  else raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
+  else raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
 end;
 
 function TParametriQLiteDataModule.GetInputPeakLevel: Single;
@@ -334,7 +335,7 @@ function TParametriQLiteDataModule.GetUpSampler(
 begin
  if (Index >= 0) and (Index < Length(FFilters))
   then Result := FUpSampler[0]
-  else raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
+  else raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
 end;
 
 procedure TParametriQLiteDataModule.ParameterBandwidthChange(
