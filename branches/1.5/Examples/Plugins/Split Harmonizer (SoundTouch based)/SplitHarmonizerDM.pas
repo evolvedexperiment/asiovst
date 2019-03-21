@@ -93,7 +93,7 @@ implementation
 
 uses
   Math, Dialogs, DAV_Common, DAV_VSTCustomModule, DAV_VSTPrograms,
-  SplitHarmonizerGUI;
+  DAV_StringConvert, SplitHarmonizerGUI;
 
 procedure TSplitHarmonizerModule.VSTModuleCreate(Sender: TObject);
 begin
@@ -296,10 +296,7 @@ end;
 procedure TSplitHarmonizerModule.ParameterOnOffDisplay(Sender: TObject;
   const Index: Integer; var PreDefined: AnsiString);
 begin
-  if Parameter[Index] > 0.5 then
-    PreDefined := 'On'
-  else
-    PreDefined := 'Off';
+  PreDefined := AnsiString(OnOff(Parameter[Index]));
 end;
 
 procedure TSplitHarmonizerModule.ParameterSequenceChange(Sender: TObject;

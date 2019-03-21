@@ -71,7 +71,7 @@ implementation
 {$ENDIF}
 
 uses
-  DAV_Common, DAV_Convert;
+  DAV_Common, DAV_Convert, DAV_StringConvert;
 
 procedure TChebyshevWaveshaperDataModule.VSTModuleCreate(Sender: TObject);
 var
@@ -196,8 +196,7 @@ begin
     for ChannelIndex := 0 to 1 do
       for SampleIndex := 0 to SampleFrames - 1 do
         Outputs[ChannelIndex, SampleIndex] := FVolume *
-          FChebysheWaveshaper.ProcessSample64
-          (Inputs[ChannelIndex, SampleIndex]);
+          FChebysheWaveshaper.ProcessSample64(Inputs[ChannelIndex, SampleIndex]);
   finally
     FreeAndNil(FCriticalSection);
   end;
@@ -214,8 +213,7 @@ begin
     for ChannelIndex := 0 to 1 do
       for SampleIndex := 0 to SampleFrames - 1 do
         Outputs[ChannelIndex, SampleIndex] := FVolume *
-          FChebysheWaveshaper.ProcessSample64
-          (Inputs[ChannelIndex, SampleIndex]);
+          FChebysheWaveshaper.ProcessSample64(Inputs[ChannelIndex, SampleIndex]);
   finally
     FreeAndNil(FCriticalSection);
   end;

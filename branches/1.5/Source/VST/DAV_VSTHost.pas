@@ -1786,12 +1786,13 @@ end;
 function TCustomVstHost.AudioMasterGetPreviousPlug(
   InputPin: Integer): PVstEffect;
 begin
-// if PlugIndex = 0 then Result := 0;
- {$IFDEF Debug}
- raise EVstHostException.Create('TODO: audioMasterGetPreviousPlug, input pin in <value> (-1: first to come), returns cEffect*')
- {$ELSE}
- Result := nil
- {$ENDIF Debug};
+  // if PlugIndex = 0 then Result := 0;
+{$IFDEF Debug}
+  raise EVstHostException.Create
+    ('TODO: audioMasterGetPreviousPlug, input pin in <value> (-1: first to come), returns cEffect*')
+{$ELSE}
+  Result := nil
+{$ENDIF Debug};
 end;
 
 function TCustomVstHost.AudioMasterCanDo(CanDo: PAnsiChar): Boolean;
@@ -1847,48 +1848,49 @@ procedure TCustomVstHost.AudioMasterSetTime(VstTimeInfo: PVstTimeInfo;
   Filter: TVstTimeInfoFlags);
 begin
  // the flags below are not yet supported! (to do: read the SDK)
- if vtiTransportChanged in Filter then ;
- if vtiTransportPlaying in Filter then ;
- if vtiTransportCycleActive in Filter then ;
- if vtiTransportRecording in Filter then ;
- if vtiAutomationWriting in Filter then ;
- if vtiAutomationReading in Filter then ;
+  if vtiTransportChanged in Filter then;
+  if vtiTransportPlaying in Filter then;
+  if vtiTransportCycleActive in Filter then;
+  if vtiTransportRecording in Filter then;
+  if vtiAutomationWriting in Filter then;
+  if vtiAutomationReading in Filter then;
 
- if vtiNanosValid in Filter
-  then Self.VstTimeInfo.NanoSeconds := VstTimeInfo.NanoSeconds;
+  if vtiNanosValid in Filter then
+    Self.VstTimeInfo.NanoSeconds := VstTimeInfo.NanoSeconds;
 
- if vtiPpqPosValid in Filter
-  then Self.VstTimeInfo.PpqPos := VstTimeInfo.PpqPos;
+  if vtiPpqPosValid in Filter then
+    Self.VstTimeInfo.PpqPos := VstTimeInfo.PpqPos;
 
- if vtiTempoValid in Filter
-  then Self.VstTimeInfo.Tempo := VstTimeInfo.Tempo;
+  if vtiTempoValid in Filter then
+    Self.VstTimeInfo.Tempo := VstTimeInfo.Tempo;
 
- if vtiBarsValid in Filter
-  then Self.VstTimeInfo.BarStartPos := VstTimeInfo.BarStartPos;
+  if vtiBarsValid in Filter then
+    Self.VstTimeInfo.BarStartPos := VstTimeInfo.BarStartPos;
 
- if vtiCyclePosValid in Filter then
+  if vtiCyclePosValid in Filter then
   begin
-   Self.VstTimeInfo.CycleStartPos := VstTimeInfo.CycleStartPos;
-   Self.VstTimeInfo.CycleEndPos := VstTimeInfo.CycleEndPos;
+    Self.VstTimeInfo.CycleStartPos := VstTimeInfo.CycleStartPos;
+    Self.VstTimeInfo.CycleEndPos := VstTimeInfo.CycleEndPos;
   end;
 
- if vtiTimeSigValid in Filter then
+  if vtiTimeSigValid in Filter then
   begin
-   Self.VstTimeInfo.TimeSigNumerator := VstTimeInfo.TimeSigNumerator;
-   Self.VstTimeInfo.TimeSigDenominator := VstTimeInfo.TimeSigDenominator;
+    Self.VstTimeInfo.TimeSigNumerator := VstTimeInfo.TimeSigNumerator;
+    Self.VstTimeInfo.TimeSigDenominator := VstTimeInfo.TimeSigDenominator;
   end;
 
- if vtiSmpteValid in Filter then
+  if vtiSmpteValid in Filter then
   begin
-   Self.VstTimeInfo.SmpteOffset := VstTimeInfo.SmpteOffset;
-   Self.VstTimeInfo.SmpteFrameRate := VstTimeInfo.SmpteFrameRate;
+    Self.VstTimeInfo.SmpteOffset := VstTimeInfo.SmpteOffset;
+    Self.VstTimeInfo.SmpteFrameRate := VstTimeInfo.SmpteFrameRate;
   end;
 
   if vtiClockValid in Filter then
     Self.VstTimeInfo.SamplesToNextClock := VstTimeInfo.SamplesToNextClock;
 end;
 
-function TCustomVstHost.AudioMasterTempoAt(const SamplePosition: Integer): Integer;
+function TCustomVstHost.AudioMasterTempoAt(const SamplePosition
+  : Integer): Integer;
 begin
   if Assigned(OnGetTempoAtSamplePosition) then
     Result := Round(OnGetTempoAtSamplePosition(Self, SamplePosition) * 10000)

@@ -116,7 +116,8 @@ implementation
 {$ENDIF}
 
 uses
-  Math, DAV_Common, DAV_Convert, DAV_Const, DAV_Approximations, MBCGUI;
+  Math, DAV_Common, DAV_Convert, DAV_Const, DAV_Approximations,
+  DAV_StringConvert, MBCGUI;
 
 procedure TMBCDataModule.VSTModuleOpen(Sender: TObject);
 var
@@ -452,10 +453,7 @@ end;
 procedure TMBCDataModule.ParameterOnOffDisplay(Sender: TObject;
   const Index: Integer; var PreDefined: AnsiString);
 begin
-  if Round(Parameter[Index]) = 0 then
-    PreDefined := 'Off'
-  else
-    PreDefined := 'On';
+  PreDefined := AnsiString(OnOff(Parameter[Index]));
 end;
 
 procedure TMBCDataModule.ParameterLimiterChange(Sender: TObject;

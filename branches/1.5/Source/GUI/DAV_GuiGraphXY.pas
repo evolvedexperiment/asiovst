@@ -149,8 +149,7 @@ type
     property OnChange: TNotifyEvent read FOnChange write FOnChange;
   end;
 
-  TFunctionEvaluateEvent = function(Sender: TObject; X: Double)
-    : Double of object;
+  TFunctionEvaluateEvent = function(Sender: TObject; X: Double): Double of object;
 
   TCustomGuiGraphXYFunctionSeries = class(TCustomGuiGraphXYSeries)
   private
@@ -292,8 +291,7 @@ type
     FAlpha: Byte;
     FGuiFont: TGuiOversampledGDIFont;
     function GetFontShadow: TGuiShadow;
-    function GetSeriesCollectionItem(Index: Integer)
-      : TGuiGraphXYSeriesCollectionItem;
+    function GetSeriesCollectionItem(Index: Integer): TGuiGraphXYSeriesCollectionItem;
     procedure SetAlpha(const Value: Byte);
     procedure SetAntiAlias(const Value: Boolean);
     procedure SetBorderColor(const Value: TColor);
@@ -348,8 +346,7 @@ type
     property GridColor: TColor read FGridColor write SetGridColor default clRed;
     property Flags: TGraphXYFlags read FFlags write SetFlags default [gfShowLabels];
     property FontShadow: TGuiShadow read GetFontShadow write SetFontShadow;
-    property SeriesCollection: TGuiGraphXYSeriesCollection
-      read FSeriesCollection write SetSeriesCollection;
+    property SeriesCollection: TGuiGraphXYSeriesCollectionread FSeriesCollection write SetSeriesCollection;
     property XAxis: TCustomAxis read FXAxis write FXAxis;
     property YAxis: TCustomAxis read FYAxis write FYAxis;
     property OnChange: TNotifyEvent read FOnChange write FOnChange;

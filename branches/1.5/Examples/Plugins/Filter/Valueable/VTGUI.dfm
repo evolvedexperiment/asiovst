@@ -268,13 +268,13 @@ object FmVT: TFmVT
     Width = 178
     Height = 106
     BorderColor = 103128
+    BorderRadius = 8.000000000000000000
     BorderWidth = 2.000000000000000000
     PanelColor = 103128
     ParentColor = True
-    BorderRadius = 8.000000000000000000
     TabOrder = 0
-    UseDockManager = True
     Transparent = True
+    UseDockManager = True
     object LbGain: TGuiLabel
       Left = 13
       Top = 15
@@ -424,6 +424,7 @@ object FmVT: TFmVT
     Top = 142
     Width = 84
     Height = 84
+    DefaultValue = 1.000000000000000000
     Max = 4.000000000000000000
     Min = 1.000000000000000000
     ScrollRange = 400.000000000000000000
@@ -432,7 +433,6 @@ object FmVT: TFmVT
     Value = 1.000000000000000000
     WheelStep = 1.000000000000000000
     OnChange = DialSelectorChange
-    DefaultValue = 0.000000000000000000
   end
   object SwitchLowBypass: TGuiStitchedSwitch
     Left = 29

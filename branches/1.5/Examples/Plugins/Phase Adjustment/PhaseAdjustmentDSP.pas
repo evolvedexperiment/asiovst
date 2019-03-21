@@ -80,7 +80,8 @@ implementation
 {$ENDIF}
 
 uses
-  Math, DAV_Common, DAV_Math, DAV_DspWindowing, PhaseAdjustmentGUI;
+  Math, DAV_Common, DAV_StringConvert, DAV_Math, DAV_DspWindowing,
+  PhaseAdjustmentGUI;
 
 { TPhaseAdjustmentModule }
 
@@ -157,10 +158,7 @@ end;
 procedure TPhaseAdjustmentModule.ParameterSuppressRingingDisplay
   (Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
-  if Parameter[Index] > 0.5 then
-    PreDefined := 'On'
-  else
-    PreDefined := 'Off';
+  PreDefined := AnsiString(OnOff(Parameter[Index]));
 end;
 
 procedure TPhaseAdjustmentModule.ParameterSuppressRingingChange(Sender: TObject;

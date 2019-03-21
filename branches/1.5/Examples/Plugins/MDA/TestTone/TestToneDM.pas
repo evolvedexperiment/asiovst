@@ -70,7 +70,7 @@ implementation
 {$ENDIF}
 
 uses
-  Math, DAV_Math;
+  Math, DAV_Math, DAV_Consts;
 
 function Midi2String(const n: Single): string;
 var
@@ -254,147 +254,151 @@ var
   z              : array [0..5] of Single;
   ph, dph, t     : Single;
   s, sx, ds, fsc : Single;
-const
-  TwoPi : Double = 2 * Pi;
 begin
 (*
  if (updateRx <> updateTx) then update;
 *)
 
- x := 0;
- z[0] := FPinkState[0];
- z[1] := FPinkState[1];
- z[2] := FPinkState[2];
- z[3] := FPinkState[3];
- z[4] := FPinkState[4];
- z[5] := FPinkState[5];
+  x := 0;
+  z[0] := FPinkState[0];
+  z[1] := FPinkState[1];
+  z[2] := FPinkState[2];
+  z[3] := FPinkState[3];
+  z[4] := FPinkState[4];
+  z[5] := FPinkState[5];
 
- ph   := FPhi;
- dph  := FDeltaPhi;
- l    := FLeft;
- r    := FRight;
- t    := FThru;
- s    := FSw;
- sx   := FSwx;
- ds   := FSwd;
- fsc  := FScale;
- st   := FSwt;
- m    := FMode;
+  ph := FPhi;
+  dph := FDeltaPhi;
+  l := FLeft;
+  r := FRight;
+  t := FThru;
+  s := FSw;
+  sx := FSwx;
+  ds := FSwd;
+  fsc := FScale;
+  st := FSwt;
+  m := FMode;
 
- for Sample := 0 to SampleFrames - 1 do
+  for Sample := 0 to SampleFrames - 1 do
   begin
-   a := Inputs[0, Sample];
-   b := Inputs[1, Sample];
+    a := Inputs[0, Sample];
+    b := Inputs[1, Sample];
 
-   case m of
-    1: if st > 0 then //impulse
+    case m of
+      1:
+        if st > 0 then // impulse
         begin
-         Dec(st);
-         x := 0;
-        end
-       else
-        begin
-         x  := 1;
-         st := round (FLength * SampleRate);
-        end;
-    2, 3: begin
-           x := 2 * Random - 1;               // Noise
-           if (m = 3) then
-            begin
-             z[0] := 0.997 * z[0] + 0.029591 * x; // Pink filter
-             z[1] := 0.985 * z[1] + 0.032534 * x;
-             z[2] := 0.950 * z[2] + 0.048056 * x;
-             z[3] := 0.850 * z[3] + 0.090579 * x;
-             z[4] := 0.620 * z[4] + 0.108990 * x;
-             z[5] := 0.250 * z[5] + 0.255784 * x;
-             x    := z[0] + z[1] + z[2] + z[3] + z[4] + z[5];
-           end;
-          end;
-
-    4: x := 0;                                // Mute
-
-    0, 5, 9: begin                            // Tones
-              ph := FloatMod(ph + dph, TwoPi);
-              x  := sin(ph);
-             end;
-
-    6, 7: begin                               // Log sweep & step
-           if (st > 0) then
-            begin
-             Dec(st);
-             ph := 0;
-            end
-           else
-            begin
-             s := s + ds;
-            end;
-           if (m = 7)
-            then dph := fsc * Power(10, 0.1 * Round(s))
-            else dph := fsc * Power(10, 0.1 * s);
-           x  := sin(ph);
-           ph := FloatMod(ph + dph, 2 * Pi);
-           if (s > sx) then
-            begin
-             l := 0;
-             r := 0;
-            end;
-          end;
-
-    8: begin                                  // Lin sweep
-        if st > 0 then
-         begin
           Dec(st);
-          ph := 0;
-         end
+          x := 0;
+        end
         else
-         begin
-          s  := s + ds;
-          x  := sin(ph);
-          ph := FloatMod(ph + s, 2 * Pi);
+        begin
+          x := 1;
+          st := Round(FLength * SampleRate);
+        end;
+      2, 3:
+        begin
+          x := 2 * Random - 1; // Noise
+          if (m = 3) then
+          begin
+            z[0] := 0.997 * z[0] + 0.029591 * x; // Pink filter
+            z[1] := 0.985 * z[1] + 0.032534 * x;
+            z[2] := 0.950 * z[2] + 0.048056 * x;
+            z[3] := 0.850 * z[3] + 0.090579 * x;
+            z[4] := 0.620 * z[4] + 0.108990 * x;
+            z[5] := 0.250 * z[5] + 0.255784 * x;
+            x := z[0] + z[1] + z[2] + z[3] + z[4] + z[5];
+          end;
+        end;
+
+      4:
+        x := 0; // Mute
+
+      0, 5, 9:
+        begin // Tones
+          ph := FloatMod(ph + dph, CTwoPI64);
+          x := sin(ph);
+        end;
+
+      6, 7:
+        begin // Log sweep & step
+          if (st > 0) then
+          begin
+            Dec(st);
+            ph := 0;
+          end
+          else
+          begin
+            s := s + ds;
+          end;
+          if (m = 7) then
+            dph := fsc * Power(10, 0.1 * Round(s))
+          else
+            dph := fsc * Power(10, 0.1 * s);
+          x := sin(ph);
+          ph := FloatMod(ph + dph, 2 * Pi);
           if (s > sx) then
-           begin
+          begin
             l := 0;
             r := 0;
-           end;
-         end;
-       end;
-   end;
+          end;
+        end;
 
-   Outputs[0, Sample] := t * a + l * x;
-   Outputs[1, Sample] := t * b + r * x;
+      8:
+        begin // Lin sweep
+          if st > 0 then
+          begin
+            Dec(st);
+            ph := 0;
+          end
+          else
+          begin
+            s := s + ds;
+            x := sin(ph);
+            ph := FloatMod(ph + s, 2 * Pi);
+            if (s > sx) then
+            begin
+              l := 0;
+              r := 0;
+            end;
+          end;
+        end;
+    end;
+
+    Outputs[0, Sample] := t * a + l * x;
+    Outputs[1, Sample] := t * b + r * x;
   end;
 
- FPinkState[0] := z[0];
- FPinkState[1] := z[1];
- FPinkState[2] := z[2];
- FPinkState[3] := z[3];
- FPinkState[4] := z[4];
- FPinkState[5] := z[5];
- FPhi := ph;
- FSw  := s;
- FSwt := st;
+  FPinkState[0] := z[0];
+  FPinkState[1] := z[1];
+  FPinkState[2] := z[2];
+  FPinkState[3] := z[3];
+  FPinkState[4] := z[4];
+  FPinkState[5] := z[5];
+  FPhi := ph;
+  FSw := s;
+  FSwt := st;
+
 (*
- if (s > sx)
-  then setParameter(0, Parameter[0]); //retrigger sweep
+  if (s > sx) then
+    setParameter(0, Parameter[0]); //retrigger sweep
 *)
 end;
 
 procedure TTestToneDataModule.VSTModuleSuspend(Sender: TObject);
 begin
- FPinkState[0] := 0;
- FPinkState[1] := 0;
- FPinkState[2] := 0;
- FPinkState[3] := 0;
- FPinkState[4] := 0;
- FPinkState[5] := 0;
- FPhi := 0;
+  FPinkState[0] := 0;
+  FPinkState[1] := 0;
+  FPinkState[2] := 0;
+  FPinkState[3] := 0;
+  FPinkState[4] := 0;
+  FPinkState[5] := 0;
+  FPhi := 0;
 end;
 
 procedure TTestToneDataModule.Update;
 var
   f, df : Single;
-const
-  TwoPi : Single = 2 * Pi;
 begin
 (*
  updateRx := updateTx;
@@ -430,56 +434,63 @@ begin
   end;
 *)
 
- df := 0;
- if Parameter[4] > 0.6 then df := 1.25 * Parameter[4] - 0.75;
- if Parameter[4] < 0.4 then df := 1.25 * Parameter[4] - 0.50;
+  df := 0;
+  if Parameter[4] > 0.6 then
+    df := 1.25 * Parameter[4] - 0.75;
+  if Parameter[4] < 0.4 then
+    df := 1.25 * Parameter[4] - 0.50;
 
- case FMode of
-  0: begin //MIDI note
-      f := Trunc(128 * Parameter[3]);
+  case FMode of
+    0:
+      begin // MIDI note
+        f := Trunc(128 * Parameter[3]);
 (*
-      //long2string((long), disp1); //Semi
-      midi2string(f, disp1); //Semitones
-      long2string((long)(100.*df), disp2); //Cents
+        //long2string((long), disp1); //Semi
+        midi2string(f, disp1); //Semitones
+        long2string((long)(100.*df), disp2); //Cents
 *)
-      FDeltaPhi := 51.37006 * Power(1.0594631, f + df) / SampleRate;
-     end;
+        FDeltaPhi := 51.37006 * Power(1.0594631, f + df) / SampleRate;
+      end;
 
-    1, 2, 3, 4:  begin //no frequency display
-(*
-                  strcpy(disp1, "--");
-                  strcpy(disp2, "--"); break;
-*)
-                 end;
-    5: begin // Sine
+    1, 2, 3, 4:
+      begin // no frequency display
+        (*
+          strcpy(disp1, "--");
+          strcpy(disp2, "--"); break;
+        *)
+      end;
+    5:
+      begin // Sine
         f := 13 + Trunc(30 * Parameter[3]);
-(*
-        iso2string(, disp1); //iso band freq
-        f := Power(10, 0.1 * (f + df));
-        float2strng(, disp2); //Hz
-*)
+        (*
+          iso2string(, disp1); //iso band freq
+          f := Power(10, 0.1 * (f + df));
+          float2strng(, disp2); //Hz
+        *)
         FDeltaPhi := 2 * Pi * f / SampleRate;
-       end;
+      end;
 
-    6, 7: begin //log sweep & step
+    6, 7:
+      begin //log sweep & step
 (*
-           FSw  := 13 + Trunc(30 * Parameter[3]);
-           FSwx := 13 + Trunc(30 * Parameter[4]);
-           iso2string(FSw, disp1); //start freq
-           iso2string(FSwx, disp2); //end freq
-           if FSw > FSwx then
-            begin
-             FSwd := FSwx;
-             FSwx := FSw;
-             FSw  := FSwd;
-            end; //only sweep up
-           if FMode = 7 then FSwx := FSwx + 1;
-           FSwd := (FSwx - sw) / (fLengh * SampleRate);
-           FSwt := 2 * round SampleRate;
+        FSw  := 13 + Trunc(30 * Parameter[3]);
+        FSwx := 13 + Trunc(30 * Parameter[4]);
+        iso2string(FSw, disp1); //start freq
+        iso2string(FSwx, disp2); //end freq
+        if FSw > FSwx then
+        begin
+          FSwd := FSwx;
+          FSwx := FSw;
+          FSw  := FSwd;
+        end; //only sweep up
+        if FMode = 7 then FSwx := FSwx + 1;
+        FSwd := (FSwx - sw) / (fLengh * SampleRate);
+        FSwt := 2 * round SampleRate;
 *)
-          end;
+      end;
 
-   8: begin//lin sweep
+   8: begin
+        //lin sweep
 (*
        FSw  := 200 * Trunc(100 * Parameter[3]);
        FSwx := 200 * Trunc(100 * Parameter[4]);
@@ -497,11 +508,12 @@ begin
        FSwt := 2 * (long)SampleRate();
 *)
       end;
- end;
+  end;
 
- FThru := Power(10, (0.05 * int(40 * Parameter[5])) - 2);
- if Parameter[5] = 0 then FThru := 0;
- FScale := 2 * Pi / SampleRate;
+  FThru := Power(10, (0.05 * int(40 * Parameter[5])) - 2);
+  if Parameter[5] = 0 then
+    FThru := 0;
+  FScale := 2 * Pi / SampleRate;
 end;
 
 end.

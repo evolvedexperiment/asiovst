@@ -135,7 +135,7 @@ end;
 
 procedure TFmTwoBandDistortion.DialFreqChange(Sender: TObject);
 begin
-  with Owner as TTwoBandDistortionDataModule do
+  with TTwoBandDistortionDataModule(Owner) do
   begin
     ParameterByName['Frequency'] := DialFreq.Value;
   end;
@@ -143,7 +143,7 @@ end;
 
 procedure TFmTwoBandDistortion.DialHighDistChange(Sender: TObject);
 begin
-  with Owner as TTwoBandDistortionDataModule do
+  with TTwoBandDistortionDataModule(Owner) do
   begin
     ParameterByName['High Distortion'] := DialHighDist.Value;
   end;
@@ -151,7 +151,7 @@ end;
 
 procedure TFmTwoBandDistortion.DialLowDistChange(Sender: TObject);
 begin
-  with Owner as TTwoBandDistortionDataModule do
+  with TTwoBandDistortionDataModule(Owner) do
   begin
     ParameterByName['Low Distortion'] := DialLowDist.Value;
   end;
@@ -192,10 +192,7 @@ begin
   with Owner as TTwoBandDistortionDataModule do
   begin
     Freq := ParameterByName['Frequency'];
-    if Freq < CThousand then
-      LbFreqValue.Caption := FloatToStrF(Freq, ffGeneral, 3, 4) + ' Hz'
-    else
-      LbFreqValue.Caption := FloatToStrF(1E-3 * Freq, ffGeneral, 3, 3) + ' kHz';
+    LbFreqValue.Caption := FloatToHertz(Freq);
     if DialFreq.Value <> Freq then
       DialFreq.Value := Freq;
   end;
@@ -208,8 +205,7 @@ begin
   with Owner as TTwoBandDistortionDataModule do
   begin
     HighDist := ParameterByName['High Distortion'];
-    LbHighDistValue.Caption := FloatToStrF(RoundTo(HighDist, -2), ffGeneral,
-      3, 1) + '%';
+    LbHighDistValue.Caption := FloatToString(HighDist, 2) + '%';
     if DialHighDist.Value <> HighDist then
       DialHighDist.Value := HighDist;
   end;
@@ -222,8 +218,7 @@ begin
   with Owner as TTwoBandDistortionDataModule do
   begin
     LowDist := ParameterByName['Low Distortion'];
-    LbLowDistValue.Caption := FloatToStrF(RoundTo(LowDist, -2), ffGeneral,
-      3, 1) + '%';
+    LbLowDistValue.Caption := FloatToString(HighDist, 2) + '%';
     if DialLowDist.Value <> LowDist then
       DialLowDist.Value := LowDist;
   end;

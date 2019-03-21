@@ -85,7 +85,8 @@ implementation
 
 uses
   Math, DAV_Strings, DAV_Consts, DAV_Common, DAV_Approximations,
-  DAV_VSTModuleWithPrograms, LightweightUpwardCompressorGUI;
+  DAV_VSTModuleWithPrograms, DAV_StringConvert,
+  LightweightUpwardCompressorGUI;
 
 procedure TLightweightUpwardCompressorDataModule.VSTModuleOpen(Sender: TObject);
 var
@@ -218,12 +219,7 @@ end;
 procedure TLightweightUpwardCompressorDataModule.ParameterOnOffDisplay
   (Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
-  case Round(Parameter[Index]) of
-    0:
-      PreDefined := 'Off';
-    1:
-      PreDefined := 'On';
-  end;
+  PreDefined := AnsiString(OnOff(Parameter[Index]));
 end;
 
 procedure TLightweightUpwardCompressorDataModule.ParameterStereoChange

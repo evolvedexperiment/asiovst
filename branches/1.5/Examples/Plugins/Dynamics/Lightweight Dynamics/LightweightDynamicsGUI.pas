@@ -34,12 +34,13 @@ interface
 
 {$I DAV_Compiler.inc}
 
-uses 
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
-  Forms, Controls, StdCtrls, DAV_Types, DAV_VSTModule, DAV_GuiLabel, 
-  DAV_GuiGraphXY, DAV_GuiBaseControl, DAV_GuiLED, DAV_GuiGroup, 
-  DAV_GuiLevelMeter, DAV_GuiStitchedControls, DAV_GuiStitchedPngList, 
-  DAV_GuiStitchedDial;
+uses
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
+  Forms, Controls, StdCtrls, DAV_Types, DAV_VSTModule, DAV_GuiLabel,
+  DAV_GuiGraphXY, DAV_GuiBaseControl, DAV_GuiLED, DAV_GuiGroup,
+  DAV_GuiLevelMeter, DAV_GuiStitchedControls, DAV_GuiStitchedPngList,
+  DAV_GuiStitchedDial, DAV_GuiImageControl, DAV_GuiCustomControl,
+  DAV_GuiGraphicControl;
 
 type
   TFmLightweightDynamics = class(TForm)
@@ -121,6 +122,8 @@ type
     procedure DialLimiterThresholdChange(Sender: TObject);
     procedure DialLimiterKneeChange(Sender: TObject);
     procedure LbSoftClipClick(Sender: TObject);
+  private
+    procedure GetParameterText(Index: Integer);
   public
     // gate
     procedure UpdateGateAttack;
@@ -161,173 +164,183 @@ uses
 
 procedure TFmLightweightDynamics.FormCreate(Sender: TObject);
 begin
- with TGuiGraphXYFunctionSeries(GuiGraphXY[0].Series) do
+  with TGuiGraphXYFunctionSeries(GuiGraphXY[0].Series) do
   begin
-   OnEvaluate := EvaluateCharacteristic;
+    OnEvaluate := EvaluateCharacteristic;
   end;
 end;
 
 procedure TFmLightweightDynamics.FormShow(Sender: TObject);
 begin
- UpdateGateAttack;
- UpdateGateRelease;
- UpdateGateThreshold;
- UpdateGateRatio;
- UpdateGateKnee;
- UpdateCompressorAttack;
- UpdateCompressorRelease;
- UpdateCompressorThreshold;
- UpdateCompressorRatio;
- UpdateCompressorKnee;
- UpdateCompressorMakeUp;
- UpdateCompressorAutoMakeUpGain;
- UpdateLimiterAttack;
- UpdateLimiterRelease;
- UpdateLimiterThreshold;
- UpdateLimiterKnee;
- UpdateLimiterSoftClip;
+  UpdateGateAttack;
+  UpdateGateRelease;
+  UpdateGateThreshold;
+  UpdateGateRatio;
+  UpdateGateKnee;
+  UpdateCompressorAttack;
+  UpdateCompressorRelease;
+  UpdateCompressorThreshold;
+  UpdateCompressorRatio;
+  UpdateCompressorKnee;
+  UpdateCompressorMakeUp;
+  UpdateCompressorAutoMakeUpGain;
+  UpdateLimiterAttack;
+  UpdateLimiterRelease;
+  UpdateLimiterThreshold;
+  UpdateLimiterKnee;
+  UpdateLimiterSoftClip;
+end;
+
+procedure TFmLightweightDynamics.GetParameterText(Index: Integer);
+begin
+  with TLightweightDynamicsDataModule(Owner) do
+  begin
+    Result := ParameterDisplay[Index] + ' ' + ParameterLabel[Index];
+  end;
 end;
 
 procedure TFmLightweightDynamics.LbSoftClipClick(Sender: TObject);
 begin
- with TLightweightDynamicsDataModule(Owner) do
+  with TLightweightDynamicsDataModule(Owner) do
   begin
-   Parameter[17] := Integer(LEDSoftClip.Brightness_Percent < 50);
+    Parameter[17] := Integer(LEDSoftClip.Brightness_Percent < 50);
   end;
 end;
 
 procedure TFmLightweightDynamics.LEDAutoGainClick(Sender: TObject);
 begin
- with TLightweightDynamicsDataModule(Owner) do
+  with TLightweightDynamicsDataModule(Owner) do
   begin
-   Parameter[11] := Integer(LEDAutoGain.Brightness_Percent < 50);
-   if not DialCompressorMakeUpGain.Enabled then UpdateCompressorMakeUp;
+    Parameter[11] := Integer(LEDAutoGain.Brightness_Percent < 50);
+    if not DialCompressorMakeUpGain.Enabled then
+      UpdateCompressorMakeUp;
   end;
 end;
 
 procedure TFmLightweightDynamics.DialGateAttackChange(Sender: TObject);
 begin
- with TLightweightDynamicsDataModule(Owner) do
+  with TLightweightDynamicsDataModule(Owner) do
   begin
-   Parameter[0] := DialGateAttack.Value;
+    Parameter[0] := DialGateAttack.Value;
   end;
 end;
 
 procedure TFmLightweightDynamics.DialGateReleaseChange(Sender: TObject);
 begin
- with TLightweightDynamicsDataModule(Owner) do
+  with TLightweightDynamicsDataModule(Owner) do
   begin
-   Parameter[1] := DialGateRelease.Value;
+    Parameter[1] := DialGateRelease.Value;
   end;
 end;
 
 procedure TFmLightweightDynamics.DialGateThresholdChange(Sender: TObject);
 begin
- with TLightweightDynamicsDataModule(Owner) do
+  with TLightweightDynamicsDataModule(Owner) do
   begin
-   Parameter[2] := DialGateThreshold.Value;
+    Parameter[2] := DialGateThreshold.Value;
   end;
 end;
 
 function TFmLightweightDynamics.EvaluateCharacteristic(Sender: TObject;
   X: Double): Double;
 begin
- result := TLightweightDynamicsDataModule(Owner).EvaluateCharacteristic(X);
+  Result := TLightweightDynamicsDataModule(Owner).EvaluateCharacteristic(X);
 end;
 
 procedure TFmLightweightDynamics.DialGateRatioChange(Sender: TObject);
 begin
- with TLightweightDynamicsDataModule(Owner) do
+  with TLightweightDynamicsDataModule(Owner) do
   begin
-   Parameter[3] := DialGateRatio.Value;
+    Parameter[3] := DialGateRatio.Value;
   end;
 end;
 
 procedure TFmLightweightDynamics.DialGateKneeChange(Sender: TObject);
 begin
- with TLightweightDynamicsDataModule(Owner) do
+  with TLightweightDynamicsDataModule(Owner) do
   begin
-   Parameter[4] := DialGateKnee.Value;
+    Parameter[4] := DialGateKnee.Value;
   end;
 end;
 
 procedure TFmLightweightDynamics.DialCompressorAttackChange(Sender: TObject);
 begin
- with TLightweightDynamicsDataModule(Owner) do
+  with TLightweightDynamicsDataModule(Owner) do
   begin
-   Parameter[5] := DialCompressorAttack.Value;
+    Parameter[5] := DialCompressorAttack.Value;
   end;
 end;
 
 procedure TFmLightweightDynamics.DialCompressorReleaseChange(Sender: TObject);
 begin
- with TLightweightDynamicsDataModule(Owner) do
+  with TLightweightDynamicsDataModule(Owner) do
   begin
-   Parameter[6] := DialCompressorRelease.Value;
+    Parameter[6] := DialCompressorRelease.Value;
   end;
 end;
 
 procedure TFmLightweightDynamics.DialCompressorThresholdChange(Sender: TObject);
 begin
- with TLightweightDynamicsDataModule(Owner) do
+  with TLightweightDynamicsDataModule(Owner) do
   begin
-   Parameter[7] := DialCompressorThreshold.Value;
+    Parameter[7] := DialCompressorThreshold.Value;
   end;
 end;
 
 procedure TFmLightweightDynamics.DialCompressorRatioChange(Sender: TObject);
 begin
- with TLightweightDynamicsDataModule(Owner) do
+  with TLightweightDynamicsDataModule(Owner) do
   begin
-   Parameter[8] := DialCompressorRatio.Value;
+    Parameter[8] := DialCompressorRatio.Value;
   end;
 end;
 
 procedure TFmLightweightDynamics.DialCompressorKneeChange(Sender: TObject);
 begin
- with TLightweightDynamicsDataModule(Owner) do
+  with TLightweightDynamicsDataModule(Owner) do
   begin
-   Parameter[9] := DialCompressorKnee.Value;
+    Parameter[9] := DialCompressorKnee.Value;
   end;
 end;
 
-procedure TFmLightweightDynamics.DialCompressorMakeUpGainChange(Sender: TObject);
+procedure TFmLightweightDynamics.DialCompressorMakeUpGainChange
+  (Sender: TObject);
 begin
- with TLightweightDynamicsDataModule(Owner) do
+  with TLightweightDynamicsDataModule(Owner) do
   begin
-   Parameter[10] := DialCompressorMakeUpGain.Value;
+    Parameter[10] := DialCompressorMakeUpGain.Value;
   end;
 end;
 
 procedure TFmLightweightDynamics.DialLimiterAttackChange(Sender: TObject);
 begin
- with TLightweightDynamicsDataModule(Owner) do
+  with TLightweightDynamicsDataModule(Owner) do
   begin
-   Parameter[13] := DialLimiterAttack.Value;
+    Parameter[13] := DialLimiterAttack.Value;
   end;
 end;
 
 procedure TFmLightweightDynamics.DialLimiterReleaseChange(Sender: TObject);
 begin
- with TLightweightDynamicsDataModule(Owner) do
+  with TLightweightDynamicsDataModule(Owner) do
   begin
-   Parameter[14] := DialLimiterRelease.Value;
+    Parameter[14] := DialLimiterRelease.Value;
   end;
 end;
 
 procedure TFmLightweightDynamics.DialLimiterThresholdChange(Sender: TObject);
 begin
- with TLightweightDynamicsDataModule(Owner) do
+  with TLightweightDynamicsDataModule(Owner) do
   begin
-   Parameter[15] := DialLimiterThreshold.Value;
+    Parameter[15] := DialLimiterThreshold.Value;
   end;
 end;
 
 procedure TFmLightweightDynamics.DialLimiterKneeChange(Sender: TObject);
 begin
- with TLightweightDynamicsDataModule(Owner) do
+  with TLightweightDynamicsDataModule(Owner) do
   begin
-   Parameter[16] := DialLimiterKnee.Value;
+    Parameter[16] := DialLimiterKnee.Value;
   end;
 end;
 
@@ -336,231 +349,231 @@ end;
 
 procedure TFmLightweightDynamics.UpdateGateAttack;
 var
-  Attack : Single;
+  Attack: Single;
 begin
- with TLightweightDynamicsDataModule(Owner) do
+  with TLightweightDynamicsDataModule(Owner) do
   begin
-   Attack := Parameter[0];
-   if Attack <> DialGateAttack.Value
-    then DialGateAttack.Value := Attack;
-   LbGateAttackValue.Caption := ParameterDisplay[0] + ' ' + ParameterLabel[0];
+    Attack := Parameter[0];
+    if Attack <> DialGateAttack.Value then
+      DialGateAttack.Value := Attack;
+    LbGateAttackValue.Caption := ParameterDisplay[0] + ' ' + ParameterLabel[0];
   end;
 end;
 
 procedure TFmLightweightDynamics.UpdateGateRelease;
 var
-  Release : Single;
+  Release: Single;
 begin
- with TLightweightDynamicsDataModule(Owner) do
+  with TLightweightDynamicsDataModule(Owner) do
   begin
-   Release := Parameter[1];
-   if Release <> DialGateRelease.Value
-    then DialGateRelease.Value := Release;
-   LbGateReleaseValue.Caption := ParameterDisplay[1] + ' ' + ParameterLabel[1];
+    Release := Parameter[1];
+    if Release <> DialGateRelease.Value then
+      DialGateRelease.Value := Release;
+    LbGateReleaseValue.Caption := GetParameterText(1);
   end;
 end;
 
 procedure TFmLightweightDynamics.UpdateGateThreshold;
 var
-  Threshold : Single;
+  Threshold: Single;
 begin
- with TLightweightDynamicsDataModule(Owner) do
+  with TLightweightDynamicsDataModule(Owner) do
   begin
-   Threshold := Parameter[2];
-   if Threshold <> DialGateThreshold.Value
-    then DialGateThreshold.Value := Threshold;
-   LbGateThresholdValue.Caption := ParameterDisplay[2] + ' ' + ParameterLabel[2];
-   GuiGraphXY.UpdateGraph;
+    Threshold := Parameter[2];
+    if Threshold <> DialGateThreshold.Value then
+      DialGateThreshold.Value := Threshold;
+    LbGateThresholdValue.Caption := GetParameterText(2);
+    GuiGraphXY.UpdateGraph;
   end;
 end;
 
 procedure TFmLightweightDynamics.UpdateGateRatio;
 var
-  Ratio : Single;
+  Ratio: Single;
 begin
- with TLightweightDynamicsDataModule(Owner) do
+  with TLightweightDynamicsDataModule(Owner) do
   begin
-   Ratio := Parameter[3];
-   if Ratio <> DialGateRatio.Value
-    then DialGateRatio.Value := Ratio;
-   LbGateRatioValue.Caption := ParameterDisplay[3];
-   GuiGraphXY.UpdateGraph;
+    Ratio := Parameter[3];
+    if Ratio <> DialGateRatio.Value then
+      DialGateRatio.Value := Ratio;
+    LbGateRatioValue.Caption := ParameterDisplay[3];
+    GuiGraphXY.UpdateGraph;
   end;
 end;
 
 procedure TFmLightweightDynamics.UpdateGateKnee;
 var
-  Knee : Single;
+  Knee: Single;
 begin
- with TLightweightDynamicsDataModule(Owner) do
+  with TLightweightDynamicsDataModule(Owner) do
   begin
-   Knee := Parameter[4];
-   if Knee <> DialGateKnee.Value
-    then DialGateKnee.Value := Knee;
-   LbGateKneeValue.Caption := ParameterDisplay[4] + ' ' + ParameterLabel[4];
-   GuiGraphXY.UpdateGraph;
+    Knee := Parameter[4];
+    if Knee <> DialGateKnee.Value then
+      DialGateKnee.Value := Knee;
+    LbGateKneeValue.Caption := GetParameterText(4);
+    GuiGraphXY.UpdateGraph;
   end;
 end;
 
 procedure TFmLightweightDynamics.UpdateCompressorAttack;
 var
-  Attack : Single;
+  Attack: Single;
 begin
- with TLightweightDynamicsDataModule(Owner) do
+  with TLightweightDynamicsDataModule(Owner) do
   begin
-   Attack := Parameter[5];
-   if Attack <> DialCompressorAttack.Value
-    then DialCompressorAttack.Value := Attack;
-   LbCompressorAttackValue.Caption := ParameterDisplay[5] + ' ' + ParameterLabel[5];
+    Attack := Parameter[5];
+    if Attack <> DialCompressorAttack.Value then
+      DialCompressorAttack.Value := Attack;
+    LbCompressorAttackValue.Caption := GetParameterText(5);
   end;
 end;
 
 procedure TFmLightweightDynamics.UpdateCompressorRelease;
 var
-  Release : Single;
+  Release: Single;
 begin
- with TLightweightDynamicsDataModule(Owner) do
+  with TLightweightDynamicsDataModule(Owner) do
   begin
-   Release := Parameter[6];
-   if Release <> DialCompressorRelease.Value
-    then DialCompressorRelease.Value := Release;
-   LbCompressorReleaseValue.Caption := ParameterDisplay[6] + ' ' + ParameterLabel[6];
+    Release := Parameter[6];
+    if Release <> DialCompressorRelease.Value then
+      DialCompressorRelease.Value := Release;
+    LbCompressorReleaseValue.Caption := GetParameterText(6);
   end;
 end;
 
 procedure TFmLightweightDynamics.UpdateCompressorThreshold;
 var
-  Threshold : Single;
+  Threshold: Single;
 begin
- with TLightweightDynamicsDataModule(Owner) do
+  with TLightweightDynamicsDataModule(Owner) do
   begin
-   Threshold := Parameter[7];
-   if Threshold <> DialCompressorThreshold.Value
-    then DialCompressorThreshold.Value := Threshold;
-   LbCompressorThresholdValue.Caption := ParameterDisplay[7] + ' ' + ParameterLabel[7];
-   GuiGraphXY.UpdateGraph;
+    Threshold := Parameter[7];
+    if Threshold <> DialCompressorThreshold.Value then
+      DialCompressorThreshold.Value := Threshold;
+    LbCompressorThresholdValue.Caption := GetParameterText(7);
+    GuiGraphXY.UpdateGraph;
   end;
 end;
 
 procedure TFmLightweightDynamics.UpdateCompressorRatio;
 var
-  Ratio : Single;
+  Ratio: Single;
 begin
- with TLightweightDynamicsDataModule(Owner) do
+  with TLightweightDynamicsDataModule(Owner) do
   begin
-   Ratio := Parameter[8];
-   if Ratio <> DialCompressorRatio.Value
-    then DialCompressorRatio.Value := Ratio;
-   LbCompressorRatioValue.Caption := ParameterDisplay[8];
-   GuiGraphXY.UpdateGraph;
+    Ratio := Parameter[8];
+    if Ratio <> DialCompressorRatio.Value then
+      DialCompressorRatio.Value := Ratio;
+    LbCompressorRatioValue.Caption := ParameterDisplay[8];
+    GuiGraphXY.UpdateGraph;
   end;
 end;
 
 procedure TFmLightweightDynamics.UpdateCompressorKnee;
 var
-  Knee : Single;
+  Knee: Single;
 begin
- with TLightweightDynamicsDataModule(Owner) do
+  with TLightweightDynamicsDataModule(Owner) do
   begin
-   Knee := Parameter[9];
-   if Knee <> DialCompressorKnee.Value
-    then DialCompressorKnee.Value := Knee;
-   LbCompressorKneeValue.Caption := ParameterDisplay[9] + ' ' + ParameterLabel[9];
-   GuiGraphXY.UpdateGraph;
+    Knee := Parameter[9];
+    if Knee <> DialCompressorKnee.Value then
+      DialCompressorKnee.Value := Knee;
+    LbCompressorKneeValue.Caption := GetParameterText(9);
+    GuiGraphXY.UpdateGraph;
   end;
 end;
 
 procedure TFmLightweightDynamics.UpdateCompressorMakeUp;
 var
-  MakeUp : Single;
+  MakeUp: Single;
 begin
- with TLightweightDynamicsDataModule(Owner) do
+  with TLightweightDynamicsDataModule(Owner) do
   begin
-   MakeUp := Compressor.MakeUpGain_dB;
-   if MakeUp <> DialCompressorMakeUpGain.Value
-    then DialCompressorMakeUpGain.Value := MakeUp;
-   LbCompressorMakeUpGainValue.Caption := ParameterDisplay[10] + ' ' + ParameterLabel[10];
-   GuiGraphXY.UpdateGraph;
+    MakeUp := Compressor.MakeUpGain_dB;
+    if MakeUp <> DialCompressorMakeUpGain.Value then
+      DialCompressorMakeUpGain.Value := MakeUp;
+    LbCompressorMakeUpGainValue.Caption := GetParameterText(10);
+    GuiGraphXY.UpdateGraph;
   end;
 end;
 
 procedure TFmLightweightDynamics.UpdateCompressorAutoMakeUpGain;
 var
-  Brightness : Single;
+  Brightness: Single;
 begin
- with TLightweightDynamicsDataModule(Owner) do
+  with TLightweightDynamicsDataModule(Owner) do
   begin
-   Brightness := 100 * (0.1 + 0.9 * Parameter[11]);
-   if Brightness <> LEDAutoGain.Brightness_Percent
-    then LEDAutoGain.Brightness_Percent := Brightness;
-   DialCompressorMakeUpGain.Enabled := Brightness < 50;
-   GuiGraphXY.UpdateGraph;
+    Brightness := 100 * (0.1 + 0.9 * Parameter[11]);
+    if Brightness <> LEDAutoGain.Brightness_Percent then
+      LEDAutoGain.Brightness_Percent := Brightness;
+    DialCompressorMakeUpGain.Enabled := Brightness < 50;
+    GuiGraphXY.UpdateGraph;
   end;
 end;
 
 procedure TFmLightweightDynamics.UpdateLimiterAttack;
 var
-  Attack : Single;
+  Attack: Single;
 begin
- with TLightweightDynamicsDataModule(Owner) do
+  with TLightweightDynamicsDataModule(Owner) do
   begin
-   Attack := Parameter[13];
-   if Attack <> DialLimiterAttack.Value
-    then DialLimiterAttack.Value := Attack;
-   LbLimiterAttackValue.Caption := ParameterDisplay[13] + ' ' + ParameterLabel[13];
+    Attack := Parameter[13];
+    if Attack <> DialLimiterAttack.Value then
+      DialLimiterAttack.Value := Attack;
+    LbLimiterAttackValue.Caption := GetParameterText(13);
   end;
 end;
 
 procedure TFmLightweightDynamics.UpdateLimiterRelease;
 var
-  Release : Single;
+  Release: Single;
 begin
- with TLightweightDynamicsDataModule(Owner) do
+  with TLightweightDynamicsDataModule(Owner) do
   begin
-   Release := Parameter[14];
-   if Release <> DialLimiterRelease.Value
-    then DialLimiterRelease.Value := Release;
-   LbLimiterReleaseValue.Caption := ParameterDisplay[14] + ' ' + ParameterLabel[14];
+    Release := Parameter[14];
+    if Release <> DialLimiterRelease.Value then
+      DialLimiterRelease.Value := Release;
+    LbLimiterReleaseValue.Caption := GetParameterText(14);
   end;
 end;
 
 procedure TFmLightweightDynamics.UpdateLimiterThreshold;
 var
-  Threshold : Single;
+  Threshold: Single;
 begin
- with TLightweightDynamicsDataModule(Owner) do
+  with TLightweightDynamicsDataModule(Owner) do
   begin
-   Threshold := Parameter[15];
-   if Threshold <> DialLimiterThreshold.Value
-    then DialLimiterThreshold.Value := Threshold;
-   LbLimiterThresholdValue.Caption := ParameterDisplay[15] + ' ' + ParameterLabel[15];
-   GuiGraphXY.UpdateGraph;
+    Threshold := Parameter[15];
+    if Threshold <> DialLimiterThreshold.Value then
+      DialLimiterThreshold.Value := Threshold;
+    LbLimiterThresholdValue.Caption := GetParameterText(15);
+    GuiGraphXY.UpdateGraph;
   end;
 end;
 
 procedure TFmLightweightDynamics.UpdateLimiterKnee;
 var
-  Knee : Single;
+  Knee: Single;
 begin
- with TLightweightDynamicsDataModule(Owner) do
+  with TLightweightDynamicsDataModule(Owner) do
   begin
-   Knee := Parameter[16];
-   if Knee <> DialLimiterKnee.Value
-    then DialLimiterKnee.Value := Knee;
-   LbLimiterKneeValue.Caption := ParameterDisplay[16] + ' ' + ParameterLabel[16];
-   GuiGraphXY.UpdateGraph;
+    Knee := Parameter[16];
+    if Knee <> DialLimiterKnee.Value then
+      DialLimiterKnee.Value := Knee;
+    LbLimiterKneeValue.Caption := GetParameterText(16);
+    GuiGraphXY.UpdateGraph;
   end;
 end;
 
 procedure TFmLightweightDynamics.UpdateLimiterSoftClip;
 var
-  Brightness : Single;
+  Brightness: Single;
 begin
- with TLightweightDynamicsDataModule(Owner) do
+  with TLightweightDynamicsDataModule(Owner) do
   begin
-   Brightness := 100 * (0.1 + 0.9 * Parameter[17]);
-   if Brightness <> LEDSoftClip.Brightness_Percent
-    then LEDSoftClip.Brightness_Percent := Brightness;
+    Brightness := 100 * (0.1 + 0.9 * Parameter[17]);
+    if Brightness <> LEDSoftClip.Brightness_Percent then
+      LEDSoftClip.Brightness_Percent := Brightness;
   end;
 end;
 

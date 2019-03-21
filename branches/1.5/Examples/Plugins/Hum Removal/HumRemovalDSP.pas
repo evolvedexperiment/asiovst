@@ -78,7 +78,7 @@ implementation
 {$ENDIF}
 
 uses
-  HumRemovalGUI;
+  DAV_StringConvert, HumRemovalGUI;
 
 procedure THumRemovalModule.VSTModuleCreate(Sender: TObject);
 begin
@@ -322,10 +322,8 @@ end;
 
 procedure THumRemovalModule.ParameterHighpassActiveDisplay(Sender: TObject;
   const Index: Integer; var PreDefined: AnsiString);
-const
-  CActiveStr: array [0 .. 1] of AnsiString = ('On', 'Off');
 begin
-  PreDefined := CActiveStr[Integer(Parameter[Index] < 0.5)];
+  PreDefined := AnsiString(OnOff(Parameter[Index]));
 end;
 
 procedure THumRemovalModule.ParameterHighpassTypeDisplay(Sender: TObject;

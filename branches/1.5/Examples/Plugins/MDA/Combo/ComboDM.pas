@@ -44,7 +44,6 @@ type
   TComboDataModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: NativeUInt);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
     procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
     procedure VSTModuleSuspend(Sender: TObject);
@@ -114,18 +113,14 @@ begin
 {$ENDIF}
   // inits here
   Parameter[0] := 6;
+
+  EditorFormClass := TFmCombo;
 end;
 
 procedure TComboDataModule.VSTModuleClose(Sender: TObject);
 begin
   Dispose(FBuffer[0]);
   Dispose(FBuffer[1]);
-end;
-
-procedure TComboDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
-  ParentWindow: NativeUInt);
-begin
-  GUI := TFmCombo.Create(Self);
 end;
 
 procedure TComboDataModule.ParamProcessChange(Sender: TObject;
@@ -398,64 +393,70 @@ end;
 
 procedure TComboDataModule.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
- InP, OutP    : array [0..1] of Double;
- trm, clp     : Single;
- LPF, bi      : Single;
- HPF, drv     : Single;
- FilterState  : array [0..1, 0..4] of Double;
- d            : array [0..1] of Integer;
- h            : array [0..1] of Double;
- m            : array [0..1] of Single;
- hf, hq       : Single;
- bp, Sample   : Integer;
+  InP, OutP: array [0 .. 1] of Double;
+  trm, clp: Single;
+  LPF, bi: Single;
+  HPF, drv: Single;
+  FilterState: array [0 .. 1, 0 .. 4] of Double;
+  d: array [0 .. 1] of Integer;
+  h: array [0 .. 1] of Double;
+  m: array [0 .. 1] of Single;
+  hf, hq: Single;
+  bp, Sample: Integer;
 begin
- m[0] := FMix[0];
- m[1] := FMix[1];
- clp  := FClip;
- LPF  := FLPF;
- HPF  := FHPF;
- bi   := FBias - 0.0001;
- drv  := FDrive;
- FilterState[0, 0] := FFilterState[0, 0];
- FilterState[0, 1] := FFilterState[0, 1];
- FilterState[0, 2] := FFilterState[0, 2];
- FilterState[0, 3] := FFilterState[0, 3];
- FilterState[0, 4] := FFilterState[0, 4];
- FilterState[1, 0] := FFilterState[1, 0];
- FilterState[1, 1] := FFilterState[1, 1];
- FilterState[1, 2] := FFilterState[1, 2];
- FilterState[1, 3] := FFilterState[1, 3];
- FilterState[1, 4] := FFilterState[1, 4];
- hf   := FHPFFrequency;
- hq   := FHPFResonance;
- h[0] := FHPFState[0];
- h[1] := FHPFState[1];
- d[0] := FDelay[0];
- d[1] := FDelay[1];
- bp   := FBufferPosition;
- trm  := FTrim * sqr(sqr(1 - LPF));
+  m[0] := FMix[0];
+  m[1] := FMix[1];
+  clp := FClip;
+  LPF := FLPF;
+  HPF := FHPF;
+  bi := FBias - 0.0001;
+  drv := FDrive;
+  FilterState[0, 0] := FFilterState[0, 0];
+  FilterState[0, 1] := FFilterState[0, 1];
+  FilterState[0, 2] := FFilterState[0, 2];
+  FilterState[0, 3] := FFilterState[0, 3];
+  FilterState[0, 4] := FFilterState[0, 4];
+  FilterState[1, 0] := FFilterState[1, 0];
+  FilterState[1, 1] := FFilterState[1, 1];
+  FilterState[1, 2] := FFilterState[1, 2];
+  FilterState[1, 3] := FFilterState[1, 3];
+  FilterState[1, 4] := FFilterState[1, 4];
+  hf := FHPFFrequency;
+  hq := FHPFResonance;
+  h[0] := FHPFState[0];
+  h[1] := FHPFState[1];
+  d[0] := FDelay[0];
+  d[1] := FDelay[1];
+  bp := FBufferPosition;
+  trm := FTrim * sqr(sqr(1 - LPF));
 
- if FStereo then //stereo
+  if FStereo then // stereo
   begin
-   for  Sample := 0 to SampleFrames - 1 do
+    for Sample := 0 to SampleFrames - 1 do
     begin
-     InP[0] := drv * (0.0002 * random + Inputs[0, Sample] + bi);
-     InP[1] := drv * (0.0002 * random + Inputs[1, Sample] + bi);
+      InP[0] := drv * (0.0002 * random + Inputs[0, Sample] + bi);
+      InP[1] := drv * (0.0002 * random + Inputs[1, Sample] + bi);
 
       if FIsSoftClipping then
-       begin
+      begin
         OutP[0] := InP[0] / (1 + Abs(InP[0]));
         OutP[1] := InP[1] / (1 + Abs(InP[1]));
-       end
+      end
       else
-       begin
-        if InP[0] > clp        then OutP[0] := clp
-         else if InP[0] < -clp then OutP[0] := -clp
-         else OutP[0] := InP[0];
-        if InP[1] > clp        then OutP[1] := clp
-         else if InP[1] < -clp then OutP[1] := -clp
-         else OutP[1] := InP[1];
-       end;
+      begin
+        if InP[0] > clp then
+          OutP[0] := clp
+        else if InP[0] < -clp then
+          OutP[0] := -clp
+        else
+          OutP[0] := InP[0];
+        if InP[1] > clp then
+          OutP[1] := clp
+        else if InP[1] < -clp then
+          OutP[1] := -clp
+        else
+          OutP[1] := InP[1];
+      end;
 
       FBuffer[0]^[bp] := OutP[0];
       FBuffer[1]^[bp] := OutP[1];
@@ -471,170 +472,191 @@ begin
       FilterState[0, 2] := LPF * FilterState[0, 2] + FilterState[0, 1];
       FilterState[1, 2] := LPF * FilterState[1, 2] + FilterState[1, 1];
       FilterState[0, 3] := LPF * FilterState[0, 3] + FilterState[0, 2];
-      FilterState[1, 3] := LPF * FilterState[1, 3] + FilterState[1, 2];  //-24dB/oct filter
+      FilterState[1, 3] := LPF * FilterState[1, 3] + FilterState[1, 2];
+      // -24dB/oct filter
 
-      FilterState[0, 4] := HPF * (FilterState[0, 4] - FilterState[0, 3]) + FilterState[0, 3];
-      FilterState[1, 4] := HPF * (FilterState[1, 4] - FilterState[1, 3]) + FilterState[1, 3];  //high pass
+      FilterState[0, 4] := HPF * (FilterState[0, 4] - FilterState[0, 3]) +
+        FilterState[0, 3];
+      FilterState[1, 4] := HPF * (FilterState[1, 4] - FilterState[1, 3]) +
+        FilterState[1, 3]; // high pass
 
       OutP[0] := FilterState[0, 3] - FilterState[0, 4];
       OutP[1] := FilterState[1, 3] - FilterState[0, 4];
 
-      if (bp = 0)
-       then bp := 999
-       else bp := bp - 1;
+      if (bp = 0) then
+        bp := 999
+      else
+        bp := bp - 1;
 
-      Outputs[0, Sample] := Outp[0];
-      Outputs[1, Sample] := Outp[1];
+      Outputs[0, Sample] := OutP[0];
+      Outputs[1, Sample] := OutP[1];
     end;
   end
- else //mono
+  else // mono
   begin
-   if FIsSoftClipping then //soft clip
+    if FIsSoftClipping then // soft clip
     begin
-     for Sample := 0 to SampleFrames - 1 do
+      for Sample := 0 to SampleFrames - 1 do
       begin
-       InP[0] := drv * (0.0002 * random + Inputs[0, Sample] + Inputs[1, Sample] + bi);
+        InP[0] := drv * (0.0002 * random + Inputs[0, Sample] + Inputs[1,
+          Sample] + bi);
 
-       h[0] := h[0] + hf * (h[1] + InP[0]);    //resonant highpass (Chamberlin SVF)
-       h[1] := h[1] - hf * (h[0] + hq * h[1]);
-       InP[0] := InP[0] + h[1];
+        h[0] := h[0] + hf * (h[1] + InP[0]);
+        // resonant highpass (Chamberlin SVF)
+        h[1] := h[1] - hf * (h[0] + hq * h[1]);
+        InP[0] := InP[0] + h[1];
 
-       OutP[0] := InP[0] / (1 + Abs(InP[0]));
+        OutP[0] := InP[0] / (1 + Abs(InP[0]));
 
-       FBuffer[0]^[bp] := OutP[0];
-       OutP[0] := OutP[0] + (m[0] * FBuffer[0]^[(bp + d[0]) mod 1000]) +
-                            (m[1] * FBuffer[0]^[(bp + d[1]) mod 1000]);
+        FBuffer[0]^[bp] := OutP[0];
+        OutP[0] := OutP[0] + (m[0] * FBuffer[0]^[(bp + d[0]) mod 1000]) +
+          (m[1] * FBuffer[0]^[(bp + d[1]) mod 1000]);
 
-       FilterState[0, 0] := LPF * FilterState[0, 0] + trm * OutP[0];
-       FilterState[0, 1] := LPF * FilterState[0, 1] + FilterState[0, 0];
-       FilterState[0, 2] := LPF * FilterState[0, 2] + FilterState[0, 1];
-       FilterState[0, 3] := LPF * FilterState[0, 3] + FilterState[0, 2]; //-24dB/oct filter
+        FilterState[0, 0] := LPF * FilterState[0, 0] + trm * OutP[0];
+        FilterState[0, 1] := LPF * FilterState[0, 1] + FilterState[0, 0];
+        FilterState[0, 2] := LPF * FilterState[0, 2] + FilterState[0, 1];
+        FilterState[0, 3] := LPF * FilterState[0, 3] + FilterState[0, 2]; // -24dB/oct filter
 
-       FilterState[0, 4] := HPF * (FilterState[0, 4] - FilterState[0, 3]) + FilterState[0, 3]; //high pass
-       OutP[0] := FilterState[0, 3] - FilterState[0, 4];
+        FilterState[0, 4] := HPF * (FilterState[0, 4] - FilterState[0, 3]) + FilterState[0, 3]; //high pass
+        OutP[0] := FilterState[0, 3] - FilterState[0, 4];
 
-       if (bp = 0)
-        then bp := 999
-        else bp := bp - 1; //buffer position
+        if (bp = 0) then
+          bp := 999
+        else
+          bp := bp - 1; // buffer position
 
-       Outputs[0, Sample] := Outp[0];
-       Outputs[1, Sample] := Outp[1];
+        Outputs[0, Sample] := OutP[0];
+        Outputs[1, Sample] := OutP[1];
       end;
     end
-   else //hard clip
+    else // hard clip
     begin
-     for Sample := 0 to SampleFrames - 1 do
+      for Sample := 0 to SampleFrames - 1 do
       begin
-       InP[0] := drv * (Inputs[0, Sample] + Inputs[1, Sample] + bi);
+        InP[0] := drv * (Inputs[0, Sample] + Inputs[1, Sample] + bi);
 
-       h[0] := h[0] + hf * (h[1] + InP[0]); //resonant highpass (Chamberlin SVF)
-       h[1] := h[1] - hf * (h[0] + hq * h[1]);
-       InP[0] := InP[0] + h[1];
+        h[0] := h[0] + hf * (h[1] + InP[0]);
+        // resonant highpass (Chamberlin SVF)
+        h[1] := h[1] - hf * (h[0] + hq * h[1]);
+        InP[0] := InP[0] + h[1];
 
+        if InP[0] > clp then
+          OutP[0] := clp
+        else if InP[0] < -clp then
+          OutP[0] := -clp
+        else
+          OutP[0] := InP[0];
 
-       if InP[0] > clp        then OutP[0] :=  clp
-        else if InP[0] < -clp then OutP[0] := -clp
-        else OutP[0] := InP[0];
+        FBuffer[0]^[bp] := OutP[0];
+        OutP[0] := OutP[0] + (m[0] * FBuffer[0]^[(bp + d[0]) mod 1000]) +
+          (m[1] * FBuffer[0]^[(bp + d[1]) mod 1000]);
 
-       FBuffer[0]^[bp] := OutP[0];
-       OutP[0] := OutP[0] + (m[0] * FBuffer[0]^[(bp + d[0]) mod 1000]) +
-                            (m[1] * FBuffer[0]^[(bp + d[1]) mod 1000]);
+        FilterState[0, 0] := LPF * FilterState[0, 0] + trm * OutP[0];
+        FilterState[0, 1] := LPF * FilterState[0, 1] + FilterState[0, 0];
+        FilterState[0, 2] := LPF * FilterState[0, 2] + FilterState[0, 1];
+        FilterState[0, 3] := LPF * FilterState[0, 3] + FilterState[0, 2];
+        // -24dB/oct filter
 
-       FilterState[0, 0] := LPF * FilterState[0, 0] + trm * OutP[0];
-       FilterState[0, 1] := LPF * FilterState[0, 1] + FilterState[0, 0];
-       FilterState[0, 2] := LPF * FilterState[0, 2] + FilterState[0, 1];
-       FilterState[0, 3] := LPF * FilterState[0, 3] + FilterState[0, 2]; //-24dB/oct filter
+        FilterState[0, 4] := HPF * (FilterState[0, 4] - FilterState[0, 3]) +
+          FilterState[0, 3]; // high pass //also want smile curve here...
+        OutP[0] := FilterState[0, 3] - FilterState[0, 4];
 
-       FilterState[0, 4] := HPF * (FilterState[0, 4] - FilterState[0, 3]) + FilterState[0, 3]; //high pass //also want smile curve here...
-       OutP[0] := FilterState[0, 3] - FilterState[0, 4];
+        if (bp = 0) then
+          bp := 999
+        else
+          bp := bp - 1; // buffer position
 
-       if (bp = 0)
-        then bp := 999
-        else bp := bp - 1; //buffer position
-
-       Outputs[0, Sample] := Outp[0];
-       Outputs[1, Sample] := Outp[1];
+        Outputs[0, Sample] := OutP[0];
+        Outputs[1, Sample] := OutP[1];
       end;
     end;
   end;
- FBufferPosition := bp;
- if (Abs(FilterState[0, 0]) < 1E-10)
-  then FillChar(FFilterState[0, 0], 5 * SizeOf(Double), 0)
-  else Move(FilterState[0, 0], FFilterState[0, 0], 5 * SizeOf(Double));
- if (Abs(FilterState[1, 0]) < 1E-10) or (not FStereo)
-  then FillChar(FFilterState[1, 0], 5 * SizeOf(Double), 0)
-  else Move(FilterState[1, 0], FFilterState[1, 0], 5 * SizeOf(Double));
-
- if (Abs(h[0]) < 1E-10)
-  then FillChar(FHPFState[0], 2 * SizeOf(Double), 0)
+  FBufferPosition := bp;
+  if (Abs(FilterState[0, 0]) < 1E-10) then
+    FillChar(FFilterState[0, 0], 5 * SizeOf(Double), 0)
   else
-   begin
+    Move(FilterState[0, 0], FFilterState[0, 0], 5 * SizeOf(Double));
+  if (Abs(FilterState[1, 0]) < 1E-10) or (not FStereo) then
+    FillChar(FFilterState[1, 0], 5 * SizeOf(Double), 0)
+  else
+    Move(FilterState[1, 0], FFilterState[1, 0], 5 * SizeOf(Double));
+
+  if (Abs(h[0]) < 1E-10) then
+    FillChar(FHPFState[0], 2 * SizeOf(Double), 0)
+  else
+  begin
     FHPFState[0] := h[0];
     FHPFState[1] := h[1];
-   end;
+  end;
 end;
 
 procedure TComboDataModule.VSTModuleProcessDoubleReplacing(const Inputs,
   Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
 var
- InP, OutP    : array [0..1] of Double;
- trm, clp     : Double;
- LPF, bi      : Double;
- HPF, drv     : Double;
- FilterState  : array [0..1, 0..4] of Double;
- d            : array [0..1] of Integer;
- h            : array [0..1] of Double;
- m            : array [0..1] of Single;
- hf, hq       : Double;
- bp, Sample   : Integer;
+  InP, OutP: array [0 .. 1] of Double;
+  trm, clp: Double;
+  LPF, bi: Double;
+  HPF, drv: Double;
+  FilterState: array [0 .. 1, 0 .. 4] of Double;
+  d: array [0 .. 1] of Integer;
+  h: array [0 .. 1] of Double;
+  m: array [0 .. 1] of Single;
+  hf, hq: Double;
+  bp, Sample: Integer;
 begin
- m[0] := FMix[0];
- m[1] := FMix[1];
- clp  := FClip;
- LPF  := FLPF;
- HPF  := FHPF;
- bi   := FBias;
- drv  := FDrive;
- FilterState[0, 0] := FFilterState[0, 0];
- FilterState[0, 1] := FFilterState[0, 1];
- FilterState[0, 2] := FFilterState[0, 2];
- FilterState[0, 3] := FFilterState[0, 3];
- FilterState[0, 4] := FFilterState[0, 4];
- FilterState[1, 0] := FFilterState[1, 0];
- FilterState[1, 1] := FFilterState[1, 1];
- FilterState[1, 2] := FFilterState[1, 2];
- FilterState[1, 3] := FFilterState[1, 3];
- FilterState[1, 4] := FFilterState[1, 4];
- hf   := FHPFFrequency;
- hq   := FHPFResonance;
- h[0] := FHPFState[0];
- h[1] := FHPFState[1];
- d[0] := FDelay[0];
- d[1] := FDelay[1];
- bp   := FBufferPosition;
- trm  := FTrim * sqr(sqr(1 - LPF));
+  m[0] := FMix[0];
+  m[1] := FMix[1];
+  clp := FClip;
+  LPF := FLPF;
+  HPF := FHPF;
+  bi := FBias;
+  drv := FDrive;
+  FilterState[0, 0] := FFilterState[0, 0];
+  FilterState[0, 1] := FFilterState[0, 1];
+  FilterState[0, 2] := FFilterState[0, 2];
+  FilterState[0, 3] := FFilterState[0, 3];
+  FilterState[0, 4] := FFilterState[0, 4];
+  FilterState[1, 0] := FFilterState[1, 0];
+  FilterState[1, 1] := FFilterState[1, 1];
+  FilterState[1, 2] := FFilterState[1, 2];
+  FilterState[1, 3] := FFilterState[1, 3];
+  FilterState[1, 4] := FFilterState[1, 4];
+  hf := FHPFFrequency;
+  hq := FHPFResonance;
+  h[0] := FHPFState[0];
+  h[1] := FHPFState[1];
+  d[0] := FDelay[0];
+  d[1] := FDelay[1];
+  bp := FBufferPosition;
+  trm := FTrim * sqr(sqr(1 - LPF));
 
- if FStereo then //stereo
+  if FStereo then // stereo
   begin
-   for  Sample := 0 to SampleFrames - 1 do
+    for Sample := 0 to SampleFrames - 1 do
     begin
-     InP[0] := drv * (Inputs[0, Sample] + bi);
-     InP[1] := drv * (Inputs[1, Sample] + bi);
+      InP[0] := drv * (Inputs[0, Sample] + bi);
+      InP[1] := drv * (Inputs[1, Sample] + bi);
 
       if FIsSoftClipping then
-       begin
+      begin
         OutP[0] := InP[0] / (1 + Abs(InP[0]));
         OutP[1] := InP[1] / (1 + Abs(InP[1]));
-       end
+      end
       else
-       begin
-        if InP[0] > clp        then OutP[0] := clp
-         else if InP[0] < -clp then OutP[0] := -clp
-         else OutP[0] := InP[0];
-        if InP[1] > clp        then OutP[1] := clp
-         else if InP[1] < -clp then OutP[1] := -clp
-         else OutP[1] := InP[1];
-       end;
+      begin
+        if InP[0] > clp then
+          OutP[0] := clp
+        else if InP[0] < -clp then
+          OutP[0] := -clp
+        else
+          OutP[0] := InP[0];
+        if InP[1] > clp then
+          OutP[1] := clp
+        else if InP[1] < -clp then
+          OutP[1] := -clp
+        else
+          OutP[1] := InP[1];
+      end;
 
       FBuffer[0]^[bp] := OutP[0];
       FBuffer[1]^[bp] := OutP[1];

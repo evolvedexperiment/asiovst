@@ -84,14 +84,15 @@ implementation
 {$ENDIF}
 
 uses
-  Math, DAV_Common, DAV_Consts, DAV_Strings, DAV_Approximations, DAV_VSTModuleWithPrograms,
+  Math, DAV_Common, DAV_Consts, DAV_Strings, DAV_StringConvert,
+  DAV_Approximations, DAV_VSTModuleWithPrograms,
   LightweightFeedbackCompressorGUI;
 
 procedure TLightweightFeedbackCompressorDataModule.VSTModuleOpen(Sender: TObject);
 var
-  Channel : Integer;
+  Channel: Integer;
 const
-  CPresets : array [1..10, 0..9] of Single = (
+  CPresets: array [1..10, 0..9] of Single = (
     (50, 500, -10, 3, 4, 3, 0, 1, 0, 100),
     (20, 100, -12, 4, 2.5, 6, 0, 0, 0, 100),
     (20,  80, -15, 8, 2, 8, 0, 1, 0, 100),
@@ -103,325 +104,339 @@ const
     (3, 44, -17, 7, 1, 9, 1, 0, 0, 100),
     (8, 56, -11, 9, 4, 5, 1, 1, 0, 100));
 begin
- for Channel := 0 to Length(FLightweightFeedbackCompressor) - 1 do
+  for Channel := 0 to Length(FLightweightFeedbackCompressor) - 1 do
   begin
-   FLightweightFeedbackCompressor[Channel] := TLightweightSoftKneeFeedbackCompressor.Create;
-   FLightweightFeedbackCompressor[Channel].SampleRate := SampleRate;
+    FLightweightFeedbackCompressor[Channel] :=
+      TLightweightSoftKneeFeedbackCompressor.Create;
+    FLightweightFeedbackCompressor[Channel].SampleRate := SampleRate;
   end;
 
- Parameter[0] := 15;
- Parameter[1] := 75;
- Parameter[2] := -10;
- Parameter[3] := 5;
- Parameter[4] := 2;
- Parameter[5] := 6;
- Parameter[6] := 0;
- Parameter[7] := 0;
- Parameter[8] := 0;
- Parameter[9] := 100;
+  Parameter[0] := 15;
+  Parameter[1] := 75;
+  Parameter[2] := -10;
+  Parameter[3] := 5;
+  Parameter[4] := 2;
+  Parameter[5] := 6;
+  Parameter[6] := 0;
+  Parameter[7] := 0;
+  Parameter[8] := 0;
+  Parameter[9] := 100;
 
- Programs[0].SetParameters(FParameter);
- for Channel := 1 to numPrograms - 1
-  do Programs[Channel].SetParameters(CPresets[Channel]);
+  Programs[0].SetParameters(FParameter);
+  for Channel := 1 to numPrograms - 1 do
+    Programs[Channel].SetParameters(CPresets[Channel]);
 end;
 
-procedure TLightweightFeedbackCompressorDataModule.VSTModuleClose(Sender: TObject);
+procedure TLightweightFeedbackCompressorDataModule.VSTModuleClose
+  (Sender: TObject);
 begin
- FreeAndNil(FLightweightFeedbackCompressor[0]);
- FreeAndNil(FLightweightFeedbackCompressor[1]);
+  FreeAndNil(FLightweightFeedbackCompressor[0]);
+  FreeAndNil(FLightweightFeedbackCompressor[1]);
 end;
 
-procedure TLightweightFeedbackCompressorDataModule.VSTModuleEditOpen(
-  Sender: TObject; var GUI: TForm; ParentWindow: NativeUInt);
+procedure TLightweightFeedbackCompressorDataModule.VSTModuleEditOpen
+  (Sender: TObject; var GUI: TForm; ParentWindow: NativeUInt);
 begin
   GUI := TFmLightweightFeedbackCompressor.Create(Self);
 end;
 
-function TLightweightFeedbackCompressorDataModule.EvaluateCharacteristic(
-  const Input: Single): Single;
+function TLightweightFeedbackCompressorDataModule.EvaluateCharacteristic
+  (const Input: Single): Single;
 begin
- Result:= FLightweightFeedbackCompressor[0].CharacteristicCurve_dB(Input);
+  Result := FLightweightFeedbackCompressor[0].CharacteristicCurve_dB(Input);
 end;
 
-procedure TLightweightFeedbackCompressorDataModule.ParameterMixChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TLightweightFeedbackCompressorDataModule.ParameterMixChange
+  (Sender: TObject; const Index: Integer; var Value: Single);
 begin
- Value := 100;
+  Value := 100;
 end;
 
-procedure TLightweightFeedbackCompressorDataModule.ParameterTimeLabel(
-  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+procedure TLightweightFeedbackCompressorDataModule.ParameterTimeLabel
+  (Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 var
-  Val : Single;
+  Val: Single;
 begin
- Val := Parameter[Index];
- if Val < 1
-  then PreDefined := 'µs' else
- if Val >= 1000
-  then PreDefined := 's';
+  Val := Parameter[Index];
+  if Val < 1 then
+    PreDefined := 'µs'
+  else if Val >= 1000 then
+    PreDefined := 's';
 end;
 
-procedure TLightweightFeedbackCompressorDataModule.ParameterTimeDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+procedure TLightweightFeedbackCompressorDataModule.ParameterTimeDisplay
+  (Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 var
-  Val : Single;
+  Val: Single;
 begin
- Val := Parameter[Index];
- if Val < 1
-  then PreDefined := FloatToStrF(RoundTo(1E3 * Val, -2), ffGeneral, 3, 3) else
- if Val < 1000
-  then PreDefined := FloatToStrF(RoundTo(Val, -2), ffGeneral, 3, 3)
-  else PreDefined := FloatToStrF(RoundTo(1E-3 * Val, -2), ffGeneral, 3, 3);
+  Val := Parameter[Index];
+  if Val < 1 then
+    PreDefined := FloatToStrF(RoundTo(1E3 * Val, -2), ffGeneral, 3, 3)
+  else if Val < 1000 then
+    PreDefined := FloatToStrF(RoundTo(Val, -2), ffGeneral, 3, 3)
+  else
+    PreDefined := FloatToStrF(RoundTo(1E-3 * Val, -2), ffGeneral, 3, 3);
 end;
 
-procedure TLightweightFeedbackCompressorDataModule.ParameterMakeUpGainDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+procedure TLightweightFeedbackCompressorDataModule.ParameterMakeUpGainDisplay
+  (Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
+  PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
 end;
 
-procedure TLightweightFeedbackCompressorDataModule.ParameterMakeUpGainChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TLightweightFeedbackCompressorDataModule.ParameterMakeUpGainChange
+  (Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if Assigned(FLightweightFeedbackCompressor[0]) then
+  if Assigned(FLightweightFeedbackCompressor[0]) then
   begin
-   FLightweightFeedbackCompressor[0].MakeUpGain_dB := Value;
-    if Assigned(FLightweightFeedbackCompressor[1])
-     then FLightweightFeedbackCompressor[1].MakeUpGain_dB := FLightweightFeedbackCompressor[0].MakeUpGain_dB;
+    FLightweightFeedbackCompressor[0].MakeUpGain_dB := Value;
+    if Assigned(FLightweightFeedbackCompressor[1]) then
+      FLightweightFeedbackCompressor[1].MakeUpGain_dB := FLightweightFeedbackCompressor[0].MakeUpGain_dB;
   end;
- if EditorForm is TFmLightweightFeedbackCompressor
-  then TFmLightweightFeedbackCompressor(EditorForm).UpdateMakeUp;
+  if EditorForm is TFmLightweightFeedbackCompressor then
+    TFmLightweightFeedbackCompressor(EditorForm).UpdateMakeUp;
 end;
 
-procedure TLightweightFeedbackCompressorDataModule.ParameterThresholdDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+procedure TLightweightFeedbackCompressorDataModule.ParameterThresholdDisplay
+  (Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
+  PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
 end;
 
-procedure TLightweightFeedbackCompressorDataModule.ParameterRatioDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+procedure TLightweightFeedbackCompressorDataModule.ParameterRatioDisplay
+  (Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
+  PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
 end;
 
-procedure TLightweightFeedbackCompressorDataModule.ParameterKneeDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+procedure TLightweightFeedbackCompressorDataModule.ParameterKneeDisplay
+  (Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
+  PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
 end;
 
-procedure TLightweightFeedbackCompressorDataModule.ParameterOnOffDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+procedure TLightweightFeedbackCompressorDataModule.ParameterOnOffDisplay
+  (Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- case Round(Parameter[Index]) of
-  0 : PreDefined := 'Off';
-  1 : PreDefined := 'On';
- end;
+  PreDefined := AnsiString(OnOff(Parameter[Index]));
 end;
 
-procedure TLightweightFeedbackCompressorDataModule.ParameterStereoChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TLightweightFeedbackCompressorDataModule.ParameterStereoChange
+  (Sender: TObject; const Index: Integer; var Value: Single);
 begin
- ChooseProcess;
- if EditorForm is TFmLightweightFeedbackCompressor
-  then TFmLightweightFeedbackCompressor(EditorForm).UpdateStereo;
+  ChooseProcess;
+  if EditorForm is TFmLightweightFeedbackCompressor then
+    TFmLightweightFeedbackCompressor(EditorForm).UpdateStereo;
 end;
 
-procedure TLightweightFeedbackCompressorDataModule.ParameterLimitChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TLightweightFeedbackCompressorDataModule.ParameterLimitChange
+  (Sender: TObject; const Index: Integer; var Value: Single);
 begin
- ChooseProcess;
- if EditorForm is TFmLightweightFeedbackCompressor
-  then TFmLightweightFeedbackCompressor(EditorForm).UpdateLimit;
+  ChooseProcess;
+  if EditorForm is TFmLightweightFeedbackCompressor then
+    TFmLightweightFeedbackCompressor(EditorForm).UpdateLimit;
 end;
 
 procedure TLightweightFeedbackCompressorDataModule.ChooseProcess;
 begin
- case Round(Parameter[7]) of
-  0 : case Round(Parameter[6]) of
-       0 : OnProcess := VSTModuleProcessMono;
-       1 : OnProcess := VSTModuleProcessStereo;
+  case Round(Parameter[7]) of
+    0:
+      case Round(Parameter[6]) of
+        0:
+          OnProcess := VSTModuleProcessMono;
+        1:
+          OnProcess := VSTModuleProcessStereo;
       end;
-  1 : case Round(Parameter[6]) of
-       0 : OnProcess := VSTModuleProcessMonoSoftClip;
-       1 : OnProcess := VSTModuleProcessStereoSoftClip;
+    1:
+      case Round(Parameter[6]) of
+        0:
+          OnProcess := VSTModuleProcessMonoSoftClip;
+        1:
+          OnProcess := VSTModuleProcessStereoSoftClip;
       end;
- end;
- OnProcess32Replacing := OnProcess;
+  end;
+  OnProcess32Replacing := OnProcess;
 end;
 
-procedure TLightweightFeedbackCompressorDataModule.ParameterAutoMakeUpGainChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TLightweightFeedbackCompressorDataModule.ParameterAutoMakeUpGainChange
+  (Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if Assigned(FLightweightFeedbackCompressor[0]) then
+  if Assigned(FLightweightFeedbackCompressor[0]) then
   begin
-   FLightweightFeedbackCompressor[0].AutoMakeUp := Boolean(Round(Value));
-   if Assigned(FLightweightFeedbackCompressor[1])
-    then FLightweightFeedbackCompressor[1].AutoMakeUp := FLightweightFeedbackCompressor[0].AutoMakeUp;
+    FLightweightFeedbackCompressor[0].AutoMakeUp := Boolean(Round(Value));
+    if Assigned(FLightweightFeedbackCompressor[1]) then
+      FLightweightFeedbackCompressor[1].AutoMakeUp :=
+        FLightweightFeedbackCompressor[0].AutoMakeUp;
   end;
 
- // update GUI
- if EditorForm is TFmLightweightFeedbackCompressor
-  then TFmLightweightFeedbackCompressor(EditorForm).UpdateAutoMakeUpGain;
+  // update GUI
+  if EditorForm is TFmLightweightFeedbackCompressor then
+    TFmLightweightFeedbackCompressor(EditorForm).UpdateAutoMakeUpGain;
 end;
 
-function TLightweightFeedbackCompressorDataModule.GetLightweightFeedbackCompressor(Index: Integer): TCustomCompressor;
+function TLightweightFeedbackCompressorDataModule.
+  GetLightweightFeedbackCompressor(Index: Integer): TCustomCompressor;
 begin
- if Index in [0 .. Length(FLightweightFeedbackCompressor) - 1] then
+  if Index in [0 .. Length(FLightweightFeedbackCompressor) - 1] then
     Result := FLightweightFeedbackCompressor[Index]
   else
     raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
 end;
 
-procedure TLightweightFeedbackCompressorDataModule.ParameterAttackChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TLightweightFeedbackCompressorDataModule.ParameterAttackChange
+  (Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if Assigned(FLightweightFeedbackCompressor[0]) then
+  if Assigned(FLightweightFeedbackCompressor[0]) then
   begin
-   FLightweightFeedbackCompressor[0].Attack := Value;
-   if Assigned(FLightweightFeedbackCompressor[1])
-    then FLightweightFeedbackCompressor[1].Attack := FLightweightFeedbackCompressor[0].Attack;
+    FLightweightFeedbackCompressor[0].Attack := Value;
+    if Assigned(FLightweightFeedbackCompressor[1]) then
+      FLightweightFeedbackCompressor[1].Attack := FLightweightFeedbackCompressor
+        [0].Attack;
   end;
 
- // update GUI
- if EditorForm is TFmLightweightFeedbackCompressor
-  then TFmLightweightFeedbackCompressor(EditorForm).UpdateAttack;
+  // update GUI
+  if EditorForm is TFmLightweightFeedbackCompressor then
+    TFmLightweightFeedbackCompressor(EditorForm).UpdateAttack;
 end;
 
-procedure TLightweightFeedbackCompressorDataModule.ParameterReleaseChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TLightweightFeedbackCompressorDataModule.ParameterReleaseChange
+  (Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if Assigned(FLightweightFeedbackCompressor[0]) then
+  if Assigned(FLightweightFeedbackCompressor[0]) then
   begin
-   FLightweightFeedbackCompressor[0].Release := Value;
-   if Assigned(FLightweightFeedbackCompressor[1])
-    then FLightweightFeedbackCompressor[1].Release := FLightweightFeedbackCompressor[0].Release;
+    FLightweightFeedbackCompressor[0].Release := Value;
+    if Assigned(FLightweightFeedbackCompressor[1]) then
+      FLightweightFeedbackCompressor[1].Release :=
+        FLightweightFeedbackCompressor[0].Release;
   end;
 
- // update GUI
- if EditorForm is TFmLightweightFeedbackCompressor
-  then TFmLightweightFeedbackCompressor(EditorForm).UpdateRelease;
+  // update GUI
+  if EditorForm is TFmLightweightFeedbackCompressor then
+    TFmLightweightFeedbackCompressor(EditorForm).UpdateRelease;
 end;
 
-procedure TLightweightFeedbackCompressorDataModule.ParameterThresholdChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TLightweightFeedbackCompressorDataModule.ParameterThresholdChange
+  (Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if Assigned(FLightweightFeedbackCompressor[0]) then
+  if Assigned(FLightweightFeedbackCompressor[0]) then
   begin
-   FLightweightFeedbackCompressor[0].Threshold_dB := Value;
-   if Assigned(FLightweightFeedbackCompressor[1])
-    then FLightweightFeedbackCompressor[1].Threshold_dB := Value;
+    FLightweightFeedbackCompressor[0].Threshold_dB := Value;
+    if Assigned(FLightweightFeedbackCompressor[1]) then
+      FLightweightFeedbackCompressor[1].Threshold_dB := Value;
   end;
 
- // update GUI
- if EditorForm is TFmLightweightFeedbackCompressor
-  then TFmLightweightFeedbackCompressor(EditorForm).UpdateThreshold;
+  // update GUI
+  if EditorForm is TFmLightweightFeedbackCompressor then
+    TFmLightweightFeedbackCompressor(EditorForm).UpdateThreshold;
 end;
 
-procedure TLightweightFeedbackCompressorDataModule.ParameterRatioChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TLightweightFeedbackCompressorDataModule.ParameterRatioChange
+  (Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if Assigned(FLightweightFeedbackCompressor[0]) then
+  if Assigned(FLightweightFeedbackCompressor[0]) then
   begin
-   FLightweightFeedbackCompressor[0].Ratio := Value;
-   if Assigned(FLightweightFeedbackCompressor[1])
-    then FLightweightFeedbackCompressor[1].Ratio := Value;
+    FLightweightFeedbackCompressor[0].Ratio := Value;
+    if Assigned(FLightweightFeedbackCompressor[1]) then
+      FLightweightFeedbackCompressor[1].Ratio := Value;
   end;
 
- // update GUI
- if EditorForm is TFmLightweightFeedbackCompressor
-  then TFmLightweightFeedbackCompressor(EditorForm).UpdateRatio;
+  // update GUI
+  if EditorForm is TFmLightweightFeedbackCompressor then
+    TFmLightweightFeedbackCompressor(EditorForm).UpdateRatio;
 end;
 
-procedure TLightweightFeedbackCompressorDataModule.ParameterKneeChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TLightweightFeedbackCompressorDataModule.ParameterKneeChange
+  (Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if Assigned(FLightweightFeedbackCompressor[0]) then
+  if Assigned(FLightweightFeedbackCompressor[0]) then
   begin
-   FLightweightFeedbackCompressor[0].Knee_dB := Value;
-   if Assigned(FLightweightFeedbackCompressor[1])
-    then FLightweightFeedbackCompressor[1].Knee_dB := Value;
+    FLightweightFeedbackCompressor[0].Knee_dB := Value;
+    if Assigned(FLightweightFeedbackCompressor[1]) then
+      FLightweightFeedbackCompressor[1].Knee_dB := Value;
   end;
 
- // update GUI
- if EditorForm is TFmLightweightFeedbackCompressor
-  then TFmLightweightFeedbackCompressor(EditorForm).UpdateKnee;
+  // update GUI
+  if EditorForm is TFmLightweightFeedbackCompressor then
+    TFmLightweightFeedbackCompressor(EditorForm).UpdateKnee;
 end;
 
-procedure TLightweightFeedbackCompressorDataModule.VSTModuleProcessStereo(const Inputs,
+procedure TLightweightFeedbackCompressorDataModule.VSTModuleProcessStereo
+  (const Inputs, Outputs: TDAVArrayOfSingleFixedArray;
+  const SampleFrames: Cardinal);
+var
+  Sample: Integer;
+begin
+  for Sample := 0 to SampleFrames - 1 do
+  begin
+    Outputs[0, Sample] := FLightweightFeedbackCompressor[0].ProcessSample64(Inputs[0, Sample]);
+    Outputs[1, Sample] := FLightweightFeedbackCompressor[1].ProcessSample64(Inputs[1, Sample]);
+  end;
+end;
+
+procedure TLightweightFeedbackCompressorDataModule.VSTModuleProcessMono
+  (const Inputs, Outputs: TDAVArrayOfSingleFixedArray;
+  const SampleFrames: Cardinal);
+var
+  Sample: Integer;
+  Temp: Single;
+begin
+  for Sample := 0 to SampleFrames - 1 do
+    with FLightweightFeedbackCompressor[0] do
+    begin
+      InputSample(CHalf32 * (Inputs[0, Sample] + Inputs[1, Sample]));
+      Temp := MakeUpGain * GainReductionFactor;
+      Outputs[0, Sample] := Temp * Inputs[0, Sample];
+      Outputs[1, Sample] := Temp * Inputs[1, Sample];
+    end;
+end;
+
+procedure TLightweightFeedbackCompressorDataModule.
+  VSTModuleProcessStereoSoftClip(const Inputs,
   Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
-  Sample : Integer;
+  Sample: Integer;
 begin
- for Sample := 0 to SampleFrames - 1 do
+  for Sample := 0 to SampleFrames - 1 do
   begin
-   Outputs[0, Sample] := FLightweightFeedbackCompressor[0].ProcessSample64(Inputs[0, Sample]);
-   Outputs[1, Sample] := FLightweightFeedbackCompressor[1].ProcessSample64(Inputs[1, Sample]);
+    Outputs[0, Sample] := FastTanhContinousError4(FLightweightFeedbackCompressor[0].ProcessSample64(Inputs[0, Sample]));
+    Outputs[1, Sample] := FastTanhContinousError4(FLightweightFeedbackCompressor[1].ProcessSample64(Inputs[1, Sample]));
   end;
 end;
 
-procedure TLightweightFeedbackCompressorDataModule.VSTModuleProcessMono(const Inputs,
-  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
+procedure TLightweightFeedbackCompressorDataModule.VSTModuleProcessMonoSoftClip
+  (const Inputs, Outputs: TDAVArrayOfSingleFixedArray;
+  const SampleFrames: Cardinal);
 var
-  Sample : Integer;
-  Temp   : Single;
+  Sample: Integer;
+  Temp: Single;
 begin
- for Sample := 0 to SampleFrames - 1 do
-  with FLightweightFeedbackCompressor[0] do
-   begin
-    InputSample(CHalf32 * (Inputs[0, Sample] + Inputs[1, Sample]));
-    Temp := MakeUpGain * GainReductionFactor;
-    Outputs[0, Sample] := Temp * Inputs[0, Sample];
-    Outputs[1, Sample] := Temp * Inputs[1, Sample];
-   end;
+  for Sample := 0 to SampleFrames - 1 do
+    with FLightweightFeedbackCompressor[0] do
+    begin
+      InputSample(CHalf32 * (Inputs[0, Sample] + Inputs[1, Sample]));
+      Temp := MakeUpGain * GainReductionFactor;
+      Outputs[0, Sample] := FastTanhContinousError4(Temp * Inputs[0, Sample]);
+      Outputs[1, Sample] := FastTanhContinousError4(Temp * Inputs[1, Sample]);
+    end;
 end;
 
-procedure TLightweightFeedbackCompressorDataModule.VSTModuleProcessStereoSoftClip(const Inputs,
-  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
-var
-  Sample : Integer;
+procedure TLightweightFeedbackCompressorDataModule.VSTModuleSampleRateChange
+  (Sender: TObject; const SampleRate: Single);
 begin
- for Sample := 0 to SampleFrames - 1 do
+  if Abs(SampleRate) <> 0 then
   begin
-   Outputs[0, Sample] := FastTanhContinousError4(FLightweightFeedbackCompressor[0].ProcessSample64(Inputs[0, Sample]));
-   Outputs[1, Sample] := FastTanhContinousError4(FLightweightFeedbackCompressor[1].ProcessSample64(Inputs[1, Sample]));
-  end;
-end;
+    if Assigned(FLightweightFeedbackCompressor[0]) then
+      FLightweightFeedbackCompressor[0].SampleRate := SampleRate;
+    if Assigned(FLightweightFeedbackCompressor[1]) then
+      FLightweightFeedbackCompressor[1].SampleRate := SampleRate;
 
-procedure TLightweightFeedbackCompressorDataModule.VSTModuleProcessMonoSoftClip(const Inputs,
-  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
-var
-  Sample : Integer;
-  Temp   : Single;
-begin
- for Sample := 0 to SampleFrames - 1 do
-  with FLightweightFeedbackCompressor[0] do
-   begin
-    InputSample(CHalf32 * (Inputs[0, Sample] + Inputs[1, Sample]));
-    Temp := MakeUpGain * GainReductionFactor;
-    Outputs[0, Sample] := FastTanhContinousError4(Temp * Inputs[0, Sample]);
-    Outputs[1, Sample] := FastTanhContinousError4(Temp * Inputs[1, Sample]);
-   end;
-end;
-
-procedure TLightweightFeedbackCompressorDataModule.VSTModuleSampleRateChange(Sender: TObject;
-  const SampleRate: Single);
-begin
- if Abs(SampleRate) <> 0 then
-  begin
-   if Assigned(FLightweightFeedbackCompressor[0])
-    then FLightweightFeedbackCompressor[0].SampleRate := SampleRate;
-   if Assigned(FLightweightFeedbackCompressor[1])
-    then FLightweightFeedbackCompressor[1].SampleRate := SampleRate;
-
-   // update GUI
-   if EditorForm is TFmLightweightFeedbackCompressor then
-    with TFmLightweightFeedbackCompressor(EditorForm) do
-     begin
-      DialAttack.Min  := max(0.01, 2000 / SampleRate);
-      DialRelease.Min := max(0.1, 2000 / SampleRate);
-     end;
+    // update GUI
+    if EditorForm is TFmLightweightFeedbackCompressor then
+      with TFmLightweightFeedbackCompressor(EditorForm) do
+      begin
+        DialAttack.Min := max(0.01, 2000 / SampleRate);
+        DialRelease.Min := max(0.1, 2000 / SampleRate);
+      end;
   end;
 end;
 

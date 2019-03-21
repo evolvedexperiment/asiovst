@@ -34,6 +34,7 @@ object ChebyshevLPModule: TChebyshevLPModule
       Units = 'Hz'
       VSTModule = Owner
       OnParameterChange = ParamFrequencyChange
+      OnCustomParameterLabel = ChebyshevLPModuleParameterProperties0CustomParameterLabel
       OnCustomParameterDisplay = ParamFrequencyDisplay
       OnStringToParameter = StringToFrequency
     end
@@ -73,9 +74,9 @@ object ChebyshevLPModule: TChebyshevLPModule
   ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
-  OnProcess = VSTModuleProcess
-  OnProcess32Replacing = VSTModuleProcess
-  OnProcess64Replacing = VSTModuleProcessDoubleReplacing
+  OnProcess = VSTModuleProcess32
+  OnProcess32Replacing = VSTModuleProcess32
+  OnProcess64Replacing = VSTModuleProcess64Replacing
   OnSampleRateChange = VSTModuleSampleRateChange
   Height = 150
   Width = 215

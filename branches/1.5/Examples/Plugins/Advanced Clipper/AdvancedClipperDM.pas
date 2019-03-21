@@ -100,7 +100,7 @@ implementation
 {$ENDIF}
 
 uses
-  Math, DAV_Common, DAV_Convert, DAV_VSTModuleWithPrograms,
+  Math, DAV_Common, DAV_Convert, DAV_StringConvert, DAV_VSTModuleWithPrograms,
   {$IFDEF HAS_UNIT_ANSISTRINGS}AnsiStrings, {$ENDIF}AdvancedClipperGUI;
 
 procedure TAdvancedClipperDataModule.VSTModuleCreate(Sender: TObject);
@@ -309,10 +309,7 @@ end;
 procedure TAdvancedClipperDataModule.ParamHardClipDisplay(Sender: TObject;
   const Index: Integer; var PreDefined: AnsiString);
 begin
-  if Boolean(Round(Parameter[Index])) then
-    PreDefined := 'On'
-  else
-    PreDefined := 'Off';
+  PreDefined := AnsiString(OnOff(Parameter[Index]));
 end;
 
 procedure TAdvancedClipperDataModule.ParamHardClipChange(Sender: TObject;

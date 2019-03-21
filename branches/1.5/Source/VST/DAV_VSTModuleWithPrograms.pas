@@ -182,7 +182,7 @@ implementation
 
 uses
   {$IFDEF DELPHI14_UP}AnsiStrings, {$ENDIF} SysUtils, Math,
-  DAV_Common, DAV_Strings, DAV_VSTBasicModule;
+  DAV_Common, DAV_Strings, DAV_StringConvert, DAV_VSTBasicModule;
 
 resourcestring
   RStrUndefined = 'undefined';

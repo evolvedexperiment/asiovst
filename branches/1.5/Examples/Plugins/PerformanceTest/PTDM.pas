@@ -41,7 +41,6 @@ uses
 type
   TPerformanceTestModule = class(TVSTModule)
     procedure VSTModuleCreate(Sender: TObject);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: NativeUInt);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
     procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
   private
@@ -196,12 +195,8 @@ begin
   SetLength(DataTest, 8192);
   FindMaximum(PSingle(@DataTest[0]), 8192);
   FindMaximum(DataGetmem, 8192);
-end;
 
-procedure TPerformanceTestModule.VSTModuleEditOpen(Sender: TObject;
-  var GUI: TForm; ParentWindow: NativeUInt);
-begin
-  GUI := TFmPerformanceTest.Create(Self);
+  EditorFormClass := TFmPerformanceTest;
 end;
 
 procedure TPerformanceTestModule.VSTModuleProcess(

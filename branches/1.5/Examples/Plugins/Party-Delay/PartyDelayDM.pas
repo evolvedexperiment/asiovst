@@ -104,7 +104,7 @@ implementation
 
 uses
   DAV_Common, DAV_Convert, DAV_Math, DAV_Complex, DAV_Approximations,
-  DAV_VSTModuleWithPrograms, PartyDelayGui;
+  DAV_VSTModuleWithPrograms, DAV_StringConvert, PartyDelayGui;
 
 procedure TPartyDelayDataModule.VSTModuleCreate(Sender: TObject);
 begin
@@ -308,10 +308,7 @@ end;
 procedure TPartyDelayDataModule.ParameterOnOffDisplay(Sender: TObject;
   const Index: Integer; var PreDefined: AnsiString);
 begin
-  if Parameter[Index] > 0.5 then
-    PreDefined := 'On'
-  else
-    PreDefined := 'Off';
+  PreDefined := AnsiString(OnOff(Parameter[Index]));
 end;
 
 procedure TPartyDelayDataModule.ParameterOnOffChange(Sender: TObject;

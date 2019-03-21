@@ -147,42 +147,6 @@ object FmLightweightFeedbackCompressor: TFmLightweightFeedbackCompressor
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
   end
-  object GuiGraphXY: TGuiGraphXY
-    Left = 168
-    Top = 11
-    Width = 74
-    Height = 74
-    BorderColor = 14277598
-    BorderRadius = 2
-    FrameColor = 6844281
-    Flags = []
-    SeriesCollection = <
-      item
-        DisplayName = 'TGuiGraphXYSeriesCollectionItem'
-        SeriesClassName = 'TGuiGraphXYFunctionSeries'
-        Series.Color = clWhite
-      end>
-    XAxis.Flags = []
-    XAxis.Granularity = 50.000000000000000000
-    XAxis.Minimum = -90.000000000000000000
-    XAxis.Maximum = 10.000000000000000000
-    XAxis.Lower = -90.000000000000000000
-    XAxis.Upper = 10.000000000000000000
-    YAxis.Flags = []
-    YAxis.Granularity = 50.000000000000000000
-    YAxis.Minimum = -90.000000000000000000
-    YAxis.Maximum = 10.000000000000000000
-    YAxis.Lower = -90.000000000000000000
-    YAxis.Upper = 10.000000000000000000
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 14277598
-    Font.Height = -11
-    Font.Name = 'Tahoma'
-    Font.Style = []
-    AntiAlias = gaaLinear2x
-    LineColor = 3948356
-    LineWidth = 2
-  end
   object LbMakeUpGain: TGuiLabel
     Left = 250
     Top = 96
@@ -327,6 +291,43 @@ object FmLightweightFeedbackCompressor: TFmLightweightFeedbackCompressor
     Visible = False
     OnClick = LEDAutoGainClick
   end
+  object GuiGraphXY: TGuiGraphXY
+    Left = 168
+    Top = 11
+    Width = 74
+    Height = 74
+    BorderColor = 14277598
+    BorderRadius = 2.000000000000000000
+    BorderWidth = 1.500000000000000000
+    FrameColor = 6844281
+    GridColor = 4540752
+    Flags = []
+    SeriesCollection = <
+      item
+        DisplayName = 'TGuiGraphXYSeriesCollectionItem'
+        SeriesClassName = 'TGuiGraphXYFunctionSeries'
+        Series.Color = clWhite
+        Series.ShadeAlpha = 0
+        Series.Width = 1.000000000000000000
+      end>
+    XAxis.Flags = []
+    XAxis.Granularity = 50.000000000000000000
+    XAxis.Minimum = -90.000000000000000000
+    XAxis.Maximum = 10.000000000000000000
+    XAxis.Lower = -90.000000000000000000
+    XAxis.Upper = 10.000000000000000000
+    YAxis.Flags = []
+    YAxis.Granularity = 50.000000000000000000
+    YAxis.Minimum = -90.000000000000000000
+    YAxis.Maximum = 10.000000000000000000
+    YAxis.Lower = -90.000000000000000000
+    YAxis.Upper = 10.000000000000000000
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 14277598
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = []
+  end
   object DialThreshold: TGuiStitchedDial
     Left = 27
     Top = 120
@@ -349,6 +350,7 @@ object FmLightweightFeedbackCompressor: TFmLightweightFeedbackCompressor
     Width = 36
     Height = 36
     CurveMapping = -1.299999952316284000
+    DefaultValue = 0.009999999776482582
     Max = 1000.000000000000000000
     Min = 0.009999999776482582
     ScrollRange = 400.000000000000000000
@@ -357,7 +359,6 @@ object FmLightweightFeedbackCompressor: TFmLightweightFeedbackCompressor
     Value = 15.000000000000000000
     WheelStep = 1.000000000000000000
     OnChange = DialAttackChange
-    DefaultValue = 0.000000000000000000
   end
   object DialRelease: TGuiStitchedDial
     Left = 107
@@ -365,6 +366,7 @@ object FmLightweightFeedbackCompressor: TFmLightweightFeedbackCompressor
     Width = 36
     Height = 36
     CurveMapping = -1.299999952316284000
+    DefaultValue = 0.100000001490116100
     Max = 5000.000000000000000000
     Min = 0.100000001490116100
     ScrollRange = 400.000000000000000000
@@ -373,7 +375,6 @@ object FmLightweightFeedbackCompressor: TFmLightweightFeedbackCompressor
     Value = 75.000000000000000000
     WheelStep = 1.000000000000000000
     OnChange = DialReleaseChange
-    DefaultValue = 0.000000000000000000
   end
   object DialRatio: TGuiStitchedDial
     Left = 107
@@ -381,6 +382,7 @@ object FmLightweightFeedbackCompressor: TFmLightweightFeedbackCompressor
     Width = 36
     Height = 36
     CurveMapping = -1.799999952316284000
+    DefaultValue = 1.000000000000000000
     Max = 100.000000000000000000
     Min = 1.000000000000000000
     ScrollRange = 400.000000000000000000
@@ -389,7 +391,6 @@ object FmLightweightFeedbackCompressor: TFmLightweightFeedbackCompressor
     Value = 5.000000000000000000
     WheelStep = 1.000000000000000000
     OnChange = DialRatioChange
-    DefaultValue = 0.000000000000000000
   end
   object DialKnee: TGuiStitchedDial
     Left = 187

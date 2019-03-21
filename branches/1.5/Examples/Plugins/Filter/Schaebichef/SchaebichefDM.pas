@@ -66,110 +66,111 @@ uses
 
 procedure TSchaebichefLPModule.VSTModuleOpen(Sender: TObject);
 var
-  ChannelIndex : Integer;
+  ChannelIndex: Integer;
 begin
- Assert(numInputs = numOutputs);
- Assert(numInputs > 0);
- SetLength(FFilter, numInputs);
- for ChannelIndex := 0 to Length(FFilter) - 1 do
+  Assert(numInputs = numOutputs);
+  Assert(numInputs > 0);
+  SetLength(FFilter, numInputs);
+  for ChannelIndex := 0 to Length(FFilter) - 1 do
   begin
-   FFilter[ChannelIndex] := TChebyshev1LowpassFilter.Create(4);
-   FFilter[ChannelIndex].SetFilterValues(1000, 0, 1);
+    FFilter[ChannelIndex] := TChebyshev1LowpassFilter.Create(4);
+    FFilter[ChannelIndex].SetFilterValues(1000, 0, 1);
   end;
 
- // Initial Parameters
- Parameter[0] := 1000;
- Parameter[1] := 1;
- Parameter[2] := 4;
+  // Initial Parameters
+  Parameter[0] := 1000;
+  Parameter[1] := 1;
+  Parameter[2] := 4;
 
- with Programs[0] do
+  with Programs[0] do
   begin
-   Parameter[0] := 1000;
-   Parameter[1] := 1;
-   Parameter[2] := 4;
+    Parameter[0] := 1000;
+    Parameter[1] := 1;
+    Parameter[2] := 4;
   end;
- EditorFormClass := TFmSchaebichef;
+  EditorFormClass := TFmSchaebichef;
 end;
 
 procedure TSchaebichefLPModule.VSTModuleClose(Sender: TObject);
 var
-  ChannelIndex : Integer;
+  ChannelIndex: Integer;
 begin
- for ChannelIndex := 0 to Length(FFilter) - 1
-  do FreeAndNil(FFilter[ChannelIndex]);
+  for ChannelIndex := 0 to Length(FFilter) - 1 do
+    FreeAndNil(FFilter[ChannelIndex]);
 end;
 
 procedure TSchaebichefLPModule.ParamRippleChange(Sender: TObject;
   const Index: Integer; var Value: Single);
 var
-  Channel : Integer;
+  Channel: Integer;
 begin
- for Channel := 0 to Length(FFilter) - 1 do
-  if Assigned(FFilter[Channel]) then FFilter[Channel].Ripple := Value;
+  for Channel := 0 to Length(FFilter) - 1 do
+    if Assigned(FFilter[Channel]) then
+      FFilter[Channel].Ripple := Value;
 
- // update GUI if necessary
- if EditorForm is TFmSchaebichef
-  then TFmSchaebichef(EditorForm).UpdateRipple;
+  // update GUI if necessary
+  if EditorForm is TFmSchaebichef then
+    TFmSchaebichef(EditorForm).UpdateRipple;
 end;
 
 procedure TSchaebichefLPModule.ParamOrderChange(Sender: TObject;
   const Index: Integer; var Value: Single);
 var
-  Channel : Integer;
+  Channel: Integer;
 begin
- for Channel := 0 to Length(FFilter) - 1 do
-  if Assigned(FFilter[Channel])
-   then FFilter[Channel].Order := Round(Value); // max(2, 2 * Round(0.5 * Value));
+  for Channel := 0 to Length(FFilter) - 1 do
+    if Assigned(FFilter[Channel]) then
+      FFilter[Channel].Order := Round(Value); // max(2, 2 * Round(0.5 * Value));
 
- // update GUI if necessary
- if EditorForm is TFmSchaebichef
-  then TFmSchaebichef(EditorForm).UpdateOrder;
+  // update GUI if necessary
+  if EditorForm is TFmSchaebichef then
+    TFmSchaebichef(EditorForm).UpdateOrder;
 end;
 
 procedure TSchaebichefLPModule.ParamFrequencyChange(Sender: TObject;
   const Index: Integer; var Value: Single);
 var
-  Channel : Integer;
+  Channel: Integer;
 begin
- for Channel := 0 to Length(FFilter) - 1 do
-  if Assigned(FFilter[Channel])
-   then FFilter[Channel].Frequency := Value;
+  for Channel := 0 to Length(FFilter) - 1 do
+    if Assigned(FFilter[Channel]) then
+      FFilter[Channel].Frequency := Value;
 
- // update GUI if necessary
- if EditorForm is TFmSchaebichef
-  then TFmSchaebichef(EditorForm).UpdateFrequency;
+  // update GUI if necessary
+  if EditorForm is TFmSchaebichef then
+    TFmSchaebichef(EditorForm).UpdateFrequency;
 end;
 
 procedure TSchaebichefLPModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 var
-  Channel : Integer;
+  Channel: Integer;
 begin
- for Channel := 0 to Length(FFilter) - 1 do
-  if Assigned(FFilter[Channel])
-   then FFilter[Channel].SampleRate := SampleRate;
+  for Channel := 0 to Length(FFilter) - 1 do
+    if Assigned(FFilter[Channel]) then
+      FFilter[Channel].SampleRate := SampleRate;
 end;
 
 procedure TSchaebichefLPModule.VSTModuleProcess(const Inputs,
   Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
-  Sample  : Integer;
-  Channel : Integer;
+  Sample: Integer;
+  Channel: Integer;
 begin
- for Channel := 0 to Length(FFilter) - 1 do
-  for Sample := 0 to SampleFrames - 1
-   do Outputs[Channel, Sample] := FFilter[Channel].ProcessSample64(Inputs[Channel, Sample]);
+  for Channel := 0 to Length(FFilter) - 1 do
+    for Sample := 0 to SampleFrames - 1 do
+      Outputs[Channel, Sample] := FFilter[Channel].ProcessSample64(Inputs[Channel, Sample]);
 end;
 
 procedure TSchaebichefLPModule.VSTModuleProcessDoubleReplacing(const Inputs,
   Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
 var
-  Sample  : Integer;
-  Channel : Integer;
+  Sample: Integer;
+  Channel: Integer;
 begin
- for Channel := 0 to Length(FFilter) - 1 do
-  for Sample := 0 to SampleFrames - 1
-   do Outputs[Channel, Sample] := FFilter[Channel].ProcessSample64(Inputs[Channel, Sample]);
+  for Channel := 0 to Length(FFilter) - 1 do
+    for Sample := 0 to SampleFrames - 1 do
+      Outputs[Channel, Sample] := FFilter[Channel].ProcessSample64(Inputs[Channel, Sample]);
 end;
 
 end.

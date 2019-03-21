@@ -88,7 +88,8 @@ contains
   DAV_WaveFileTypes in '..\..\Source\DAV_WaveFileTypes.pas',
   DAV_XPlatform in '..\..\Source\DAV_XPlatform.pas',
   DAV_Convert in '..\..\Source\DAV_Convert.pas',
-  DAV_Consts in '..\..\Source\DAV_Consts.pas';
+  DAV_Consts in '..\..\Source\DAV_Consts.pas',
+  DAV_StringConvert in '..\..\Source\DAV_StringConvert.pas';
 
 end.
 

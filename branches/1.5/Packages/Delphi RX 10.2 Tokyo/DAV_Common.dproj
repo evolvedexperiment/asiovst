@@ -135,6 +135,7 @@
         <DCCReference Include="..\..\Source\DAV_XPlatform.pas"/>
         <DCCReference Include="..\..\Source\DAV_Convert.pas"/>
         <DCCReference Include="..\..\Source\DAV_Consts.pas"/>
+        <DCCReference Include="..\..\Source\DAV_StringConvert.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>

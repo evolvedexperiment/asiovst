@@ -35,10 +35,10 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
-  Forms, Controls, ExtCtrls, StdCtrls, DAV_Types, DAV_VSTModule, DAV_GuiPanel, 
-  DAV_GuiBaseControl, DAV_GuiLabel, DAV_GuiStitchedControls, 
-  DAV_GuiStitchedPngList, DAV_GuiStitchedDial, DAV_GuiStitchedSwitch, 
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
+  Forms, Controls, ExtCtrls, StdCtrls, DAV_Types, DAV_VSTModule, DAV_GuiPanel,
+  DAV_GuiBaseControl, DAV_GuiLabel, DAV_GuiStitchedControls,
+  DAV_GuiStitchedPngList, DAV_GuiStitchedDial, DAV_GuiStitchedSwitch,
   DAV_GuiCustomControl, DAV_GuiGraphicControl, DAV_GuiImageControl;
 
 type
@@ -107,119 +107,119 @@ uses
 
 procedure TFmVT.DialLowGainChange(Sender: TObject);
 begin
- with TVTVSTModule(Owner) do
+  with TVTVSTModule(Owner) do
   begin
-   if Parameter[0] <> DialLowGain.Value
-    then Parameter[0] := DialLowGain.Value;
+    if Parameter[0] <> DialLowGain.Value then
+      Parameter[0] := DialLowGain.Value;
   end;
 end;
 
 procedure TFmVT.DialHiGainChange(Sender: TObject);
 begin
- with TVTVSTModule(Owner) do
+  with TVTVSTModule(Owner) do
   begin
-   if Parameter[1] <> DialHiGain.Value
-    then Parameter[1] := DialHiGain.Value;
+    if Parameter[1] <> DialHiGain.Value then
+      Parameter[1] := DialHiGain.Value;
   end;
 end;
 
 procedure TFmVT.SwitchLowBypassChange(Sender: TObject);
 begin
- with TVTVSTModule(Owner) do
+  with TVTVSTModule(Owner) do
   begin
-   if Parameter[2] <> 1 - SwitchLowBypass.GlyphIndex
-    then Parameter[2] := 1 - SwitchLowBypass.GlyphIndex;
+    if Parameter[2] <> 1 - SwitchLowBypass.GlyphIndex then
+      Parameter[2] := 1 - SwitchLowBypass.GlyphIndex;
   end;
 end;
 
 procedure TFmVT.SwitchHiBypassChange(Sender: TObject);
 begin
- with TVTVSTModule(Owner) do
+  with TVTVSTModule(Owner) do
   begin
-   if Parameter[3] <> 1 - SwitchHiBypass.GlyphIndex
-    then Parameter[3] := 1 - SwitchHiBypass.GlyphIndex;
+    if Parameter[3] <> 1 - SwitchHiBypass.GlyphIndex then
+      Parameter[3] := 1 - SwitchHiBypass.GlyphIndex;
   end;
 end;
 
 procedure TFmVT.DialSelectorChange(Sender: TObject);
 begin
- with TVTVSTModule(Owner) do
+  with TVTVSTModule(Owner) do
   begin
-   if Parameter[4] <> DialSelector.Value
-    then Parameter[4] := DialSelector.Value;
+    if Parameter[4] <> DialSelector.Value then
+      Parameter[4] := DialSelector.Value;
   end;
 end;
 
 procedure TFmVT.SwitchChannelChange(Sender: TObject);
 begin
- with TVTVSTModule(Owner) do
+  with TVTVSTModule(Owner) do
   begin
-   if Parameter[5] <> 3 - SwitchChannel.GlyphIndex
-    then Parameter[5] := 3 - SwitchChannel.GlyphIndex;
+    if Parameter[5] <> 3 - SwitchChannel.GlyphIndex then
+      Parameter[5] := 3 - SwitchChannel.GlyphIndex;
   end;
 end;
 
 procedure TFmVT.DialOutputGainChange(Sender: TObject);
 begin
- with TVTVSTModule(Owner) do
+  with TVTVSTModule(Owner) do
   begin
-   if Parameter[6] <> DialOutputGain.Value
-    then Parameter[6] := DialOutputGain.Value;
+    if Parameter[6] <> DialOutputGain.Value then
+      Parameter[6] := DialOutputGain.Value;
   end;
 end;
 
 procedure TFmVT.FormShow(Sender: TObject);
 begin
- UpdateBassGain;
- UpdateTrebleGain;
- UpdateBassBypass;
- UpdateTrebleBypass;
- UpdateGain;
- UpdateChannel;
- UpdateSelector;
+  UpdateBassGain;
+  UpdateTrebleGain;
+  UpdateBassBypass;
+  UpdateTrebleBypass;
+  UpdateGain;
+  UpdateChannel;
+  UpdateSelector;
 end;
 
 procedure TFmVT.LbRoasty1Click(Sender: TObject);
 begin
- TVTVSTModule(Owner).Parameter[4] := 2;
+  TVTVSTModule(Owner).Parameter[4] := 2;
 end;
 
 procedure TFmVT.LbRoasty2Click(Sender: TObject);
 begin
- TVTVSTModule(Owner).Parameter[4] := 1;
+  TVTVSTModule(Owner).Parameter[4] := 1;
 end;
 
 procedure TFmVT.LbSteamin1Click(Sender: TObject);
 begin
- TVTVSTModule(Owner).Parameter[4] := 3;
+  TVTVSTModule(Owner).Parameter[4] := 3;
 end;
 
 procedure TFmVT.LbSteamin2Click(Sender: TObject);
 begin
- TVTVSTModule(Owner).Parameter[4] := 4;
+  TVTVSTModule(Owner).Parameter[4] := 4;
 end;
 
 procedure TFmVT.UpdateBassBypass;
 var
-  TempPosition : Integer;
+  TempPosition: Integer;
 begin
- with TVTVSTModule(Owner) do
+  with TVTVSTModule(Owner) do
   begin
-   TempPosition := Round(1 - Parameter[2]);
-   if SwitchLowBypass.GlyphIndex <> TempPosition
-    then SwitchLowBypass.GlyphIndex := TempPosition
+    TempPosition := Round(1 - Parameter[2]);
+    if SwitchLowBypass.GlyphIndex <> TempPosition then
+      SwitchLowBypass.GlyphIndex := TempPosition
   end;
 end;
 
 procedure TFmVT.UpdateBassGain;
 var
-  TempPosition : Single;
+  TempPosition: Single;
 begin
- with TVTVSTModule(Owner) do
+  with TVTVSTModule(Owner) do
   begin
-   TempPosition := Parameter[0];
-   if DialLowGain.Value <> TempPosition
-    then DialLowGain.Value := TempPosition
+    TempPosition := Parameter[0];
+    if DialLowGain.Value <> TempPosition then
+      DialLowGain.Value := TempPosition
   end;
 end;
 
@@ -227,60 +227,60 @@ procedure TFmVT.UpdateChannel;
 var
   TempPosition: Integer;
 begin
- with TVTVSTModule(Owner) do
+  with TVTVSTModule(Owner) do
   begin
-   TempPosition := Round(3 - Parameter[5]);
-   if SwitchChannel.GlyphIndex <> TempPosition
-    then SwitchChannel.GlyphIndex := TempPosition
+    TempPosition := Round(3 - Parameter[5]);
+    if SwitchChannel.GlyphIndex <> TempPosition then
+      SwitchChannel.GlyphIndex := TempPosition
   end;
 end;
 
 procedure TFmVT.UpdateGain;
 var
-  TempGain : Single;
+  TempGain: Single;
 begin
- with TVTVSTModule(Owner) do
+  with TVTVSTModule(Owner) do
   begin
-   TempGain := Parameter[6];
-   if DialOutputGain.Value <> TempGain
-    then DialOutputGain.Value := TempGain;
-   LbGainValue.Caption := FloatToStrF(RoundTo(TempGain, -1), ffGeneral, 0, 1) + ' dB';
+    TempGain := Parameter[6];
+    if DialOutputGain.Value <> TempGain then
+      DialOutputGain.Value := TempGain;
+    LbGainValue.Caption := FloatToStrF(RoundTo(TempGain, -1), ffGeneral, 0, 1) + ' dB';
   end;
 end;
 
 procedure TFmVT.UpdateSelector;
 var
-  TempPosition : Single;
+  TempPosition: Single;
 begin
- with TVTVSTModule(Owner) do
+  with TVTVSTModule(Owner) do
   begin
-   TempPosition := Parameter[4];
-   if DialSelector.Value <> TempPosition
-    then DialSelector.Value := TempPosition
+    TempPosition := Parameter[4];
+    if DialSelector.Value <> TempPosition then
+      DialSelector.Value := TempPosition
   end;
 end;
 
 procedure TFmVT.UpdateTrebleBypass;
 var
-  TempPosition : Integer;
+  TempPosition: Integer;
 begin
- with TVTVSTModule(Owner) do
+  with TVTVSTModule(Owner) do
   begin
-   TempPosition := Round(1 - Parameter[3]);
-   if SwitchHiBypass.GlyphIndex <> TempPosition
-    then SwitchHiBypass.GlyphIndex := TempPosition
+    TempPosition := Round(1 - Parameter[3]);
+    if SwitchHiBypass.GlyphIndex <> TempPosition then
+      SwitchHiBypass.GlyphIndex := TempPosition
   end;
 end;
 
 procedure TFmVT.UpdateTrebleGain;
 var
-  TempPosition : Single;
+  TempPosition: Single;
 begin
- with TVTVSTModule(Owner) do
+  with TVTVSTModule(Owner) do
   begin
-   TempPosition := Parameter[1];
-   if DialHiGain.Value <> TempPosition
-    then DialHiGain.Value := TempPosition
+    TempPosition := Parameter[1];
+    if DialHiGain.Value <> TempPosition then
+      DialHiGain.Value := TempPosition
   end;
 end;
 

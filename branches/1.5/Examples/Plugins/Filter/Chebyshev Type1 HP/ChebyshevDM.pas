@@ -43,7 +43,6 @@ type
   TChebyshevHPModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: NativeUInt);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
     procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
@@ -73,7 +72,7 @@ implementation
 
 uses
   {$IFDEF HAS_UNIT_ANSISTRINGS} AnsiStrings, {$ENDIF} Math, DAV_Common,
-  ChebyshevGUI;
+  DAV_StringConvert, ChebyshevGUI;
 
 procedure TChebyshevHPModule.VSTModuleOpen(Sender: TObject);
 var
@@ -87,10 +86,6 @@ begin
     FFilter[Channel] := TChebyshev1HighpassFilter.Create(4);
     FFilter[Channel].SetFilterValues(1000, 0, 1);
   end;
-  (*
- FResizer := TVstWindowSizer.Create;
- FResizer.Effect := Self;
-*)
 
   // Initial Parameters
   Parameter[0] := 1000;
@@ -103,6 +98,8 @@ begin
     Parameter[1] := 1;
     Parameter[2] := 4;
   end;
+
+  EditorFormClass := TFmChebyshev;
 end;
 
 procedure TChebyshevHPModule.VSTModuleClose(Sender: TObject);
@@ -112,12 +109,6 @@ begin
   for Channel := 0 to Length(FFilter) - 1 do
     FreeAndNil(FFilter[Channel]);
   // FreeAndNil(FResizer);
-end;
-
-procedure TChebyshevHPModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
-  ParentWindow: NativeUInt);
-begin
-  GUI := TFmChebyshev.Create(Self);
 end;
 
 
@@ -177,10 +168,7 @@ end;
 procedure TChebyshevHPModule.ParameterFrequencyDisplay(Sender: TObject;
   const Index: Integer; var PreDefined: AnsiString);
 begin
-  if Parameter[Index] < 1000 then
-    PreDefined := AnsiString(FloatToStrF(Parameter[Index], ffGeneral, 4, 4))
-  else
-    PreDefined := AnsiString(FloatToStrF(1E-3 * Parameter[Index], ffGeneral, 4, 4));
+  PreDefined := FloatToHertzShiftNoUnit(Parameter[Index]);
 end;
 
 procedure TChebyshevHPModule.ParameterFrequencyLabel(Sender: TObject;

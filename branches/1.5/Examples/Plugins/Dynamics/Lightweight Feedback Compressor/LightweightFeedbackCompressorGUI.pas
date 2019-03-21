@@ -34,9 +34,9 @@ interface
 
 {$I DAV_Compiler.inc}
 
-uses 
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
-  Forms, DAV_Types, DAV_VSTModule, DAV_GuiLabel, Controls, DAV_GuiBaseControl, 
+uses
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
+  Forms, DAV_Types, DAV_VSTModule, DAV_GuiLabel, Controls, DAV_GuiBaseControl,
   DAV_GuiGraphXY, DAV_GuiLED, DAV_GuiStitchedControls, DAV_GuiStitchedDial,
   DAV_GuiStitchedPngList, DAV_GuiImageControl, DAV_GuiCustomControl,
   DAV_GuiGraphicControl;
@@ -108,226 +108,237 @@ uses
 
 procedure TFmLightweightFeedbackCompressor.FormCreate(Sender: TObject);
 begin
- with TGuiGraphXYFunctionSeries(GuiGraphXY[0].Series) do
+  with TGuiGraphXYFunctionSeries(GuiGraphXY[0].Series) do
   begin
-   OnEvaluate := EvaluateCharacteristic;
+    OnEvaluate := EvaluateCharacteristic;
   end;
 end;
 
 procedure TFmLightweightFeedbackCompressor.FormShow(Sender: TObject);
 begin
- with TLightweightFeedbackCompressorDataModule(Owner) do
+  with TLightweightFeedbackCompressorDataModule(Owner) do
   begin
-   DialAttack.Min := max(0.01, 2000 / SampleRate);
-   DialRelease.Min := max(0.1, 2000 / SampleRate);
+    DialAttack.Min := max(0.01, 2000 / SampleRate);
+    DialRelease.Min := max(0.1, 2000 / SampleRate);
   end;
- UpdateAttack;
- UpdateRelease;
- UpdateThreshold;
- UpdateRatio;
- UpdateKnee;
- UpdateMakeUp;
- UpdateStereo;
- UpdateLimit;
- UpdateAutoMakeUpGain;
+  UpdateAttack;
+  UpdateRelease;
+  UpdateThreshold;
+  UpdateRatio;
+  UpdateKnee;
+  UpdateMakeUp;
+  UpdateStereo;
+  UpdateLimit;
+  UpdateAutoMakeUpGain;
 end;
 
 procedure TFmLightweightFeedbackCompressor.LEDAutoGainClick(Sender: TObject);
 begin
- with TLightweightFeedbackCompressorDataModule(Owner) do
+  with TLightweightFeedbackCompressorDataModule(Owner) do
   begin
-   Parameter[8] := Integer(LEDAutoGain.Brightness_Percent < 50);
-   if not DialMakeUpGain.Enabled then UpdateMakeUp;
+    Parameter[8] := Integer(LEDAutoGain.Brightness_Percent < 50);
+    if not DialMakeUpGain.Enabled then
+      UpdateMakeUp;
   end;
 end;
 
 procedure TFmLightweightFeedbackCompressor.LEDLimitClick(Sender: TObject);
 begin
- with TLightweightFeedbackCompressorDataModule(Owner) do
+  with TLightweightFeedbackCompressorDataModule(Owner) do
   begin
-   Parameter[7] := Integer(LEDLimit.Brightness_Percent < 50);
+    Parameter[7] := Integer(LEDLimit.Brightness_Percent < 50);
   end;
 end;
 
 procedure TFmLightweightFeedbackCompressor.LEDStereoClick(Sender: TObject);
 begin
- with TLightweightFeedbackCompressorDataModule(Owner) do
+  with TLightweightFeedbackCompressorDataModule(Owner) do
   begin
-   Parameter[6] := Integer(LEDStereo.Brightness_Percent < 50);
+    Parameter[6] := Integer(LEDStereo.Brightness_Percent < 50);
   end;
 end;
 
 procedure TFmLightweightFeedbackCompressor.DialAttackChange(Sender: TObject);
 begin
- with TLightweightFeedbackCompressorDataModule(Owner) do
+  with TLightweightFeedbackCompressorDataModule(Owner) do
   begin
-   Parameter[0] := DialAttack.Value;
+    Parameter[0] := DialAttack.Value;
   end;
 end;
 
 procedure TFmLightweightFeedbackCompressor.DialReleaseChange(Sender: TObject);
 begin
- with TLightweightFeedbackCompressorDataModule(Owner) do
+  with TLightweightFeedbackCompressorDataModule(Owner) do
   begin
-   Parameter[1] := DialRelease.Value;
+    Parameter[1] := DialRelease.Value;
   end;
 end;
 
 procedure TFmLightweightFeedbackCompressor.DialThresholdChange(Sender: TObject);
 begin
- with TLightweightFeedbackCompressorDataModule(Owner) do
+  with TLightweightFeedbackCompressorDataModule(Owner) do
   begin
-   Parameter[2] := DialThreshold.Value;
+    Parameter[2] := DialThreshold.Value;
   end;
 end;
 
-function TFmLightweightFeedbackCompressor.EvaluateCharacteristic(Sender: TObject;
-  X: Double): Double;
+function TFmLightweightFeedbackCompressor.EvaluateCharacteristic
+  (Sender: TObject; X: Double): Double;
 begin
- result := TLightweightFeedbackCompressorDataModule(Owner).EvaluateCharacteristic(X);
+  result := TLightweightFeedbackCompressorDataModule(Owner)
+    .EvaluateCharacteristic(X);
 end;
 
 procedure TFmLightweightFeedbackCompressor.DialRatioChange(Sender: TObject);
 begin
- with TLightweightFeedbackCompressorDataModule(Owner) do
+  with TLightweightFeedbackCompressorDataModule(Owner) do
   begin
-   Parameter[3] := DialRatio.Value;
+    Parameter[3] := DialRatio.Value;
   end;
 end;
 
 procedure TFmLightweightFeedbackCompressor.DialKneeChange(Sender: TObject);
 begin
- with TLightweightFeedbackCompressorDataModule(Owner) do
+  with TLightweightFeedbackCompressorDataModule(Owner) do
   begin
-   Parameter[4] := DialKnee.Value;
+    Parameter[4] := DialKnee.Value;
   end;
 end;
 
-procedure TFmLightweightFeedbackCompressor.DialMakeUpGainChange(Sender: TObject);
+procedure TFmLightweightFeedbackCompressor.DialMakeUpGainChange
+  (Sender: TObject);
 begin
- with TLightweightFeedbackCompressorDataModule(Owner) do
+  with TLightweightFeedbackCompressorDataModule(Owner) do
   begin
-   Parameter[5] := DialMakeUpGain.Value;
+    Parameter[5] := DialMakeUpGain.Value;
+  end;
+end;
+
+procedure TFmLightweightFeedbackCompressor.GetParameterText(Index: Integer);
+begin
+  with TLightweightFeedbackCompressorDataModule(Owner) do
+  begin
+    Result := ParameterDisplay[Index] + ' ' + ParameterLabel[Index];
   end;
 end;
 
 procedure TFmLightweightFeedbackCompressor.UpdateAttack;
 var
-  Attack : Single;
+  Attack: Single;
 begin
- with TLightweightFeedbackCompressorDataModule(Owner) do
+  with TLightweightFeedbackCompressorDataModule(Owner) do
   begin
-   Attack := Parameter[0];
-   if Attack <> DialAttack.Value
-    then DialAttack.Value := Attack;
-   LbAttackValue.Caption := ParameterDisplay[0] + ' ' + ParameterLabel[0];
+    Attack := Parameter[0];
+    if Attack <> DialAttack.Value then
+      DialAttack.Value := Attack;
+    LbAttackValue.Caption := GetParameterText(0);
   end;
 end;
 
 procedure TFmLightweightFeedbackCompressor.UpdateRelease;
 var
-  Release : Single;
+  Release: Single;
 begin
- with TLightweightFeedbackCompressorDataModule(Owner) do
+  with TLightweightFeedbackCompressorDataModule(Owner) do
   begin
-   Release := Parameter[1];
-   if Release <> DialRelease.Value
-    then DialRelease.Value := Release;
-   LbReleaseValue.Caption := ParameterDisplay[1] + ' ' + ParameterLabel[1];
+    Release := Parameter[1];
+    if Release <> DialRelease.Value then
+      DialRelease.Value := Release;
+    LbReleaseValue.Caption := GetParameterText(1);
   end;
 end;
 
 procedure TFmLightweightFeedbackCompressor.UpdateKnee;
 var
-  Knee : Single;
+  Knee: Single;
 begin
- with TLightweightFeedbackCompressorDataModule(Owner) do
+  with TLightweightFeedbackCompressorDataModule(Owner) do
   begin
-   Knee := Parameter[4];
-   if Knee <> DialKnee.Value
-    then DialKnee.Value := Knee;
-   LbKneeValue.Caption := ParameterDisplay[4] + ' ' + ParameterLabel[4];
-   GuiGraphXY.UpdateGraph;
+    Knee := Parameter[4];
+    if Knee <> DialKnee.Value then
+      DialKnee.Value := Knee;
+    LbKneeValue.Caption := GetParameterText(4);
+    GuiGraphXY.UpdateGraph;
   end;
 end;
 
 procedure TFmLightweightFeedbackCompressor.UpdateMakeUp;
 var
-  MakeUp : Single;
+  MakeUp: Single;
 begin
- with TLightweightFeedbackCompressorDataModule(Owner) do
+  with TLightweightFeedbackCompressorDataModule(Owner) do
   begin
-   MakeUp := LightweightFeedbackCompressor[0].MakeUpGain_dB;
-   if MakeUp <> DialMakeUpGain.Value
-    then DialMakeUpGain.Value := MakeUp;
-   LbMakeUpGainValue.Caption := ParameterDisplay[5] + ' ' + ParameterLabel[5];
-   GuiGraphXY.UpdateGraph;
+    MakeUp := LightweightFeedbackCompressor[0].MakeUpGain_dB;
+    if MakeUp <> DialMakeUpGain.Value then
+      DialMakeUpGain.Value := MakeUp;
+    LbMakeUpGainValue.Caption := GetParameterText(5);
+    GuiGraphXY.UpdateGraph;
   end;
 end;
 
 procedure TFmLightweightFeedbackCompressor.UpdateRatio;
 var
-  Ratio : Single;
+  Ratio: Single;
 begin
- with TLightweightFeedbackCompressorDataModule(Owner) do
+  with TLightweightFeedbackCompressorDataModule(Owner) do
   begin
-   Ratio := Parameter[3];
-   if Ratio <> DialRatio.Value
-    then DialRatio.Value := Ratio;
-   LbRatioValue.Caption := ParameterDisplay[3] + ' : 1';
-   GuiGraphXY.UpdateGraph;
+    Ratio := Parameter[3];
+    if Ratio <> DialRatio.Value then
+      DialRatio.Value := Ratio;
+    LbRatioValue.Caption := ParameterDisplay[3] + ' : 1';
+    GuiGraphXY.UpdateGraph;
   end;
 end;
 
 procedure TFmLightweightFeedbackCompressor.UpdateThreshold;
 var
-  Threshold : Single;
+  Threshold: Single;
 begin
- with TLightweightFeedbackCompressorDataModule(Owner) do
+  with TLightweightFeedbackCompressorDataModule(Owner) do
   begin
-   Threshold := Parameter[2];
-   if Threshold <> DialThreshold.Value
-    then DialThreshold.Value := Threshold;
-   LbThresholdValue.Caption := ParameterDisplay[2] + ' ' + ParameterLabel[2];
-   GuiGraphXY.UpdateGraph;
+    Threshold := Parameter[2];
+    if Threshold <> DialThreshold.Value then
+      DialThreshold.Value := Threshold;
+    LbThresholdValue.Caption := GetParameterText(2);
+    GuiGraphXY.UpdateGraph;
   end;
 end;
 
 procedure TFmLightweightFeedbackCompressor.UpdateStereo;
 var
-  Brightness : Single;
+  Brightness: Single;
 begin
- with TLightweightFeedbackCompressorDataModule(Owner) do
+  with TLightweightFeedbackCompressorDataModule(Owner) do
   begin
-   Brightness := 100 * (0.1 + 0.9 * Parameter[6]);
-   if Brightness <> LEDStereo.Brightness_Percent
-    then LEDStereo.Brightness_Percent := Brightness;
+    Brightness := 100 * (0.1 + 0.9 * Parameter[6]);
+    if Brightness <> LEDStereo.Brightness_Percent then
+      LEDStereo.Brightness_Percent := Brightness;
   end;
 end;
 
 procedure TFmLightweightFeedbackCompressor.UpdateAutoMakeUpGain;
 var
-  Brightness : Single;
+  Brightness: Single;
 begin
- with TLightweightFeedbackCompressorDataModule(Owner) do
+  with TLightweightFeedbackCompressorDataModule(Owner) do
   begin
-   Brightness := 100 * (0.1 + 0.9 * Parameter[8]);
-   if Brightness <> LEDAutoGain.Brightness_Percent
-    then LEDAutoGain.Brightness_Percent := Brightness;
-   DialMakeUpGain.Enabled := Brightness < 50;
-   GuiGraphXY.UpdateGraph;
+    Brightness := 100 * (0.1 + 0.9 * Parameter[8]);
+    if Brightness <> LEDAutoGain.Brightness_Percent then
+      LEDAutoGain.Brightness_Percent := Brightness;
+    DialMakeUpGain.Enabled := Brightness < 50;
+    GuiGraphXY.UpdateGraph;
   end;
 end;
 
 procedure TFmLightweightFeedbackCompressor.UpdateLimit;
 var
-  Brightness : Single;
+  Brightness: Single;
 begin
- with TLightweightFeedbackCompressorDataModule(Owner) do
+  with TLightweightFeedbackCompressorDataModule(Owner) do
   begin
-   Brightness := 100 * (0.1 + 0.9 * Parameter[7]);
-   if Brightness <> LEDLimit.Brightness_Percent
-    then LEDLimit.Brightness_Percent := Brightness;
+    Brightness := 100 * (0.1 + 0.9 * Parameter[7]);
+    if Brightness <> LEDLimit.Brightness_Percent then
+      LEDLimit.Brightness_Percent := Brightness;
   end;
 end;
 

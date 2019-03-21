@@ -905,45 +905,49 @@ var
   n, i: Integer;
   s: AnsiString;
 begin
- PresetBox.clear;
- n := VSTHost[0].numPrograms;
+  PresetBox.Clear;
+  n := VSTHost[0].numPrograms;
 
- for i := 0 to n - 1 do
+  for i := 0 to n - 1 do
   begin
-   VSTHost[0].GetProgramNameIndexed(-1, i, s);
-   m := TMenuItem.Create(Self);
-   m.Caption := string(s);
-   m.OnClick := SetPreset;
-   m.Tag := i;
-  {$IFNDEF FPC}
-   if (i > 0) and (i mod 256 <> 0) and (i mod 32 = 0)
-    then m.break := mbBarBreak;
-  {$ENDIF}
-   s := AnsiString(IntToStr(i));
-   if i < 10 then s := '00' + s else
-   if i < 100 then s := '0' + s;
-   PresetBox.AddItem(string(s) + ': ' + M.Caption, nil);
+    VSTHost[0].GetProgramNameIndexed(-1, i, s);
+    m := TMenuItem.Create(Self);
+    m.Caption := string(s);
+    m.OnClick := SetPreset;
+    m.Tag := i;
+{$IFNDEF FPC}
+    if (i > 0) and (i mod 256 <> 0) and (i mod 32 = 0) then
+      m.break := mbBarBreak;
+{$ENDIF}
+    s := AnsiString(IntToStr(i));
+    if i < 10 then
+      s := '00' + s
+    else if i < 100 then
+      s := '0' + s;
+    PresetBox.AddItem(string(s) + ': ' + m.Caption, nil);
   end;
 
- if n >= 0 then PresetBox.ItemIndex := FCurProg;
+  if n >= 0 then
+    PresetBox.ItemIndex := FCurProg;
 end;
 
 procedure TFormMiniHost.StopProcessingAndClosePlugin;
 begin
- TimerWaveFile.Enabled := False;
- FProcessing := False;
- StopAudio;
- Sleep(2);
- ClosePlugin;
- Sleep(2);
+  TimerWaveFile.Enabled := False;
+  FProcessing := False;
+  StopAudio;
+  Sleep(2);
+  ClosePlugin;
+  Sleep(2);
 end;
 
-procedure TFormMiniHost.LoadPlugin(const VSTDll: TFileName; const DefaultProgram: Integer = 0);
+procedure TFormMiniHost.LoadPlugin(const VSTDll: TFileName;
+  const DefaultProgram: Integer = 0);
 var
   PresetFileName: TFileName;
-  {$IFDEF LoadPluginFromStream}
+{$IFDEF LoadPluginFromStream}
   FileStream: TFileStream;
-  {$ENDIF}
+{$ENDIF}
 begin
   if not FileExists(VSTDll) then
     Exit;

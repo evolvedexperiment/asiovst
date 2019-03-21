@@ -80,7 +80,7 @@ implementation
 {$ENDIF}
 
 uses
-  Math, EditorFrm;
+  Math, DAV_StringConvert, EditorFrm;
 
 procedure TEnhancedGateDataModule.VSTModuleOpen(Sender: TObject);
 var
@@ -128,22 +128,22 @@ begin
     OnProcess := VSTModuleProcessBypass;
     OnProcess32Replacing := OnProcess;
   end;
-  if Assigned(EditorForm) then
-    with TEditorForm(EditorForm) do
-      if CBOnOff.Brightness_Percent > 90 <> Boolean(Round(Value)) then
-        if Boolean(Round(Value)) then
-          CBOnOff.Brightness_Percent := 100
-        else
-          CBOnOff.Brightness_Percent := 20;
+
+  if not Assigned(EditorForm) then
+    Exit;
+
+  with TEditorForm(EditorForm) do
+    if CBOnOff.Brightness_Percent > 90 <> Boolean(Round(Value)) then
+      if Boolean(Round(Value)) then
+        CBOnOff.Brightness_Percent := 100
+      else
+        CBOnOff.Brightness_Percent := 20;
 end;
 
 procedure TEnhancedGateDataModule.EAGOnOffDisplay(Sender: TObject;
   const Index: Integer; var PreDefined: AnsiString);
 begin
-  if Boolean(Round(Parameter[index])) then
-    PreDefined := 'On'
-  else
-    PreDefined := 'Off';
+  PreDefined := AnsiString(OnOff(Parameter[Index]));
 end;
 
 procedure TEnhancedGateDataModule.EAGThresholdChange(Sender: TObject;

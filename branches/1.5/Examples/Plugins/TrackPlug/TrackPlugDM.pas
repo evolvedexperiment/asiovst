@@ -99,7 +99,7 @@ implementation
 
 uses
   Math, {$IFDEF HAS_UNIT_ANSISTRINGS} AnsiStrings, {$ENDIF} DAV_Strings,
-  TrackPlugGUI;
+  DAV_StringConvert, TrackPlugGUI;
 
 procedure TTrackPlugModule.VSTModuleOpen(Sender: TObject);
 var
@@ -626,12 +626,7 @@ end;
 procedure TTrackPlugModule.ParameterOnOffDisplay(Sender: TObject;
   const Index: Integer; var PreDefined: AnsiString);
 begin
-  case Round(Parameter[Index]) of
-    0:
-      PreDefined := 'Off';
-    1:
-      PreDefined := 'On';
-  end;
+  PreDefined := AnsiString(OnOff(Parameter[Index]));
 end;
 
 procedure TTrackPlugModule.VSTModuleSampleRateChange(Sender: TObject;

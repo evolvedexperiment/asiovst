@@ -23,15 +23,14 @@ object FmSchaebichef: TFmSchaebichef
     Width = 80
     Height = 19
     Alignment = taCenter
-    FontOversampling = fo4x
     Caption = 'Frequency'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 1714203
     Font.Height = -13
     Font.Name = 'Comic Sans MS'
     Font.Style = [fsBold]
+    FontOversampling = fo4x
     ParentFont = False
-    Shadow.Color = clBlack
     OnDblClick = DialFrequencyDblClick
   end
   object LbRippleValue: TGuiLabel
@@ -40,15 +39,14 @@ object FmSchaebichef: TFmSchaebichef
     Width = 80
     Height = 19
     Alignment = taCenter
-    FontOversampling = fo4x
     Caption = 'Ripple'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 1714203
     Font.Height = -13
     Font.Name = 'Comic Sans MS'
     Font.Style = [fsBold]
+    FontOversampling = fo4x
     ParentFont = False
-    Shadow.Color = clBlack
     OnDblClick = DialRippleDblClick
   end
   object LbOrderValue: TGuiLabel
@@ -57,15 +55,14 @@ object FmSchaebichef: TFmSchaebichef
     Width = 80
     Height = 19
     Alignment = taCenter
-    FontOversampling = fo4x
     Caption = 'Order'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 1714203
     Font.Height = -13
     Font.Name = 'Comic Sans MS'
     Font.Style = [fsBold]
+    FontOversampling = fo4x
     ParentFont = False
-    Shadow.Color = clBlack
     OnDblClick = DialOrderDblClick
   end
   object LbFrequency: TGuiLabel
@@ -74,15 +71,14 @@ object FmSchaebichef: TFmSchaebichef
     Width = 112
     Height = 31
     Alignment = taCenter
-    FontOversampling = fo4x
     Caption = 'Frequency'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 1714203
     Font.Height = -21
     Font.Name = 'Comic Sans MS'
     Font.Style = [fsBold]
+    FontOversampling = fo4x
     ParentFont = False
-    Shadow.Color = clBlack
   end
   object LbRipple: TGuiLabel
     Left = 273
@@ -90,15 +86,14 @@ object FmSchaebichef: TFmSchaebichef
     Width = 80
     Height = 31
     Alignment = taCenter
-    FontOversampling = fo4x
     Caption = 'Ripple'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 1714203
     Font.Height = -21
     Font.Name = 'Comic Sans MS'
     Font.Style = [fsBold]
+    FontOversampling = fo4x
     ParentFont = False
-    Shadow.Color = clBlack
   end
   object LbOrder: TGuiLabel
     Left = 22
@@ -106,15 +101,14 @@ object FmSchaebichef: TFmSchaebichef
     Width = 80
     Height = 31
     Alignment = taCenter
-    FontOversampling = fo4x
     Caption = 'Order'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 1714203
     Font.Height = -21
     Font.Name = 'Comic Sans MS'
     Font.Style = [fsBold]
+    FontOversampling = fo4x
     ParentFont = False
-    Shadow.Color = clBlack
   end
   object DialOrder: TGuiStitchedDial
     Left = 14
@@ -123,11 +117,14 @@ object FmSchaebichef: TFmSchaebichef
     Height = 96
     Color = 16776153
     Max = 16.000000000000000000
-    OnChange = DialOrderChange
     ParentColor = False
-    ImageIndex = 0
+    ScrollRange = 400.000000000000000000
     ImageList = GSPL
+    ImageIndex = 0
     WheelStep = 1.000000000000000000
+    OnChange = DialOrderChange
+    DefaultValue = 0.000000000000000000
+    Value = 0.000000000000000000
   end
   object DialRipple: TGuiStitchedDial
     Left = 266
@@ -138,12 +135,14 @@ object FmSchaebichef: TFmSchaebichef
     CurveMapping = -1.000000000000000000
     Max = 10.000000000000000000
     Min = 0.001000000047497451
-    OnChange = DialRippleChange
     ParentColor = False
-    ImageIndex = 0
+    ScrollRange = 400.000000000000000000
     ImageList = GSPL
+    ImageIndex = 0
     Value = 0.001000000047497451
     WheelStep = 1.000000000000000000
+    OnChange = DialRippleChange
+    DefaultValue = 0.000000000000000000
   end
   object DialFrequency: TGuiStitchedDial
     Left = 140
@@ -154,12 +153,14 @@ object FmSchaebichef: TFmSchaebichef
     CurveMapping = -2.099999904632568000
     Max = 20000.000000000000000000
     Min = 20.000000000000000000
-    OnChange = DialFrequencyChange
     ParentColor = False
-    ImageIndex = 0
+    ScrollRange = 400.000000000000000000
     ImageList = GSPL
+    ImageIndex = 0
     Value = 20.000000000000000000
     WheelStep = 1.000000000000000000
+    OnChange = DialFrequencyChange
+    DefaultValue = 0.000000000000000000
   end
   object GSPL: TGuiStitchedPNGList
     StitchedPNGs = <
@@ -7159,7 +7160,6 @@ object FmSchaebichef: TFmSchaebichef
           E6F00000000049454E44AE426082}
         DisplayName = 'Knob'
         GlyphCount = 65
-        StitchKind = skHorizontal
         Height = 96
         Width = 6240
       end>

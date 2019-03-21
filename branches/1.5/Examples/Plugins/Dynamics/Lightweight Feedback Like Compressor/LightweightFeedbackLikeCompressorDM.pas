@@ -85,7 +85,8 @@ implementation
 
 uses
   Math, DAV_Common, DAV_Consts, DAV_Strings, DAV_Approximations,
-  DAV_VSTModuleWithPrograms, LightweightFeedbackLikeCompressorGUI;
+  DAV_VSTModuleWithPrograms, DAV_StringConvert,
+  LightweightFeedbackLikeCompressorGUI;
 
 procedure TLightweightFeedbackLikeCompressorDataModule.VSTModuleOpen(Sender: TObject);
 var
@@ -220,12 +221,7 @@ end;
 procedure TLightweightFeedbackLikeCompressorDataModule.ParameterOnOffDisplay
   (Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
-  case Round(Parameter[Index]) of
-    0:
-      PreDefined := 'Off';
-    1:
-      PreDefined := 'On';
-  end;
+  PreDefined := AnsiString(OnOff(Parameter[Index]));
 end;
 
 procedure TLightweightFeedbackLikeCompressorDataModule.ParameterStereoChange

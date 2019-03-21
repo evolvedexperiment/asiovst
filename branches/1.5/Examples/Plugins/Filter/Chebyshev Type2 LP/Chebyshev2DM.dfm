@@ -34,6 +34,8 @@ object Chebyshev2LPModule: TChebyshev2LPModule
       Units = 'Hz'
       VSTModule = Owner
       OnParameterChange = ParamFrequencyChange
+      OnCustomParameterLabel = Chebyshev2LPModuleParameterProperties0CustomParameterLabel
+      OnCustomParameterDisplay = Chebyshev2LPModuleParameterProperties0CustomParameterDisplay
     end
     item
       CurveFactor = 1.000000000000000000
@@ -87,13 +89,10 @@ object Chebyshev2LPModule: TChebyshev2LPModule
   ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
-  OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
-  OnProcess64Replacing = VSTModuleProcessDoubleReplacing
   OnProcess32Replacing = VSTModuleProcess
+  OnProcess64Replacing = VSTModuleProcessDoubleReplacing
   OnSampleRateChange = VSTModuleSampleRateChange
-  Left = 843
-  Top = 82
   Height = 150
   Width = 215
 end

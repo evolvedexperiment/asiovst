@@ -63,8 +63,6 @@ type
     procedure ParameterTimeDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterTimeLabel(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterMixChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
-      ParentWindow: NativeUInt);
   private
     FLightweightFeedbackLimiter : array [0..1] of TCustomKneeLimiter;
     function GetLightweightFeedbackLimiter(Index: Integer): TCustomKneeLimiter;
@@ -83,8 +81,9 @@ implementation
 {$ENDIF}
 
 uses
-  Math, DAV_Common, DAV_Consts, DAV_Strings, DAV_Approximations,
-  DAV_VSTModuleWithPrograms, LightweightFeedbackLimiterGUI;
+  Math, DAV_Common, DAV_Consts, DAV_Strings, DAV_StringConvert,
+  DAV_Approximations, DAV_VSTModuleWithPrograms,
+  LightweightFeedbackLimiterGUI;
 
 procedure TLightweightFeedbackLimiterDataModule.VSTModuleOpen(Sender: TObject);
 var
@@ -121,18 +120,14 @@ begin
   Programs[0].SetParameters(FParameter);
   for Channel := 1 to numPrograms - 1 do
     Programs[Channel].SetParameters(CPresets[Channel]);
+
+  EditorFormClass := TFmLightweightFeedbackLimiter;
 end;
 
 procedure TLightweightFeedbackLimiterDataModule.VSTModuleClose(Sender: TObject);
 begin
   FreeAndNil(FLightweightFeedbackLimiter[0]);
   FreeAndNil(FLightweightFeedbackLimiter[1]);
-end;
-
-procedure TLightweightFeedbackLimiterDataModule.VSTModuleEditOpen
-  (Sender: TObject; var GUI: TForm; ParentWindow: NativeUInt);
-begin
-  GUI := TFmLightweightFeedbackLimiter.Create(Self);
 end;
 
 function TLightweightFeedbackLimiterDataModule.EvaluateCharacteristic
@@ -211,12 +206,7 @@ end;
 procedure TLightweightFeedbackLimiterDataModule.ParameterOnOffDisplay
   (Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
-  case Round(Parameter[Index]) of
-    0:
-      PreDefined := 'Off';
-    1:
-      PreDefined := 'On';
-  end;
+  PreDefined := AnsiString(OnOff(Parameter[Index]));
 end;
 
 procedure TLightweightFeedbackLimiterDataModule.ParameterStereoChange

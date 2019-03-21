@@ -146,8 +146,7 @@ begin
     Depth := Parameter[2];
     if DialDepth.Value <> Depth then
       DialDepth.Value := Depth;
-    LbDepthValue.Caption := FloatToStrF(RoundTo(Depth, -1), ffGeneral, 3,
-      3) + ' %';
+    LbDepthValue.Caption := FloatToString(Depth, 1) + ' %';
   end;
 end;
 

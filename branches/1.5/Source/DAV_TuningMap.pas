@@ -281,7 +281,8 @@ begin
   // Important, because notes not listed in the tuning file
   // should always have standard tuning.
   Reset;
-  for i := 0 to 127 do lTunes[i] := Round(FTunes[i]);
+  for i := 0 to 127 do
+    lTunes[i] := Round(FTunes[i]);
 
   if uppercase(extractfileext(FileName)) = '.SCL' then
     ImportScala(FileName)
@@ -313,7 +314,7 @@ begin
             break;
           szLine := szLine + ch;
           Inc(nCurrPos);
-        end
+        end;
       until ((ifs.position >= ifs.size) or (nCurrPos <> 0));
 
       if (nCurrPos >= 510) then
@@ -331,7 +332,7 @@ begin
 
       // Skip empty lines
       if (szCurr = #0) then
-        continue;
+        Continue;
 
       // Skip leading and trailing spaces/tabs
       szCurr := StripBlanks(szCurr);
@@ -346,7 +347,9 @@ begin
         if (szCurr[Length(szCurr)] <> ']') then
         begin
           FreeAndNil(ifs);
-          raise Exception.CreateFmt('Syntax error: Section-tag must be the only string in the line! (line %d)', [lLineCount]);
+          raise Exception.CreateFmt
+            ('Syntax error: Section-tag must be the only string in the line! (line %d)',
+            [lLineCount]);
         end;
 
         // Known section found?
@@ -367,17 +370,19 @@ begin
       end;
 
       // Skip all lines which are in none or in an unknown section
-      if ((secCurr = SEC_None) or (secCurr = SEC_Unknown)) then Continue;
+      if ((secCurr = SEC_None) or (secCurr = SEC_Unknown)) then
+        Continue;
 
       // Separate parameter name and value
       j := pos('=', szCurr);
       if j < 1 then
       begin
         FreeAndNil(ifs);
-        raise Exception.CreateFmt('Syntax error: "=" missing! (line %s)', [lLineCount]);
+        raise Exception.CreateFmt('Syntax error: "=" missing! (line %s)',
+          [lLineCount]);
       end;
-      szParam := copy(szCurr, 1, j - 1);
-      szValue := copy(szCurr, j + 1, Length(szCurr) - j);
+      szParam := Copy(szCurr, 1, j - 1);
+      szValue := Copy(szCurr, j + 1, Length(szCurr) - j);
 
       // Skip leading and trailing spaces/tabs
       szParam := StripBlanks(szParam);
@@ -385,24 +390,24 @@ begin
 
       // Now process the different sections:
       case secCurr of
-        SEC_Tuning :
-          if (copy(szParam, 1, 4) = 'note') then
+        SEC_Tuning:
+          if (Copy(szParam, 1, 4) = 'note') then
           begin
             // Get MIDI-Note number
-            lNoteIndex := StrToInt(copy(szParam, 5, Length(szParam) - 4));
+            lNoteIndex := StrToInt(Copy(szParam, 5, Length(szParam) - 4));
             // Check for correct range [0;127] and ignore it, if it's out of range.
-            if ((lNoteIndex >= 0) and (lNoteIndex <= 127))
-             then lTunes[lNoteIndex] := StrToInt(szValue);
-          end;// Check for note-tag
+            if ((lNoteIndex >= 0) and (lNoteIndex <= 127)) then
+              lTunes[lNoteIndex] := StrToInt(szValue);
+          end; // Check for note-tag
 
-        SEC_ExactTuning :
+        SEC_ExactTuning:
           begin
             // Check for note-tag
-            if (copy(szParam, 1, 4) = 'note') then
+            if (Copy(szParam, 1, 4) = 'note') then
             begin
               // note-tag found
               // Get MIDI-Note number
-              lNoteIndex := StrToInt(copy(szParam, 5, Length(szParam) - 4));
+              lNoteIndex := StrToInt(Copy(szParam, 5, Length(szParam) - 4));
 
               // Check for correct range [0;127] and ignore it, if it's out of range.
               if ((lNoteIndex >= 0) and (lNoteIndex <= 127)) then
@@ -411,9 +416,9 @@ begin
               if (lET_LastNoteFound < lNoteIndex) then
                 lET_LastNoteFound := lNoteIndex;
             end;
-          // Check for basefreq parameter
-          if (copy(szParam, 1, 8) = 'basefreq') then
-            FBaseFreq := StrToFloat(szValue); // basefreq found
+            // Check for basefreq parameter
+            if (Copy(szParam, 1, 8) = 'basefreq') then
+              FBaseFreq := StrToFloat(szValue); // basefreq found
           end;
       end;
     end;
@@ -426,17 +431,17 @@ begin
 
     if (not bExactTuningFound) then
       for i := 0 to 127 do
-        FTunes[i] := lTunes[i] // There are no exact tuning values, so map the quantized
-     // values to the exact ones:
-    else
-    if ((lET_LastNoteFound >= 0) and (lET_LastNoteFound < 127)) then
+        FTunes[i] := lTunes[i]
+        // There are no exact tuning values, so map the quantized
+        // values to the exact ones:
+    else if ((lET_LastNoteFound >= 0) and (lET_LastNoteFound < 127)) then
     begin
       // Now loop the given data (auto expand):
       j := lET_LastNoteFound; // Highest MIDI note number
-      P := FTunes[j];     // Period Length
+      p := FTunes[j]; // Period Length
       for i := j to 127 do
-        FTunes[i] := FTunes[i - j] + P;
-    end;// [Exact Tuning] section found, so ignore the values found
+        FTunes[i] := FTunes[i - j] + p;
+    end; // [Exact Tuning] section found, so ignore the values found
     // in the [Tuning] section and do the "auto expand":
 
     FreeAndNil(ifs);

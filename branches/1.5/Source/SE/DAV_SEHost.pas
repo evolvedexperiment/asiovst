@@ -564,8 +564,8 @@ begin
       CallPlugin(seffClose);
   finally
     (*
-      if Assigned(FSE2ModStructBase)
-      then Dispose(FSE2ModStructBase);
+      if Assigned(FSE2ModStructBase) then
+        Dispose(FSE2ModStructBase);
     *)
     FSE2ModStructBase := nil;
   end;
