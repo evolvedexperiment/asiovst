@@ -2,6 +2,8 @@ unit DAV_Convert;
 
 interface
 
+{$I DAV_Compiler.inc}
+
 uses
   DAV_Types;
 

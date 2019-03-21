@@ -104,7 +104,7 @@ implementation
 
 uses
   Math, Graphics, DAV_Common, DAV_Convert, DAV_Strings, DAV_Approximations,
-  DAV_VSTModuleWithPrograms, SmoothMultibandCompressorGUI;
+  DAV_VSTModuleWithPrograms, DAV_StringConvert, SmoothMultibandCompressorGUI;
 
 procedure TSmoothMultibandCompressorDataModule.VSTModuleOpen(Sender: TObject);
 var
@@ -274,376 +274,413 @@ end;
 procedure TSmoothMultibandCompressorDataModule.SetAutoGain(Index: Integer;
   const Value: Boolean);
 begin
- if Index in [0..Length(FActualCompressor) - 1] then
+  if Index in [0 .. Length(FActualCompressor) - 1] then
   begin
-   FFeedForwCompressor[Index].AutoMakeUp := Value;
-   FFeedBackCompressor[Index].AutoMakeUp := Value;
-   if EditorForm is TFmSmoothMultibandCompressor then
-    with TFmSmoothMultibandCompressor(EditorForm) do
-     case Index of
-      0: UpdateLowAutoMakeUpGain;
-      1: UpdateMidAutoMakeUpGain;
-      2: UpdateHighAutoMakeUpGain;
-     end;
-  end else raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
+    FFeedForwCompressor[Index].AutoMakeUp := Value;
+    FFeedBackCompressor[Index].AutoMakeUp := Value;
+    if EditorForm is TFmSmoothMultibandCompressor then
+      with TFmSmoothMultibandCompressor(EditorForm) do
+        case Index of
+          0:
+            UpdateLowAutoMakeUpGain;
+          1:
+            UpdateMidAutoMakeUpGain;
+          2:
+            UpdateHighAutoMakeUpGain;
+        end;
+  end
+  else
+    raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
 end;
 
-procedure TSmoothMultibandCompressorDataModule.ParameterVolumeDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+procedure TSmoothMultibandCompressorDataModule.ParameterVolumeDisplay
+  (Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- Predefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 4, 4);
+  PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 4, 4);
 end;
 
-procedure TSmoothMultibandCompressorDataModule.ParameterTimeDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+procedure TSmoothMultibandCompressorDataModule.ParameterTimeDisplay
+  (Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 var
-  Val : Single;
+  Val: Single;
 begin
- Val := Parameter[Index];
- if Val < 1
-  then PreDefined := FloatToStrF(RoundTo(1E3 * Val, -2), ffGeneral, 3, 3) else
- if Val < 1000
-  then PreDefined := FloatToStrF(RoundTo(Val, -2), ffGeneral, 3, 3)
-  else PreDefined := FloatToStrF(RoundTo(1E-3 * Val, -2), ffGeneral, 3, 3);
+  Val := Parameter[Index];
+  if Val < 1 then
+    PreDefined := FloatToStrF(RoundTo(1E3 * Val, -2), ffGeneral, 3, 3) else
+  if Val < 1000 then
+    PreDefined := FloatToStrF(RoundTo(Val, -2), ffGeneral, 3, 3)
+  else
+    PreDefined := FloatToStrF(RoundTo(1E-3 * Val, -2), ffGeneral, 3, 3);
 end;
 
-procedure TSmoothMultibandCompressorDataModule.ParameterMakeUpGainDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+procedure TSmoothMultibandCompressorDataModule.ParameterMakeUpGainDisplay
+  (Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
+  PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
 end;
 
-procedure TSmoothMultibandCompressorDataModule.ParameterThresholdDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+procedure TSmoothMultibandCompressorDataModule.ParameterThresholdDisplay
+  (Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
+  PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
 end;
 
-procedure TSmoothMultibandCompressorDataModule.ParameterRatioDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+procedure TSmoothMultibandCompressorDataModule.ParameterRatioDisplay
+  (Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
+  PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
 end;
 
-procedure TSmoothMultibandCompressorDataModule.ParameterKneeDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+procedure TSmoothMultibandCompressorDataModule.ParameterKneeDisplay
+  (Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
+  PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
 end;
 
-procedure TSmoothMultibandCompressorDataModule.ParameterOnOffDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+procedure TSmoothMultibandCompressorDataModule.ParameterOnOffDisplay
+  (Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- case Round(Parameter[Index]) of
-  0 : PreDefined := 'Off';
-  1 : PreDefined := 'On';
- end;
+  PreDefined := AnsiString(OnOff(Parameter[Index]));
 end;
 
-procedure TSmoothMultibandCompressorDataModule.ParameterLowFreqChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TSmoothMultibandCompressorDataModule.ParameterLowFreqChange
+  (Sender: TObject; const Index: Integer; var Value: Single);
 var
-  Channel : Integer;
+  Channel: Integer;
 begin
- for Channel := 0 to Length(FLinearPhaseCrossover) - 1 do
+  for Channel := 0 to Length(FLinearPhaseCrossover) - 1 do
   begin
-   FLinkwitzRiley[Channel].Frequency := Value;
-   FCrossoverFilter[Channel].Frequency := Value;
+    FLinkwitzRiley[Channel].Frequency := Value;
+    FCrossoverFilter[Channel].Frequency := Value;
   end;
- if EditorForm is TFmSmoothMultibandCompressor then
-  with TFmSmoothMultibandCompressor(EditorForm) do UpdateLowFrequency;
+  if EditorForm is TFmSmoothMultibandCompressor then
+    with TFmSmoothMultibandCompressor(EditorForm) do
+      UpdateLowFrequency;
 end;
 
-procedure TSmoothMultibandCompressorDataModule.ParameterHighChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TSmoothMultibandCompressorDataModule.ParameterHighChange
+  (Sender: TObject; const Index: Integer; var Value: Single);
 var
-  Channel : Integer;
+  Channel: Integer;
 begin
- for Channel := 0 to Length(FLinearPhaseCrossover) - 1
-  do FLinearPhaseCrossover[Channel].Frequency := Value;
- if EditorForm is TFmSmoothMultibandCompressor then
-  with TFmSmoothMultibandCompressor(EditorForm) do UpdateHighFrequency;
+  for Channel := 0 to Length(FLinearPhaseCrossover) - 1 do
+    FLinearPhaseCrossover[Channel].Frequency := Value;
+  if EditorForm is TFmSmoothMultibandCompressor then
+    with TFmSmoothMultibandCompressor(EditorForm) do
+      UpdateHighFrequency;
 end;
 
-procedure TSmoothMultibandCompressorDataModule.ParameterLimitChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TSmoothMultibandCompressorDataModule.ParameterLimitChange
+  (Sender: TObject; const Index: Integer; var Value: Single);
 begin
- ChooseProcess;
- if EditorForm is TFmSmoothMultibandCompressor
-  then TFmSmoothMultibandCompressor(EditorForm).UpdateLimit;
+  ChooseProcess;
+  if EditorForm is TFmSmoothMultibandCompressor then
+    TFmSmoothMultibandCompressor(EditorForm).UpdateLimit;
 end;
 
 procedure TSmoothMultibandCompressorDataModule.ChooseProcess;
 begin
- case Round(Parameter[2]) of
-  0 : OnProcess := VSTModuleProcessMono;
-  1 : OnProcess := VSTModuleProcessMonoSoftClip;
- end;
- OnProcess32Replacing := OnProcess;
+  case Round(Parameter[2]) of
+    0:
+      OnProcess := VSTModuleProcessMono;
+    1:
+      OnProcess := VSTModuleProcessMonoSoftClip;
+  end;
+  OnProcess32Replacing := OnProcess;
 end;
 
-function TSmoothMultibandCompressorDataModule.GetAutoGain(
-  Index: Integer): Boolean;
+function TSmoothMultibandCompressorDataModule.GetAutoGain
+  (Index: Integer): Boolean;
 begin
- if Index in [0 .. Length(FActualCompressor) - 1] then
+  if Index in [0 .. Length(FActualCompressor) - 1] then
     Result := FActualCompressor[Index].AutoMakeUp
   else
     raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
 end;
 
-function TSmoothMultibandCompressorDataModule.GetLightweightCompressor(Index: Integer): TCustomCompressor;
+function TSmoothMultibandCompressorDataModule.GetLightweightCompressor
+  (Index: Integer): TCustomCompressor;
 begin
- if Index in [0 .. Length(FActualCompressor) - 1] then
+  if Index in [0 .. Length(FActualCompressor) - 1] then
     Result := FActualCompressor[Index]
   else
     raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
 end;
 
-function TSmoothMultibandCompressorDataModule.GetBandStates(
-  Index: Integer): TBandStates;
+function TSmoothMultibandCompressorDataModule.GetBandStates(Index: Integer)
+  : TBandStates;
 begin
- if Index in [0..2]
-  then Result := FStates[Index]
-  else raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
+  if Index in [0 .. 2] then
+    Result := FStates[Index]
+  else
+    raise Exception.CreateFmt(RStrIndexOutOfBounds, [Index]);
 end;
 
-procedure TSmoothMultibandCompressorDataModule.ParameterAttackChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TSmoothMultibandCompressorDataModule.ParameterAttackChange
+  (Sender: TObject; const Index: Integer; var Value: Single);
 var
-  Band : Integer;
+  Band: Integer;
 begin
- Band := (Index - 3) div 6;
- FFeedForwCompressor[Band].Attack := Value;
- FFeedBackCompressor[Band].Attack := Value;
- if EditorForm is TFmSmoothMultibandCompressor then
-  with TFmSmoothMultibandCompressor(EditorForm) do
-   case Band of
-    0: UpdateLowAttack;
-    1: UpdateMidAttack;
-    2: UpdateHighAttack;
-   end;
+  Band := (Index - 3) div 6;
+  FFeedForwCompressor[Band].Attack := Value;
+  FFeedBackCompressor[Band].Attack := Value;
+  if EditorForm is TFmSmoothMultibandCompressor then
+    with TFmSmoothMultibandCompressor(EditorForm) do
+      case Band of
+        0:
+          UpdateLowAttack;
+        1:
+          UpdateMidAttack;
+        2:
+          UpdateHighAttack;
+      end;
 end;
 
-procedure TSmoothMultibandCompressorDataModule.ParameterReleaseChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TSmoothMultibandCompressorDataModule.ParameterReleaseChange
+  (Sender: TObject; const Index: Integer; var Value: Single);
 var
-  Band : Integer;
+  Band: Integer;
 begin
- Band := (Index - 4) div 6;
- FFeedForwCompressor[Band].Release := Value;
- FFeedBackCompressor[Band].Release := Value;
- if EditorForm is TFmSmoothMultibandCompressor then
-  with TFmSmoothMultibandCompressor(EditorForm) do
-   case Band of
-    0: UpdateLowRelease;
-    1: UpdateMidRelease;
-    2: UpdateHighRelease;
-   end;
+  Band := (Index - 4) div 6;
+  FFeedForwCompressor[Band].Release := Value;
+  FFeedBackCompressor[Band].Release := Value;
+  if EditorForm is TFmSmoothMultibandCompressor then
+    with TFmSmoothMultibandCompressor(EditorForm) do
+      case Band of
+        0:
+          UpdateLowRelease;
+        1:
+          UpdateMidRelease;
+        2:
+          UpdateHighRelease;
+      end;
 end;
 
-procedure TSmoothMultibandCompressorDataModule.ParameterThresholdChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TSmoothMultibandCompressorDataModule.ParameterThresholdChange
+  (Sender: TObject; const Index: Integer; var Value: Single);
 var
-  Band : Integer;
+  Band: Integer;
 begin
- Band := (Index - 5) div 6;
- FFeedForwCompressor[Band].Threshold_dB := Value;
- FFeedBackCompressor[Band].Threshold_dB := Value;
- if EditorForm is TFmSmoothMultibandCompressor then
-  with TFmSmoothMultibandCompressor(EditorForm) do
-   case Band of
-    0: UpdateLowThreshold;
-    1: UpdateMidThreshold;
-    2: UpdateHighThreshold;
-   end;
+  Band := (Index - 5) div 6;
+  FFeedForwCompressor[Band].Threshold_dB := Value;
+  FFeedBackCompressor[Band].Threshold_dB := Value;
+  if EditorForm is TFmSmoothMultibandCompressor then
+    with TFmSmoothMultibandCompressor(EditorForm) do
+      case Band of
+        0:
+          UpdateLowThreshold;
+        1:
+          UpdateMidThreshold;
+        2:
+          UpdateHighThreshold;
+      end;
 end;
 
-procedure TSmoothMultibandCompressorDataModule.ParameterRatioChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TSmoothMultibandCompressorDataModule.ParameterRatioChange
+  (Sender: TObject; const Index: Integer; var Value: Single);
 var
-  Band : Integer;
+  Band: Integer;
 begin
- Band := (Index - 6) div 6;
- FFeedForwCompressor[Band].Ratio := Value;
- FFeedBackCompressor[Band].Ratio := Value;
- if EditorForm is TFmSmoothMultibandCompressor then
-  with TFmSmoothMultibandCompressor(EditorForm) do
-   case Band of
-    0: UpdateLowRatio;
-    1: UpdateMidRatio;
-    2: UpdateHighRatio;
-   end;
+  Band := (Index - 6) div 6;
+  FFeedForwCompressor[Band].Ratio := Value;
+  FFeedBackCompressor[Band].Ratio := Value;
+  if EditorForm is TFmSmoothMultibandCompressor then
+    with TFmSmoothMultibandCompressor(EditorForm) do
+      case Band of
+        0:
+          UpdateLowRatio;
+        1:
+          UpdateMidRatio;
+        2:
+          UpdateHighRatio;
+      end;
 end;
 
-procedure TSmoothMultibandCompressorDataModule.ParameterKneeChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TSmoothMultibandCompressorDataModule.ParameterKneeChange
+  (Sender: TObject; const Index: Integer; var Value: Single);
 var
-  Band : Integer;
+  Band: Integer;
 begin
- Band := (Index - 7) div 6;
- FFeedForwCompressor[Band].Knee_dB := Value;
- FFeedBackCompressor[Band].Knee_dB := Value;
- if EditorForm is TFmSmoothMultibandCompressor then
-  with TFmSmoothMultibandCompressor(EditorForm) do
-   case Band of
-    0: UpdateLowKnee;
-    1: UpdateMidKnee;
-    2: UpdateHighKnee;
-   end;
+  Band := (Index - 7) div 6;
+  FFeedForwCompressor[Band].Knee_dB := Value;
+  FFeedBackCompressor[Band].Knee_dB := Value;
+  if EditorForm is TFmSmoothMultibandCompressor then
+    with TFmSmoothMultibandCompressor(EditorForm) do
+      case Band of
+        0:
+          UpdateLowKnee;
+        1:
+          UpdateMidKnee;
+        2:
+          UpdateHighKnee;
+      end;
 end;
 
-procedure TSmoothMultibandCompressorDataModule.ParameterMakeUpGainChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TSmoothMultibandCompressorDataModule.ParameterMakeUpGainChange
+  (Sender: TObject; const Index: Integer; var Value: Single);
 var
-  Band : Integer;
+  Band: Integer;
 begin
- Band := (Index - 8) div 6;
- FFeedBackCompressor[Band].MakeUpGain_dB := Value;
- FFeedForwCompressor[Band].MakeUpGain_dB := Value;
+  Band := (Index - 8) div 6;
+  FFeedBackCompressor[Band].MakeUpGain_dB := Value;
+  FFeedForwCompressor[Band].MakeUpGain_dB := Value;
 
- if EditorForm is TFmSmoothMultibandCompressor then
-  with TFmSmoothMultibandCompressor(EditorForm) do
-   case Band of
-    0: UpdateLowMakeUp;
-    1: UpdateMidMakeUp;
-    2: UpdateHighMakeUp;
-   end;
+  if EditorForm is TFmSmoothMultibandCompressor then
+    with TFmSmoothMultibandCompressor(EditorForm) do
+      case Band of
+        0:
+          UpdateLowMakeUp;
+        1:
+          UpdateMidMakeUp;
+        2:
+          UpdateHighMakeUp;
+      end;
 end;
 
-procedure TSmoothMultibandCompressorDataModule.ParameterStateChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TSmoothMultibandCompressorDataModule.ParameterStateChange
+  (Sender: TObject; const Index: Integer; var Value: Single);
 var
-  Band    : Integer;
-  State   : Cardinal;
+  Band: Integer;
+  State: Cardinal;
 begin
- Band := (Index - 9) div 6;
- State := Round(Value);
- if (State and 1) > 0
-  then FStates[Band] := FStates[Band] + [bsBypass]
-  else FStates[Band] := FStates[Band] - [bsBypass];
- if (State and 2) > 0
-  then FStates[Band] := FStates[Band] + [bsMute]
-  else FStates[Band] := FStates[Band] - [bsMute];
- if (State and 4) > 0
-  then FStates[Band] := FStates[Band] + [bsSmooth]
-  else FStates[Band] := FStates[Band] - [bsSmooth];
- if (State and 8) > 0
-  then FStates[Band] := FStates[Band] + [bsClipped]
-  else FStates[Band] := FStates[Band] - [bsClipped];
+  Band := (Index - 9) div 6;
+  State := Round(Value);
+  if (State and 1) > 0 then
+    FStates[Band] := FStates[Band] + [bsBypass]
+  else
+    FStates[Band] := FStates[Band] - [bsBypass];
+  if (State and 2) > 0 then
+    FStates[Band] := FStates[Band] + [bsMute]
+  else
+    FStates[Band] := FStates[Band] - [bsMute];
+  if (State and 4) > 0 then
+    FStates[Band] := FStates[Band] + [bsSmooth]
+  else
+    FStates[Band] := FStates[Band] - [bsSmooth];
+  if (State and 8) > 0 then
+    FStates[Band] := FStates[Band] + [bsClipped]
+  else
+    FStates[Band] := FStates[Band] - [bsClipped];
 
- if (bsSmooth in FStates[Band])
-  then FActualCompressor[Band] := FFeedBackCompressor[Band]
-  else FActualCompressor[Band] := FFeedForwCompressor[Band];
+  if (bsSmooth in FStates[Band]) then
+    FActualCompressor[Band] := FFeedBackCompressor[Band]
+  else
+    FActualCompressor[Band] := FFeedForwCompressor[Band];
 
- if EditorForm is TFmSmoothMultibandCompressor then
-  with TFmSmoothMultibandCompressor(EditorForm) do
-   begin
-    case Band of
-     0: UpdateLowState;
-     1: UpdateMidState;
-     2: UpdateHighState;
+  if EditorForm is TFmSmoothMultibandCompressor then
+    with TFmSmoothMultibandCompressor(EditorForm) do
+    begin
+      case Band of
+        0:
+          UpdateLowState;
+        1:
+          UpdateMidState;
+        2:
+          UpdateHighState;
+      end;
     end;
-   end;
 end;
 
-procedure TSmoothMultibandCompressorDataModule.VSTModuleProcessMono(const Inputs,
-  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
+procedure TSmoothMultibandCompressorDataModule.VSTModuleProcessMono
+  (const Inputs, Outputs: TDAVArrayOfSingleFixedArray;
+  const SampleFrames: Cardinal);
 var
-  Sample : Integer;
-  Temp   : array [0..2] of Single;
-  FD     : array [0..1, 0..2] of Single;
+  Sample: Integer;
+  Temp: array [0 .. 2] of Single;
+  FD: array [0 .. 1, 0 .. 2] of Single;
 const
-  CDenorm32 : Single = 1E-12;
+  CDenorm32: Single = 1E-12;
 begin
- for Sample := 0 to SampleFrames - 1 do
+  for Sample := 0 to SampleFrames - 1 do
   begin
-   // split high
-   FLinearPhaseCrossover[0].ProcessSample(CDenorm32 + Inputs[0, Sample], FD[0, 1], FD[0, 2]);
-   FLinearPhaseCrossover[1].ProcessSample(CDenorm32 + Inputs[1, Sample], FD[1, 1], FD[1, 2]);
+    // split high
+    FLinearPhaseCrossover[0].ProcessSample(CDenorm32 + Inputs[0, Sample], FD[0, 1], FD[0, 2]);
+    FLinearPhaseCrossover[1].ProcessSample(CDenorm32 + Inputs[1, Sample], FD[1, 1], FD[1, 2]);
 
-   // split low
-   FLinkwitzRiley[0].ProcessSample(FD[0, 1] - CDenorm32, FD[0, 0], FD[0, 1]);
-   FLinkwitzRiley[1].ProcessSample(FD[1, 1] - CDenorm32, FD[1, 0], FD[1, 1]);
+    // split low
+    FLinkwitzRiley[0].ProcessSample(FD[0, 1] - CDenorm32, FD[0, 0], FD[0, 1]);
+    FLinkwitzRiley[1].ProcessSample(FD[1, 1] - CDenorm32, FD[1, 0], FD[1, 1]);
 (*
    FCrossoverFilter[0].ProcessSample(FD[0, 1] - CDenorm32, FD[0, 0], FD[0, 1]);
    FCrossoverFilter[1].ProcessSample(FD[1, 1] - CDenorm32, FD[1, 0], FD[1, 1]);
 *)
 
    // compress & copy gain reduction
-   with FActualCompressor[0] do
+    with FActualCompressor[0] do
     begin
-     InputSample(CHalf32 * (FD[0, 0] + FD[1, 0]));
-     Temp[0] := GainReductionFactor * MakeUpGain;
+      InputSample(CHalf32 * (FD[0, 0] + FD[1, 0]));
+      Temp[0] := GainReductionFactor * MakeUpGain;
     end;
-   with FActualCompressor[1] do
+    with FActualCompressor[1] do
     begin
-     InputSample(CHalf32 * (FD[0, 1] + FD[1, 1]));
-     Temp[1] := GainReductionFactor * MakeUpGain;
+      InputSample(CHalf32 * (FD[0, 1] + FD[1, 1]));
+      Temp[1] := GainReductionFactor * MakeUpGain;
     end;
-   with FActualCompressor[2] do
+    with FActualCompressor[2] do
     begin
-     InputSample(CHalf32 * (FD[0, 2] + FD[1, 2]));
-     Temp[2] := GainReductionFactor * MakeUpGain;
+      InputSample(CHalf32 * (FD[0, 2] + FD[1, 2]));
+      Temp[2] := GainReductionFactor * MakeUpGain;
     end;
 
-   // gain and combine
-   Outputs[0, Sample] := FGain * (Temp[0] * FD[0, 0] + Temp[1] * FD[0, 1] - Temp[2] * FD[0, 2]);
-   Outputs[1, Sample] := FGain * (Temp[0] * FD[1, 0] + Temp[1] * FD[1, 1] - Temp[2] * FD[1, 2]);
+    // gain and combine
+    Outputs[0, Sample] := FGain * (Temp[0] * FD[0, 0] + Temp[1] * FD[0, 1] - Temp[2] * FD[0, 2]);
+    Outputs[1, Sample] := FGain * (Temp[0] * FD[1, 0] + Temp[1] * FD[1, 1] - Temp[2] * FD[1, 2]);
   end;
 end;
 
-procedure TSmoothMultibandCompressorDataModule.VSTModuleProcessMonoSoftClip(const Inputs,
-  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
+procedure TSmoothMultibandCompressorDataModule.VSTModuleProcessMonoSoftClip
+  (const Inputs, Outputs: TDAVArrayOfSingleFixedArray;
+  const SampleFrames: Cardinal);
 var
-  Sample : Integer;
-  Temp   : array [0..2] of Single;
-  FD     : array [0..1, 0..2] of Single;
+  Sample: Integer;
+  Temp: array [0 .. 2] of Single;
+  FD: array [0 .. 1, 0 .. 2] of Single;
 begin
- for Sample := 0 to SampleFrames - 1 do
+  for Sample := 0 to SampleFrames - 1 do
   begin
-   // split high
-   FLinearPhaseCrossover[0].ProcessSample(CDenorm32 + Inputs[0, Sample], FD[0, 1], FD[0, 2]);
-   FLinearPhaseCrossover[1].ProcessSample(CDenorm32 + Inputs[1, Sample], FD[1, 1], FD[1, 2]);
+    // split high
+    FLinearPhaseCrossover[0].ProcessSample(CDenorm32 + Inputs[0, Sample], FD[0, 1], FD[0, 2]);
+    FLinearPhaseCrossover[1].ProcessSample(CDenorm32 + Inputs[1, Sample], FD[1, 1], FD[1, 2]);
 
-   // split low
-   FLinkwitzRiley[0].ProcessSample(FD[0, 1] - CDenorm32, FD[0, 0], FD[0, 1]);
-   FLinkwitzRiley[1].ProcessSample(FD[1, 1] - CDenorm32, FD[1, 0], FD[1, 1]);
+    // split low
+    FLinkwitzRiley[0].ProcessSample(FD[0, 1] - CDenorm32, FD[0, 0], FD[0, 1]);
+    FLinkwitzRiley[1].ProcessSample(FD[1, 1] - CDenorm32, FD[1, 0], FD[1, 1]);
 
-   // compress
-   FActualCompressor[0].ProcessSample64(CHalf32 * (FD[0, 0] + FD[1, 0]));
-   FActualCompressor[1].ProcessSample64(CHalf32 * (FD[0, 1] + FD[1, 1]));
-   FActualCompressor[2].ProcessSample64(CHalf32 * (FD[0, 2] + FD[1, 2]));
+    // compress
+    FActualCompressor[0].ProcessSample64(CHalf32 * (FD[0, 0] + FD[1, 0]));
+    FActualCompressor[1].ProcessSample64(CHalf32 * (FD[0, 1] + FD[1, 1]));
+    FActualCompressor[2].ProcessSample64(CHalf32 * (FD[0, 2] + FD[1, 2]));
 
-   // copy gain reduction
-   Temp[0] := FActualCompressor[0].GainReductionFactor;
-   Temp[1] := FActualCompressor[1].GainReductionFactor;
-   Temp[2] := FActualCompressor[2].GainReductionFactor;
+    // copy gain reduction
+    Temp[0] := FActualCompressor[0].GainReductionFactor;
+    Temp[1] := FActualCompressor[1].GainReductionFactor;
+    Temp[2] := FActualCompressor[2].GainReductionFactor;
 
-   // gain and combine
-   Outputs[0, Sample] := FGain * FastTanhContinousError4(Temp[0] * FD[0, 0] + Temp[1] * FD[0, 1] + Temp[2] * FD[0, 2]);
-   Outputs[1, Sample] := FGain * FastTanhContinousError4(Temp[0] * FD[1, 0] + Temp[1] * FD[1, 1] + Temp[2] * FD[1, 2]);
+    // gain and combine
+    Outputs[0, Sample] := FGain * FastTanhContinousError4(Temp[0] * FD[0, 0] + Temp[1] * FD[0, 1] + Temp[2] * FD[0, 2]);
+    Outputs[1, Sample] := FGain * FastTanhContinousError4(Temp[0] * FD[1, 0] + Temp[1] * FD[1, 1] + Temp[2] * FD[1, 2]);
   end;
 end;
 
-procedure TSmoothMultibandCompressorDataModule.VSTModuleSampleRateChange(Sender: TObject;
-  const SampleRate: Single);
+procedure TSmoothMultibandCompressorDataModule.VSTModuleSampleRateChange
+  (Sender: TObject; const SampleRate: Single);
 var
-  Band, Channel : Integer;
+  Band, Channel: Integer;
 begin
- for Band := 0 to Length(FActualCompressor) - 1 do
+  for Band := 0 to Length(FActualCompressor) - 1 do
   begin
-   FFeedForwCompressor[Band].SampleRate := SampleRate;
-   FFeedBackCompressor[Band].SampleRate := SampleRate;
+    FFeedForwCompressor[Band].SampleRate := SampleRate;
+    FFeedBackCompressor[Band].SampleRate := SampleRate;
   end;
 
- for Channel := 0 to Length(FLinearPhaseCrossover) - 1
-  do FLinearPhaseCrossover[Channel].SampleRate := SampleRate;
+  for Channel := 0 to Length(FLinearPhaseCrossover) - 1 do
+    FLinearPhaseCrossover[Channel].SampleRate := SampleRate;
 
- for Channel := 0 to Length(FLinkwitzRiley) - 1
-  do FLinkwitzRiley[Channel].SampleRate := SampleRate;
+  for Channel := 0 to Length(FLinkwitzRiley) - 1 do
+    FLinkwitzRiley[Channel].SampleRate := SampleRate;
 
- for Channel := 0 to Length(FCrossoverFilter) - 1
-  do FCrossoverFilter[Channel].SampleRate := SampleRate;
+  for Channel := 0 to Length(FCrossoverFilter) - 1 do
+    FCrossoverFilter[Channel].SampleRate := SampleRate;
 end;
 
 end.

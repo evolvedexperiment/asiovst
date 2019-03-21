@@ -86,8 +86,8 @@ implementation
 {$ENDIF}
 
 uses
-  Math, DAV_Common, DAV_Convert, DAV_Consts, DAV_Approximations,
-  DAV_VSTModuleWithPrograms, AdhesiveGUI;
+  Math, DAV_Common, DAV_Convert, DAV_StringConvert, DAV_Consts,
+  DAV_Approximations, DAV_VSTModuleWithPrograms, AdhesiveGUI;
 
 procedure TAdhesiveDataModule.VSTModuleOpen(Sender: TObject);
 var
@@ -213,12 +213,7 @@ end;
 procedure TAdhesiveDataModule.ParameterOnOffDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
-  case Round(Parameter[Index]) of
-    0:
-      PreDefined := 'Off';
-    1:
-      PreDefined := 'On';
-  end;
+  PreDefined := AnsiString(OnOff(Parameter[Index]));
 end;
 
 procedure TAdhesiveDataModule.ParameteActiveChange(Sender: TObject;

@@ -1,5 +1,4 @@
 object SimpleFeedbackCompressorDataModule: TSimpleFeedbackCompressorDataModule
-  OldCreateOrder = True
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'Simple Feedback Compressor'
@@ -105,12 +104,9 @@ object SimpleFeedbackCompressorDataModule: TSimpleFeedbackCompressorDataModule
   ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
-  OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
   OnProcess32Replacing = VSTModuleProcess
   OnSampleRateChange = VSTModuleSampleRateChange
-  Left = 679
-  Top = 126
   Height = 150
   Width = 215
 end

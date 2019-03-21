@@ -190,8 +190,7 @@ begin
 
   // Similar to above, if odd symmetry, last grid point can't be .5
   // - but, if there are even taps, leave the last grid point at .5
-  { if ((symmetry = skOdd) and (Grid[gridsize - 1] > (0.5 - delf)) and ((numtaps  mod  2)=1)) //=1???
-    then } Grid[gridsize - 1] := 0.5 - delf;
+  Grid[gridsize - 1] := 0.5 - delf;
 end;
 
 {

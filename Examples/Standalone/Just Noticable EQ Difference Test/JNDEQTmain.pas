@@ -223,7 +223,8 @@ implementation
 
 uses
   IniFiles, Math, Mapi, ShellApi, AnsiStrings, System.ZLib, DAV_GuiCommon,
-  DAV_Common, DAV_Convert, DAV_Approximations, JNDEQTaudio, JNDEQTsurvey;
+  DAV_Common, DAV_Convert, DAV_Approximations, DAV_StringConvert,
+  JNDEQTaudio, JNDEQTsurvey;
 
 procedure TFormJNDEQT.FormCreate(Sender: TObject);
 var
@@ -467,11 +468,7 @@ end;
 procedure TFormJNDEQT.LabelAutoVolumeAdjustmentClick(Sender: TObject);
 begin
   VolumeAutoAdjustment := False; // not VolumeAutoAdjustment;
-
-  if VolumeAutoAdjustment then
-    LabelAutoVolumeAdjValue.Caption := 'On'
-  else
-    LabelAutoVolumeAdjValue.Caption := 'Off';
+  LabelAutoVolumeAdjValue.Caption := OnOff(VolumeAutoAdjustment);
 end;
 
 procedure TFormJNDEQT.LabelSkipClick(Sender: TObject);

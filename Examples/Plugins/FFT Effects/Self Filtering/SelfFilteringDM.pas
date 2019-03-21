@@ -48,10 +48,8 @@ type
     procedure ParameterDecayChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterWindowFunctionDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterWindowFunctionChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterFftOrderDisplay(
-      Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
-    procedure ParameterFftOrderChange(
-      Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterFftOrderDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterFftOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
     FCriticalSection: TCriticalSection;
     FSpectralFilter: array of TPeakSelfFiltering32;
@@ -71,116 +69,116 @@ uses
 
 procedure TSpectralSelfFilterModule.VSTModuleCreate(Sender: TObject);
 begin
- FCriticalSection := TCriticalSection.Create;
+  FCriticalSection := TCriticalSection.Create;
 end;
 
 procedure TSpectralSelfFilterModule.VSTModuleDestroy(Sender: TObject);
 begin
- FreeAndNil(FCriticalSection);
+  FreeAndNil(FCriticalSection);
 end;
 
 procedure TSpectralSelfFilterModule.VSTModuleOpen(Sender: TObject);
 var
-  Channel : Integer;
+  Channel: Integer;
 begin
- Assert(numInputs = numOutputs);
+  Assert(numInputs = numOutputs);
 
- SetLength(FSpectralFilter, numInputs);
- for Channel := 0 to Length(FSpectralFilter) - 1 do
+  SetLength(FSpectralFilter, numInputs);
+  for Channel := 0 to Length(FSpectralFilter) - 1 do
   begin
-   FSpectralFilter[Channel] := TPeakSelfFiltering32.Create;
-   with FSpectralFilter[Channel] do
+    FSpectralFilter[Channel] := TPeakSelfFiltering32.Create;
+    with FSpectralFilter[Channel] do
     begin
-     FftOrder := Round(Log2(BlockModeSize));
-     Assert(FftSize = BlockModeSize);
+      FftOrder := Round(Log2(BlockModeSize));
+      Assert(FftSize = BlockModeSize);
     end;
   end;
 
- with ParameterProperties[2] do
+  with ParameterProperties[2] do
   begin
-   Max := Length(GWindowFunctions) - 1;
-   MaxInteger := Length(GWindowFunctions) - 1;
+    Max := Length(GWindowFunctions) - 1;
+    MaxInteger := Length(GWindowFunctions) - 1;
   end;
 
- Parameter[0] := -30;
- Parameter[1] :=  12;
- Parameter[2] :=   4;
+  Parameter[0] := -30;
+  Parameter[1] := 12;
+  Parameter[2] := 4;
 end;
 
-procedure TSpectralSelfFilterModule.ParameterWindowFunctionDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+procedure TSpectralSelfFilterModule.ParameterWindowFunctionDisplay
+  (Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- PreDefined := GWindowFunctions[Round(Parameter[Index])].GetWindowFunctionName;
+  PreDefined := GWindowFunctions[Round(Parameter[Index])].GetWindowFunctionName;
 end;
 
-procedure TSpectralSelfFilterModule.ParameterFftOrderChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TSpectralSelfFilterModule.ParameterFftOrderChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 var
-  Channel : Integer;
+  Channel: Integer;
 begin
- FCriticalSection.Enter;
- try
-  for Channel := 0 to Length(FSpectralFilter) - 1
-   do FSpectralFilter[Channel].FFTOrder := Round(Value);
+  FCriticalSection.Enter;
+  try
+    for Channel := 0 to Length(FSpectralFilter) - 1 do
+      FSpectralFilter[Channel].FftOrder := Round(Value);
 
-  InitialDelay := 1 shl Round(Value);
- finally
-  FCriticalSection.Leave;
- end;
+    InitialDelay := 1 shl Round(Value);
+  finally
+    FCriticalSection.Leave;
+  end;
 end;
 
-procedure TSpectralSelfFilterModule.ParameterFftOrderDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+procedure TSpectralSelfFilterModule.ParameterFftOrderDisplay(Sender: TObject;
+  const Index: Integer; var PreDefined: AnsiString);
 begin
- PreDefined := IntToStr(Round(Parameter[Index]));
+  PreDefined := IntToStr(Round(Parameter[Index]));
 end;
 
-procedure TSpectralSelfFilterModule.ParameterWindowFunctionChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TSpectralSelfFilterModule.ParameterWindowFunctionChange
+  (Sender: TObject; const Index: Integer; var Value: Single);
 var
-  Channel : Integer;
+  Channel: Integer;
 begin
- FCriticalSection.Enter;
- try
-  for Channel := 0 to Length(FSpectralFilter) - 1
-   do FSpectralFilter[Channel].WindowFunctionClass := GWindowFunctions[Round(Parameter[Index])];
- finally
-  FCriticalSection.Leave;
- end;
+  FCriticalSection.Enter;
+  try
+    for Channel := 0 to Length(FSpectralFilter) - 1 do
+      FSpectralFilter[Channel].WindowFunctionClass := GWindowFunctions[Round(Parameter[Index])];
+  finally
+    FCriticalSection.Leave;
+  end;
 end;
 
 procedure TSpectralSelfFilterModule.VSTModuleClose(Sender: TObject);
 var
-  Channel : Integer;
+  Channel: Integer;
 begin
- for Channel := 0 to Length(FSpectralFilter) - 1
-  do FreeAndNil(FSpectralFilter[Channel]);
+  for Channel := 0 to Length(FSpectralFilter) - 1 do
+    FreeAndNil(FSpectralFilter[Channel]);
 end;
 
-procedure TSpectralSelfFilterModule.ParameterDecayChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TSpectralSelfFilterModule.ParameterDecayChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 var
-  Channel : Integer;
+  Channel: Integer;
 begin
- for Channel := 0 to Length(FSpectralFilter) - 1
-  do FSpectralFilter[Channel].Decay := Value;
+  for Channel := 0 to Length(FSpectralFilter) - 1 do
+    FSpectralFilter[Channel].Decay := Value;
 end;
 
 procedure TSpectralSelfFilterModule.VSTModuleProcess(const Inputs,
   Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
-  Channel : Integer;
+  Channel: Integer;
 begin
- FCriticalSection.Enter;
- try
-  for Channel := 0 to Length(FSpectralFilter) - 1 do
-   begin
-    FSpectralFilter[Channel].ProcessBlock(@Inputs[Channel, 0],
-      @Outputs[Channel, 0], SampleFrames);
-   end;
- finally
-  FCriticalSection.Leave;
- end;
+  FCriticalSection.Enter;
+  try
+    for Channel := 0 to Length(FSpectralFilter) - 1 do
+    begin
+      FSpectralFilter[Channel].ProcessBlock(@Inputs[Channel, 0],
+        @Outputs[Channel, 0], SampleFrames);
+    end;
+  finally
+    FCriticalSection.Leave;
+  end;
 end;
 
 end.

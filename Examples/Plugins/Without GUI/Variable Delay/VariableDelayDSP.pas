@@ -68,96 +68,99 @@ uses
 
 procedure TVariableDelayVST.VSTModuleCreate(Sender: TObject);
 begin
- FCriticalSection := TCriticalSection.Create;
+  FCriticalSection := TCriticalSection.Create;
 end;
 
 procedure TVariableDelayVST.VSTModuleDestroy(Sender: TObject);
 begin
- FreeAndNil(FCriticalSection);
+  FreeAndNil(FCriticalSection);
 end;
 
 procedure TVariableDelayVST.VSTModuleOpen(Sender: TObject);
 begin
- FVariDelay[0] := TVariableDelay32Allpass.Create;
- FVariDelay[1] := TVariableDelay32Allpass.Create;
+  FVariDelay[0] := TVariableDelay32Allpass.Create;
+  FVariDelay[1] := TVariableDelay32Allpass.Create;
 
- Parameter[0] := 100;
- Parameter[1] := 0;
- Parameter[2] := 100;
+  Parameter[0] := 100;
+  Parameter[1] := 0;
+  Parameter[2] := 100;
 end;
 
-procedure TVariableDelayVST.SDDelayLengthChange(Sender: TObject; const Index: Integer; var Value: Single);
+procedure TVariableDelayVST.SDDelayLengthChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 var
-  Channel : Integer;
+  Channel: Integer;
 begin
- FCriticalSection.Enter;
- try
-  for Channel := 0 to Length(FVariDelay) - 1 do
-   if Assigned(FVariDelay[Channel])
-    then FVariDelay[Channel].Delay := 1E-4 * Value;
- finally
-   FCriticalSection.Leave;
- end;
+  FCriticalSection.Enter;
+  try
+    for Channel := 0 to Length(FVariDelay) - 1 do
+      if Assigned(FVariDelay[Channel]) then
+        FVariDelay[Channel].Delay := 1E-4 * Value;
+  finally
+    FCriticalSection.Leave;
+  end;
 end;
 
-procedure TVariableDelayVST.ParameterWetMixChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TVariableDelayVST.ParameterWetMixChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
- FMix[1] := 0.01 * Value;
+  FMix[1] := 0.01 * Value;
 end;
 
-procedure TVariableDelayVST.ParamDryMixChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TVariableDelayVST.ParamDryMixChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
- FMix[0] := 0.01 * Value;
+  FMix[0] := 0.01 * Value;
 end;
 
-procedure TVariableDelayVST.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
+procedure TVariableDelayVST.VSTModuleProcess(const Inputs,
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
-  Sample, Channel : Integer;
+  Sample, Channel: Integer;
 begin
- FCriticalSection.Enter;
- try
-  for Sample := 0 to SampleFrames - 1 do
-   for Channel := 0 to Length(FVariDelay) - 1
-    do Outputs[Channel, Sample] := FMix[0] * Inputs[Channel, Sample] +
-         FMix[1] * FVariDelay[Channel].ProcessSample32(Inputs[Channel, Sample]);
- finally
-  FCriticalSection.Leave;
- end;
+  FCriticalSection.Enter;
+  try
+    for Sample := 0 to SampleFrames - 1 do
+      for Channel := 0 to Length(FVariDelay) - 1 do
+        Outputs[Channel, Sample] := FMix[0] * Inputs[Channel, Sample] +
+          FMix[1] * FVariDelay[Channel].ProcessSample32(Inputs[Channel, Sample]);
+  finally
+    FCriticalSection.Leave;
+  end;
 end;
 
 procedure TVariableDelayVST.VSTModuleProcessDoubleReplacing(const Inputs,
   Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
 var
-  Sample, Channel : Integer;
+  Sample, Channel: Integer;
 begin
- FCriticalSection.Enter;
- try
-  for Sample := 0 to SampleFrames - 1 do
-   for Channel := 0 to Length(FVariDelay) - 1
-    do Outputs[Channel, Sample] := FMix[0] * Inputs[Channel, Sample] +
-         FMix[1] * FVariDelay[Channel].ProcessSample32(Inputs[Channel, Sample]);
- finally
-  FCriticalSection.Leave;
- end;
+  FCriticalSection.Enter;
+  try
+    for Sample := 0 to SampleFrames - 1 do
+      for Channel := 0 to Length(FVariDelay) - 1 do
+        Outputs[Channel, Sample] := FMix[0] * Inputs[Channel, Sample] +
+          FMix[1] * FVariDelay[Channel].ProcessSample32(Inputs[Channel, Sample]);
+  finally
+    FCriticalSection.Leave;
+  end;
 end;
 
 procedure TVariableDelayVST.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 var
-  Channel : Integer;
+  Channel: Integer;
 begin
- if Abs(SampleRate) = 0 then Exit;
- 
- FCriticalSection.Enter;
- try
-  for Channel := 0 to Length(FVariDelay) - 1 do
-   if Assigned(FVariDelay[Channel])
-    then FVariDelay[Channel].SampleRate := Abs(SampleRate);
- finally
-   FCriticalSection.Leave;
- end;
+  if Abs(SampleRate) = 0 then
+    Exit;
+
+  FCriticalSection.Enter;
+  try
+    for Channel := 0 to Length(FVariDelay) - 1 do
+      if Assigned(FVariDelay[Channel]) then
+        FVariDelay[Channel].SampleRate := Abs(SampleRate);
+  finally
+    FCriticalSection.Leave;
+  end;
 end;
 
 end.

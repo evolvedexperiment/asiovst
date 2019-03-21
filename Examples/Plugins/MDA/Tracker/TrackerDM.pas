@@ -156,49 +156,51 @@ var
   m, we, dr, bo, r1, r2  : Single;
   sw, dsw, dy, e, re     : Single;
   n, s, mo               : Integer;
-const
-  TwoPi : Single = 6.2831853;
 begin
- t   := FThreshold;
- p   := FPhi;
- dp  := FDeltaPhi;
+  t   := FThreshold;
+  p   := FPhi;
+  dp  := FDeltaPhi;
 (*
- ddp := ddphi;
- o   := fo;
- i   := fi;
- b1  := FBuffer[0];
- b2  := FBuffer[1]
- bo  := fBold;
- r1  := res1;
- r2  := res2;
- b3  := FBuffer[2];
- b4  := FBuffer[3];
- sw  := saw;
- dsw := dsaw;
- re  := rel;
- n   := num;
- s   := sig;
+  ddp := ddphi;
+  o   := fo;
+  i   := fi;
+  b1  := FBuffer[0];
+  b2  := FBuffer[1]
+  bo  := fBold;
+  r1  := res1;
+  r2  := res2;
+  b3  := FBuffer[2];
+  b4  := FBuffer[3];
+  sw  := saw;
+  dsw := dsaw;
+  re  := rel;
+  n   := num;
+  s   := sig;
 *)
- we  := FWet;
- dr  := FDry;
- mn  := FMin;
- m   := FMax;
- dy  := FDyn;
- e   := FEnv;
- mo  := FMode;
+  we := FWet;
+  dr := FDry;
+  mn := FMin;
+  m := FMax;
+  dy := FDyn;
+  e := FEnv;
+  mo := FMode;
 
- for Sample := 0 to SampleFrames - 1 do
+  for Sample := 0 to SampleFrames - 1 do
   begin
-   a := Inputs[0, Sample];
-   b := Inputs[1, Sample];
-   x := a; // + b;
+    a := Inputs[0, Sample];
+    b := Inputs[1, Sample];
+    x := a; // + b;
 
-   if (x > 0)                                   // Dynamics Envelope
-    then tmp :=  x
-    else tmp := -x;
-   if (tmp > e)
-    then e := 0.5 * (tmp + e)
-    else e := e * re;
+    // Dynamics Envelope
+    if (x > 0)
+    then
+      tmp := x
+    else
+      tmp := -x;
+    if (tmp > e) then
+      e := 0.5 * (tmp + e)
+    else
+      e := e * re;
 
    b1 := o * b1 + i * x;
    b2 := o * b2 + b1;                              // low-pass filter
@@ -211,7 +213,7 @@ begin
         begin
 (*
          tmp2 := b2 / (b2 - bo);                   // update period
-         tmp  := FTrans * TwoPi / (n + dn - tmp2);
+         tmp  := FTrans * CTwoPI64 / (n + dn - tmp2);
          dp   := dp + ddp * (tmp - dp);
          dn   := tmp2;
 *)

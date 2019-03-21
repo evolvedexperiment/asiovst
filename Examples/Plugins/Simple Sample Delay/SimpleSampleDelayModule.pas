@@ -76,7 +76,7 @@ implementation
 {$ENDIF}
 
 uses
-  SimpleSampleDelayGUI, DAV_VSTCustomModule;
+  SimpleSampleDelayGUI, DAV_StringConvert, DAV_VSTCustomModule;
 
 procedure TSimpleSampleDelayVST.VSTModuleCreate(Sender: TObject);
 begin
@@ -192,10 +192,7 @@ end;
 procedure TSimpleSampleDelayVST.ParameterInvFBDisplay(Sender: TObject;
   const Index: Integer; var PreDefined: AnsiString);
 begin
-  if Parameter[Index] < 0.5 then
-    PreDefined := 'Off'
-  else
-    PreDefined := 'On';
+  PreDefined := AnsiString(OnOff(Parameter[Index]));
 end;
 
 procedure TSimpleSampleDelayVST.ParameterWetMixChange(Sender: TObject;

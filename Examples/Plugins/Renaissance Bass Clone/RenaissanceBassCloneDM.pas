@@ -61,7 +61,8 @@ type
 implementation
 
 uses
-  Math, DAV_Common, DAV_Convert, DAV_Approximations, RenaissanceBassCloneGUI;
+  Math, DAV_Common, DAV_Convert, DAV_StringConvert, DAV_Approximations,
+  RenaissanceBassCloneGUI;
 
 {$IFDEF FPC}
 {$R *.lfm}
@@ -146,12 +147,7 @@ end;
 procedure TResurrectionBassCloneModule.ParameterAddOriginalBassDisplay
   (Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
-  case Round(Parameter[Index]) of
-    0:
-      PreDefined := 'Off';
-    1:
-      PreDefined := 'On';
-  end;
+  PreDefined := AnsiString(OnOff(Parameter[Index]));
 end;
 
 procedure TResurrectionBassCloneModule.ParameterdBDisplay(Sender: TObject;

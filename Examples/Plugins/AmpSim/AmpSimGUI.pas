@@ -191,7 +191,7 @@ begin
     Drive := ParameterByName['Drive'];
     if DialDrive.Value <> Drive then
       DialDrive.Value := Drive;
-    LbDriveValue.Caption := FloatToStrF(Drive, ffGeneral, 3, 3) + ' %';
+    LbDriveValue.Caption := FloatToString(Drive, 3) + ' %';
   end;
 end;
 
@@ -204,7 +204,7 @@ begin
     Bias := ParameterByName['Bias'];
     if DialBias.Value <> Bias then
       DialBias.Value := Bias;
-    LbBiasValue.Caption := FloatToStrF(Bias, ffGeneral, 3, 3) + ' %';
+    LbBiasValue.Caption := FloatToString(Bias, 3) + ' %';
   end;
 end;
 
@@ -217,7 +217,7 @@ begin
     Frequency := ParameterByName['HPF Frequency'];
     if DialFrequency.Value <> Frequency then
       DialFrequency.Value := Frequency;
-    LbFrequencyValue.Caption := FloatToStrF(Frequency, ffGeneral, 5, 5) + ' Hz';
+    LbFrequencyValue.Caption := FloatToString(Frequency, 5) + ' Hz';
   end;
 end;
 
@@ -264,7 +264,7 @@ begin
     Output := ParameterByName['Output'];
     if DialOutput.Value <> Output then
       DialOutput.Value := Output;
-    LbOutputValue.Caption := FloatToStrF(Output, ffGeneral, 3, 3) + ' dB';
+    LbOutputValue.Caption := FloatToString(Output, 3) + ' dB';
   end;
 end;
 
@@ -277,7 +277,7 @@ begin
     Reso := ParameterByName['HPF Resonance'];
     if DialResonance.Value <> Reso then
       DialResonance.Value := Reso;
-    LbResonanceValue.Caption := FloatToStrF(Reso, ffGeneral, 3, 3) + ' %';
+    LbResonanceValue.Caption := FloatToString(Reso, 3) + ' %';
   end;
 end;
 

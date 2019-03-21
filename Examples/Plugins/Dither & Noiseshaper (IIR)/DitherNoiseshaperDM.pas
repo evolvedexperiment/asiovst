@@ -69,7 +69,7 @@ implementation
 {$ENDIF}
 
 uses
-  DitherNoiseshaperGUI;
+  DAV_StringConvert, DitherNoiseshaperGUI;
 
 procedure TDitherNoiseshaperModule.VSTModuleCreate(Sender: TObject);
 begin
@@ -188,10 +188,8 @@ end;
 
 procedure TDitherNoiseshaperModule.ParameterOnOffDisplay(Sender: TObject;
   const Index: Integer; var PreDefined: AnsiString);
-const
-  COnOff: array [0 .. 1] of AnsiString = ('Off', 'On');
 begin
-  PreDefined := COnOff[Round(Parameter[Index])];
+  PreDefined := AnsiString(OnOff(Parameter[Index]));
 end;
 
 procedure TDitherNoiseshaperModule.ParameterDitherTypeDisplay(Sender: TObject;

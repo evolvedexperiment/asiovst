@@ -136,10 +136,6 @@ function Compare4(S1, S2 : PAnsiChar): Boolean; {$IFDEF SUPPORTS_INLINE} inline;
 function SplitString(S: String; Delimiter: AnsiChar): TStrArray;
 function MakeGoodFileName(s: string): string;
 
-function FloatWithUnit(const Value: Double): string;
-function FloatToString(Value: Extended; Digits: Integer = -1): string;
-function FloatToAnsiString(Value: Extended; Digits: Integer = -1): AnsiString;
-
 {$IFDEF MSWINDOWS}
 {$IFDEF CPU386}
 function MethodToProcedure(Self: TObject; MethodAddr: Pointer): Pointer; overload;
@@ -1098,60 +1094,6 @@ begin
       Result := Result + '-';
 end;
 
-function FloatWithUnit(const Value: Double): string;
-begin
-  if Value > 1 then
-    Result := FloatToStrF(Value, ffFixed, 6, 3)+ 's'
-  else
-  if Value > 1E-3 then
-    Result := FloatToStrF(1E3 * Value, ffFixed, 6, 3)+ 'ms'
-  else
-  if Value > 1E-6 then
-    Result := FloatToStrF(1E6 * Value, ffFixed, 6, 3)+ 'µs'
-  else
-    Result := FloatToStrF(1E9 * Value, ffFixed, 6, 3)+ 'ns'
-end;
-
-function FloatToString(Value: Extended; Digits: Integer = -1): string;
-begin
-{$IFDEF UseNativeFloatToStringConversion}
-  if Digits >= 0 then
-    Result := FloatToStrF(Value, ffGeneral, Digits, Digits)
-  else
-    Result := FloatToStr(Value);
-{$ELSE}
-  if IsNan(Value) then
-    Result := 'Error'
-  else
-  if IsInfinite(Value) then
-    Result := 'oo'
-  else
-    Result := IntToStr(Round(Value));
-{$ENDIF}
-end;
-
-function FloatToAnsiString(Value: Extended; Digits: Integer = -1): AnsiString;
-begin
-{$IFDEF UseNativeFloatToStringConversion}
-  if Digits >= 0 then
-  begin
-    Value := RoundTo(Value, -Digits);
-    Result := AnsiString(FloatToStrF(Value, ffGeneral, Abs(Digits), Abs(Digits)))
-  end
-  else
-    Result := AnsiString(FloatToStr(Value));
-  {$ELSE}
-  if IsNan(Value) then
-    Result := 'Error'
-  else
-  if IsInfinite(Value) then
-    Result := 'oo'
-  else
-    Result := IntToStr(Round(Value));
-{$ENDIF}
-end;
-
-
 {$DEFINE PUREPASCAL}
 
 function FastMin(const A, B: Single) : Single;
@@ -1174,9 +1116,10 @@ end;
 function FastMax(const A, B: Single) : Single;
 {$IFDEF PUREPASCAL}
 begin
- if A < B
-  then Result := B
-  else Result := A
+  if A < B then
+    Result := B
+  else
+    Result := A
 end;
 {$ELSE}
 asm

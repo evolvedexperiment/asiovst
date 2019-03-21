@@ -92,8 +92,9 @@ implementation
 {$ENDIF}
 
 uses
-  Math, DAV_Common, DAV_Consts, DAV_Strings, DAV_Approximations,
-  DAV_VSTModuleWithPrograms, LightweightMultibandCompressorGUI;
+  Math, DAV_Common, DAV_Consts, DAV_Strings, DAV_StringConvert,
+  DAV_Approximations, DAV_VSTModuleWithPrograms,
+  LightweightMultibandCompressorGUI;
 
 procedure TLightweightMultibandCompressorDataModule.VSTModuleOpen(Sender: TObject);
 var
@@ -311,12 +312,7 @@ end;
 procedure TLightweightMultibandCompressorDataModule.ParameterOnOffDisplay
   (Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
-  case Round(Parameter[Index]) of
-    0:
-      PreDefined := 'Off';
-    1:
-      PreDefined := 'On';
-  end;
+  PreDefined := AnsiString(OnOff(Parameter[Index]));
 end;
 
 procedure TLightweightMultibandCompressorDataModule.ParameterLowFreqChange

@@ -42,7 +42,6 @@ type
   TLightweightDynamicsDataModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: NativeUInt);
     procedure VSTModuleProcessGateCompressorLimiter(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
     procedure VSTModuleProcessGateCompressorLimiterSoftClip(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
@@ -94,8 +93,8 @@ implementation
 {$ENDIF}
 
 uses
-  Math, DAV_Common, DAV_Consts, DAV_Approximations, DAV_VSTModuleWithPrograms,
-  LightweightDynamicsGUI;
+  Math, DAV_Common, DAV_Consts, DAV_StringConvert, DAV_Approximations,
+  DAV_VSTModuleWithPrograms, LightweightDynamicsGUI;
 
 procedure TLightweightDynamicsDataModule.VSTModuleOpen(Sender: TObject);
 var
@@ -150,6 +149,8 @@ begin
   Programs[0].SetParameters(FParameter);
   for Channel := 1 to numPrograms - 1 do
     Programs[Channel].SetParameters(CPresets[Channel]);
+
+  EditorFormClass := TFmLightweightDynamics;
 end;
 
 procedure TLightweightDynamicsDataModule.VSTModuleClose(Sender: TObject);
@@ -157,12 +158,6 @@ begin
   FreeAndNil(FGate);
   FreeAndNil(FCompressor);
   FreeAndNil(FLimiter);
-end;
-
-procedure TLightweightDynamicsDataModule.VSTModuleEditOpen(Sender: TObject;
-  var GUI: TForm; ParentWindow: NativeUInt);
-begin
-  GUI := TFmLightweightDynamics.Create(Self);
 end;
 
 procedure TLightweightDynamicsDataModule.ChooseProcess;
@@ -434,12 +429,7 @@ end;
 procedure TLightweightDynamicsDataModule.ParameterOnOffDisplay(Sender: TObject;
   const Index: Integer; var PreDefined: AnsiString);
 begin
-  case Round(Parameter[Index]) of
-    0:
-      PreDefined := 'Off';
-    1:
-      PreDefined := 'On';
-  end;
+  PreDefined := AnsiString(OnOff(Parameter[Index]));
 end;
 
 procedure TLightweightDynamicsDataModule.VSTModuleSampleRateChange

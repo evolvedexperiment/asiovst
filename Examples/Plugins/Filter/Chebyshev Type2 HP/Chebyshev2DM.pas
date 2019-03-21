@@ -43,7 +43,6 @@ type
   TChebyshev2HPModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: NativeUInt);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
     procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
@@ -52,6 +51,8 @@ type
     procedure ParamOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterCorrectFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterOnOffDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure Chebyshev2HPModuleParameterProperties0CustomParameterDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure Chebyshev2HPModuleParameterProperties0CustomParameterLabel(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
   private
     FFilter  : array [0..1] of TCustomChebyshev2HighpassFilter;
     FResizer : TVstWindowSizer;
@@ -68,7 +69,7 @@ implementation
 {$ENDIF}
 
 uses
-  Math, Chebyshev2GUI;
+  Math, DAV_StringConvert, Chebyshev2GUI;
 
 procedure TChebyshev2HPModule.VSTModuleOpen(Sender: TObject);
 var
@@ -79,10 +80,6 @@ begin
     FFilter[ChannelIndex] := TChebyshev2HighpassFilter.Create;
     FFilter[ChannelIndex].SetFilterValues(1000, 0, -10);
   end;
-  (*
- FResizer := TVstWindowSizer.Create;
- FResizer.Effect := Self;
-*)
 
   // Initial Parameters
   Parameter[0] := 1000;
@@ -95,6 +92,8 @@ begin
     Parameter[1] := -24;
     Parameter[2] := 4;
   end;
+
+  EditorFormClass := TFmChebyshev2;
 end;
 
 procedure TChebyshev2HPModule.VSTModuleClose(Sender: TObject);
@@ -104,12 +103,6 @@ begin
   for ChannelIndex := 0 to numInputs - 1 do
     FreeAndNil(FFilter[ChannelIndex]);
   // FreeAndNil(FResizer);
-end;
-
-procedure TChebyshev2HPModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
-  ParentWindow: NativeUInt);
-begin
-  GUI := TFmChebyshev2.Create(Self);
 end;
 
 procedure TChebyshev2HPModule.ParamStopbandChange(Sender: TObject;
@@ -144,10 +137,22 @@ end;
 procedure TChebyshev2HPModule.ParameterOnOffDisplay(Sender: TObject;
   const Index: Integer; var PreDefined: AnsiString);
 begin
-  if Parameter[Index] > 0.5 then
-    PreDefined := 'On'
+  PreDefined := AnsiString(OnOff(Parameter[Index]));
+end;
+
+procedure TChebyshev2HPModule.Chebyshev2HPModuleParameterProperties0CustomParameterDisplay(
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+begin
+  PreDefined := FloatToHertzShiftNoUnit(Parameter[Index]);
+end;
+
+procedure TChebyshev2HPModule.Chebyshev2HPModuleParameterProperties0CustomParameterLabel(
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+begin
+  if Parameter[Index] < 1000 then
+    PreDefined := 'Hz'
   else
-    PreDefined := 'Off';
+    PreDefined := 'kHz';
 end;
 
 procedure TChebyshev2HPModule.ParameterCorrectFrequencyChange(Sender: TObject;

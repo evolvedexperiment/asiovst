@@ -70,8 +70,8 @@ implementation
 
 procedure TDelayDataModule.VSTModuleOpen(Sender: TObject);
 begin
- FSize   := 32766;  //set max delay time at max sample rate
- GetMem(FBuffer, FSize * SizeOf(Single));
+  FSize := 32766; // set max delay time at max sample rate
+  GetMem(FBuffer, FSize * SizeOf(Single));
 
 (*
  FIntPos = 0;
@@ -92,59 +92,72 @@ end;
 
 procedure TDelayDataModule.VSTModuleClose(Sender: TObject);
 begin
- if Assigned(FBuffer)
-  then Dispose(FBuffer);
+  if Assigned(FBuffer) then
+    Dispose(FBuffer);
 end;
 
 procedure TDelayDataModule.VSTModuleParameterChange(Sender: TObject;
   const Index: Integer; var Value: Single);
 var
-  tmp : Single;
+  tmp: Single;
 begin
- //calcs here
- ldel := Round(FSize * sqr(Parameter[0]));
- if (ldel < 4) then ldel := 4;
+  // calcs here
+  ldel := Round(FSize * sqr(Parameter[0]));
+  if (ldel < 4) then
+    ldel := 4;
 
- case Round(Parameter[1] * 17.9) of //fixed left/right ratios
-   17: tmp := 0.5;
-   16: tmp := 0.6667;
-   15: tmp := 0.75;
-   14: tmp := 0.8333;
-   13: tmp := 1;
-   12: tmp := 1.2;
-   11: tmp := 1.3333;
-   10: tmp := 1.5;
-    9: tmp := 2;
-  else tmp := 4 * Parameter[1]; //variable ratio
- end;
+  case Round(Parameter[1] * 17.9) of // fixed left/right ratios
+    17:
+      tmp := 0.5;
+    16:
+      tmp := 0.6667;
+    15:
+      tmp := 0.75;
+    14:
+      tmp := 0.8333;
+    13:
+      tmp := 1;
+    12:
+      tmp := 1.2;
+    11:
+      tmp := 1.3333;
+    10:
+      tmp := 1.5;
+    9:
+      tmp := 2;
+  else
+    tmp := 4 * Parameter[1]; // variable ratio
+  end;
 
- rdel := Round(FSize * sqr(Parameter[0]) * tmp);
- if (rdel > FSize) then rdel := FSize;
- if (rdel < 4) then rdel := 4;
+  rdel := Round(FSize * sqr(Parameter[0]) * tmp);
+  if (rdel > FSize) then
+    rdel := FSize;
+  if (rdel < 4) then
+    rdel := 4;
 
 (*
- fil := Parameter[3];
+  fil := Parameter[3];
 
- if (Parameter[3] > 0.5)  //simultaneously change crossover frequency & high/low mix
+  if (Parameter[3] > 0.5)  //simultaneously change crossover frequency & high/low mix
   begin
-   fil  := 0.5 * fil - 0.25;
-   lmix := -2.0 * fil;
-   hmix := 1.0;
+    fil  := 0.5 * fil - 0.25;
+    lmix := -2.0 * fil;
+    hmix := 1.0;
   end;
- else
+  else
   begin
-   hmix := 2 * fil;
-   lmix := 1 - hmix;
+    hmix := 2 * fil;
+    lmix := 1 - hmix;
   end;
- fil := exp(-6.2831853 * Power(10, 2.2 + 4.5 * fil) / SampleRate);
+  fil := exp(-6.2831853 * Power(10, 2.2 + 4.5 * fil) / SampleRate);
 *)
 
- FFeedback := 0.495 * Parameter[2];
- FWet      := 1 - Parameter[4];
- FWet      := Parameter[5] * (1 - sqr(FWet)); // -3dB at 50% mix
- FDry      := Parameter[5] * 2 * (1 - sqr(Parameter[4]));
+  FFeedback := 0.495 * Parameter[2];
+  FWet := 1 - Parameter[4];
+  FWet := Parameter[5] * (1 - sqr(FWet)); // -3dB at 50% mix
+  FDry := Parameter[5] * 2 * (1 - sqr(Parameter[4]));
 
- //if(Parameter[2] > 0.99) { fbk=0.5; FWet=0.0; } //freeze
+//  if(Parameter[2] > 0.99) { fbk=0.5; FWet=0.0; } //freeze
 end;
 
 procedure TDelayDataModule.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);

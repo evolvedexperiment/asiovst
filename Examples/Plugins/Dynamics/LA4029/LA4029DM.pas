@@ -101,7 +101,8 @@ implementation
 {$ENDIF}
 
 uses
-  Dialogs, Math, EditorFrm, DAV_Common, DAV_Math, DAV_DspFilter;
+  Dialogs, Math, EditorFrm, DAV_Common, DAV_StringConvert, DAV_Math,
+  DAV_DspFilter;
 
 procedure TLA4029DataModule.VSTModuleOpen(Sender: TObject);
 begin
@@ -289,10 +290,7 @@ end;
 procedure TLA4029DataModule.ParamOnOffDisplay(Sender: TObject;
   const Index: Integer; var PreDefined: AnsiString);
 begin
-  if Parameter[Index] < 0.5 then
-    PreDefined := 'On'
-  else
-    PreDefined := 'Off';
+  PreDefined := AnsiString(OnOff(Parameter[Index]));
 end;
 
 procedure TLA4029DataModule.ParamVUSpeedChange(Sender: TObject;

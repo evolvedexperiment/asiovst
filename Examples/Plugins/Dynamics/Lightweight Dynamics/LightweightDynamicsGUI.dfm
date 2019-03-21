@@ -22,17 +22,19 @@ object FmLightweightDynamics: TFmLightweightDynamics
     Top = 8
     Width = 457
     Height = 93
-    FontOversampling = fo4x
+    BorderColor = 14277598
+    BorderWidth = 1.000000000000000000
     Caption = 'Gate'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clBlack
     Font.Height = -19
     Font.Name = 'Tahoma'
     Font.Style = []
-    LineColor = 14277598
-    PanelColor = clBlack
+    FontOversampling = fo4x
+    GroupColor = clBlack
+    Native = False
     ParentFont = False
-    BorderRadius = 5
+    BorderRadius = 5.000000000000000000
     TabOrder = 0
     object LbGateAttack: TGuiLabel
       Left = 58
@@ -49,7 +51,6 @@ object FmLightweightDynamics: TFmLightweightDynamics
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbGateAttackValue: TGuiLabel
       Left = 48
@@ -66,7 +67,6 @@ object FmLightweightDynamics: TFmLightweightDynamics
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbGateRelease: TGuiLabel
       Left = 132
@@ -83,7 +83,6 @@ object FmLightweightDynamics: TFmLightweightDynamics
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbGateReleaseValue: TGuiLabel
       Left = 126
@@ -100,7 +99,6 @@ object FmLightweightDynamics: TFmLightweightDynamics
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbGateThreshold: TGuiLabel
       Left = 203
@@ -117,7 +115,6 @@ object FmLightweightDynamics: TFmLightweightDynamics
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbGateThresholdValue: TGuiLabel
       Left = 208
@@ -134,7 +131,6 @@ object FmLightweightDynamics: TFmLightweightDynamics
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbGateRatio: TGuiLabel
       Left = 299
@@ -151,7 +147,6 @@ object FmLightweightDynamics: TFmLightweightDynamics
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbGateRatioValue: TGuiLabel
       Left = 286
@@ -168,7 +163,6 @@ object FmLightweightDynamics: TFmLightweightDynamics
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbGateKnee: TGuiLabel
       Left = 363
@@ -185,7 +179,6 @@ object FmLightweightDynamics: TFmLightweightDynamics
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbGateKneeValue: TGuiLabel
       Left = 368
@@ -202,7 +195,6 @@ object FmLightweightDynamics: TFmLightweightDynamics
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LmLeft: TGuiColorLevelMeter
       Left = 9
@@ -239,7 +231,6 @@ object FmLightweightDynamics: TFmLightweightDynamics
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
       Visible = False
     end
     object LbInputGainRight: TGuiLabel
@@ -257,7 +248,6 @@ object FmLightweightDynamics: TFmLightweightDynamics
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
       Visible = False
     end
     object DialGateAttack: TGuiStitchedDial
@@ -268,11 +258,13 @@ object FmLightweightDynamics: TFmLightweightDynamics
       CurveMapping = -1.299999952316284000
       Max = 1000.000000000000000000
       Min = 0.009999999776482582
-      OnChange = DialGateAttackChange
+      ScrollRange = 400.000000000000000000
       ImageList = GSPL
       ImageIndex = 0
       Value = 15.000000000000000000
       WheelStep = 1.000000000000000000
+      OnChange = DialGateAttackChange
+      DefaultValue = 0.000000000000000000
     end
     object DialGateRelease: TGuiStitchedDial
       Left = 147
@@ -282,11 +274,13 @@ object FmLightweightDynamics: TFmLightweightDynamics
       CurveMapping = -1.299999952316284000
       Max = 5000.000000000000000000
       Min = 0.100000001490116100
-      OnChange = DialGateReleaseChange
+      ScrollRange = 400.000000000000000000
       ImageList = GSPL
       ImageIndex = 0
       Value = 75.000000000000000000
       WheelStep = 1.000000000000000000
+      OnChange = DialGateReleaseChange
+      DefaultValue = 0.000000000000000000
     end
     object DialGateThreshold: TGuiStitchedDial
       Left = 227
@@ -296,11 +290,13 @@ object FmLightweightDynamics: TFmLightweightDynamics
       CurveMapping = -1.799999952316284000
       Max = 10.000000000000000000
       Min = -90.000000000000000000
-      OnChange = DialGateThresholdChange
+      ScrollRange = 400.000000000000000000
       ImageList = GSPL
       ImageIndex = 0
       Value = -60.000000000000000000
       WheelStep = 1.000000000000000000
+      OnChange = DialGateThresholdChange
+      DefaultValue = 0.000000000000000000
     end
     object DialGateRatio: TGuiStitchedDial
       Left = 307
@@ -310,11 +306,13 @@ object FmLightweightDynamics: TFmLightweightDynamics
       CurveMapping = -1.799999952316284000
       Max = 100.000000000000000000
       Min = 1.000000000000000000
-      OnChange = DialGateRatioChange
+      ScrollRange = 400.000000000000000000
       ImageList = GSPL
       ImageIndex = 0
       Value = 10.000000000000000000
       WheelStep = 1.000000000000000000
+      OnChange = DialGateRatioChange
+      DefaultValue = 0.000000000000000000
     end
     object DialGateKnee: TGuiStitchedDial
       Left = 387
@@ -323,11 +321,13 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Height = 36
       CurveMapping = -0.800000011920929000
       Max = 10.000000000000000000
-      OnChange = DialGateKneeChange
+      ScrollRange = 400.000000000000000000
       ImageList = GSPL
       ImageIndex = 0
       Value = 2.000000000000000000
       WheelStep = 1.000000000000000000
+      OnChange = DialGateKneeChange
+      DefaultValue = 0.000000000000000000
     end
   end
   object GbCompressor: TGuiGroup
@@ -335,17 +335,19 @@ object FmLightweightDynamics: TFmLightweightDynamics
     Top = 107
     Width = 273
     Height = 208
-    FontOversampling = fo4x
+    BorderColor = 14277598
+    BorderWidth = 1.000000000000000000
     Caption = 'Compressor'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clBlack
     Font.Height = -19
     Font.Name = 'Tahoma'
     Font.Style = []
-    LineColor = 14277598
-    PanelColor = clBlack
+    FontOversampling = fo4x
+    GroupColor = clBlack
+    Native = False
     ParentFont = False
-    BorderRadius = 5
+    BorderRadius = 5.000000000000000000
     TabOrder = 1
     object LbCompressorThreshold: TGuiLabel
       Left = 166
@@ -362,7 +364,6 @@ object FmLightweightDynamics: TFmLightweightDynamics
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbCompressorThresholdValue: TGuiLabel
       Left = 171
@@ -379,7 +380,6 @@ object FmLightweightDynamics: TFmLightweightDynamics
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbCompressorAttack: TGuiLabel
       Left = 18
@@ -396,7 +396,6 @@ object FmLightweightDynamics: TFmLightweightDynamics
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbCompressorAttackValue: TGuiLabel
       Left = 8
@@ -413,7 +412,6 @@ object FmLightweightDynamics: TFmLightweightDynamics
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbCompressorRelease: TGuiLabel
       Left = 92
@@ -430,7 +428,6 @@ object FmLightweightDynamics: TFmLightweightDynamics
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbCompressorReleaseValue: TGuiLabel
       Left = 86
@@ -447,7 +444,6 @@ object FmLightweightDynamics: TFmLightweightDynamics
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbCompressorRatio: TGuiLabel
       Left = 19
@@ -464,7 +460,6 @@ object FmLightweightDynamics: TFmLightweightDynamics
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbCompressorRatioValue: TGuiLabel
       Left = 6
@@ -481,7 +476,6 @@ object FmLightweightDynamics: TFmLightweightDynamics
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbCompressorKnee: TGuiLabel
       Left = 83
@@ -498,7 +492,6 @@ object FmLightweightDynamics: TFmLightweightDynamics
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbCompressorKneeValue: TGuiLabel
       Left = 88
@@ -515,7 +508,6 @@ object FmLightweightDynamics: TFmLightweightDynamics
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbCompressorMakeUpGain: TGuiLabel
       Left = 173
@@ -532,7 +524,6 @@ object FmLightweightDynamics: TFmLightweightDynamics
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbCompressorMakeUpGainValue: TGuiLabel
       Left = 171
@@ -549,7 +540,6 @@ object FmLightweightDynamics: TFmLightweightDynamics
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LEDAutoGain: TGuiLED
       Left = 110
@@ -578,7 +568,6 @@ object FmLightweightDynamics: TFmLightweightDynamics
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
       OnClick = LEDAutoGainClick
     end
     object DialCompressorThreshold: TGuiStitchedDial
@@ -589,11 +578,13 @@ object FmLightweightDynamics: TFmLightweightDynamics
       CurveMapping = -1.799999952316284000
       Max = 10.000000000000000000
       Min = -90.000000000000000000
-      OnChange = DialCompressorThresholdChange
+      ScrollRange = 400.000000000000000000
       ImageList = GSPL
       ImageIndex = 0
       Value = -10.000000000000000000
       WheelStep = 1.000000000000000000
+      OnChange = DialCompressorThresholdChange
+      DefaultValue = 0.000000000000000000
     end
     object DialCompressorAttack: TGuiStitchedDial
       Left = 27
@@ -603,11 +594,13 @@ object FmLightweightDynamics: TFmLightweightDynamics
       CurveMapping = -1.299999952316284000
       Max = 1000.000000000000000000
       Min = 0.009999999776482582
-      OnChange = DialCompressorAttackChange
+      ScrollRange = 400.000000000000000000
       ImageList = GSPL
       ImageIndex = 0
       Value = 15.000000000000000000
       WheelStep = 1.000000000000000000
+      OnChange = DialCompressorAttackChange
+      DefaultValue = 0.000000000000000000
     end
     object DialCompressorRelease: TGuiStitchedDial
       Left = 107
@@ -617,11 +610,13 @@ object FmLightweightDynamics: TFmLightweightDynamics
       CurveMapping = -1.299999952316284000
       Max = 5000.000000000000000000
       Min = 0.100000001490116100
-      OnChange = DialCompressorReleaseChange
+      ScrollRange = 400.000000000000000000
       ImageList = GSPL
       ImageIndex = 0
       Value = 75.000000000000000000
       WheelStep = 1.000000000000000000
+      OnChange = DialCompressorReleaseChange
+      DefaultValue = 0.000000000000000000
     end
     object DialCompressorRatio: TGuiStitchedDial
       Left = 27
@@ -631,11 +626,13 @@ object FmLightweightDynamics: TFmLightweightDynamics
       CurveMapping = -1.799999952316284000
       Max = 100.000000000000000000
       Min = 1.000000000000000000
-      OnChange = DialCompressorRatioChange
+      ScrollRange = 400.000000000000000000
       ImageList = GSPL
       ImageIndex = 0
       Value = 5.000000000000000000
       WheelStep = 1.000000000000000000
+      OnChange = DialCompressorRatioChange
+      DefaultValue = 0.000000000000000000
     end
     object DialCompressorKnee: TGuiStitchedDial
       Left = 107
@@ -644,11 +641,13 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Height = 36
       CurveMapping = -0.800000011920929000
       Max = 10.000000000000000000
-      OnChange = DialCompressorKneeChange
+      ScrollRange = 400.000000000000000000
       ImageList = GSPL
       ImageIndex = 0
       Value = 2.000000000000000000
       WheelStep = 1.000000000000000000
+      OnChange = DialCompressorKneeChange
+      DefaultValue = 0.000000000000000000
     end
     object DialCompressorMakeUpGain: TGuiStitchedDial
       Left = 190
@@ -657,11 +656,13 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Height = 36
       CurveMapping = -0.800000011920929000
       Max = 60.000000000000000000
-      OnChange = DialCompressorMakeUpGainChange
+      ScrollRange = 400.000000000000000000
       ImageList = GSPL
       ImageIndex = 0
       Value = 6.000000000000000000
       WheelStep = 1.000000000000000000
+      OnChange = DialCompressorMakeUpGainChange
+      DefaultValue = 0.000000000000000000
     end
   end
   object GbCharacteristics: TGuiGroup
@@ -669,17 +670,19 @@ object FmLightweightDynamics: TFmLightweightDynamics
     Top = 107
     Width = 178
     Height = 208
-    FontOversampling = fo4x
+    BorderColor = 14277598
+    BorderWidth = 1.000000000000000000
     Caption = 'Characteristic Plot'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clBlack
     Font.Height = -19
     Font.Name = 'Tahoma'
     Font.Style = []
-    LineColor = 14277598
-    PanelColor = clBlack
+    FontOversampling = fo4x
+    GroupColor = clBlack
+    Native = False
     ParentFont = False
-    BorderRadius = 5
+    BorderRadius = 5.000000000000000000
     TabOrder = 2
     object GuiGraphXY: TGuiGraphXY
       Left = 16
@@ -687,12 +690,16 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Width = 145
       Height = 160
       BorderColor = 11383224
+      BorderWidth = 1.500000000000000000
       FrameColor = 11383224
+      GridColor = 4473924
       SeriesCollection = <
         item
           DisplayName = 'TGuiGraphXYSeriesCollectionItem'
           SeriesClassName = 'TGuiGraphXYFunctionSeries'
           Series.Color = clWhite
+          Series.ShadeAlpha = 0
+          Series.Width = 1.000000000000000000
         end>
       XAxis.Flags = []
       XAxis.Granularity = 20.000000000000000000
@@ -711,9 +718,6 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Font.Height = -11
       Font.Name = 'Tahoma'
       Font.Style = []
-      FontOversampling = fo2x
-      LineColor = 5922921
-      LineWidth = 2
     end
   end
   object GbLimiter: TGuiGroup
@@ -721,17 +725,19 @@ object FmLightweightDynamics: TFmLightweightDynamics
     Top = 321
     Width = 457
     Height = 93
-    FontOversampling = fo4x
+    BorderColor = 14277598
+    BorderWidth = 1.000000000000000000
     Caption = 'Limiter'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clBlack
     Font.Height = -19
     Font.Name = 'Tahoma'
     Font.Style = []
-    LineColor = 14277598
-    PanelColor = clBlack
+    FontOversampling = fo4x
+    GroupColor = clBlack
+    Native = False
     ParentFont = False
-    BorderRadius = 5
+    BorderRadius = 5.000000000000000000
     TabOrder = 3
     object LbLimiterAttack: TGuiLabel
       Left = 103
@@ -748,7 +754,6 @@ object FmLightweightDynamics: TFmLightweightDynamics
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbLimiterAttackValue: TGuiLabel
       Left = 93
@@ -765,7 +770,6 @@ object FmLightweightDynamics: TFmLightweightDynamics
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbLimiterRelease: TGuiLabel
       Left = 185
@@ -782,7 +786,6 @@ object FmLightweightDynamics: TFmLightweightDynamics
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbLimiterReleaseValue: TGuiLabel
       Left = 179
@@ -799,7 +802,6 @@ object FmLightweightDynamics: TFmLightweightDynamics
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbLimiterThreshold: TGuiLabel
       Left = 264
@@ -816,7 +818,6 @@ object FmLightweightDynamics: TFmLightweightDynamics
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbLimiterThresholdValue: TGuiLabel
       Left = 269
@@ -833,7 +834,6 @@ object FmLightweightDynamics: TFmLightweightDynamics
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbLimiterKnee: TGuiLabel
       Left = 363
@@ -850,7 +850,6 @@ object FmLightweightDynamics: TFmLightweightDynamics
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbLimiterKneeValue: TGuiLabel
       Left = 368
@@ -867,7 +866,6 @@ object FmLightweightDynamics: TFmLightweightDynamics
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbSoftClip: TGuiLabel
       Left = 26
@@ -883,7 +881,6 @@ object FmLightweightDynamics: TFmLightweightDynamics
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
       OnClick = LbSoftClipClick
     end
     object LEDSoftClip: TGuiLED
@@ -907,11 +904,13 @@ object FmLightweightDynamics: TFmLightweightDynamics
       CurveMapping = -1.299999952316284000
       Max = 1000.000000000000000000
       Min = 0.009999999776482582
-      OnChange = DialLimiterAttackChange
+      ScrollRange = 400.000000000000000000
       ImageList = GSPL
       ImageIndex = 0
       Value = 15.000000000000000000
       WheelStep = 1.000000000000000000
+      OnChange = DialLimiterAttackChange
+      DefaultValue = 0.000000000000000000
     end
     object DialLimiterRelease: TGuiStitchedDial
       Left = 200
@@ -921,11 +920,13 @@ object FmLightweightDynamics: TFmLightweightDynamics
       CurveMapping = -1.299999952316284000
       Max = 5000.000000000000000000
       Min = 0.100000001490116100
-      OnChange = DialLimiterReleaseChange
+      ScrollRange = 400.000000000000000000
       ImageList = GSPL
       ImageIndex = 0
       Value = 75.000000000000000000
       WheelStep = 1.000000000000000000
+      OnChange = DialLimiterReleaseChange
+      DefaultValue = 0.000000000000000000
     end
     object DialLimiterThreshold: TGuiStitchedDial
       Left = 288
@@ -935,11 +936,13 @@ object FmLightweightDynamics: TFmLightweightDynamics
       CurveMapping = -1.799999952316284000
       Max = 10.000000000000000000
       Min = -90.000000000000000000
-      OnChange = DialLimiterThresholdChange
+      ScrollRange = 400.000000000000000000
       ImageList = GSPL
       ImageIndex = 0
       Value = -0.019999999552965160
       WheelStep = 1.000000000000000000
+      OnChange = DialLimiterThresholdChange
+      DefaultValue = 0.000000000000000000
     end
     object DialLimiterKnee: TGuiStitchedDial
       Left = 387
@@ -948,11 +951,13 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Height = 36
       CurveMapping = -0.800000011920929000
       Max = 10.000000000000000000
-      OnChange = DialLimiterKneeChange
+      ScrollRange = 400.000000000000000000
       ImageList = GSPL
       ImageIndex = 0
       Value = 5.000000000000000000
       WheelStep = 1.000000000000000000
+      OnChange = DialLimiterKneeChange
+      DefaultValue = 0.000000000000000000
     end
   end
   object GSPL: TGuiStitchedPNGList
@@ -2045,7 +2050,6 @@ object FmLightweightDynamics: TFmLightweightDynamics
           9BA0C66898C64E7D0000000049454E44AE426082}
         DisplayName = 'Knob'
         GlyphCount = 65
-        StitchKind = skHorizontal
         Height = 36
         Width = 2340
       end>

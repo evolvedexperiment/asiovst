@@ -43,7 +43,6 @@ type
   TChebyshev2LPModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: NativeUInt);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
     procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
@@ -52,6 +51,10 @@ type
     procedure ParamOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterOnOffDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterCorrectFrequencyDisplay(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure Chebyshev2LPModuleParameterProperties0CustomParameterDisplay(
+      Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure Chebyshev2LPModuleParameterProperties0CustomParameterLabel(
+      Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
   private
     FFilter  : array [0..1] of TCustomChebyshev2LowpassFilter;
   end;
@@ -65,136 +68,146 @@ implementation
 {$ENDIF}
 
 uses
-  Math, Chebyshev2GUI;
+  Math, DAV_StringConvert, Chebyshev2GUI;
 
 procedure TChebyshev2LPModule.VSTModuleOpen(Sender: TObject);
 var
-  Channel : Integer;
+  Channel: Integer;
 begin
- for Channel := 0 to numInputs - 1 do
+  for Channel := 0 to numInputs - 1 do
   begin
-   FFilter[Channel] := TChebyshev2LowpassFilter.Create(4);
-   FFilter[Channel].SetFilterValues(1000, 0, -10);
+    FFilter[Channel] := TChebyshev2LowpassFilter.Create(4);
+    FFilter[Channel].SetFilterValues(1000, 0, -10);
   end;
 
- Parameter[0] := 1000;
- Parameter[1] := -24;
- Parameter[2] := 4;
+  Parameter[0] := 1000;
+  Parameter[1] := -24;
+  Parameter[2] := 4;
 
- with Programs[0] do
+  with Programs[0] do
   begin
-   Parameter[0] := 1000;
-   Parameter[1] := -24;
-   Parameter[2] := 4;
+    Parameter[0] := 1000;
+    Parameter[1] := -24;
+    Parameter[2] := 4;
   end;
+
+  EditorFormClass := TFmChebyshev;
 end;
 
 procedure TChebyshev2LPModule.VSTModuleClose(Sender: TObject);
 var
-  Channel : Integer;
+  Channel: Integer;
 begin
- for Channel := 0 to numInputs - 1
-  do FreeAndNil(FFilter[Channel]);
-end;
-
-procedure TChebyshev2LPModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
-  ParentWindow: NativeUInt);
-begin
- GUI := TFmChebyshev.Create(Self);
+  for Channel := 0 to numInputs - 1 do
+    FreeAndNil(FFilter[Channel]);
 end;
 
 procedure TChebyshev2LPModule.ParamStopbandChange(Sender: TObject;
   const Index: Integer; var Value: Single);
 var
-  Channel : Integer;
+  Channel: Integer;
 begin
- for Channel := 0 to numInputs - 1 do
-  if Assigned(FFilter[Channel]) then FFilter[Channel].Stopband := Value;
+  for Channel := 0 to numInputs - 1 do
+    if Assigned(FFilter[Channel]) then
+      FFilter[Channel].Stopband := Value;
 
- // update GUI if necessary
- if EditorForm is TFmChebyshev
-  then TFmChebyshev(EditorForm).UpdateStopband;
+  // update GUI if necessary
+  if EditorForm is TFmChebyshev then
+    TFmChebyshev(EditorForm).UpdateStopband;
 end;
 
 procedure TChebyshev2LPModule.ParamOrderChange(Sender: TObject;
   const Index: Integer; var Value: Single);
 var
-  Channel : Integer;
+  Channel: Integer;
 begin
- for Channel := 0 to numInputs - 1 do
-  if Assigned(FFilter[Channel])
-   then FFilter[Channel].Order := Round(Value); // max(2, 2 * Round(0.5 * Value));
+  for Channel := 0 to numInputs - 1 do
+    if Assigned(FFilter[Channel]) then
+      FFilter[Channel].Order := Round(Value); // max(2, 2 * Round(0.5 * Value));
 
- // update GUI if necessary
- if EditorForm is TFmChebyshev
-  then TFmChebyshev(EditorForm).UpdateOrder;
+  // update GUI if necessary
+  if EditorForm is TFmChebyshev then
+    TFmChebyshev(EditorForm).UpdateOrder;
+end;
+
+procedure TChebyshev2LPModule.Chebyshev2LPModuleParameterProperties0CustomParameterDisplay(
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+begin
+  PreDefined := FloatToHertzShiftNoUnit(Parameter[Index]);
+end;
+
+procedure TChebyshev2LPModule.Chebyshev2LPModuleParameterProperties0CustomParameterLabel(
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+begin
+  if Parameter[Index] < 1000 then
+    PreDefined := 'Hz'
+  else
+    PreDefined := 'kHz';
 end;
 
 procedure TChebyshev2LPModule.ParameterCorrectFrequencyDisplay(Sender: TObject;
   const Index: Integer; var Value: Single);
 var
-  Channel : Integer;
+  Channel: Integer;
 begin
- for Channel := 0 to numInputs - 1 do
-  if Assigned(FFilter[Channel])
-   then FFilter[Channel].FixFrequency := Value > 0.5;
+  for Channel := 0 to numInputs - 1 do
+    if Assigned(FFilter[Channel]) then
+      FFilter[Channel].FixFrequency := Value > 0.5;
 end;
 
-procedure TChebyshev2LPModule.ParameterOnOffDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+procedure TChebyshev2LPModule.ParameterOnOffDisplay(Sender: TObject;
+  const Index: Integer; var PreDefined: AnsiString);
 begin
- if Parameter[Index] > 0.5
-  then PreDefined := 'On'
-  else PreDefined := 'Off';
+  PreDefined := AnsiString(OnOff(Parameter[Index]));
 end;
 
 procedure TChebyshev2LPModule.ParamFrequencyChange(Sender: TObject;
   const Index: Integer; var Value: Single);
 var
-  Channel : Integer;
+  Channel: Integer;
 begin
- for Channel := 0 to numInputs - 1 do
-  if Assigned(FFilter[Channel])
-   then FFilter[Channel].Frequency := Value;
+  for Channel := 0 to numInputs - 1 do
+    if Assigned(FFilter[Channel]) then
+      FFilter[Channel].Frequency := Value;
 
- // update GUI if necessary
- if EditorForm is TFmChebyshev
-  then TFmChebyshev(EditorForm).UpdateFrequency;
+  // update GUI if necessary
+  if EditorForm is TFmChebyshev then
+    TFmChebyshev(EditorForm).UpdateFrequency;
 end;
 
 procedure TChebyshev2LPModule.VSTModuleProcess(const Inputs,
   Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
-  Sample : Integer;
+  Sample: Integer;
 begin
- for Sample := 0 to SampleFrames - 1 do
+  for Sample := 0 to SampleFrames - 1 do
   begin
-   Outputs[0, Sample] := FFilter[0].ProcessSample64(Inputs[0, Sample]);
-   Outputs[1, Sample] := FFilter[1].ProcessSample64(Inputs[1, Sample]);
+    Outputs[0, Sample] := FFilter[0].ProcessSample64(Inputs[0, Sample]);
+    Outputs[1, Sample] := FFilter[1].ProcessSample64(Inputs[1, Sample]);
   end;
 end;
 
 procedure TChebyshev2LPModule.VSTModuleProcessDoubleReplacing(const Inputs,
   Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
 var
-  Sample : Integer;
+  Sample: Integer;
 begin
- for Sample := 0 to SampleFrames - 1 do
+  for Sample := 0 to SampleFrames - 1 do
   begin
-   Outputs[0, Sample] := FFilter[0].ProcessSample64(Inputs[0, Sample]);
-   Outputs[1, Sample] := FFilter[1].ProcessSample64(Inputs[1, Sample]);
+    Outputs[0, Sample] := FFilter[0].ProcessSample64(Inputs[0, Sample]);
+    Outputs[1, Sample] := FFilter[1].ProcessSample64(Inputs[1, Sample]);
   end;
 end;
 
 procedure TChebyshev2LPModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 var
-  Channel : Integer;
+  Channel: Integer;
 begin
- if Abs(SampleRate) > 0 then
-  for Channel := 0 to numInputs - 1 do
-   if Assigned(FFilter[Channel])
-    then FFilter[Channel].SampleRate := Abs(SampleRate);
+  if Abs(SampleRate) > 0 then
+    for Channel := 0 to numInputs - 1 do
+      if Assigned(FFilter[Channel]) then
+        FFilter[Channel].SampleRate := Abs(SampleRate);
 end;
 
 end.

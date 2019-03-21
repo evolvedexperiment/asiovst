@@ -43,21 +43,17 @@ type
   TChebyshevLPModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
-    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
+    procedure VSTModuleProcess32(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
+    procedure VSTModuleProcess64Replacing(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure ParamFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamRippleChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure StringToFrequency(
-      Sender: TObject; const Index: Integer; const ParameterString: AnsiString;
-      var Value: Single);
-    procedure StringToOrder(
-      Sender: TObject; const Index: Integer; const ParameterString: AnsiString;
-      var Value: Single);
-    procedure ParamOrderDisplay(
-      Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
-    procedure ParamFrequencyDisplay(
+    procedure StringToFrequency(Sender: TObject; const Index: Integer; const ParameterString: AnsiString; var Value: Single);
+    procedure StringToOrder(Sender: TObject; const Index: Integer; const ParameterString: AnsiString; var Value: Single);
+    procedure ParamOrderDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParamFrequencyDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ChebyshevLPModuleParameterProperties0CustomParameterLabel(
       Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
   private
     FFilter  : array of TCustomChebyshev1LowpassFilter;
@@ -75,7 +71,8 @@ implementation
 {$ENDIF}
 
 uses
-  {$IFDEF HAS_UNIT_ANSISTRINGS} AnsiStrings, {$ENDIF} Math, ChebyshevGUI;
+  {$IFDEF HAS_UNIT_ANSISTRINGS} AnsiStrings, {$ENDIF} Math, DAV_StringConvert,
+  ChebyshevGUI;
 
 procedure TChebyshevLPModule.VSTModuleOpen(Sender: TObject);
 var
@@ -89,10 +86,6 @@ begin
     FFilter[ch] := TChebyshev1LowpassFilter.Create(4);
     FFilter[ch].SetFilterValues(1000, 0, 1);
   end;
-  (*
- FResizer := TVstWindowSizer.Create;
- FResizer.Effect := Self;
-*)
 
   // Initial Parameters
   Parameter[0] := 1000;
@@ -116,7 +109,6 @@ var
 begin
   for Channel := 0 to Length(FFilter) - 1 do
     FreeAndNil(FFilter[Channel]);
-  // FreeAndNil(FResizer);
 end;
 
 procedure TChebyshevLPModule.ParamRippleChange(Sender: TObject;
@@ -225,10 +217,16 @@ end;
 procedure TChebyshevLPModule.ParamFrequencyDisplay(Sender: TObject;
   const Index: Integer; var PreDefined: AnsiString);
 begin
+  PreDefined := FloatToHertzShiftNoUnit(Parameter[Index]);
+end;
+
+procedure TChebyshevLPModule.ChebyshevLPModuleParameterProperties0CustomParameterLabel(
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+begin
   if Parameter[Index] < 1000 then
-    PreDefined := AnsiString(FloatToStrF(Parameter[Index], ffGeneral, 4, 4))
+    PreDefined := 'Hz'
   else
-    PreDefined := AnsiString(FloatToStrF(1E-3 * Parameter[Index], ffGeneral, 4, 4));
+    PreDefined := 'kHz';
 end;
 
 procedure TChebyshevLPModule.ParamFrequencyChange(Sender: TObject;
@@ -255,7 +253,7 @@ begin
       FFilter[Channel].SampleRate := SampleRate;
 end;
 
-procedure TChebyshevLPModule.VSTModuleProcess(const Inputs,
+procedure TChebyshevLPModule.VSTModuleProcess32(const Inputs,
   Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
   Sample: Integer;
@@ -267,7 +265,7 @@ begin
         FFilter[Channel].ProcessSample64(Inputs[Channel, Sample]);
 end;
 
-procedure TChebyshevLPModule.VSTModuleProcessDoubleReplacing(const Inputs,
+procedure TChebyshevLPModule.VSTModuleProcess64Replacing(const Inputs,
   Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
 var
   Sample: Integer;

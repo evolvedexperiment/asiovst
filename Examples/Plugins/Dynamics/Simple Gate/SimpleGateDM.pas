@@ -34,15 +34,14 @@ interface
 
 {$I DAV_Compiler.inc}
 
-uses 
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
+uses
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
   Forms, DAV_Types, DAV_VSTModule, DAV_DspDynamics;
 
 type
   TSimpleGateDataModule = class(TVSTModule)
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
     procedure SGDMThresholdChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: NativeUInt);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
@@ -64,51 +63,51 @@ uses
 
 procedure TSimpleGateDataModule.VSTModuleOpen(Sender: TObject);
 begin
- FSimpleGates[0] := TClassicGate.Create;
- FSimpleGates[1] := TClassicGate.Create;
+  FSimpleGates[0] := TClassicGate.Create;
+  FSimpleGates[1] := TClassicGate.Create;
 
- Parameter[0] := -10;
+  Parameter[0] := -10;
+
+  EditorFormClass := TEditorForm
 end;
 
 procedure TSimpleGateDataModule.VSTModuleClose(Sender: TObject);
 begin
- FreeAndNil(FSimpleGates[0]);
- FreeAndNil(FSimpleGates[1]);
+  FreeAndNil(FSimpleGates[0]);
+  FreeAndNil(FSimpleGates[1]);
 end;
 
-procedure TSimpleGateDataModule.VSTModuleEditOpen(Sender: TObject;
-  var GUI: TForm; ParentWindow: NativeUInt);
+procedure TSimpleGateDataModule.SGDMThresholdChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
- GUI := TEditorForm.Create(Self);
-end;
-
-procedure TSimpleGateDataModule.SGDMThresholdChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
-begin
- if Assigned(FSimpleGates[0]) then FSimpleGates[0].Threshold_dB := Value;
- if Assigned(FSimpleGates[1]) then FSimpleGates[1].Threshold_dB := Value;
- if EditorForm is TEditorForm then
-  with TEditorForm(EditorForm)
-   do UpdateScrollBar;
+  if Assigned(FSimpleGates[0]) then
+    FSimpleGates[0].Threshold_dB := Value;
+  if Assigned(FSimpleGates[1]) then
+    FSimpleGates[1].Threshold_dB := Value;
+  if EditorForm is TEditorForm then
+    with TEditorForm(EditorForm) do
+      UpdateScrollBar;
 end;
 
 procedure TSimpleGateDataModule.VSTModuleProcess(const Inputs,
   Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
-  i : Integer;
+  i: Integer;
 begin
- for i := 0 to SampleFrames - 1 do
+  for i := 0 to SampleFrames - 1 do
   begin
-   Outputs[0, i] := FSimpleGates[0].ProcessSample64(Inputs[0, i]);
-   Outputs[1, i] := FSimpleGates[1].ProcessSample64(Inputs[1, i]);
+    Outputs[0, i] := FSimpleGates[0].ProcessSample64(Inputs[0, i]);
+    Outputs[1, i] := FSimpleGates[1].ProcessSample64(Inputs[1, i]);
   end;
 end;
 
 procedure TSimpleGateDataModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 begin
- if Assigned(FSimpleGates[0]) then FSimpleGates[0].SampleRate := SampleRate;
- if Assigned(FSimpleGates[1]) then FSimpleGates[1].SampleRate := SampleRate;
+  if Assigned(FSimpleGates[0]) then
+    FSimpleGates[0].SampleRate := SampleRate;
+  if Assigned(FSimpleGates[1]) then
+    FSimpleGates[1].SampleRate := SampleRate;
 end;
 
 end.

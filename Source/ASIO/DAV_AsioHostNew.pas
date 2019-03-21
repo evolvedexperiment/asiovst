@@ -279,259 +279,272 @@ const
 
 constructor TCustomAsioHostNative.Create(Owner: TComponent);
 begin
- // set the driver itself to nil for now
- FCore := nil;
+  // set the driver itself to nil for now
+  FCore := nil;
 
- // and make sure all controls are enabled or disabled
- FDriverIndex := -1;
+  // and make sure all controls are enabled or disabled
+  FDriverIndex := -1;
 
- FAsioDriverList := TDAVAsioDriverList.Create;
- try
-  FAsioDriverList.UpdateList;
- except
- end;
+  FAsioDriverList := TDAVAsioDriverList.Create;
+  try
+    FAsioDriverList.UpdateList;
+  except
+  end;
 
- inherited;
+  inherited;
 end;
 
 destructor TCustomAsioHostNative.Destroy;
 begin
- try
-  if Assigned(FOnDestroy) then FOnDestroy(Self);
+  try
+    if Assigned(FOnDestroy) then
+      FOnDestroy(Self);
 //  if Active then Active := False;
 
-  if Assigned(FCore)
-   then FreeAndNil(FCore);
+    if Assigned(FCore) then
+      FreeAndNil(FCore);
 
-  FreeAndNil(FAsioDriverList);
- finally
-  inherited;
- end;
+    FreeAndNil(FAsioDriverList);
+  finally
+    inherited;
+  end;
 end;
 
 procedure TCustomAsioHostNative.ResetDriverSpecificData;
 begin
 (*
- FDriverName := '';
- FInputLatency := 0;
- FOutputLatency := 0;
- FInputChannelCount := 0;
- FOutputChannelCount := 0;
- FBufferSize := 0;
+  FDriverName := '';
+  FInputLatency := 0;
+  FOutputLatency := 0;
+  FInputChannelCount := 0;
+  FOutputChannelCount := 0;
+  FBufferSize := 0;
 *)
 end;
 
 function TCustomAsioHostNative.GetAsioTime: TAsioTimeSub;
 begin
- if Assigned(FCore)
-  then Result := FCore.AsioTime
-  else Result := nil;
+  if Assigned(FCore) then
+    Result := FCore.AsioTime
+  else
+    Result := nil;
 end;
 
 function TCustomAsioHostNative.GetBufferSize: Cardinal;
 begin
- if Assigned(FCore)
-  then Result := FCore.BufferSize
-  else Result := 0;
+  if Assigned(FCore) then
+    Result := FCore.BufferSize
+  else
+    Result := 0;
 end;
 
 function TCustomAsioHostNative.GetCanDos: TAsioCanDos;
 begin
- if Assigned(FCore)
-  then Result := FCore.CanDos
-  else Result := [];
+  if Assigned(FCore) then
+    Result := FCore.CanDos
+  else
+    Result := [];
 end;
 
 function TCustomAsioHostNative.GetDriverList: TStrings;
 begin
- Result := FAsioDriverList.DriverNames;
+  Result := FAsioDriverList.DriverNames;
 end;
 
 function TCustomAsioHostNative.GetDriverVersion: Integer;
 begin
- if Assigned(FCore)
-  then Result := FCore.DriverVersion
-  else Result := 0;
+  if Assigned(FCore) then
+    Result := FCore.DriverVersion
+  else
+    Result := 0;
 end;
 
 function TCustomAsioHostNative.GetInputChannelCount: Integer;
 begin
- if Assigned(FCore)
-  then Result := FCore.InputChannelCount
-  else Result := 0;
+  if Assigned(FCore) then
+    Result := FCore.InputChannelCount
+  else
+    Result := 0;
 end;
 
 function TCustomAsioHostNative.GetInputLatency: Integer;
 begin
- if Assigned(FCore)
-  then Result := FCore.InputLatency
-  else Result := 0;
+  if Assigned(FCore) then
+    Result := FCore.InputLatency
+  else
+    Result := 0;
 end;
 
 procedure TCustomAsioHostNative.SetIgnoredDriver(ID: TGuid);
 begin
- FAsioDriverList.SetIgnoredDriver(ID);
- FAsioDriverList.UpdateList;
+  FAsioDriverList.SetIgnoredDriver(ID);
+  FAsioDriverList.UpdateList;
 end;
 
 procedure TCustomAsioHostNative.SetSupports(const Value: TAsioSupports);
 begin
- if Assigned(FCore)
-  then FCore.Supports := Value;
+  if Assigned(FCore) then
+    FCore.Supports := Value;
 end;
 
 procedure TCustomAsioHostNative.BufferSwitchHandler(Sender: TObject;
   const BufferInfo: PAsioBufferList; const BufferIndex: Integer);
 begin
- if Assigned(FOnBufferSwitch)
-  then FOnBufferSwitch(Self, BufferInfo, BufferIndex);
+  if Assigned(FOnBufferSwitch) then
+    FOnBufferSwitch(Self, BufferInfo, BufferIndex);
 end;
 
 procedure TCustomAsioHostNative.ResetHandler(Sender: TObject);
 begin
- if Assigned(FOnReset)
-  then FOnReset(Self);
+  if Assigned(FOnReset) then
+    FOnReset(Self);
 end;
 
 procedure TCustomAsioHostNative.SampleRateChangedHandler(Sender: TObject);
 begin
- if Assigned(FOnSampleRateChanged)
-  then FOnSampleRateChanged(Self);
+  if Assigned(FOnSampleRateChanged) then
+    FOnSampleRateChanged(Self);
 end;
 
 procedure TCustomAsioHostNative.LatencyChangedHandler(Sender: TObject);
 begin
- if Assigned(FOnLatencyChanged)
-  then FOnLatencyChanged(Self);
+  if Assigned(FOnLatencyChanged) then
+    FOnLatencyChanged(Self);
 end;
 
 procedure TCustomAsioHostNative.SetActive(Value: Boolean);
 begin
- if (FCore = nil) then Value := False;
+  if (FCore = nil) then
+    Value := False;
 
- if FActive <> Value then
+  if FActive <> Value then
   begin
-   FActive := Value;
-   ActiveChanged;
+    FActive := Value;
+    ActiveChanged;
   end;
 end;
 
 procedure TCustomAsioHostNative.SetDriverIndex(Value: Integer);
 begin
- if (Value < -1) or (Value >= FAsioDriverList.Count)
-  then Value := -1;
+  if (Value < -1) or (Value >= FAsioDriverList.Count) then
+    Value := -1;
 
- if (Value <> FDriverIndex) then
+  if (Value <> FDriverIndex) then
   begin
-   FDriverIndex := Value;
-   DriverIndexChanged;
+    FDriverIndex := Value;
+    DriverIndexChanged;
   end;
 end;
 
 procedure TCustomAsioHostNative.ActiveChanged;
 begin
- if FActive then
+  if FActive then
   begin
-   FCore.Start;
-   FActive := FCore.Running;
-   if FActive = False then FCore.Stop;
+    FCore.Start;
+    FActive := FCore.Running;
+    if FActive = False then
+      FCore.Stop;
   end
- else
+  else
   begin
-   FActive := False;
-   if Assigned(FCore)
-    then FCore.Stop;
+    FActive := False;
+    if Assigned(FCore) then
+      FCore.Stop;
   end;
 end;
 
 procedure TCustomAsioHostNative.DriverIndexChanged;
 var
-  WasActive : Boolean;
+  WasActive: Boolean;
 begin
- WasActive := Active;
- Active := False;
+  WasActive := Active;
+  Active := False;
 
- if Assigned(FCore)
-  then FreeAndNil(FCore);
+  if Assigned(FCore) then
+    FreeAndNil(FCore);
 
- // check if no driver has been selected and reset all driver specific data
- if FDriverIndex = -1
-  then ResetDriverSpecificData
+  // check if no driver has been selected and reset all driver specific data
+  if FDriverIndex = -1 then
+    ResetDriverSpecificData
   else
-   with FAsioDriverList.Items[FDriverIndex] do
-    try
-     // create ASIO host core
-     FCore := TAsioHostCore.Create(Guid);
+    with FAsioDriverList.Items[FDriverIndex] do
+      try
+        // create ASIO host core
+        FCore := TAsioHostCore.Create(Guid);
 
-     // assign default event handlers
-     with FCore do
-      begin
-       OnLatencyChanged := LatencyChangedHandler;
-       OnReset := ResetHandler;
-       OnSampleRateChanged := SampleRateChangedHandler;
+        // assign default event handlers
+        with FCore do
+        begin
+          OnLatencyChanged := LatencyChangedHandler;
+          OnReset := ResetHandler;
+          OnSampleRateChanged := SampleRateChangedHandler;
+        end;
+
+        // set driver name
+        FDriverName := FAsioDriverList.Items[FDriverIndex].Name;
+
+        // create buffers
+        FCore.CreateBuffers;
+        BuffersChanged;
+      except
+        FDriverIndex := -1;
+        ResetDriverSpecificData;
+        Exit;
       end;
 
-     // set driver name
-     FDriverName := FAsioDriverList.Items[FDriverIndex].Name;
+  if Assigned(FOnDriverChanged) then
+    FOnDriverChanged(Self);
 
-     // create buffers
-     FCore.CreateBuffers;
-     BuffersChanged;
-    except
-     FDriverIndex := -1;
-     ResetDriverSpecificData;
-     Exit;
-    end;
-
- if Assigned(FOnDriverChanged)
-  then FOnDriverChanged(self);
-
- Active := WasActive;
+  Active := WasActive;
 end;
 
 procedure TCustomAsioHostNative.Reset;
 begin
- if Assigned(FCore)
-  then Reset;
+  if Assigned(FCore) then
+    Reset;
 end;
 
 procedure TCustomAsioHostNative.BuffersChanged;
 begin
- if Assigned(FOnBuffersChanged)
-  then FOnBuffersChanged(Self);
+  if Assigned(FOnBuffersChanged) then
+    FOnBuffersChanged(Self);
 end;
 
 function TCustomAsioHostNative.GetNumDrivers: Integer;
 begin
- Result := FAsioDriverList.Count;
+  Result := FAsioDriverList.Count;
 end;
 
 function TCustomAsioHostNative.GetOutputChannelCount: Integer;
 begin
- if Assigned(FCore)
-  then Result := FCore.OutputChannelCount
-  else Result := 0;
+  if Assigned(FCore) then
+    Result := FCore.OutputChannelCount
+  else
+    Result := 0;
 end;
 
 function TCustomAsioHostNative.GetOutputLatency: Integer;
 begin
- if Assigned(FCore)
-  then Result := FCore.OutputLatency
-  else Result := 0;
+  if Assigned(FCore) then
+    Result := FCore.OutputLatency
+  else
+    Result := 0;
 end;
 
 function TCustomAsioHostNative.GetSampleRate: Double;
 begin
- if Assigned(FCore)
-  then Result := FCore.SampleRate
-  else Result := 44100;
+  if Assigned(FCore) then
+    Result := FCore.SampleRate
+  else
+    Result := 44100;
 end;
 
 function TCustomAsioHostNative.GetSupports: TAsioSupports;
 begin
- if Assigned(FCore)
-  then Result := FCore.Supports
-  else Result := [];
+  if Assigned(FCore) then
+    Result := FCore.Supports
+  else
+    Result := [];
 end;
 
 {$IFDEF DELPHI10_UP} {$endregion} {$ENDIF}

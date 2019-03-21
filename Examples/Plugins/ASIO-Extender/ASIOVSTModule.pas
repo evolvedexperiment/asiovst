@@ -78,7 +78,7 @@ implementation
 {$ENDIF}
 
 uses
-  Math, Dialogs, ASIOVSTGUI;
+  Math, Dialogs, DAV_StringConvert, ASIOVSTGUI;
 
 procedure TASIOVSTModule.VSTModuleOpen(Sender: TObject);
 begin
@@ -258,10 +258,7 @@ end;
 procedure TASIOVSTModule.ParameterUseSSEMMXDisplay(Sender: TObject;
   const Index: Integer; var PreDefined: AnsiString);
 begin
-  if Parameter[Index] > 0.5 then
-    PreDefined := 'On'
-  else
-    PreDefined := 'Off';
+  PreDefined := AnsiString(OnOff(Parameter[Index]));
 end;
 
 procedure TASIOVSTModule.ParameterUseSSEMMXChange(Sender: TObject;

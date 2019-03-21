@@ -26,7 +26,6 @@ object FmLightweightGate: TFmLightweightGate
     Caption = 'Threshold'
     FontOversampling = fo4x
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object LbThresholdValue: TGuiLabel
     Left = 8
@@ -43,7 +42,6 @@ object FmLightweightGate: TFmLightweightGate
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object LbAttack: TGuiLabel
     Left = 18
@@ -54,7 +52,6 @@ object FmLightweightGate: TFmLightweightGate
     Caption = 'Attack'
     FontOversampling = fo4x
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object LbAttackValue: TGuiLabel
     Left = 8
@@ -71,7 +68,6 @@ object FmLightweightGate: TFmLightweightGate
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object LbRelease: TGuiLabel
     Left = 92
@@ -82,7 +78,6 @@ object FmLightweightGate: TFmLightweightGate
     Caption = 'Release'
     FontOversampling = fo4x
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object LbReleaseValue: TGuiLabel
     Left = 86
@@ -99,7 +94,6 @@ object FmLightweightGate: TFmLightweightGate
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object LbRatio: TGuiLabel
     Left = 99
@@ -110,7 +104,6 @@ object FmLightweightGate: TFmLightweightGate
     Caption = 'Ratio'
     FontOversampling = fo4x
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object LbRatioValue: TGuiLabel
     Left = 86
@@ -127,7 +120,6 @@ object FmLightweightGate: TFmLightweightGate
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object LbKnee: TGuiLabel
     Left = 163
@@ -138,7 +130,6 @@ object FmLightweightGate: TFmLightweightGate
     Caption = 'Soft Knee'
     FontOversampling = fo4x
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object LbKneeValue: TGuiLabel
     Left = 168
@@ -155,7 +146,6 @@ object FmLightweightGate: TFmLightweightGate
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object GuiGraphXY: TGuiGraphXY
     Left = 168
@@ -163,14 +153,18 @@ object FmLightweightGate: TFmLightweightGate
     Width = 74
     Height = 74
     BorderColor = 14277598
-    BorderRadius = 2
+    BorderRadius = 2.000000000000000000
+    BorderWidth = 1.500000000000000000
     FrameColor = 6844281
+    GridColor = 4540752
     Flags = []
     SeriesCollection = <
       item
         DisplayName = 'TGuiGraphXYSeriesCollectionItem'
         SeriesClassName = 'TGuiGraphXYFunctionSeries'
         Series.Color = clWhite
+        Series.ShadeAlpha = 0
+        Series.Width = 1.000000000000000000
       end>
     XAxis.Flags = []
     XAxis.Granularity = 50.000000000000000000
@@ -189,9 +183,6 @@ object FmLightweightGate: TFmLightweightGate
     Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = []
-    AntiAlias = gaaLinear2x
-    LineColor = 3948356
-    LineWidth = 2
   end
   object DialThreshold: TGuiStitchedDial
     Left = 27
@@ -201,11 +192,13 @@ object FmLightweightGate: TFmLightweightGate
     CurveMapping = -1.799999952316284000
     Max = 10.000000000000000000
     Min = -90.000000000000000000
-    OnChange = DialThresholdChange
+    ScrollRange = 400.000000000000000000
     ImageList = GSPL
     ImageIndex = 0
     Value = -20.000000000000000000
     WheelStep = 1.000000000000000000
+    OnChange = DialThresholdChange
+    DefaultValue = 0.000000000000000000
   end
   object DialAttack: TGuiStitchedDial
     Left = 27
@@ -215,11 +208,13 @@ object FmLightweightGate: TFmLightweightGate
     CurveMapping = -1.299999952316284000
     Max = 1000.000000000000000000
     Min = 0.100000001490116100
-    OnChange = DialAttackChange
+    ScrollRange = 400.000000000000000000
     ImageList = GSPL
     ImageIndex = 0
     Value = 15.000000000000000000
     WheelStep = 1.000000000000000000
+    OnChange = DialAttackChange
+    DefaultValue = 0.000000000000000000
   end
   object DialRelease: TGuiStitchedDial
     Left = 99
@@ -229,11 +224,13 @@ object FmLightweightGate: TFmLightweightGate
     CurveMapping = -1.299999952316284000
     Max = 5000.000000000000000000
     Min = 0.100000001490116100
-    OnChange = DialReleaseChange
+    ScrollRange = 400.000000000000000000
     ImageList = GSPL
     ImageIndex = 0
     Value = 75.000000000000000000
     WheelStep = 1.000000000000000000
+    OnChange = DialReleaseChange
+    DefaultValue = 0.000000000000000000
   end
   object DialRatio: TGuiStitchedDial
     Left = 103
@@ -242,11 +239,13 @@ object FmLightweightGate: TFmLightweightGate
     Height = 36
     CurveMapping = -0.800000011920929000
     Max = 10.000000000000000000
-    OnChange = DialKneeChange
+    ScrollRange = 400.000000000000000000
     ImageList = GSPL
     ImageIndex = 0
     Value = 5.000000000000000000
     WheelStep = 1.000000000000000000
+    OnChange = DialKneeChange
+    DefaultValue = 0.000000000000000000
   end
   object DialKnee: TGuiStitchedDial
     Left = 185
@@ -254,11 +253,13 @@ object FmLightweightGate: TFmLightweightGate
     Width = 36
     Height = 36
     Max = 10.000000000000000000
-    OnChange = DialKneeChange
+    ScrollRange = 400.000000000000000000
     ImageList = GSPL
     ImageIndex = 0
     Value = 6.000000000000000000
     WheelStep = 1.000000000000000000
+    OnChange = DialKneeChange
+    DefaultValue = 0.000000000000000000
   end
   object GSPL: TGuiStitchedPNGList
     StitchedPNGs = <
@@ -1350,7 +1351,6 @@ object FmLightweightGate: TFmLightweightGate
           9BA0C66898C64E7D0000000049454E44AE426082}
         DisplayName = 'Knob'
         GlyphCount = 65
-        StitchKind = skHorizontal
         Height = 36
         Width = 2340
       end>

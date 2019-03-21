@@ -324,21 +324,11 @@ end;
 
 procedure TGuiCustomControlsEdit.CMSysColorChange(var Message: TMessage);
 begin
-  (*
-    if FParentColor then
-    if Parent <> nil
-    then FBackgroundColor := TForm(Parent).Color;
-  *)
   inherited;
 end;
 
 procedure TGuiCustomControlsEdit.CMParentColorChanged(var Message: TWMNoParams);
 begin
-  (*
-    if FParentColor then
-    if Assigned(Parent)
-    then FBackgroundColor := TForm(Parent).Color;
-  *)
   inherited;
 end;
 

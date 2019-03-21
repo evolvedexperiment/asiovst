@@ -2090,12 +2090,14 @@ procedure Process32ReplacingFuncUserPtr(const Effect: PVSTEffect; const Inputs,
   Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer); cdecl;
 {$IFDEF PUREPASCAL}
 begin
- // check consistency
- if not Assigned(Effect) or (SampleFrames <= 0) or ((Inputs = nil) and (Outputs = nil))
-  then Exit;
+  // check consistency
+  if not Assigned(Effect) or (SampleFrames <= 0) or
+    ((Inputs = nil) and (Outputs = nil)) then
+    Exit;
 
- if TObject(Effect^.User) is TBasicVSTModule
-  then TBasicVSTModule(Effect^.User).HostCallProcess32Replacing(Inputs, Outputs, SampleFrames);
+  if TObject(Effect^.User) is TBasicVSTModule then
+    TBasicVSTModule(Effect^.User).HostCallProcess32Replacing(Inputs, Outputs,
+      SampleFrames);
 end;
 {$ELSE}
 asm

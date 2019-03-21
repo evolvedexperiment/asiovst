@@ -70,7 +70,7 @@ implementation
 {$ENDIF}
 
 uses
-  DitherNoiseshaperGUI, Dialogs;
+  Dialogs, DAV_StringConvert, DitherNoiseshaperGUI;
 
 resourcestring
   ECStrOnly44100 = 'Only a samplerate of 44.1 kHz is supported!';
@@ -193,10 +193,8 @@ end;
 
 procedure TDitherNoiseshaperModule.ParameterOnOffDisplay(Sender: TObject;
   const Index: Integer; var PreDefined: AnsiString);
-const
-  COnOff: array [0 .. 1] of AnsiString = ('Off', 'On');
 begin
-  PreDefined := COnOff[Round(Parameter[Index])];
+  PreDefined := AnsiString(OnOff(Parameter[Index]));
 end;
 
 procedure TDitherNoiseshaperModule.ParameterDitherTypeDisplay(Sender: TObject;

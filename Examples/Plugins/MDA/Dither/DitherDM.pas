@@ -35,7 +35,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
   Forms, DAV_Types, DAV_VSTModule;
 
 type
@@ -70,49 +70,57 @@ uses
 procedure TDitherDataModule.ParamDitherDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- case Round(Parameter[Index]) of
-   0 : PreDefined := 'OFF';
-   1 : PreDefined := 'TRI';
-   2 : PreDefined := 'HP-TRI';
-  else PreDefined := 'N.SHAPE';
- end;
+  case Round(Parameter[Index]) of
+    0:
+      PreDefined := 'OFF';
+    1:
+      PreDefined := 'TRI';
+    2:
+      PreDefined := 'HP-TRI';
+  else
+    PreDefined := 'N.SHAPE';
+  end;
 end;
 
 procedure TDitherDataModule.VSTModuleOpen(Sender: TObject);
 begin
- FShapeState[0] := 0;
- FShapeState[1] := 0;
- FShapeState[2] := 0;
- FShapeState[3] := 0;
- FRandom[0]     := 0;
- FRandom[1]     := 0;
+  FShapeState[0] := 0;
+  FShapeState[1] := 0;
+  FShapeState[2] := 0;
+  FShapeState[3] := 0;
+  FRandom[0] := 0;
+  FRandom[1] := 0;
 end;
 
 procedure TDitherDataModule.VSTModuleParameterChange(Sender: TObject;
   const Index: Integer; var Value: Single);
 begin
- //calcs here
- FGain := 1;
- FBits := 8 + 2 * trunc(8.9 * Parameter[0]);
+  // calcs here
+  FGain := 1;
+  FBits := 8 + 2 * trunc(8.9 * Parameter[0]);
 
- if (Parameter[4] > 0.1) then //zoom to 6 bit & fade out audio
+  if (Parameter[4] > 0.1) then // zoom to 6 bit & fade out audio
   begin
-   FWordLength := 32;
-   FGain := sqr(1 - Parameter[4]);
+    FWordLength := 32;
+    FGain := sqr(1 - Parameter[4]);
   end
- else FWordLength := Round(Power(2, FBits - 1)); //word length in quanta
+  else
+    FWordLength := Round(Power(2, FBits - 1)); // word length in quanta
 
- //Using WaveLab 2.01 (unity gain) as a reference:
- //  16-bit output is floor(floating_point_value * 32768)
+  // Using WaveLab 2.01 (unity gain) as a reference:
+  // 16-bit output is floor(floating_point_value * 32768)
 
- FOffset := (4 * Parameter[3] - 1.5) / FWordLength;   //DC offset (plus 0.5 to round dither not truncate)
- FDither := 2 * Parameter[2] / (FWordLength * 32767);
- FShaper := 0;
+  FOffset := (4 * Parameter[3] - 1.5) / FWordLength;
+  // DC offset (plus 0.5 to round dither not truncate)
+  FDither := 2 * Parameter[2] / (FWordLength * 32767);
+  FShaper := 0;
 
- case Round(Parameter[0]) of // dither mode:
-  0: FDither := 0;           // - off
-  3: FShaper := 0.5;         // - noise shaping
- end;
+  case Round(Parameter[0]) of // dither mode:
+    0:
+      FDither := 0; // - off
+    3:
+      FShaper := 0.5; // - noise shaping
+  end;
 end;
 
 procedure TDitherDataModule.VSTModuleProcess(const Inputs,
@@ -141,14 +149,14 @@ begin
   r3 := FRandom[1];
   m := 1;
 (*
-  if (Round(fParam1 * 3.9) = 1)
-   then m := 0;
+  if (Round(fParam1 * 3.9) = 1) then
+    m := 0;
 *)
 
- for Sample := 0 to SampleFrames - 1 do
+  for Sample := 0 to SampleFrames - 1 do
   begin
-   Outputs[0, Sample] := Inputs[0, Sample];
-   Outputs[1, Sample] := Inputs[1, Sample];
+    Outputs[0, Sample] := Inputs[0, Sample];
+    Outputs[1, Sample] := Inputs[1, Sample];
    (*
     a = *++in1;
     b = *++in2;
@@ -195,7 +203,7 @@ void mdaDither::getParameterDisplay(VstInt32 index, char *text)
     case 0: long2string((long)bits, text); break;
     case 2: float2strng(4.0f * fParam2, text); break;
     case 3: float2strng(4.0f * fParam3 - 2.0f, text); break;
-    case 4: if(fParam4>0.1f) 
+    case 4: if(fParam4>0.1f)
             if(gain<0.0001f) strcpy(text, "-80");
                         else long2string((long)(20.0 * log10(gain)), text);
                         else strcpy(text, "OFF"); break;

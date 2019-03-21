@@ -66,7 +66,7 @@ implementation
 {$ENDIF}
 
 uses
-  DAV_Approximations, DAV_DspWaveshaper, BaxxpanderGui;
+  DAV_Approximations, DAV_StringConvert, DAV_DspWaveshaper, BaxxpanderGui;
 
 procedure TBaxxpanderModule.VSTModuleOpen(Sender: TObject);
 var
@@ -137,10 +137,7 @@ end;
 procedure TBaxxpanderModule.ParameterOnOffDisplay(Sender: TObject;
   const Index: Integer; var PreDefined: AnsiString);
 begin
-  if Parameter[Index] > 0.5 then
-    PreDefined := 'On'
-  else
-    PreDefined := 'Off';
+  PreDefined := AnsiString(OnOff(Parameter[Index]));
 end;
 
 procedure TBaxxpanderModule.ParameterShapeChange(Sender: TObject;

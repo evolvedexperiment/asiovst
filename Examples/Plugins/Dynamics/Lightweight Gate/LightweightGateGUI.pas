@@ -34,11 +34,12 @@ interface
 
 {$I DAV_Compiler.inc}
 
-uses 
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
-  Forms, DAV_Types, DAV_VSTModule, DAV_GuiLabel, Controls, DAV_GuiBaseControl, 
-  DAV_GuiGraphXY, DAV_GuiLED, DAV_GuiStitchedControls, DAV_GuiStitchedDial, 
-  DAV_GuiStitchedPngList;
+uses
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
+  Forms, DAV_Types, DAV_VSTModule, DAV_GuiLabel, Controls, DAV_GuiBaseControl,
+  DAV_GuiGraphXY, DAV_GuiLED, DAV_GuiStitchedControls, DAV_GuiStitchedDial,
+  DAV_GuiStitchedPngList, DAV_GuiImageControl, DAV_GuiCustomControl,
+  DAV_GuiGraphicControl;
 
 type
   TFmLightweightGate = class(TForm)
@@ -66,6 +67,8 @@ type
     procedure DialThresholdChange(Sender: TObject);
     procedure DialRatioChange(Sender: TObject);
     procedure DialKneeChange(Sender: TObject);
+  private
+    procedure GetParameterText(Index: Integer);
   public
     procedure UpdateAttack;
     procedure UpdateRelease;
@@ -88,132 +91,140 @@ uses
 
 procedure TFmLightweightGate.FormCreate(Sender: TObject);
 begin
- with TGuiGraphXYFunctionSeries(GuiGraphXY[0].Series) do
+  with TGuiGraphXYFunctionSeries(GuiGraphXY[0].Series) do
   begin
-   OnEvaluate := EvaluateCharacteristic;
+    OnEvaluate := EvaluateCharacteristic;
   end;
 end;
 
 procedure TFmLightweightGate.FormShow(Sender: TObject);
 begin
- UpdateAttack;
- UpdateRelease;
- UpdateThreshold;
- UpdateRatio;
- UpdateKnee;
+  UpdateAttack;
+  UpdateRelease;
+  UpdateThreshold;
+  UpdateRatio;
+  UpdateKnee;
+end;
+
+procedure TFmLightweightGate.GetParameterText(Index: Integer);
+begin
+  with TLightweightGateDataModule(Owner) do
+  begin
+    Result := ParameterDisplay[Index] + ' ' + ParameterLabel[Index];
+  end;
 end;
 
 procedure TFmLightweightGate.DialAttackChange(Sender: TObject);
 begin
- with TLightweightGateDataModule(Owner) do
+  with TLightweightGateDataModule(Owner) do
   begin
-   Parameter[0] := DialAttack.Value;
+    Parameter[0] := DialAttack.Value;
   end;
 end;
 
 procedure TFmLightweightGate.DialReleaseChange(Sender: TObject);
 begin
- with TLightweightGateDataModule(Owner) do
+  with TLightweightGateDataModule(Owner) do
   begin
-   Parameter[1] := DialRelease.Value;
+    Parameter[1] := DialRelease.Value;
   end;
 end;
 
 procedure TFmLightweightGate.DialThresholdChange(Sender: TObject);
 begin
- with TLightweightGateDataModule(Owner) do
+  with TLightweightGateDataModule(Owner) do
   begin
-   Parameter[2] := DialThreshold.Value;
+    Parameter[2] := DialThreshold.Value;
   end;
 end;
 
 function TFmLightweightGate.EvaluateCharacteristic(Sender: TObject;
   X: Double): Double;
 begin
- result := TLightweightGateDataModule(Owner).EvaluateCharacteristic(X);
+  result := TLightweightGateDataModule(Owner).EvaluateCharacteristic(X);
 end;
 
 procedure TFmLightweightGate.DialRatioChange(Sender: TObject);
 begin
- with TLightweightGateDataModule(Owner) do
+  with TLightweightGateDataModule(Owner) do
   begin
-   Parameter[3] := 1 / DialRatio.Value;
+    Parameter[3] := 1 / DialRatio.Value;
   end;
 end;
 
 procedure TFmLightweightGate.DialKneeChange(Sender: TObject);
 begin
- with TLightweightGateDataModule(Owner) do
+  with TLightweightGateDataModule(Owner) do
   begin
-   Parameter[4] := DialKnee.Value;
+    Parameter[4] := DialKnee.Value;
   end;
 end;
 
 procedure TFmLightweightGate.UpdateAttack;
 var
-  Attack : Single;
+  Attack: Single;
 begin
- with TLightweightGateDataModule(Owner) do
+  with TLightweightGateDataModule(Owner) do
   begin
-   Attack := Parameter[0];
-   if Attack <> DialAttack.Value
-    then DialAttack.Value := Attack;
-   LbAttackValue.Caption := ParameterDisplay[0] + ' ' + ParameterLabel[0];
+    Attack := Parameter[0];
+    if Attack <> DialAttack.Value then
+      DialAttack.Value := Attack;
+    LbAttackValue.Caption := GetParameterText(0);
   end;
 end;
 
 procedure TFmLightweightGate.UpdateRelease;
 var
-  Release : Single;
+  Release: Single;
 begin
- with TLightweightGateDataModule(Owner) do
+  with TLightweightGateDataModule(Owner) do
   begin
-   Release := Parameter[1];
-   if Release <> DialRelease.Value
-    then DialRelease.Value := Release;
-   LbReleaseValue.Caption := ParameterDisplay[1] + ' ' + ParameterLabel[1];
+    Release := Parameter[1];
+    if Release <> DialRelease.Value then
+      DialRelease.Value := Release;
+    LbReleaseValue.Caption := GetParameterText(1);
   end;
 end;
 
 procedure TFmLightweightGate.UpdateKnee;
 var
-  Knee : Single;
+  Knee: Single;
 begin
- with TLightweightGateDataModule(Owner) do
+  with TLightweightGateDataModule(Owner) do
   begin
-   Knee := Parameter[4];
-   if Knee <> DialKnee.Value
-    then DialKnee.Value := Knee;
-   LbKneeValue.Caption := ParameterDisplay[4] + ' ' + ParameterLabel[4];
-   GuiGraphXY.UpdateGraph;
+    Knee := Parameter[4];
+    if Knee <> DialKnee.Value then
+      DialKnee.Value := Knee;
+    LbKneeValue.Caption := GetParameterText(4);
+    GuiGraphXY.UpdateGraph;
   end;
 end;
 
 procedure TFmLightweightGate.UpdateRatio;
 var
-  Ratio : Single;
+  Ratio: Single;
 begin
- with TLightweightGateDataModule(Owner) do
+  with TLightweightGateDataModule(Owner) do
   begin
-   Ratio := 1 / Parameter[3];
-   if Ratio <> DialRatio.Value
-    then DialRatio.Value := Ratio;
-   LbRatioValue.Caption := '1 : ' + FloatToStrF(Ratio, ffGeneral, 3, 3);
-   GuiGraphXY.UpdateGraph;
+    Ratio := 1 / Parameter[3];
+    if Ratio <> DialRatio.Value then
+      DialRatio.Value := Ratio;
+    LbRatioValue.Caption := '1 : ' + FloatToStrF(Ratio, ffGeneral, 3, 3);
+    GuiGraphXY.UpdateGraph;
   end;
 end;
 
 procedure TFmLightweightGate.UpdateThreshold;
 var
-  Threshold : Single;
+  Threshold: Single;
 begin
- with TLightweightGateDataModule(Owner) do
+  with TLightweightGateDataModule(Owner) do
   begin
-   Threshold := Parameter[2];
-   if Threshold <> DialThreshold.Value
-    then DialThreshold.Value := Threshold;
-   LbThresholdValue.Caption := ParameterDisplay[2] + ' ' + ParameterLabel[2];
-   GuiGraphXY.UpdateGraph;
+    Threshold := Parameter[2];
+    if Threshold <> DialThreshold.Value then
+      DialThreshold.Value := Threshold;
+    LbThresholdValue.Caption := GetParameterText(2);
+    GuiGraphXY.UpdateGraph;
   end;
 end;
 

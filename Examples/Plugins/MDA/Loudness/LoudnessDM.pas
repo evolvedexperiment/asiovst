@@ -64,7 +64,7 @@ implementation
 {$ENDIF}
 
 uses
-  Math;
+  Math, DAV_StringConvert;
 
 const
   cLoudness : array [0..13, 0..2] of Single =
@@ -86,9 +86,7 @@ const
 
 procedure TLoudnessDataModule.ParameterLinkDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- if Parameter[Index] > 0.5
-  then PreDefined := 'ON'
-  else PreDefined := 'OFF';
+  PreDefined := AnsiString(Uppercase(OnOff(Parameter[Index])));
 end;
 
 procedure TLoudnessDataModule.VSTModuleOpen(Sender: TObject);

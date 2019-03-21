@@ -44,7 +44,6 @@ type
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: NativeUInt);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure ParamFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -75,7 +74,9 @@ uses
 
 procedure TLinearPhaseLinkwitzRileyDataModule.VSTModuleCreate(Sender: TObject);
 begin
- FCriticalSection := TCriticalSection.Create;
+  FCriticalSection := TCriticalSection.Create;
+
+  EditorFormClass := TFmLinearPhaseLinkwitzRiley;
 end;
 
 procedure TLinearPhaseLinkwitzRileyDataModule.VSTModuleOpen(Sender: TObject);
@@ -101,11 +102,6 @@ procedure TLinearPhaseLinkwitzRileyDataModule.VSTModuleClose(Sender: TObject);
 begin
  FreeAndNil(FConvolution);
  FreeAndNil(FDownsampler);
-end;
-
-procedure TLinearPhaseLinkwitzRileyDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: NativeUInt);
-begin
- GUI := TFmLinearPhaseLinkwitzRiley.Create(Self);
 end;
 
 procedure TLinearPhaseLinkwitzRileyDataModule.ParameterFilterOrderDisplay(

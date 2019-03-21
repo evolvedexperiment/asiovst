@@ -56,17 +56,16 @@ type
     procedure ParameterFeedbackChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleClose(Sender: TObject);
   private
-    FBuffer    : array [0..1] of PDAVSingleFixedArray;
-    FRate      : Single;
-    FPhi, FDem : Single;
-    FDeps      : Single;
-    FDepth     : Single;
-    FWet, FDry : Single;
-    FBufPos    : Integer;
-    FFeedback  : array [0..2] of Single;
+    FBuffer: array [0 .. 1] of PDAVSingleFixedArray;
+    FRate: Single;
+    FPhi, FDem: Single;
+    FDeps: Single;
+    FDepth: Single;
+    FWet, FDry: Single;
+    FBufPos: Integer;
+    FFeedback: array [0 .. 2] of Single;
     procedure RateChanged;
     procedure DepthChanged;
-  public
   end;
 
 implementation
@@ -82,51 +81,51 @@ uses
 
 procedure TThruZeroDataModule.VSTModuleOpen(Sender: TObject);
 begin
-  Parameter[0] := 0.30;  // Rate
-  Parameter[1] := 0.43;  // Depth
-  Parameter[2] :=  47;   // Mix
-  Parameter[3] := -40;   // Feedback
-  Parameter[4] := 100;   // Minimum delay to stop LF buildup with feedback
+  Parameter[0] := 0.30; // Rate
+  Parameter[1] := 0.43; // Depth
+  Parameter[2] := 47; // Mix
+  Parameter[3] := -40; // Feedback
+  Parameter[4] := 100; // Minimum delay to stop LF buildup with feedback
 
-  ///differences from default program...
+  /// differences from default program...
   with Programs[1] do
-   begin
+  begin
     Parameter[0] := 0.50;
     Parameter[1] := 0.20;
-    Parameter[2] :=   47;
-    Parameter[3] :=  -40;
-    Parameter[4] :=  100;
-   end;
+    Parameter[2] := 47;
+    Parameter[3] := -40;
+    Parameter[4] := 100;
+  end;
 
   with Programs[2] do
-   begin
+  begin
     Parameter[0] := 0.60;
     Parameter[1] := 0.60;
-    Parameter[2] :=   35;
-    Parameter[3] :=  -40;
-    Parameter[4] :=   70;
-   end;
+    Parameter[2] := 35;
+    Parameter[3] := -40;
+    Parameter[4] := 70;
+  end;
 
   with Programs[3] do
-   begin
+  begin
     Parameter[0] := 0.75;
     Parameter[1] := 1.00;
-    Parameter[2] :=   50;
-    Parameter[3] :=   50;
-    Parameter[4] :=  100;
-   end;
+    Parameter[2] := 50;
+    Parameter[3] := 50;
+    Parameter[4] := 100;
+  end;
 
- ///initialise...
- FBufPos := 0;
- GetMem(FBuffer[0], cBUFMAX * SizeOf(Single));
- GetMem(FBuffer[1], cBUFMAX * SizeOf(Single));
- FPhi         := 0;
- FFeedback[0] := 0;
- FFeedback[1] := 0;
- FFeedback[2] := 0;
- FDeps        := 0;
+  /// initialise...
+  FBufPos := 0;
+  GetMem(FBuffer[0], cBUFMAX * SizeOf(Single));
+  GetMem(FBuffer[1], cBUFMAX * SizeOf(Single));
+  FPhi := 0;
+  FFeedback[0] := 0;
+  FFeedback[1] := 0;
+  FFeedback[2] := 0;
+  FDeps := 0;
 
- VSTModuleSuspend(Sender);
+  VSTModuleSuspend(Sender);
 end;
 
 procedure TThruZeroDataModule.VSTModuleClose(Sender: TObject);
@@ -137,32 +136,32 @@ end;
 
 procedure TThruZeroDataModule.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
-  Sample                  : Integer;
-  a, b, f, f1, f2, ph     : Single;
-  ra, de, we, dr, ds, dm  : Single;
-  tmp, tmpi, bp           : Integer;
-  tmpf, dpt               : Single;
+  Sample: Integer;
+  a, b, f, f1, f2, ph: Single;
+  ra, de, we, dr, ds, dm: Single;
+  tmp, tmpi, bp: Integer;
+  tmpf, dpt: Single;
 begin
- f  := FFeedback[0];
- f1 := FFeedback[1];
- f2 := FFeedback[2];
- ph := FPhi;
- ra := FRate;
- de := FDepth;
- we := FWet;
- dr := FDry;
- ds := FDeps;
- dm := FDem;
- bp := FBufPos;
+  f := FFeedback[0];
+  f1 := FFeedback[1];
+  f2 := FFeedback[2];
+  ph := FPhi;
+  ra := FRate;
+  de := FDepth;
+  we := FWet;
+  dr := FDry;
+  ds := FDeps;
+  dm := FDem;
+  bp := FBufPos;
 
- for Sample := 0 to SampleFrames - 1 do
+  for Sample := 0 to SampleFrames - 1 do
   begin
     a := Inputs[0, Sample];
     b := Inputs[1, Sample];
 
     ph := ph + ra;
-    if ph > 1
-     then ph := ph - 2;
+    if ph > 1 then
+      ph := ph - 2;
 
     Dec(bp);
     bp := bp and cBUFMAX;
@@ -170,14 +169,14 @@ begin
     FBuffer[1, bp] := b + f * f2;
 
     // ds := 0.995 * (ds - de) + de;           // smoothed depth change ...try inc not mult
-    dpt  := dm + de * (1 - sqr(ph));           // delay mod shape
+    dpt := dm + de * (1 - sqr(ph)); // delay mod shape
     tmpf := dpt;
-    tmp  := Round(tmpf);
+    tmp := Round(tmpf);
     tmpf := tmpf - tmp;
-    tmp  := (tmp + bp) and $7FF;
+    tmp := (tmp + bp) and $7FF;
     tmpi := (tmp + 1) and $7FF;
 
-    f1 := FBuffer[0, tmp];                     // try adding a constant to reduce denormalling
+    f1 := FBuffer[0, tmp]; // try adding a constant to reduce denormalling
     f2 := FBuffer[1, tmp];
     f1 := tmpf * (FBuffer[0, tmpi] - f1) + f1; // linear interpolation
     f2 := tmpf * (FBuffer[1, tmpi] - f2) + f2;
@@ -189,99 +188,101 @@ begin
     Outputs[1, Sample] := b;
   end;
 
- if Abs(f1) > 1E-10 then
+  if Abs(f1) > 1E-10 then
   begin
-   FFeedback[1] := f1;
-   FFeedback[2] := f2;
+    FFeedback[1] := f1;
+    FFeedback[2] := f2;
   end
- else
+  else
   begin
-   FFeedback[1] := 0;
-   FFeedback[2] := 0; //catch denormals
+    FFeedback[1] := 0;
+    FFeedback[2] := 0; // catch denormals
   end;
- FPhi    := ph;
- FDeps   := ds;
- FBufPos := bp;
+  FPhi := ph;
+  FDeps := ds;
+  FBufPos := bp;
 end;
 
 procedure TThruZeroDataModule.VSTModuleResume(Sender: TObject);
 begin
- DepthChanged;
+  DepthChanged;
 end;
 
 procedure TThruZeroDataModule.DepthChanged;
 begin
- FDepth := 2000 * sqr(Parameter[1]);
- FDem := sqr(FDepth) * 0.01 * Parameter[4];
- FDepth := FDepth - FDem;
+  FDepth := 2000 * sqr(Parameter[1]);
+  FDem := sqr(FDepth) * 0.01 * Parameter[4];
+  FDepth := FDepth - FDem;
 end;
 
 procedure TThruZeroDataModule.ParameterMixChange(Sender: TObject;
   const Index: Integer; var Value: Single);
 begin
- FWet := 0.01 * Value;
- FDry := 1 - FWet;
+  FWet := 0.01 * Value;
+  FDry := 1 - FWet;
 end;
 
 procedure TThruZeroDataModule.ParameterDepthModChange(Sender: TObject;
   const Index: Integer; var Value: Single);
 begin
- FFeedback[0] := 0.0095 * Value;
- FPhi         := 0.0;             //reset cycle
+  FFeedback[0] := 0.0095 * Value;
+  FPhi := 0.0; // reset cycle
 end;
 
 procedure TThruZeroDataModule.ParameterRateChange(Sender: TObject;
   const Index: Integer; var Value: Single);
 begin
- RateChanged;
- if Value < 0.01 then
+  RateChanged;
+  if Value < 0.01 then
   begin
-   FRate := 0;
-   FPhi  := 0;
+    FRate := 0;
+    FPhi := 0;
   end;
 end;
 
 procedure TThruZeroDataModule.RateChanged;
 begin
- FRate := Power(10, 3 * Parameter[0] - 2) * 2 / SampleRate;
+  FRate := Power(10, 3 * Parameter[0] - 2) * 2 / SampleRate;
 end;
 
 procedure TThruZeroDataModule.ParameterFeedbackChange(Sender: TObject;
   const Index: Integer; var Value: Single);
 begin
- DepthChanged;
+  DepthChanged;
 end;
 
-procedure TThruZeroDataModule.ParameterDepthChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TThruZeroDataModule.ParameterDepthChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
- DepthChanged;
+  DepthChanged;
 end;
 
 procedure TThruZeroDataModule.ParameterRateDisplay(Sender: TObject;
   const Index: Integer; var PreDefined: AnsiString);
 begin
- if Parameter[0] < 0.01
-  then PreDefined := '-'
-  else PreDefined := FloatToStrF(Power(10, 2 - 3 * Parameter[index]), ffGeneral, 4, 4);
+  if Parameter[0] < 0.01 then
+    PreDefined := '-'
+  else
+    PreDefined := FloatToStrF(Power(10, 2 - 3 * Parameter[index]),
+      ffGeneral, 4, 4);
 end;
 
 procedure TThruZeroDataModule.ParameterDepthDisplay(Sender: TObject;
   const Index: Integer; var PreDefined: AnsiString);
 begin
- PreDefined := FloatToStrF(1000 * FDepth / SampleRate, ffGeneral, 4, 4);
+  PreDefined := FloatToStrF(1000 * FDepth / SampleRate, ffGeneral, 4, 4);
 end;
 
 procedure TThruZeroDataModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 begin
- RateChanged;
+  RateChanged;
 end;
 
 procedure TThruZeroDataModule.VSTModuleSuspend(Sender: TObject);
 begin
- if Assigned(FBuffer[0]) then FillChar(FBuffer[0, 0], cBUFMAX * SizeOf(Single), 0);
- if Assigned(FBuffer[1]) then FillChar(FBuffer[1, 0], cBUFMAX * SizeOf(Single), 0);
+  if Assigned(FBuffer[0]) then FillChar(FBuffer[0, 0], cBUFMAX * SizeOf(Single), 0);
+  if Assigned(FBuffer[1]) then FillChar(FBuffer[1, 0], cBUFMAX * SizeOf(Single), 0);
 end;
 
 end.

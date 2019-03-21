@@ -42,7 +42,6 @@ type
   TLightweightCompressorDataModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: NativeUInt);
     procedure VSTModuleProcessMono(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
     procedure VSTModuleProcessStereo(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
     procedure VSTModuleProcessMonoSoftClip(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
@@ -83,8 +82,8 @@ implementation
 {$ENDIF}
 
 uses
-  Math, DAV_Strings, DAV_Common, DAV_Consts, DAV_Approximations, DAV_VSTModuleWithPrograms,
-  LightweightCompressorGUI;
+  Math, DAV_Strings, DAV_Common, DAV_Consts, DAV_StringConvert,
+  DAV_Approximations, DAV_VSTModuleWithPrograms, LightweightCompressorGUI;
 
 procedure TLightweightCompressorDataModule.VSTModuleOpen(Sender: TObject);
 var
@@ -122,18 +121,14 @@ begin
   Programs[0].SetParameters(FParameter);
   for Channel := 1 to numPrograms - 1 do
     Programs[Channel].SetParameters(CPresets[Channel]);
+
+  EditorFormClass := TFmLightweightCompressor;
 end;
 
 procedure TLightweightCompressorDataModule.VSTModuleClose(Sender: TObject);
 begin
   FreeAndNil(FCompressor[0]);
   FreeAndNil(FCompressor[1]);
-end;
-
-procedure TLightweightCompressorDataModule.VSTModuleEditOpen(Sender: TObject;
-  var GUI: TForm; ParentWindow: NativeUInt);
-begin
-  GUI := TFmLightweightCompressor.Create(Self);
 end;
 
 function TLightweightCompressorDataModule.EvaluateCharacteristic
@@ -335,12 +330,7 @@ end;
 procedure TLightweightCompressorDataModule.ParameterOnOffDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
-  case Round(Parameter[Index]) of
-    0:
-      PreDefined := 'Off';
-    1:
-      PreDefined := 'On';
-  end;
+  PreDefined := AnsiString(OnOff(Parameter[Index]));
 end;
 
 procedure TLightweightCompressorDataModule.ParameterStereoChange

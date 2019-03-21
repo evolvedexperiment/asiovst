@@ -69,7 +69,7 @@ implementation
 {$R Default.RES}
 
 uses
-  Math, HRTF3DGUI;
+  Math, DAV_StringConvert, HRTF3DGUI;
 
 procedure TVSTHRTF3DModule.VST2ModuleOpen(Sender: TObject);
 var
@@ -128,10 +128,7 @@ end;
 procedure TVSTHRTF3DModule.ParameterDisplayHRTFsDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
-  if Parameter[Index] > 0.5 then
-    PreDefined := 'On'
-  else
-    PreDefined := 'Off';
+  PreDefined := AnsiString(OnOff(Parameter[Index]));
 end;
 
 procedure TVSTHRTF3DModule.ParameterInterpolationChange(

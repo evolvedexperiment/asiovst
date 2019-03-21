@@ -46,14 +46,13 @@ type
     procedure ParamFilterChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamHFDriveChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
-    FThreshold : Single;
-    FEnvelope  : Single;
-    FAttack    : Single;
-    FRelease   : Single;
-    FFilter    : Single;
-    FGain      : Single;
-    FBuffer    : array [0..1] of Single;
-  public
+    FThreshold: Single;
+    FEnvelope: Single;
+    FAttack: Single;
+    FRelease: Single;
+    FFilter: Single;
+    FGain: Single;
+    FBuffer: array [0 .. 1] of Single;
   end;
 
 implementation

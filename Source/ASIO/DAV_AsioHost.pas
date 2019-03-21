@@ -73,7 +73,7 @@ type
 
   TAsioSupport = (assSupportsTimeInfo, assSupportsTimeCode,
     assSupportsInputMonitor);
-  TAsioSupports = set of TAsioSupport;                        
+  TAsioSupports = set of TAsioSupport;
 
   TAsioCanDo = (acdInputMonitor, acdTimeInfo, acdTimeCode, acdTransport,
                 acdInputGain, acdInputMeter, acdOutputGain, acdOutputMeter);
@@ -1409,56 +1409,69 @@ var
   Channel    : Integer;
   SampleSize : Word;
 begin
-  try
-    // clear output buffer
-    Buffer := FOutputBuffers;
-    if Assigned(Buffer) then
-      for Channel := 0 to FOutputChannelCount - 1 do
-        with FOutputChannelInfos[Channel] do
-        begin
-          // determine sample size
-          if SampleType in [CAsioSTInt16MSB, CAsioSTInt16LSB]     then SampleSize := SizeOf(Word) else
-          if SampleType in [CAsioSTInt24MSB, CAsioSTInt24LSB]     then SampleSize := 3 else
-          if SampleType in [CAsioSTFloat32LSB, CAsioSTFloat32MSB] then SampleSize := SizeOf(Single) else
-          if SampleType in [CAsioSTFloat64LSB, CAsioSTFloat64MSB] then SampleSize := SizeOf(Double)
-           else SampleSize := SizeOf(Integer);
-
-          // finally clear buffer
-          Assert(Assigned(Buffer));
-          with Buffer^[0] do
-           begin
-            if Assigned(Buffers[0]) then FillChar(Buffers[0]^, FBufferSize * SampleSize, 0);
-            if Assigned(Buffers[1]) then FillChar(Buffers[1]^, FBufferSize * SampleSize, 0);
-           end;
-          Inc(Buffer);
-        end;
-
-    // clear input buffer
-    Buffer := FInputBuffers;
-    if Assigned(Buffer) then
-      for Channel := 0 to FInputChannelCount - 1 do
-        with FInputChannelInfos[Channel] do
-        begin
-          // determine sample size
-          if SampleType in [CAsioSTInt16MSB, CAsioSTInt16LSB]     then SampleSize := SizeOf(Word) else
-          if SampleType in [CAsioSTInt24MSB, CAsioSTInt24LSB]     then SampleSize := 3 else
-          if SampleType in [CAsioSTFloat32LSB, CAsioSTFloat32MSB] then SampleSize := SizeOf(Single) else
-          if SampleType in [CAsioSTFloat64LSB, CAsioSTFloat64MSB] then SampleSize := SizeOf(Double)
-          else
-            SampleSize := SizeOf(Integer);
-
-          // finally clear buffer
-          Assert(Assigned(Buffer));
-          with Buffer^[0] do
+    try
+      // clear output buffer
+      Buffer := FOutputBuffers;
+      if Assigned(Buffer) then
+        for Channel := 0 to FOutputChannelCount - 1 do
+          with FOutputChannelInfos[Channel] do
           begin
-            if Assigned(Buffers[0]) then FillChar(Buffers[0]^, FBufferSize * SampleSize, 0);
-            if Assigned(Buffers[1]) then FillChar(Buffers[1]^, FBufferSize * SampleSize, 0);
+            // determine sample size
+            if SampleType in [CAsioSTInt16MSB, CAsioSTInt16LSB] then
+              SampleSize := SizeOf(Word)
+            else if SampleType in [CAsioSTInt24MSB, CAsioSTInt24LSB] then
+              SampleSize := 3
+            else if SampleType in [CAsioSTFloat32LSB, CAsioSTFloat32MSB] then
+              SampleSize := SizeOf(Single)
+            else if SampleType in [CAsioSTFloat64LSB, CAsioSTFloat64MSB] then
+              SampleSize := SizeOf(Double)
+            else
+              SampleSize := SizeOf(Integer);
+
+            // finally clear buffer
+            Assert(Assigned(Buffer));
+            with Buffer^[0] do
+            begin
+              if Assigned(Buffers[0]) then
+                FillChar(Buffers[0]^, FBufferSize * SampleSize, 0);
+              if Assigned(Buffers[1]) then
+                FillChar(Buffers[1]^, FBufferSize * SampleSize, 0);
+            end;
+            Inc(Buffer);
           end;
-          Inc(Buffer);
-        end;
-  except
+
+      // clear input buffer
+      Buffer := FInputBuffers;
+      if Assigned(Buffer) then
+        for Channel := 0 to FInputChannelCount - 1 do
+          with FInputChannelInfos[Channel] do
+          begin
+            // determine sample size
+            if SampleType in [CAsioSTInt16MSB, CAsioSTInt16LSB] then
+              SampleSize := SizeOf(Word)
+            else if SampleType in [CAsioSTInt24MSB, CAsioSTInt24LSB] then
+              SampleSize := 3
+            else if SampleType in [CAsioSTFloat32LSB, CAsioSTFloat32MSB] then
+              SampleSize := SizeOf(Single)
+            else if SampleType in [CAsioSTFloat64LSB, CAsioSTFloat64MSB] then
+              SampleSize := SizeOf(Double)
+            else
+              SampleSize := SizeOf(Integer);
+
+            // finally clear buffer
+            Assert(Assigned(Buffer));
+            with Buffer^[0] do
+            begin
+              if Assigned(Buffers[0]) then
+                FillChar(Buffers[0]^, FBufferSize * SampleSize, 0);
+              if Assigned(Buffers[1]) then
+                FillChar(Buffers[1]^, FBufferSize * SampleSize, 0);
+            end;
+            Inc(Buffer);
+          end;
+    except
+    end;
   end;
-end;
 
 function TCustomAsioHostBasic.GetNumDrivers: Integer;
 begin

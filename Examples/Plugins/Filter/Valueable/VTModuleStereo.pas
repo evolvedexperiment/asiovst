@@ -109,7 +109,7 @@ implementation
 
 uses
   Dialogs, DAV_Common, DAV_DspDFT, DAV_VSTCustomModule,
-  DAV_VSTModuleWithPrograms, VTGUIStereo;
+  DAV_VSTModuleWithPrograms, DAV_StringConvert, VTGUIStereo;
 
 const
   CKernelSizes: array [1..4, 0..1] of Integer =
@@ -122,20 +122,20 @@ const
 procedure ConvolveIR_X87(InOutBuffer, IRBuffer: PSingle;
   SampleFrames: Integer; Current: Single);
 asm
- fld   Current.Single
- @SmallLoop:
- fld   [edx].Single
- fmul  st(0),st(1)
- fld   [eax].Single
- faddp
+  fld   Current.Single
+  @SmallLoop:
+  fld   [edx].Single
+  fmul  st(0),st(1)
+  fld   [eax].Single
+  faddp
 
- fstp [eax].Single
- add   eax, 4
- add   edx, 4
- loop  @SmallLoop
+  fstp [eax].Single
+  add   eax, 4
+  add   edx, 4
+  loop  @SmallLoop
 
- @EndSmallLoop:
- ffree st(0)
+  @EndSmallLoop:
+  ffree st(0)
 end;
 
 procedure ConvolveIR_X87large(InOutBuffer, IRBuffer: PSingle;
@@ -797,10 +797,7 @@ end;
 procedure TVTVSTModule.ParameterBypassDisplay(Sender: TObject;
   const Index: Integer; var PreDefined: AnsiString);
 begin
-  if Boolean(Round(Parameter[Index])) then
-    PreDefined := 'On'
-  else
-    PreDefined := 'Off';
+  PreDefined := AnsiString(OnOff(Parameter[Index]));
 end;
 
 end.
