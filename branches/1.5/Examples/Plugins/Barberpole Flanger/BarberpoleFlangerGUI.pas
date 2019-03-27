@@ -81,7 +81,7 @@ implementation
 {$ENDIF}
 
 uses
-  Math, DAV_VSTModuleWithPrograms, BarberpoleFlangerDM;
+  Math, DAV_StringConvert, DAV_VSTModuleWithPrograms, BarberpoleFlangerDM;
 
 procedure TFmBarberpoleFlanger.FormShow(Sender: TObject);
 begin

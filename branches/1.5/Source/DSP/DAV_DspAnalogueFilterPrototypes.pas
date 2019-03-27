@@ -483,7 +483,7 @@ end;
 
 procedure TCustomBiquadAnalogueFilterPrototype.GainChanged;
 begin
-  FGainFactor := dB_to_Amp(0.5 * FGain);
+  FGainFactor := DAV_Convert.dB_to_Amp(0.5 * FGain);
   CalculateCoefficients;
 end;
 

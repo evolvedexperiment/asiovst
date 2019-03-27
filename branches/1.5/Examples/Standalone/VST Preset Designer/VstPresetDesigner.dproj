@@ -68,8 +68,10 @@
         <VerInfo_Locale>1031</VerInfo_Locale>
         <DCC_N>true</DCC_N>
         <DCC_S>false</DCC_S>
-        <PostBuildEvent><![CDATA[move /y $(OUTPUTPATH) "$(OUTPUTDIR)\VST Preset Designer.exe"
-$(PostBuildEvent)]]></PostBuildEvent>
+        <PostBuildEvent>
+            <![CDATA[move /y $(OUTPUTPATH) "$(OUTPUTDIR)\VST Preset Designer.exe"
+$(PostBuildEvent)]]>
+        </PostBuildEvent>
         <DCC_K>false</DCC_K>
         <DCC_DcuOutput>..\..\..\UnitCache\$(Platform)\$(Config)</DCC_DcuOutput>
         <DCC_E>false</DCC_E>

@@ -38,7 +38,7 @@ implementation
 {$ENDIF}
 
 uses
-  Math, DAV_Common, DAV_Approximations, VocoderGUI;
+  Math, DAV_Common, DAV_Convert, DAV_Approximations, VocoderGUI;
 
 procedure TVSTSSModule.VSTModuleOpen(Sender: TObject);
 begin

@@ -123,7 +123,7 @@ type
     procedure DialLimiterKneeChange(Sender: TObject);
     procedure LbSoftClipClick(Sender: TObject);
   private
-    procedure GetParameterText(Index: Integer);
+    function GetParameterText(Index: Integer): String;
   public
     // gate
     procedure UpdateGateAttack;
@@ -191,7 +191,7 @@ begin
   UpdateLimiterSoftClip;
 end;
 
-procedure TFmLightweightDynamics.GetParameterText(Index: Integer);
+function TFmLightweightDynamics.GetParameterText(Index: Integer): String;
 begin
   with TLightweightDynamicsDataModule(Owner) do
   begin

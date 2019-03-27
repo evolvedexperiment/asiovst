@@ -1368,11 +1368,11 @@ var
 begin
   Section := GetExportSection(Offset);
   if Assigned(Section) then
-   begin
-    ExportSection := PImageExportDirectory(
-      PAnsiChar(Section.FRawData.memory) + Offset);
+  begin
+    ExportSection := PImageExportDirectory
+      (PAnsiChar(Section.FRawData.memory) + Offset);
     Result := ExportSection^.NumberOfNames;
-   end;
+  end
   else
     Result := 0;
 end;
@@ -1758,7 +1758,7 @@ begin
     if FSectionHeader.Misc.VirtualSize = 0 then
       FSectionHeader.Misc.VirtualSize := FSectionHeader.SizeOfRawData;
     FRawData.Write(rawData^, FSectionHeader.Misc.VirtualSize)
-  end;
+  end
   else
 
 // nb.  If VirtualSize is bigger than SizeOfRawData it implies that extra padding is required.

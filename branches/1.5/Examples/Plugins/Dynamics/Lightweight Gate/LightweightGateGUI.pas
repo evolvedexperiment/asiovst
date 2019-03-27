@@ -68,7 +68,7 @@ type
     procedure DialRatioChange(Sender: TObject);
     procedure DialKneeChange(Sender: TObject);
   private
-    procedure GetParameterText(Index: Integer);
+    function GetParameterText(Index: Integer): string;
   public
     procedure UpdateAttack;
     procedure UpdateRelease;
@@ -106,7 +106,7 @@ begin
   UpdateKnee;
 end;
 
-procedure TFmLightweightGate.GetParameterText(Index: Integer);
+function TFmLightweightGate.GetParameterText(Index: Integer): string;
 begin
   with TLightweightGateDataModule(Owner) do
   begin

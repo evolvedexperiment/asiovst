@@ -87,8 +87,10 @@
         <Icon_MainIcon>..\..\..\Resources\GUIGraphXY.ico</Icon_MainIcon>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1)'!=''">
-        <PostBuildEvent><![CDATA[move /y $(OUTPUTPATH) "$(OUTPUTDIR)\Noiseshaping Filter Designer.exe"
-$(PostBuildEvent)]]></PostBuildEvent>
+        <PostBuildEvent>
+            <![CDATA[move /y $(OUTPUTPATH) "$(OUTPUTDIR)\Noiseshaping Filter Designer.exe"
+$(PostBuildEvent)]]>
+        </PostBuildEvent>
         <DCC_LocalDebugSymbols>false</DCC_LocalDebugSymbols>
         <DCC_Define>RELEASE;$(DCC_Define)</DCC_Define>
         <DCC_SymbolReferenceInfo>0</DCC_SymbolReferenceInfo>
@@ -189,14 +191,6 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <ProjectFileVersion>12</ProjectFileVersion>
     </ProjectExtensions>
     <Import Condition="Exists('$(APPDATA)\Embarcadero\$(BDSAPPDATABASEDIR)\$(PRODUCTVERSION)\UserTools.proj')" Project="$(APPDATA)\Embarcadero\$(BDSAPPDATABASEDIR)\$(PRODUCTVERSION)\UserTools.proj"/>
-    <PropertyGroup Condition="'$(Config)'=='Release' And '$(Platform)'=='OSX32'">
-        <PreBuildEvent/>
-        <PreBuildEventIgnoreExitCode>False</PreBuildEventIgnoreExitCode>
-        <PreLinkEvent/>
-        <PreLinkEventIgnoreExitCode>False</PreLinkEventIgnoreExitCode>
-        <PostBuildEvent>move /y $(OUTPUTPATH) &quot;$(OUTPUTDIR)\Noiseshaping Filter Designer.exe&quot;</PostBuildEvent>
-        <PostBuildEventIgnoreExitCode>False</PostBuildEventIgnoreExitCode>
-    </PropertyGroup>
     <PropertyGroup Condition="'$(Config)'=='Release' And '$(Platform)'=='Win32'">
         <PreBuildEvent/>
         <PreBuildEventIgnoreExitCode>False</PreBuildEventIgnoreExitCode>

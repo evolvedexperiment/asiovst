@@ -71,7 +71,7 @@ implementation
 {$ENDIF}
 
 uses
-  Registry, DAV_Common;
+  Registry, DAV_Common, DAV_StringConvert;
 
 const
   CRegKeyRoot = 'Software\Delphi ASIO & VST Project\Bode Frequency Shifter';

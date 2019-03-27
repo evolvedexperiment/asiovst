@@ -346,7 +346,7 @@ type
     property GridColor: TColor read FGridColor write SetGridColor default clRed;
     property Flags: TGraphXYFlags read FFlags write SetFlags default [gfShowLabels];
     property FontShadow: TGuiShadow read GetFontShadow write SetFontShadow;
-    property SeriesCollection: TGuiGraphXYSeriesCollectionread FSeriesCollection write SetSeriesCollection;
+    property SeriesCollection: TGuiGraphXYSeriesCollection read FSeriesCollection write SetSeriesCollection;
     property XAxis: TCustomAxis read FXAxis write FXAxis;
     property YAxis: TCustomAxis read FYAxis write FYAxis;
     property OnChange: TNotifyEvent read FOnChange write FOnChange;
