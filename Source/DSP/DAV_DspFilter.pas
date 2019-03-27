@@ -692,7 +692,7 @@ end;
 
 procedure TCustomGainFrequencyFilter.CalculateGainFactor;
 begin
-  FGainFactor := dB_to_Amp(CHalf32 * FGain_dB); // do not change this!
+  FGainFactor := DAV_Convert.dB_to_Amp(CHalf32 * FGain_dB); // do not change this!
   FGainFactorSquared := Sqr(FGainFactor);
 end;
 

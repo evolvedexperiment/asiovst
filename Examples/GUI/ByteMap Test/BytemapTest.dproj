@@ -60,6 +60,7 @@
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
         <SanitizedProjectName>BytemapTest</SanitizedProjectName>
+        <DCC_UnitSearchPath>..\..\..\Source;..\..\..\Source\GUI;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
         <DCC_DcuOutput>..\..\..\UnitCache\$(Platform)\$(Config)</DCC_DcuOutput>
         <DCC_DependencyCheckOutputName>BytemapTest.exe</DCC_DependencyCheckOutputName>
         <DCC_ExeOutput>..\..\..\Bin\$(Platform)\GUI</DCC_ExeOutput>

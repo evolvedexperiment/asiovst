@@ -12,8 +12,7 @@ uses
   FastMove, // either download the library or disable the feature
   {$ENDIF}
   Forms,
-  MainUnit in 'MainUnit.pas' {FmSwitchTest},
-  DAV_GuiFileFormatGraphics in '..\..\..\Source\GUI\DAV_GuiFileFormatGraphics.pas';
+  MainUnit in 'MainUnit.pas' {FmSwitchTest};
 
 {$R *.res}
 

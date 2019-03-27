@@ -82,6 +82,8 @@ type
     procedure LEDStereoClick(Sender: TObject);
     procedure LEDLimitClick(Sender: TObject);
     procedure LEDAutoGainClick(Sender: TObject);
+  private
+    function GetParameterText(Index: Integer): String;
   public
     procedure UpdateAttack;
     procedure UpdateRelease;
@@ -214,7 +216,7 @@ begin
   end;
 end;
 
-procedure TFmLightweightFeedbackCompressor.GetParameterText(Index: Integer);
+function TFmLightweightFeedbackCompressor.GetParameterText(Index: Integer): string;
 begin
   with TLightweightFeedbackCompressorDataModule(Owner) do
   begin

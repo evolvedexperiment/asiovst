@@ -70,7 +70,7 @@ implementation
 {$ENDIF}
 
 uses
-  Math, DAV_Common, DAV_DspWindowing, BugpassLiteGUI;
+  Math, DAV_Common, DAV_StringConvert, DAV_DspWindowing, BugpassLiteGUI;
 
 procedure TBugpassLiteDataModule.VSTModuleCreate(Sender: TObject);
 begin
@@ -152,10 +152,7 @@ end;
 procedure TBugpassLiteDataModule.ParameterFrequencyDisplay(Sender: TObject;
   const Index: Integer; var PreDefined: AnsiString);
 begin
-  if Parameter[Index] >= 1000 then
-    PreDefined := FloatToAnsiString(1E-3 * Parameter[Index], 3)
-  else
-    PreDefined := FloatToAnsiString(Parameter[Index], 3);
+  PreDefined := FloatToHertzShiftNoUnit(Parameter[Index])
 end;
 
 procedure TBugpassLiteDataModule.ParameterFrequencyLabel(Sender: TObject;

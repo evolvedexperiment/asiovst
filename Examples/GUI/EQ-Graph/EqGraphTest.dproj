@@ -66,6 +66,7 @@
         <DCC_Platform>x86</DCC_Platform>
         <DCC_S>false</DCC_S>
         <DCC_SymbolReferenceInfo>1</DCC_SymbolReferenceInfo>
+        <DCC_UnitSearchPath>..\..\..\Source;..\..\..\Source\GUI;..\..\..\Source\DSP;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
         <Icon_MainIcon>EqGraphTest_Icon2.ico</Icon_MainIcon>
         <Manifest_File>None</Manifest_File>
         <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
@@ -109,6 +110,7 @@
         <BT_BuildType>Debug</BT_BuildType>
         <DCC_Define>madExcept;$(DCC_Define)</DCC_Define>
         <DCC_MapFile>3</DCC_MapFile>
+        <Icon_MainIcon>..\..\..\Resources\OnOff.ico</Icon_MainIcon>
         <Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_Locale>1033</VerInfo_Locale>
